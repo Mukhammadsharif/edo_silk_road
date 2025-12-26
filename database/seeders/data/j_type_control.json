@@ -1,0 +1,108 @@
+{
+    "journal_type_controls": [
+        {
+            "id" : 1,
+            "journal_type_id" : 2,
+            "status" : 1
+        },
+        {
+            "id" : 2,
+            "journal_type_id" : 3,
+            "status" : 0
+        },
+        {
+            "id" : 3,
+            "journal_type_id" : 5,
+            "status" : 1
+        },
+        {
+            "id" : 4,
+            "journal_type_id" : 6,
+            "status" : 0
+        },
+        {
+            "id" : 5,
+            "journal_type_id" : 7,
+            "status" : 1
+        },
+        {
+            "id" : 6,
+            "journal_type_id" : 8,
+            "status" : 0
+        },
+        {
+            "id" : 7,
+            "journal_type_id" : 9,
+            "status" : 0
+        },
+        {
+            "id" : 8,
+            "journal_type_id" : 10,
+            "status" : 1
+        },
+        {
+            "id" : 9,
+            "journal_type_id" : 11,
+            "status" : 0
+        },
+        {
+            "id" : 10,
+            "journal_type_id" : 12,
+            "status" : 0
+        },
+        {
+            "id" : 11,
+            "journal_type_id" : 13,
+            "status" : 1
+        },
+        {
+            "id" : 12,
+            "journal_type_id" : 15,
+            "status" : 1
+        },
+        {
+            "id" : 13,
+            "journal_type_id" : 16,
+            "status" : 1
+        },
+        {
+            "id" : 14,
+            "journal_type_id" : 17,
+            "status" : 1
+        },
+        {
+            "id" : 15,
+            "journal_type_id" : 18,
+            "status" : 1
+        },
+        {
+            "id" : 16,
+            "journal_type_id" : 19,
+            "status" : 1
+        },
+        {
+            "id" : 17,
+            "journal_type_id" : 20,
+            "status" : 1
+        },
+        {
+            "id" : 18,
+            "journal_type_id" : 21,
+            "status" : 1
+        },
+        {
+            "id" : 19,
+            "journal_type_id" : 22,
+            "status" : 1
+        },
+        {
+            "id" : 20,
+            "journal_type_id" : 23,
+            "status" : 1
+        },
+        {
+            "id" : 22,
+            "journal_type_id" : 14,
+            "status" : 1
+        }
+    ]}

@@ -1,0 +1,181 @@
+<?php
+
+use App\Http\Controllers\Api\Admin\DictionaryApiController;
+use App\Http\Controllers\Api\CompanyController;
+use App\Http\Controllers\Api\DataController;
+use App\Http\Controllers\Api\DivisionController;
+use App\Http\Controllers\Api\EmployeeController;
+use App\Http\Controllers\Api\Messages\MessageApiController;
+use App\Http\Controllers\Api\Office\DocApiController;
+use App\Http\Controllers\Api\Office\ExecutionApiController;
+use App\Http\Controllers\Api\Office\JournalApiController;
+use App\Http\Controllers\Api\PersonController;
+use App\Http\Controllers\Api\PositionController;
+use App\Http\Controllers\Api\Protocol\ProtocolApiCommentController;
+use App\Http\Controllers\Api\Protocol\ProtocolApiEmpHrOrdersController;
+use App\Http\Controllers\Api\Protocol\ProtocolApiMembersController;
+use App\Http\Controllers\Api\Protocol\ProtocolApiSecretaryController;
+use App\Http\Controllers\Api\User\UserApiController;
+use App\Http\Controllers\Auth\AuthController;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
+
+Route::post('/callback', function (Request $request) {
+
+    //
+    $token = $request->bearerToken();
+    $data = json_decode($request->getContent(), true);
+
+    $key = $data['key'] ?? null;
+    if (!$key) {
+        Log::warning("Key not found in callback.");
+        return response()->json(['error' => 1]);
+    }
+
+    $status = $data['status'] ?? null;
+    if (in_array($status, [1, 4])) {
+        return response()->json(['error' => 0]);
+    }
+
+    if (!in_array($status, [2, 6, 7])) {
+        Log::info('Callback status not handled', ['status' => $status]);
+        return response()->json(['error' => 0]);
+    }
+
+    $downloadUrl = $data['url'] ?? null;
+    if (!$downloadUrl) {
+        Log::error('No download URL in callback.');
+        return response()->json(['error' => 1]);
+    }
+
+    // Replace external IP with internal IP
+    $onlyOfficeExternalUrl = config('only-office.ONLY_OFFICE_EXTERNAL_URL');
+    $onlyOfficeInternalUrl = config('only-office.ONLY_OFFICE_INTERNAL_URL');
+    $downloadUrl = str_replace(
+        $onlyOfficeExternalUrl,
+        $onlyOfficeInternalUrl,
+        $downloadUrl
+    );
+
+    try {
+        $options = ['timeout' => 60];
+        if (config('only-office.HTTP_PROXY')) {
+            $options['proxy'] = config('only-office.HTTP_PROXY');
+        }
+
+        $response = Http::withOptions($options)
+            ->withHeaders(['Authorization' => "Bearer $token"])
+            ->get($downloadUrl);
+
+        if (!$response->successful()) {
+            Log::error('Failed to download file', ['url' => $downloadUrl]);
+            return response()->json(['error' => 1]);
+        }
+
+        $today = Carbon::today();
+        $year = $today->year;
+        $month = $today->month;
+        $day = $today->day;
+        $ood_path = 'ood/' . $year . '/' . $month . '/' . $day . '/';
+
+        $filename = $key . '.docx';
+        $path = $ood_path . $filename;
+
+        Storage::disk('public')->put($path, $response->body());
+
+        return response()->json(['error' => 0]);
+
+    } catch (\Exception $e) {
+        Log::error('Exception saving file', ['message' => $e->getMessage()]);
+        return response()->json(['error' => 1]);
+    }
+
+});
+
+Route::prefix('auth')->group(function () {
+    Route::post('/login', [AuthController::class, 'login']);
+});
+
+Route::prefix('main/api-1c/v1')->middleware('auth:sanctum')->group(function () {
+
+    Route::put('/companies/create_update', [CompanyController::class, 'store']);
+
+    Route::put('/persons/create_update_list', [PersonController::class, 'store']);
+
+    Route::put('/divisions/create_update_list', [DivisionController::class, 'store']);
+
+    Route::put('/positions/create_update_list', [PositionController::class, 'store']);
+
+    Route::put('/employees/create_update_list', [EmployeeController::class, 'store']);
+});
+
+
+Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
+
+    Route::get('/hr-orders', [DataController::class, 'hrOrders']);
+
+    Route::get('/users', [UserApiController::class, 'index']);
+    Route::get('/roles', [DictionaryApiController::class, 'roleList']);
+    Route::get('/languages', [DictionaryApiController::class, 'languageList']);
+
+    // Execution routes
+    Route::prefix('executions')->group(function () {
+        Route::get('/for-execution', [ExecutionApiController::class, 'forExecutionIndex']);
+        Route::get('/for-sign', [ExecutionApiController::class, 'forSignIndex']);
+        Route::get('/for-approval', [ExecutionApiController::class, 'forApprovalIndex']);
+        Route::get('/for-confirm', [ExecutionApiController::class, 'forConfirmIndex']);
+        Route::get('/for-control', [ExecutionApiController::class, 'forControlIndex']);
+        Route::get('/document/{j_id}', [ExecutionApiController::class, 'viewDocument']);
+        Route::post('/document/{j_id}/sign', [ExecutionApiController::class, 'signDocument']);
+
+        Route::get('/status-list', [ExecutionApiController::class, 'statusList']);
+        Route::get('/journal-list', [ExecutionApiController::class, 'journalList']);
+    });
+
+    // Message routes
+    Route::prefix('messages')->group(function () {
+        Route::get('/{type}', [MessageApiController::class, 'list']);
+        Route::get('/view/{id}', [MessageApiController::class, 'view']);
+        Route::delete('/{id}', [MessageApiController::class, 'delete']);
+    });
+
+    Route::prefix('protocol')->group(function () {
+        Route::get('/secretary/{doc_type}', [ProtocolApiSecretaryController::class, 'index']);
+        Route::get('/secretary/{id}/{doc_hash}', [ProtocolApiSecretaryController::class, 'view']);
+        Route::post('/secretary/{id}/{doc_hash}/send', [ProtocolApiSecretaryController::class, 'sendToMembers']);
+
+        Route::get('/hr-orders', [ProtocolApiEmpHrOrdersController::class, 'index']);
+        Route::get('/hr-orders/{id}/{doc_hash}', [ProtocolApiEmpHrOrdersController::class, 'view']);
+        Route::post('/hr-orders/{id}/{doc_hash}/sign', [ProtocolApiEmpHrOrdersController::class, 'sign']);
+
+        Route::get('/member-protocols', [ProtocolApiMembersController::class, 'index']);
+        Route::get('/member-protocol/{doc_hash}', [ProtocolApiMembersController::class, 'show']);
+        Route::post('/member-protocol/{doc_hash}/sign', [ProtocolApiMembersController::class, 'sign']);
+
+        Route::get('/{doc_hash}/comments', [ProtocolApiCommentController::class, 'index']);
+        Route::get('/protocol-comments/{comment_id}', [ProtocolApiCommentController::class, 'show']);
+    });
+
+    Route::get('/work-documents', [JournalApiController::class, 'indexWork']);
+    Route::get('/work-documents/{id}/{hash}', [JournalApiController::class, 'viewWork']);
+    Route::get('/inbox-documents', [JournalApiController::class, 'indexInbox']);
+    Route::get('/inbox-documents/{id}/{hash}', [JournalApiController::class, 'viewInbox']);
+    Route::get('/outgoing-documents', [JournalApiController::class, 'indexOutgoing']);
+    Route::get('/outgoing-documents/{id}/{hash}', [JournalApiController::class, 'viewOutgoing']);
+
+
+    Route::prefix('doc-controller')->group(function () {
+        Route::get('/documents/work-docs', [DocApiController::class, 'workDocsIndex']);
+        Route::get('/documents/{id}/view/{doc_hash}', [DocApiController::class, 'workView']);
+        Route::get('/public-protocols', [DocApiController::class, 'publicProtocolsIndex']);
+        Route::get('/protocols', [DocApiController::class, 'protocolsIndex']);
+        Route::get('/protocol/{id}/{doc_hash}', [DocApiController::class, 'protocolView']);
+        Route::delete('/work-documents', [DocApiController::class, 'delWorkDoc']);
+        Route::delete('/protocols', [DocApiController::class, 'delProtocol']);
+    });
+});
+

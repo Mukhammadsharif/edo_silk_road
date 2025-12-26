@@ -1,0 +1,31 @@
+{
+    "resolution_types": [
+        {
+            "id" : 1,
+            "title" : "Boshqalar",
+            "lang_id" : 83,
+            "doc_code" : "OTHER",
+            "status" : 1
+        },
+        {
+            "id" : 2,
+            "title" : "Ijrosi ta'minlansin",
+            "lang_id" : 161,
+            "doc_code" : "PERF",
+            "status" : 1
+        },
+        {
+            "id" : 3,
+            "title" : "Ma'lumot uchun",
+            "lang_id" : 176,
+            "doc_code" : "FOR_INF",
+            "status" : 1
+        },
+        {
+            "id" : 4,
+            "title" : "Hisobot tayyorlansin",
+            "lang_id" : 121,
+            "doc_code" : "PR_REPORT",
+            "status" : 1
+        }
+    ]}

@@ -1,0 +1,95 @@
+{
+    "table": "users",
+    "rows": [
+        {
+            "id" : 1,
+            "username" : "super_admin",
+            "email" : "super_admin@gmail.com",
+            "f_name" : "SuperAdmin",
+            "password" : "super_admin!@#",
+            "dep_id" : 2,
+            "post_id" : 3,
+            "status" : 1
+        },
+        {
+            "id" : 2,
+            "username" : "it_admin",
+            "email" : "it_admin@gmail.com",
+            "f_name" : "IT Admin",
+            "password" : "123456",
+            "dep_id" : 2,
+            "post_id" : 3,
+            "status" : 1
+        },
+        {
+            "id" : 3,
+            "username" : "hr_admin",
+            "email" : "hr_admin@gmail.com",
+            "f_name" : "HR Admin",
+            "password" : "123456",
+            "dep_id" : 3,
+            "post_id" : 4,
+            "status" : 1
+        },
+        {
+            "id" : 4,
+            "username" : "office_emp",
+            "email" : "office_emp@gmail.com",
+            "f_name" : "Devonxona",
+            "password" : "123456",
+            "dep_id" : 3,
+            "post_id" : 3,
+            "status" : 1
+        },
+        {
+            "id" : 5,
+            "username" : "control_emp",
+            "email" : "control_emp@gmail.com",
+            "f_name" : "Ijro Nazorati",
+            "password" : "123456",
+            "dep_id" : 2,
+            "post_id" : 4,
+            "status" : 1
+        },
+        {
+            "id" : 6,
+            "username" : "director",
+            "email" : "director@gmail.com",
+            "f_name" : "Direktor",
+            "password" : "123456",
+            "dep_id" : 1,
+            "post_id" : 1,
+            "status" : 1
+        },
+        {
+            "id" : 7,
+            "username" : "deputy_director",
+            "email" : "deputy_director@gmail.com",
+            "f_name" : "Direktor o`rinbosari",
+            "password" : "123456",
+            "dep_id" : 2,
+            "post_id" : 2,
+            "status" : 1
+        },
+        {
+            "id" : 8,
+            "username" : "dep_head",
+            "email" : "dep_head@gmail.com",
+            "f_name" : "Bo`lim boshlig`i",
+            "password" : "123456",
+            "dep_id" : 4,
+            "post_id" : 4,
+            "status" : 1
+        },
+        {
+            "id" : 9,
+            "username" : "dep_emp",
+            "email" : "dep_emp@gmail.com",
+            "f_name" : "Bo`lim xodimi",
+            "password" : "123456",
+            "dep_id" : 4,
+            "post_id" : 3,
+            "status" : 1
+        }
+    ]
+}

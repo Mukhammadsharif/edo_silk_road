@@ -1,0 +1,31 @@
+{
+    "confidential_types": [
+        {
+            "id" : 1,
+            "title" : "Ochiq ma'lumot",
+            "lang_id" : 53,
+            "doc_code" : "OPEN",
+            "status" : 1
+        },
+        {
+            "id" : 2,
+            "title" : "Xizmat haqida ma'lumot",
+            "lang_id" : 51,
+            "doc_code" : "SERVICE",
+            "status" : 1
+        },
+        {
+            "id" : 3,
+            "title" : "Maxfiy ma'lumo",
+            "lang_id" : 52,
+            "doc_code" : "CONFIDENTIAL",
+            "status" : 1
+        },
+        {
+            "id" : 4,
+            "title" : "O'ta maxfiy ma'lumot",
+            "lang_id" : 54,
+            "doc_code" : "TOP_SECRET",
+            "status" : 1
+        }
+    ]}

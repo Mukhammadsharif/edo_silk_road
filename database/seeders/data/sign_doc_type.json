@@ -1,0 +1,81 @@
+{
+    "signature_document_types": [
+        {
+            "id" : 1,
+            "doc_name" : "Ishchi hujjat rezolyutsiya yaratishga yuborish",
+            "doc_code" : "send_to_create_res",
+            "status" : 1
+        },
+        {
+            "id" : 2,
+            "doc_name" : "Ishchi hujjat kelishuvchiga yuborish",
+            "doc_code" : "send_to_agreement",
+            "status" : 1
+        },
+        {
+            "id" : 3,
+            "doc_name" : "Ishchi hujjat imzoga yuborish",
+            "doc_code" : "send_to_sign",
+            "status" : 1
+        },
+        {
+            "id" : 4,
+            "doc_name" : "Imzlovchidan kelishuvchiga",
+            "doc_code" : "from_signer_to_ag",
+            "status" : 1
+        },
+        {
+            "id" : 5,
+            "doc_name" : "Imzolovchidan rezolyutsiya yaratishga",
+            "doc_code" : "from_signer_to_c_res",
+            "status" : 1
+        },
+        {
+            "id" : 6,
+            "doc_name" : "Kelishuvchidan rezolyutsiyaga yaratishga",
+            "doc_code" : "from_ag_to_res",
+            "status" : 1
+        },
+        {
+            "id" : 7,
+            "doc_name" : "Rezolyustsiyani tasdqilash",
+            "doc_code" : "sign_resolution",
+            "status" : 1
+        },
+        {
+            "id" : 8,
+            "doc_name" : "Hujjat ijrosini tugatish",
+            "doc_code" : "close_exec_doc",
+            "status" : 1
+        },
+        {
+            "id" : 9,
+            "doc_name" : "Chiquvchi xat kelishuvchiga yuborish",
+            "doc_code" : "send_to_ag_out_doc",
+            "status" : 1
+        },
+        {
+            "id" : 10,
+            "doc_name" : "Chiquvchi xat imzoga yuborish",
+            "doc_code" : "send_sign_out_doc",
+            "status" : 1
+        },
+        {
+            "id" : 11,
+            "doc_name" : "Chiquvchi xatni imzolash",
+            "doc_code" : "sign_out_doc",
+            "status" : 1
+        },
+        {
+            "id" : 12,
+            "doc_name" : "Protokol",
+            "doc_code" : "protocol_document",
+            "status" : 1
+        },
+        {
+            "id" : 13,
+            "doc_name" : "Protokol xodim buyruq",
+            "doc_code" : "pr_emp_hr_order",
+            "status" : 1
+        }
+    ]}

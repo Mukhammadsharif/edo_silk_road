@@ -1,0 +1,1023 @@
+{
+    "status_lists": [
+        {
+            "id" : 1,
+            "title" : "Faol",
+            "lang_id" : 102,
+            "type" : "user_status",
+            "code" : 1,
+            "icon_id" : 36,
+            "class_id" : 275,
+            "order_number" : 1
+        },
+        {
+            "id" : 2,
+            "title" : "Faol emas",
+            "lang_id" : 400,
+            "type" : "user_status",
+            "code" : 2,
+            "icon_id" : 4,
+            "class_id" : 277,
+            "order_number" : 2
+        },
+        {
+            "id" : 3,
+            "title" : "O`chirilgan",
+            "lang_id" : 129,
+            "type" : "status",
+            "code" : 3,
+            "icon_id" : 194,
+            "class_id" : 276,
+            "order_number" : 3
+        },
+        {
+            "id" : 4,
+            "title" : "O`chirilgan",
+            "lang_id" : 129,
+            "type" : "user_status",
+            "code" : 3,
+            "icon_id" : 194,
+            "class_id" : 276,
+            "order_number" : 3
+        },
+        {
+            "id" : 5,
+            "title" : "Faol",
+            "lang_id" : 102,
+            "type" : "status",
+            "code" : 1,
+            "icon_id" : 37,
+            "class_id" : 275,
+            "order_number" : 1
+        },
+        {
+            "id" : 6,
+            "title" : "Faol emas",
+            "lang_id" : 212,
+            "type" : "status",
+            "code" : 2,
+            "icon_id" : 4,
+            "class_id" : 277,
+            "order_number" : 2
+        },
+        {
+            "id" : 7,
+            "title" : "Ishalydi",
+            "lang_id" : null,
+            "type" : "hr_emp_status",
+            "code" : 1,
+            "icon_id" : 36,
+            "class_id" : 275,
+            "order_number" : 1
+        },
+        {
+            "id" : 8,
+            "title" : "Mehnat ta`tili",
+            "lang_id" : 61,
+            "type" : "hr_emp_status",
+            "code" : 2,
+            "icon_id" : 48,
+            "class_id" : 274,
+            "order_number" : 2
+        },
+        {
+            "id" : 9,
+            "title" : "Boshqa lavozimga o`tish",
+            "lang_id" : null,
+            "type" : "hr_emp_status",
+            "code" : 3,
+            "icon_id" : 48,
+            "class_id" : 274,
+            "order_number" : 3
+        },
+        {
+            "id" : 10,
+            "title" : "Ishdan bo`shatish",
+            "lang_id" : null,
+            "type" : "hr_emp_status",
+            "code" : 4,
+            "icon_id" : 194,
+            "class_id" : 276,
+            "order_number" : 4
+        },
+        {
+            "id" : 11,
+            "title" : "O`quv ta`tili",
+            "lang_id" : null,
+            "type" : "hr_emp_status",
+            "code" : 5,
+            "icon_id" : 48,
+            "class_id" : 274,
+            "order_number" : 5
+        },
+        {
+            "id" : 12,
+            "title" : "Kasallik ta`tili",
+            "lang_id" : null,
+            "type" : "hr_emp_status",
+            "code" : 6,
+            "icon_id" : 48,
+            "class_id" : 274,
+            "order_number" : 6
+        },
+        {
+            "id" : 13,
+            "title" : "GPX",
+            "lang_id" : null,
+            "type" : "hr_emp_status",
+            "code" : 7,
+            "icon_id" : 48,
+            "class_id" : 274,
+            "order_number" : 7
+        },
+        {
+            "id" : 14,
+            "title" : "Ishga qabul qilish",
+            "lang_id" : null,
+            "type" : "hr_emp_status",
+            "code" : 8,
+            "icon_id" : 48,
+            "class_id" : 273,
+            "order_number" : 8
+        },
+        {
+            "id" : 15,
+            "title" : "Boshqalar",
+            "lang_id" : null,
+            "type" : "hr_emp_status",
+            "code" : 9,
+            "icon_id" : 48,
+            "class_id" : 274,
+            "order_number" : 9
+        },
+        {
+            "id" : 16,
+            "title" : "Faol",
+            "lang_id" : 102,
+            "type" : "journal_type",
+            "code" : 1,
+            "icon_id" : 36,
+            "class_id" : 275,
+            "order_number" : 1
+        },
+        {
+            "id" : 17,
+            "title" : "Faol emas",
+            "lang_id" : 212,
+            "type" : "journal_type",
+            "code" : 0,
+            "icon_id" : 2,
+            "class_id" : 276,
+            "order_number" : 2
+        },
+        {
+            "id" : 18,
+            "title" : "Otam",
+            "lang_id" : null,
+            "type" : "hr_emp_fam_name",
+            "code" : 1,
+            "icon_id" : 208,
+            "class_id" : 273,
+            "order_number" : 1
+        },
+        {
+            "id" : 19,
+            "title" : "Onam",
+            "lang_id" : null,
+            "type" : "hr_emp_fam_name",
+            "code" : 2,
+            "icon_id" : 208,
+            "class_id" : 273,
+            "order_number" : 2
+        },
+        {
+            "id" : 20,
+            "title" : "Akam",
+            "lang_id" : null,
+            "type" : "hr_emp_fam_name",
+            "code" : 3,
+            "icon_id" : 208,
+            "class_id" : 273,
+            "order_number" : 3
+        },
+        {
+            "id" : 21,
+            "title" : "Ukam",
+            "lang_id" : null,
+            "type" : "hr_emp_fam_name",
+            "code" : 4,
+            "icon_id" : 208,
+            "class_id" : 273,
+            "order_number" : 4
+        },
+        {
+            "id" : 22,
+            "title" : "Opam",
+            "lang_id" : null,
+            "type" : "hr_emp_fam_name",
+            "code" : 5,
+            "icon_id" : 208,
+            "class_id" : 273,
+            "order_number" : 5
+        },
+        {
+            "id" : 23,
+            "title" : "Singlim",
+            "lang_id" : null,
+            "type" : "hr_emp_fam_name",
+            "code" : 6,
+            "icon_id" : 208,
+            "class_id" : 273,
+            "order_number" : 6
+        },
+        {
+            "id" : 24,
+            "title" : "Turmush o`rtog`im",
+            "lang_id" : null,
+            "type" : "hr_emp_fam_name",
+            "code" : 7,
+            "icon_id" : 208,
+            "class_id" : 273,
+            "order_number" : 7
+        },
+        {
+            "id" : 25,
+            "title" : "O`g`lim",
+            "lang_id" : null,
+            "type" : "hr_emp_fam_name",
+            "code" : 8,
+            "icon_id" : 208,
+            "class_id" : 273,
+            "order_number" : 8
+        },
+        {
+            "id" : 26,
+            "title" : "Qizim",
+            "lang_id" : null,
+            "type" : "hr_emp_fam_name",
+            "code" : 9,
+            "icon_id" : 208,
+            "class_id" : 273,
+            "order_number" : 9
+        },
+        {
+            "id" : 27,
+            "title" : "Qaynotam",
+            "lang_id" : null,
+            "type" : "hr_emp_fam_name",
+            "code" : 10,
+            "icon_id" : 208,
+            "class_id" : 273,
+            "order_number" : 10
+        },
+        {
+            "id" : 28,
+            "title" : "Qaynonam",
+            "lang_id" : null,
+            "type" : "hr_emp_fam_name",
+            "code" : 11,
+            "icon_id" : 208,
+            "class_id" : 273,
+            "order_number" : 11
+        },
+        {
+            "id" : 29,
+            "title" : "Yaratilgan (hujjat)",
+            "lang_id" : 389,
+            "type" : "work_document",
+            "code" : 1,
+            "icon_id" : null,
+            "class_id" : 274,
+            "order_number" : 1
+        },
+        {
+            "id" : 30,
+            "title" : "Bekor qilingan (hujjat)",
+            "lang_id" : 386,
+            "type" : "work_document",
+            "code" : 2,
+            "icon_id" : null,
+            "class_id" : 276,
+            "order_number" : 2
+        },
+        {
+            "id" : 31,
+            "title" : "Tahrirlash (hujjat)",
+            "lang_id" : 22,
+            "type" : "work_document",
+            "code" : 3,
+            "icon_id" : null,
+            "class_id" : 277,
+            "order_number" : 3
+        },
+        {
+            "id" : 32,
+            "title" : "O`chirilgan (hujjat)",
+            "lang_id" : 392,
+            "type" : "work_document",
+            "code" : 4,
+            "icon_id" : null,
+            "class_id" : 280,
+            "order_number" : 4
+        },
+        {
+            "id" : 33,
+            "title" : "Imzolashda (hujjat)",
+            "lang_id" : 403,
+            "type" : "work_document",
+            "code" : 5,
+            "icon_id" : null,
+            "class_id" : 276,
+            "order_number" : 5
+        },
+        {
+            "id" : 34,
+            "title" : "Ijro nazoratida (hujjat)",
+            "lang_id" : 405,
+            "type" : "work_document",
+            "code" : 7,
+            "icon_id" : null,
+            "class_id" : 278,
+            "order_number" : 6
+        },
+        {
+            "id" : 35,
+            "title" : "Rezolyutsiyada",
+            "lang_id" : 399,
+            "type" : "work_document",
+            "code" : 8,
+            "icon_id" : null,
+            "class_id" : 274,
+            "order_number" : 7
+        },
+        {
+            "id" : 36,
+            "title" : "In process",
+            "lang_id" : 236,
+            "type" : "work_document",
+            "code" : 9,
+            "icon_id" : null,
+            "class_id" : 277,
+            "order_number" : 8
+        },
+        {
+            "id" : 37,
+            "title" : "Kelishuvda (hujjat)",
+            "lang_id" : 387,
+            "type" : "work_document",
+            "code" : 6,
+            "icon_id" : null,
+            "class_id" : 274,
+            "order_number" : 9
+        },
+        {
+            "id" : 38,
+            "title" : "Tugatilgan (hujjat)",
+            "lang_id" : 388,
+            "type" : "work_document",
+            "code" : 10,
+            "icon_id" : null,
+            "class_id" : 275,
+            "order_number" : 12
+        },
+        {
+            "id" : 39,
+            "title" : "Yaratilgan (hujjat)",
+            "lang_id" : 389,
+            "type" : "doc_signer",
+            "code" : 1,
+            "icon_id" : null,
+            "class_id" : 274,
+            "order_number" : 1
+        },
+        {
+            "id" : 40,
+            "title" : "Imzo kutilmoqda (hujjat)",
+            "lang_id" : 401,
+            "type" : "doc_signer",
+            "code" : 2,
+            "icon_id" : null,
+            "class_id" : 276,
+            "order_number" : 2
+        },
+        {
+            "id" : 41,
+            "title" : "Bekor qilingan (hujjat)",
+            "lang_id" : 386,
+            "type" : "doc_signer",
+            "code" : 3,
+            "icon_id" : null,
+            "class_id" : 277,
+            "order_number" : 3
+        },
+        {
+            "id" : 42,
+            "title" : "Tahrirlashga qaytarilgan (hujjat)",
+            "lang_id" : 397,
+            "type" : "doc_signer",
+            "code" : 4,
+            "icon_id" : null,
+            "class_id" : 277,
+            "order_number" : 4
+        },
+        {
+            "id" : 43,
+            "title" : "Imzolangan (hujjat)",
+            "lang_id" : 404,
+            "type" : "doc_signer",
+            "code" : 5,
+            "icon_id" : null,
+            "class_id" : 275,
+            "order_number" : 5
+        },
+        {
+            "id" : 44,
+            "title" : "Yaratilgan",
+            "lang_id" : 389,
+            "type" : "prt_status",
+            "code" : 1,
+            "icon_id" : 88,
+            "class_id" : 274,
+            "order_number" : 1
+        },
+        {
+            "id" : 45,
+            "title" : "Imzo kutilmoqda",
+            "lang_id" : 401,
+            "type" : "prt_status",
+            "code" : 2,
+            "icon_id" : 48,
+            "class_id" : 273,
+            "order_number" : 2
+        },
+        {
+            "id" : 46,
+            "title" : "Imzolangan",
+            "lang_id" : null,
+            "type" : "prt_status",
+            "code" : 3,
+            "icon_id" : 38,
+            "class_id" : 275,
+            "order_number" : 3
+        },
+        {
+            "id" : 47,
+            "title" : "Tahrirlashga qaytarilgan",
+            "lang_id" : 397,
+            "type" : "prt_status",
+            "code" : 4,
+            "icon_id" : 78,
+            "class_id" : 277,
+            "order_number" : 4
+        },
+        {
+            "id" : 48,
+            "title" : "Bekor qilingan",
+            "lang_id" : 386,
+            "type" : "prt_status",
+            "code" : 5,
+            "icon_id" : 2,
+            "class_id" : 276,
+            "order_number" : 5
+        },
+        {
+            "id" : 49,
+            "title" : "Bajarish uchun (hujjat)",
+            "lang_id" : 318,
+            "type" : "doc_exec",
+            "code" : 2,
+            "icon_id" : null,
+            "class_id" : 276,
+            "order_number" : 2
+        },
+        {
+            "id" : 50,
+            "title" : "Jarayonda (hujjat)",
+            "lang_id" : 236,
+            "type" : "doc_exec",
+            "code" : 4,
+            "icon_id" : null,
+            "class_id" : 273,
+            "order_number" : 3
+        },
+        {
+            "id" : 51,
+            "title" : "Bajarilgan (hujjat)",
+            "lang_id" : 165,
+            "type" : "doc_exec",
+            "code" : 5,
+            "icon_id" : null,
+            "class_id" : 275,
+            "order_number" : 5
+        },
+        {
+            "id" : 52,
+            "title" : "Protokol Raisi",
+            "lang_id" : 365,
+            "type" : "prt_role_type",
+            "code" : 1,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 53,
+            "title" : "Protokol a`zosi",
+            "lang_id" : 367,
+            "type" : "prt_role_type",
+            "code" : 2,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 2
+        },
+        {
+            "id" : 54,
+            "title" : "Taklif etilgan",
+            "lang_id" : 366,
+            "type" : "prt_role_type",
+            "code" : 3,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 3
+        },
+        {
+            "id" : 55,
+            "title" : "Yaratilgan (hujjat)",
+            "lang_id" : 389,
+            "type" : "out_document",
+            "code" : 1,
+            "icon_id" : null,
+            "class_id" : 274,
+            "order_number" : 1
+        },
+        {
+            "id" : 56,
+            "title" : "Bekor qilingan (hujjat)",
+            "lang_id" : 386,
+            "type" : "out_document",
+            "code" : 2,
+            "icon_id" : null,
+            "class_id" : 277,
+            "order_number" : 2
+        },
+        {
+            "id" : 57,
+            "title" : "Tahrirlashda",
+            "lang_id" : 397,
+            "type" : "out_document",
+            "code" : 3,
+            "icon_id" : null,
+            "class_id" : 280,
+            "order_number" : 3
+        },
+        {
+            "id" : 58,
+            "title" : "O`chirilgan (hujjat)",
+            "lang_id" : 392,
+            "type" : "out_document",
+            "code" : 4,
+            "icon_id" : null,
+            "class_id" : 276,
+            "order_number" : 4
+        },
+        {
+            "id" : 59,
+            "title" : "Kelishuvda",
+            "lang_id" : 387,
+            "type" : "out_document",
+            "code" : 6,
+            "icon_id" : null,
+            "class_id" : 273,
+            "order_number" : 5
+        },
+        {
+            "id" : 60,
+            "title" : "Imzolangan (hujjat)",
+            "lang_id" : 404,
+            "type" : "out_document",
+            "code" : 10,
+            "icon_id" : null,
+            "class_id" : 275,
+            "order_number" : 7
+        },
+        {
+            "id" : 61,
+            "title" : "Imzo kutilmoqda (hujjat)",
+            "lang_id" : 401,
+            "type" : "out_document",
+            "code" : 8,
+            "icon_id" : null,
+            "class_id" : 278,
+            "order_number" : 6
+        },
+        {
+            "id" : 62,
+            "title" : "Yaratilan",
+            "lang_id" : 389,
+            "type" : "doc_exec",
+            "code" : 1,
+            "icon_id" : null,
+            "class_id" : 274,
+            "order_number" : 1
+        },
+        {
+            "id" : 63,
+            "title" : "Ijrosi ta`minlangan (hujjat)",
+            "lang_id" : 396,
+            "type" : "doc_exec",
+            "code" : 6,
+            "icon_id" : null,
+            "class_id" : 278,
+            "order_number" : 4
+        },
+        {
+            "id" : 64,
+            "title" : "Ijrosi ta`minlllanan (hujjat)",
+            "lang_id" : 396,
+            "type" : "work_document",
+            "code" : 11,
+            "icon_id" : null,
+            "class_id" : 273,
+            "order_number" : 13
+        },
+        {
+            "id" : 65,
+            "title" : "Ijrosi taminlangan",
+            "lang_id" : 162,
+            "type" : "doc_signer",
+            "code" : 6,
+            "icon_id" : 36,
+            "class_id" : 273,
+            "order_number" : 1
+        },
+        {
+            "id" : 66,
+            "title" : "Muddati o`tib ketgan (hujjat)",
+            "lang_id" : 425,
+            "type" : "work_document",
+            "code" : 12,
+            "icon_id" : null,
+            "class_id" : 274,
+            "order_number" : 10
+        },
+        {
+            "id" : 67,
+            "title" : "O`chirilgan (hujjat)",
+            "lang_id" : 392,
+            "type" : "work_document",
+            "code" : 13,
+            "icon_id" : null,
+            "class_id" : 276,
+            "order_number" : 1
+        },
+        {
+            "id" : 68,
+            "title" : "O`chirilgan (hujjat)",
+            "lang_id" : 392,
+            "type" : "out_document",
+            "code" : 13,
+            "icon_id" : null,
+            "class_id" : 276,
+            "order_number" : 8
+        },
+        {
+            "id" : 69,
+            "title" : "O`chirilgan (protokol)",
+            "lang_id" : 392,
+            "type" : "prt_status",
+            "code" : 6,
+            "icon_id" : 194,
+            "class_id" : 276,
+            "order_number" : 6
+        },
+        {
+            "id" : 70,
+            "title" : "Betarafman",
+            "lang_id" : 28,
+            "type" : "prt_status",
+            "code" : 7,
+            "icon_id" : null,
+            "class_id" : 277,
+            "order_number" : 7
+        },
+        {
+            "id" : 71,
+            "title" : "Tahrirlashga qaytarildi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : -6,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 72,
+            "title" : "Bekor qilindi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : -5,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 73,
+            "title" : "Yaratildi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 1,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 74,
+            "title" : "Uzgartirildi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 2,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 75,
+            "title" : "Ochirildi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 3,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 76,
+            "title" : "Kelishuvchilarga yuborildi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 4,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 77,
+            "title" : "Imzoga yuborildi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 5,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 78,
+            "title" : "Kelishuvchi xodim imzoladi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 6,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 79,
+            "title" : "Kelishuvchi xodim bekor qildi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 7,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 80,
+            "title" : "Kelishuvchi xodim tahr-qaytardi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 8,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 81,
+            "title" : "Direktor Rezol. imzoladi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 9,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 82,
+            "title" : "Direktor Rezol. Bekor qildi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 11,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 83,
+            "title" : "Direktor Rezol. Tahr-qaytardi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 12,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 84,
+            "title" : "Ijrochi javob xati yozdi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 13,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 85,
+            "title" : "Direktor hujjat ijrosini tugatdi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 15,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 86,
+            "title" : "Xodim hujjatni imzoladi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 16,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 87,
+            "title" : "Xodim hujjatni bekor qildi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 17,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 88,
+            "title" : "Xodim hujjatni tahrir-qaytardi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 18,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 89,
+            "title" : "Xodim hujjat ijrosini tugatdi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 19,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 90,
+            "title" : "Xodim Javob xatini uchirdi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 26,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 91,
+            "title" : "Ijrochi Qoshimcha Ijrochi qoshdi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 14,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 92,
+            "title" : "Protokol imzolash",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 20,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 93,
+            "title" : "Imzolovchi imzoladi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 21,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 94,
+            "title" : "Imzolovchi bekor qildi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 22,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 95,
+            "title" : "Imzolovchi tahrirlashga qaytardi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 23,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 96,
+            "title" : "Ijro nazorati rezolyutsiya yaratdi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 24,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 97,
+            "title" : "Ijro nazorati tahrirlashga qaytardi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 25,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 98,
+            "title" : "Izoh qoldirildi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 27,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 99,
+            "title" : "Rezolyutsiyaga yuborish",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 28,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 100,
+            "title" : "Rezolyutsiya tahrirlandi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 29,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 101,
+            "title" : "Ijrochi ijroni tasdqiladi",
+            "lang_id" : null,
+            "type" : "document_log",
+            "code" : 30,
+            "icon_id" : null,
+            "class_id" : null,
+            "order_number" : 1
+        },
+        {
+            "id" : 102,
+            "title" : "Ijro muddati o'tgan",
+            "lang_id" : null,
+            "type" : "work_document",
+            "code" : 14,
+            "icon_id" : null,
+            "class_id" : 276,
+            "order_number" : 11
+        }
+    ]}

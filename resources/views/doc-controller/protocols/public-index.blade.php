@@ -1,0 +1,139 @@
+@extends('layouts.app')
+
+@section('content')
+    <div class="container-fluid">
+        <div class="page-header">
+            <div class="row align-items-end">
+                <div class="col-md-3">
+                    <div class="page-header-title">
+                        <i class="ik ik-file-text bg-blue"></i>
+                        <div class="d-inline">
+                            <h5>{{ __('field.public_protocols') }}</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    @include('templates.alert')
+                </div>
+                <div class="col-md-3">
+                    <nav class="breadcrumb-container" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="{{ route('home') }}"><i class="ik ik-home"></i></a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="{{ route('doc-controller.public-protocols') }}">{{ __('field.public_protocols') }}</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">{{ __('menu.list') }}</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-header d-block">
+                        <form action="{{ route('doc-controller.public-protocols') }}" method="POST" role="search" class="form-inline w-100">
+                            @csrf
+                            <div class="mb-2 mr-sm-2">
+                                <select name="s_type" class="form-control">
+                                    <option value="">{{ __('field.protocol-types') }}</option>
+                                    @foreach($protocolTypes as $key => $item)
+                                        <option value="{{ $item->id }}" {{ $s_type == $item->id ? 'selected':''}}>
+                                            {{ $key+1 }}. {{ $item->lang($item->id) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <input type="text" name="s_text" placeholder="{{ __('document.doc_name') }}" value="{{ $s_text??'' }}" class="form-control w-25 mb-2 mr-sm-2">
+
+                            <div class="mb-2 mr-sm-2">
+                                <select name="s_status" class="form-control">
+                                    <option value="">{{ __('field.status_all') }}</option>
+                                    @foreach($statusList as $key => $item)
+                                        <option value="{{ $item->code }}" {{ $s_status == $item->code ? 'selected':''}}>
+                                            {{ $key+1 }}. {{ $item->lang($item->id) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-info mb-2 mr-10">
+                                <i class="ik ik-search"></i>
+                                {{ __('action.search') }} ({{ $models->total() }})
+                            </button>
+                            <a href="{{ route('doc-controller.public-protocols') }}" class="btn btn-light mb-2">
+                                <i class="ik ik-refresh-cw"></i> {{ __('action.clear') }}
+                            </a>
+                        </form>
+                    </div>
+                    <div class="card-body template-demo">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered">
+                                <thead>
+                                <tr class="text-center">
+                                    <th>{{ __('field.#') }}</th>
+                                    <th>{{ __('field.doc_type') }}</th>
+                                    <th>{{ __('field.doc_name') }}</th>
+                                    <th>{{ __('field.doc_number') }}</th>
+                                    <th>{{ __('field.doc_date') }}</th>
+                                    <th>{{ __('field.status') }}</th>
+                                    <th>{{ __('field.doc_term') }}</th>
+                                    <th>{{ __('field.doc_secretary') }}</th>
+                                    <th>{{ __('field.created_date') }}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @forelse($models as $key => $item)
+                                    <tr class="text-center">
+                                        <td>{{ $key+1 }}</td>
+                                        <td>
+                                            <span class="badge badge-info">
+                                                {{ $item->docType->lang($item->docType->id) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="{{ route('doc-controller.protocol-view', [$item->id, $item->doc_hash]) }}" class="text-primary">
+                                                {{ $item->doc_name??'-' }}
+                                            </a>
+                                        </td>
+                                        <td>{{ $item->doc_number }}</td>
+                                        <td>{{ date('d.m.Y', strtotime($item->doc_date)) }}</td>
+                                        <td>
+                                            <span class="badge badge-pill @if($item->status == 4 || $item->status == 5) badge-warning @else badge-blue @endif">
+                                                {{ $item->statusDoc($item->status) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @php($doc_term = $item->doc_term??'')
+                                            @if($doc_term)
+                                                <span class="badge badge-pill badge-danger text-white">
+                                                    {{ date('d.m.Y', strtotime($item->doc_term)) }}
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @php($secretaryShortName = $item->secretary->personal??0)
+                                            @if($secretaryShortName)
+                                                {{ $secretaryShortName->shortName() }}
+                                            @endif
+                                        </td>
+                                        <td>{{ date('d.m.Y, H:i', strtotime($item->created_at)) }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="9" class="text-center">{{ __('field.not_found') }}</td>
+                                    </tr>
+                                @endforelse
+                                </tbody>
+                            </table>
+                            {!! $models->links() !!}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection

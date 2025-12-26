@@ -1,0 +1,123 @@
+{
+    "app_temps": [
+        {
+            "id" : 2,
+            "journal_id" : 15,
+            "t_name" : "Ish haqqi saqlanmagan holda ta`til",
+            "t_code" : "APP_MT_RPOD",
+            "t_text" : "",
+            "status" : 1,
+            "t_category" : 0,
+            "created_id" : 1,
+            "created_at" : "2025-05-08T14:09:29.000Z",
+            "updated_at" : "2025-05-08T14:09:29.000Z"
+        },
+        {
+            "id" : 3,
+            "journal_id" : 16,
+            "t_name" : "Mehnat shartnomasini bekor qilish",
+            "t_code" : "APP_MT_SDJW",
+            "t_text" : "",
+            "status" : 1,
+            "t_category" : 0,
+            "created_id" : 1,
+            "created_at" : "2025-05-08T14:09:29.000Z",
+            "updated_at" : "2025-05-08T14:09:29.000Z"
+        },
+        {
+            "id" : 4,
+            "journal_id" : 17,
+            "t_name" : "Moddiy yordam puli berish",
+            "t_code" : "APP_MT_SVEZ",
+            "t_text" : "",
+            "status" : 1,
+            "t_category" : 0,
+            "created_id" : 1,
+            "created_at" : "2025-05-08T14:09:29.000Z",
+            "updated_at" : "2025-05-08T14:09:29.000Z"
+        },
+        {
+            "id" : 5,
+            "journal_id" : 18,
+            "t_name" : "O'quv ta'tili berish",
+            "t_code" : "APP_MT_LETO",
+            "t_text" : "",
+            "status" : 1,
+            "t_category" : 0,
+            "created_id" : 1,
+            "created_at" : "2025-05-08T14:09:29.000Z",
+            "updated_at" : "2025-05-08T14:09:29.000Z"
+        },
+        {
+            "id" : 6,
+            "journal_id" : 19,
+            "t_name" : "Dekret ta'tiliga chiqish",
+            "t_code" : "APP_MT_DMXT",
+            "t_text" : "",
+            "status" : 1,
+            "t_category" : 0,
+            "created_id" : 1,
+            "created_at" : "2025-05-08T14:09:29.000Z",
+            "updated_at" : "2025-05-08T14:09:29.000Z"
+        },
+        {
+            "id" : 7,
+            "journal_id" : 20,
+            "t_name" : "Dekret ta'tilidan qaytish",
+            "t_code" : "APP_MT_TRUB",
+            "t_text" : "",
+            "status" : 1,
+            "t_category" : 0,
+            "created_id" : 1,
+            "created_at" : "2025-05-08T14:09:29.000Z",
+            "updated_at" : "2025-05-08T14:09:29.000Z"
+        },
+        {
+            "id" : 8,
+            "journal_id" : 21,
+            "t_name" : "Mexnat kelishuvi asosida",
+            "t_code" : "APP_MT_PONQ",
+            "t_text" : "",
+            "status" : 1,
+            "t_category" : 0,
+            "created_id" : 1,
+            "created_at" : "2025-05-08T14:09:29.000Z",
+            "updated_at" : "2025-05-08T14:09:29.000Z"
+        },
+        {
+            "id" : 9,
+            "journal_id" : 22,
+            "t_name" : "Boshka lavozimga o'tish",
+            "t_code" : "APP_MT_QQYL",
+            "t_text" : "",
+            "status" : 1,
+            "t_category" : 0,
+            "created_id" : 1,
+            "created_at" : "2025-05-08T14:09:29.000Z",
+            "updated_at" : "2025-05-08T14:09:29.000Z"
+        },
+        {
+            "id" : 10,
+            "journal_id" : 23,
+            "t_name" : "Boshqalar",
+            "t_code" : "APP_MT_QNIC",
+            "t_text" : "",
+            "status" : 1,
+            "t_category" : 0,
+            "created_id" : 1,
+            "created_at" : "2025-05-08T14:09:29.000Z",
+            "updated_at" : "2025-05-08T14:09:29.000Z"
+        },
+        {
+            "id" : 1,
+            "journal_id" : 14,
+            "t_name" : "Mehnat ta'tili",
+            "t_code" : "APP_MT_META",
+            "t_text" : "<p>\r\n\r\n<p align=\"right\" style=\"text-align:right\"><span Jizzax  viloyati Forish  tumani MFY Oq  tepa  QFY p  align=\"right\" style=\"text-align:right\" span  new=\"\" roman serif mso-ansi-language:uz>Telefon raqam:+998(88)437-36-33<\/span><\/p>\r\n\r\n<br \/><\/p>\r\n<p style=\"text-align: center; \">Ariza<\/p>",
+            "status" : 1,
+            "t_category" : 0,
+            "created_id" : 1,
+            "created_at" : "2025-05-08T14:09:29.000Z",
+            "updated_at" : "2025-05-20T15:16:25.000Z"
+        }
+    ]}

@@ -1,0 +1,31 @@
+{
+    "document_execution_roles": [
+        {
+            "id" : 1,
+            "title" : "Imzolovchi",
+            "lang_id" : 96,
+            "doc_code" : "SIGN",
+            "status" : 1
+        },
+        {
+            "id" : 2,
+            "title" : "Kelishuvchi",
+            "lang_id" : 93,
+            "doc_code" : "AGREE",
+            "status" : 1
+        },
+        {
+            "id" : 3,
+            "title" : "Rezolyutsiya",
+            "lang_id" : 95,
+            "doc_code" : "RESOL",
+            "status" : 1
+        },
+        {
+            "id" : 4,
+            "title" : "Ijrochi",
+            "lang_id" : 94,
+            "doc_code" : "EXEC",
+            "status" : 1
+        }
+    ]}

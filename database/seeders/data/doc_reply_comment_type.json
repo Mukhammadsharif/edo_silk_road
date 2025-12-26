@@ -1,0 +1,59 @@
+{
+    "reply_comment_types": [
+        {
+            "id" : 1,
+            "title" : "Boshqa",
+            "lang_id" : 29,
+            "doc_code" : "OTHER",
+            "status" : 1
+        },
+        {
+            "id" : 2,
+            "title" : "Ijrosi ta'minlandi",
+            "lang_id" : 26,
+            "doc_code" : "PERF",
+            "status" : 1
+        },
+        {
+            "id" : 3,
+            "title" : "Ma'lumot uchun qabul qilindi",
+            "lang_id" : 27,
+            "doc_code" : "INFO",
+            "status" : 1
+        },
+        {
+            "id" : 4,
+            "title" : "Hisobot tayyorlandi",
+            "lang_id" : 28,
+            "doc_code" : "REPORT",
+            "status" : 1
+        },
+        {
+            "id" : 5,
+            "title" : "Yaratilgan",
+            "lang_id" : 174,
+            "doc_code" : "DOC_CREATED",
+            "status" : 1
+        },
+        {
+            "id" : 6,
+            "title" : "Bekor qilingan",
+            "lang_id" : 178,
+            "doc_code" : "DOC_CANCELLED",
+            "status" : 1
+        },
+        {
+            "id" : 7,
+            "title" : "Tahrirlashga qaytarilgan",
+            "lang_id" : 193,
+            "doc_code" : "DOC_RETURNED",
+            "status" : 1
+        },
+        {
+            "id" : 8,
+            "title" : "Imzolangan",
+            "lang_id" : 179,
+            "doc_code" : "DOC_SIGNED",
+            "status" : 1
+        }
+    ]}

@@ -1,0 +1,63 @@
+{
+    "departments": [
+        {
+            "id" : 1,
+            "code": "BOSH_O",
+            "name_uz" : "Bosh ofis",
+            "name_kr" : "Бош офис",
+            "name_ru" : "Головной офис",
+            "name_en" : "Head office",
+            "unit_id": 0,
+            "parent_id" : 0,
+            "order_number" : 1,
+            "level_number" : 1,
+            "status" : 1,
+            "created_at" : "2025-05-13T00:21:52.000Z",
+            "updated_at" : "2025-05-21T06:37:01.000Z"
+        },
+        {
+            "id" : 2,
+            "code": "BUL_1",
+            "name_uz" : "Bo`lim 1",
+            "name_kr" : "Бўлим 1",
+            "name_ru" : "Отдел 1",
+            "name_en" : "Part 1",
+            "unit_id": 0,
+            "parent_id" : 1,
+            "order_number" : 2,
+            "level_number" : 2,
+            "status" : 1,
+            "created_at" : "2025-05-13T00:24:20.000Z",
+            "updated_at" : "2025-05-13T00:24:20.000Z"
+        },
+        {
+            "id" : 3,
+            "code": "BUL_2",
+            "name_uz" : "Bo`lim 2",
+            "name_kr" : "Бўлим 2",
+            "name_ru" : "Отдел 2",
+            "name_en" : "Part 2",
+            "unit_id": 0,
+            "parent_id" : 1,
+            "order_number" : 3,
+            "level_number" : 2,
+            "status" : 1,
+            "created_at" : "2025-05-13T00:24:55.000Z",
+            "updated_at" : "2025-05-21T06:37:15.000Z"
+        },
+        {
+            "id" : 4,
+            "code": "BUL_4",
+            "name_uz" : "Bo`lim 3",
+            "name_kr" : "Бўлим 3",
+            "name_ru" : "Отдел 3",
+            "name_en" : "Part 3",
+            "unit_id": 0,
+            "parent_id" : 1,
+            "order_number" : 4,
+            "level_number" : 2,
+            "status" : 1,
+            "created_at" : "2025-05-13T00:26:07.000Z",
+            "updated_at" : "2025-05-13T00:26:07.000Z"
+        }
+    ]}

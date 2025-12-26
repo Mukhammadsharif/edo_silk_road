@@ -1,0 +1,38 @@
+{
+    "resolution_execution_roles": [
+        {
+            "id" : 1,
+            "title" : "Asosiy ijrochi",
+            "lang_id" : 200,
+            "doc_code" : "MAIN_EXEC",
+            "status" : 1
+        },
+        {
+            "id" : 2,
+            "title" : "Ijrochi",
+            "lang_id" : 230,
+            "doc_code" : "EXEC",
+            "status" : 1
+        },
+        {
+            "id" : 3,
+            "title" : "Jamlovchi",
+            "lang_id" : 103,
+            "doc_code" : "AGGREGATOR",
+            "status" : 1
+        },
+        {
+            "id" : 4,
+            "title" : "Nazoratchi",
+            "lang_id" : 116,
+            "doc_code" : "SUPERVISOR",
+            "status" : 1
+        },
+        {
+            "id" : 5,
+            "title" : "Ma'lumot uchun",
+            "lang_id" : 176,
+            "doc_code" : "FOR_INF",
+            "status" : 1
+        }
+    ]}

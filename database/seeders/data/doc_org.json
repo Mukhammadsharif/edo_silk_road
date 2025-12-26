@@ -1,0 +1,23 @@
+{
+    "document_organizations": [
+        {
+            "id" : 1,
+            "name_uz" : "O'zbekiston Respublikasi Moliya vazirligi",
+            "name_ru" : "Министерство финансов Республики Узбекистан",
+            "name_en" : "Ministry of Finance, Republic of Uzbekistan",
+            "for_doc_type" : 2,
+            "status" : 1,
+            "created_at" : "2024-08-20T07:29:30.000Z",
+            "updated_at" : "2024-08-20T07:29:32.000Z"
+        },
+        {
+            "id" : 2,
+            "name_uz" : "O‘zbekiston Respublikasi Adliya vazirligi",
+            "name_ru" : "Министерство юстиции Республики Узбекистан",
+            "name_en" : "Ministry of Justice of the Republic of Uzbekistan",
+            "for_doc_type" : 3,
+            "status" : 1,
+            "created_at" : null,
+            "updated_at" : null
+        }
+    ]}

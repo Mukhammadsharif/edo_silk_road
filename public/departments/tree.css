@@ -1,0 +1,69 @@
+.list-tree {
+    --tree-clr: #075985;
+    --tree-font-size: 1rem;
+    --tree-item-height: 2;
+    --tree-offset: 1.5rem;
+    --tree-thickness: 2px;
+    --tree-style: solid;
+}
+.list-tree ul{
+    display: grid;
+    list-style: none;
+    font-size: var(--tree-font-size);
+}
+.list-tree li {
+    line-height: var(--tree-item-height);
+    padding-inline-start: var(--tree-offset);
+    border-left: var(--tree-thickness) var(--tree-style) var(--tree-clr);
+    position: relative;
+    text-indent: .5rem;
+}
+
+.list-tree li:last-child {
+    border-color: transparent;
+}
+
+.list-tree li span {
+    font-size: 0.8rem;
+    font-style: italic;
+    font-weight: 100;
+    opacity: .65;
+}
+
+.list-tree li::before {
+    content: '';
+    position: absolute;
+    top: calc(var(--tree-item-height) / 2 * -1 * var(--tree-font-size) + var(--tree-thickness));
+    left: calc(var(--tree-thickness) * -1);
+    width: calc(var(--tree-offset) + var(--tree-thickness) * 2);
+    height: calc(var(--tree-item-height) * var(--tree-font-size));
+    border-left: var(--tree-thickness) var(--tree-style) var(--tree-clr);
+    border-bottom: var(--tree-thickness) var(--tree-style) var(--tree-clr);
+}
+
+.list-tree li::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--tree-clr);
+    top: calc(var(--tree-item-height) / 2 * 1rem);
+    left: var(--tree-offset);
+    translate: calc(var(--tree-thickness) * -1) calc(var(--tree-thickness) * -1);
+}
+
+.list-tree li li li {
+    --tree-style: dotted;
+}
+
+
+
+/* general styling */
+*,
+::before,
+::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}

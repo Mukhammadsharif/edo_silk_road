@@ -1,0 +1,146 @@
+{
+    "table": "permissions",
+    "rows":
+    [
+        {
+            "id" : 1,
+            "name" : "Roles",
+            "guard_name" : "web",
+            "lang_id" : null,
+            "parent_id" : 0
+        },
+        {
+            "id" : 2,
+            "name" : "Permissions",
+            "guard_name" : "web",
+            "lang_id" : null,
+            "parent_id" : 0
+        },
+        {
+            "id" : 3,
+            "name" : "Users",
+            "guard_name" : "web",
+            "lang_id" : null,
+            "parent_id" : 0
+        },
+        {
+            "id" : 4,
+            "name" : "Languages",
+            "guard_name" : "web",
+            "lang_id" : null,
+            "parent_id" : 0
+        },
+        {
+            "id" : 5,
+            "name" : "role-list",
+            "guard_name" : "web",
+            "lang_id" : null,
+            "parent_id" : 1
+        },
+        {
+            "id" : 6,
+            "name" : "role-create",
+            "guard_name" : "web",
+            "lang_id" : null,
+            "parent_id" : 1
+        },
+        {
+            "id" : 7,
+            "name" : "role-edit",
+            "guard_name" : "web",
+            "lang_id" : null,
+            "parent_id" : 1
+        },
+        {
+            "id" : 8,
+            "name" : "role-delete",
+            "guard_name" : "web",
+            "lang_id" : null,
+            "parent_id" : 1
+        },
+        {
+            "id" : 9,
+            "name" : "permission-list",
+            "guard_name" : "web",
+            "lang_id" : null,
+            "parent_id" : 2
+        },
+        {
+            "id" : 10,
+            "name" : "permission-create",
+            "guard_name" : "web",
+            "lang_id" : null,
+            "parent_id" : 2
+        },
+        {
+            "id" : 11,
+            "name" : "permission-edit",
+            "guard_name" : "web",
+            "lang_id" : null,
+            "parent_id" : 2
+        },
+        {
+            "id" : 12,
+            "name" : "permission-delete",
+            "guard_name" : "web",
+            "lang_id" : null,
+            "parent_id" : 2
+        },
+        {
+            "id" : 13,
+            "name" : "user-list",
+            "guard_name" : "web",
+            "lang_id" : null,
+            "parent_id" : 3
+        },
+        {
+            "id" : 14,
+            "name" : "user-create",
+            "guard_name" : "web",
+            "lang_id" : null,
+            "parent_id" : 3
+        },
+        {
+            "id" : 15,
+            "name" : "user-edit",
+            "guard_name" : "web",
+            "lang_id" : null,
+            "parent_id" : 3
+        },
+        {
+            "id" : 16,
+            "name" : "user-delete",
+            "guard_name" : "web",
+            "lang_id" : null,
+            "parent_id" : 3
+        },
+        {
+            "id" : 17,
+            "name" : "language-list",
+            "guard_name" : "web",
+            "lang_id" : null,
+            "parent_id" : 4
+        },
+        {
+            "id" : 18,
+            "name" : "language-create",
+            "guard_name" : "web",
+            "lang_id" : null,
+            "parent_id" : 4
+        },
+        {
+            "id" : 19,
+            "name" : "language-edit",
+            "guard_name" : "web",
+            "lang_id" : null,
+            "parent_id" : 4
+        },
+        {
+            "id" : 20,
+            "name" : "language-delete",
+            "guard_name" : "web",
+            "lang_id" : null,
+            "parent_id" : 4
+        }
+    ]
+}

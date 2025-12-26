@@ -1,0 +1,4075 @@
+{
+    "language_lines": [
+        {
+            "id" : 1,
+            "group" : "action",
+            "key" : "action",
+            "text" : "{\"en\": \"Action\", \"ru\": \"Действие\", \"uz\": \"Harakat\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 2,
+            "group" : "action",
+            "key" : "add-edit-permission",
+            "text" : "{\"en\": \"Permission\", \"ru\": \"Разрешение\", \"uz\": \"Ruxsat\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 3,
+            "group" : "action",
+            "key" : "attach_file",
+            "text" : "{\"en\": \"Attach file\", \"ru\": \"Прикрепить файл\", \"uz\": \"Fayl biriktirish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 4,
+            "group" : "action",
+            "key" : "back_edit",
+            "text" : "{\"en\": \"Return to editing\", \"ru\": \"Возвращение в редактирование\", \"uz\": \"Tahrirlashga qaytarish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 5,
+            "group" : "action",
+            "key" : "back_edit_doc",
+            "text" : "{\"en\": \"Return document to editing\", \"ru\": \"Вернуть документ в редактирование\", \"uz\": \"Hujjatni tahrirlashga qaytarish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 6,
+            "group" : "action",
+            "key" : "cancel",
+            "text" : "{\"en\": \"Cancel\", \"ru\": \"Отменить\", \"uz\": \"Bekor qilish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 7,
+            "group" : "action",
+            "key" : "cancel_doc",
+            "text" : "{\"en\": \"Cancel document\", \"ru\": \"Отменить документ\", \"uz\": \"Hujjatni bekor qilish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 8,
+            "group" : "action",
+            "key" : "choose",
+            "text" : "{\"en\": \"Choose\", \"ru\": \"Выбирать\", \"uz\": \"Tanlamoq\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 9,
+            "group" : "action",
+            "key" : "choose_position",
+            "text" : "{\"en\": \"Select a position\", \"ru\": \"Выберите позицию\", \"uz\": \"Lavozimni tanlang\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 10,
+            "group" : "action",
+            "key" : "clear",
+            "text" : "{\"en\": \"Clear\", \"ru\": \"Очистить\", \"uz\": \"Tozalash\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 11,
+            "group" : "action",
+            "key" : "close",
+            "text" : "{\"en\": \"Close\", \"ru\": \"Закрыть\", \"uz\": \"Yopish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 12,
+            "group" : "action",
+            "key" : "close_execution_document",
+            "text" : "{\"en\": \"Close execution document\", \"ru\": \"Завершить исполнение документа\", \"uz\": \"Hujjatni ijrosini tugatish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 13,
+            "group" : "action",
+            "key" : "confirm_key",
+            "text" : "{\"en\": \"Confirm the key\", \"ru\": \"Подтвердите код\", \"uz\": \"Kodni tasdiqlang\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 14,
+            "group" : "action",
+            "key" : "create",
+            "text" : "{\"en\": \"Create\", \"ru\": \"Создать\", \"uz\": \"Yaratmoq\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 15,
+            "group" : "action",
+            "key" : "create_code",
+            "text" : "{\"en\": \"Create code\", \"ru\": \"Создать код\", \"uz\": \"Kodni yaratish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 16,
+            "group" : "action",
+            "key" : "create_document",
+            "text" : "{\"en\": \"Create document\", \"ru\": \"Создать документ\", \"uz\": \"Hujjat yaratish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 17,
+            "group" : "action",
+            "key" : "create_resolution",
+            "text" : "{\"en\": \"Create resolution\", \"ru\": \"Создать резолюцию\", \"uz\": \"Rezolyutsiya yaratish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 18,
+            "group" : "action",
+            "key" : "delete",
+            "text" : "{\"en\": \"Delete\", \"ru\": \"Удалить\", \"uz\": \"O`chirmoq\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 19,
+            "group" : "action",
+            "key" : "delete_yes",
+            "text" : "{\"en\": \"Yes, delete\", \"ru\": \"Да, удалить\", \"uz\": \"Ha, o'chirish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 20,
+            "group" : "action",
+            "key" : "disagree",
+            "text" : "{\"en\": \"Disagree\", \"ru\": \"Не согласен\", \"uz\": \"Qarshiman\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 21,
+            "group" : "action",
+            "key" : "download",
+            "text" : "{\"en\": \"Download\", \"ru\": \"Скачать\", \"uz\": \"Yuklab olish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 22,
+            "group" : "action",
+            "key" : "edit",
+            "text" : "{\"en\": \"Edit\", \"ru\": \"Редактировать\", \"uz\": \"Tahrirlash\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 23,
+            "group" : "action",
+            "key" : "edit_document",
+            "text" : "{\"en\": \"Edit_document\", \"ru\": \"Редактировать документ\", \"uz\": \"Hujjatni tahrirlash\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 24,
+            "group" : "action",
+            "key" : "edit_resolution",
+            "text" : "{\"en\": \"Edit resolution\", \"ru\": \"Редактировать резолюцию\", \"uz\": \"Rezolyutsiyani tahrirlash\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 25,
+            "group" : "action",
+            "key" : "execute",
+            "text" : "{\"en\": \"Confirm execution\", \"ru\": \"Подтвердить исполнение\", \"uz\": \"Ijroni tasdiqlash\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 26,
+            "group" : "action",
+            "key" : "hide_code",
+            "text" : "{\"en\": \"Hide code\", \"ru\": \"Скрыть код\", \"uz\": \"Kodni yashirish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 27,
+            "group" : "action",
+            "key" : "leave_comment",
+            "text" : "{\"en\": \"Leave comment\", \"ru\": \"Оставьте комментарий\", \"uz\": \"Izoh qoldiring\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 28,
+            "group" : "action",
+            "key" : "neutral",
+            "text" : "{\"en\": \"Neutral\", \"ru\": \"Я нейтральный\", \"uz\": \"Betarafman\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 29,
+            "group" : "action",
+            "key" : "print",
+            "text" : "{\"en\": \"Print\", \"ru\": \"Распечатать\", \"uz\": \"Chop etish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 30,
+            "group" : "action",
+            "key" : "re-editing",
+            "text" : "{\"en\": \"Return to edit\", \"ru\": \"Вернуться к редактированию\", \"uz\": \"Tahrirlashga qaytarish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 31,
+            "group" : "action",
+            "key" : "reload",
+            "text" : "{\"en\": \"Reload\", \"ru\": \"Перезагрузить\", \"uz\": \"Qayta yuklash\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 32,
+            "group" : "action",
+            "key" : "save",
+            "text" : "{\"en\": \"Save\", \"ru\": \"Сохранить\", \"uz\": \"Saqlamoq\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 33,
+            "group" : "action",
+            "key" : "save_change",
+            "text" : "{\"en\": \"Save change\", \"ru\": \"Сохранить изменения\", \"uz\": \"O'zgarishni saqlash\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 34,
+            "group" : "action",
+            "key" : "search",
+            "text" : "{\"en\": \"Search\", \"ru\": \"Поиск\", \"uz\": \"Qidirish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 35,
+            "group" : "action",
+            "key" : "select_ecp_key",
+            "text" : "{\"en\": \"Select ECP key\", \"ru\": \"Выберите ключ ЭЦП\", \"uz\": \"ERI kalitingizni tanlang\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 36,
+            "group" : "action",
+            "key" : "select_performers",
+            "text" : "{\"en\": \"Select performers\", \"ru\": \"Выберите исполнителей\", \"uz\": \"Ijrochilarni tanlang\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 37,
+            "group" : "action",
+            "key" : "send",
+            "text" : "{\"en\": \"Send\", \"ru\": \"Отправить\", \"uz\": \"Yuborish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 38,
+            "group" : "action",
+            "key" : "send_for_signature",
+            "text" : "{\"en\": \"Send for signature\", \"ru\": \"Отправить за подписью\", \"uz\": \"Imzo uchun yuborish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 39,
+            "group" : "action",
+            "key" : "send_to_ag",
+            "text" : "{\"en\": \"Send to agreement\", \"ru\": \"Отправить к соглашению\", \"uz\": \"Kelishuvga yuborish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 40,
+            "group" : "action",
+            "key" : "send_to_members",
+            "text" : "{\"en\": \"Send to participants\", \"ru\": \"Отправить участникам\", \"uz\": \"Ishtirokchilarga yuborish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 41,
+            "group" : "action",
+            "key" : "send_to_signer",
+            "text" : "{\"en\": \"Send to signatory\", \"ru\": \"Отправить подписанту\", \"uz\": \"Imzolovchiga yuborish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 42,
+            "group" : "action",
+            "key" : "sent_to_ag",
+            "text" : "{\"en\": \"Send to agreement\", \"ru\": \"Отправить к соглашению\", \"uz\": \"Kelishuvga yuborish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 43,
+            "group" : "action",
+            "key" : "to_sign",
+            "text" : "{\"en\": \"Signing\", \"ru\": \"Подписание\", \"uz\": \"Imzolash\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 44,
+            "group" : "action",
+            "key" : "to_sign_pr",
+            "text" : "{\"en\": \"Sign.\", \"ru\": \"Подписать.\", \"uz\": \"Imzolamoq.\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 45,
+            "group" : "action",
+            "key" : "update_code",
+            "text" : "{\"en\": \"Update code\", \"ru\": \"Обновление кода\", \"uz\": \"Kodni yangilash\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 46,
+            "group" : "action",
+            "key" : "upload_files",
+            "text" : "{\"en\": \"Upload files\", \"ru\": \"Загрузка файлов\", \"uz\": \"Fayllarni yuklash\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 47,
+            "group" : "action",
+            "key" : "upload_profile_picture",
+            "text" : "{\"en\": \"Upload profile picture\", \"ru\": \"Загрузить фотографию профиля\", \"uz\": \"Profil rasmini yuklash\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 48,
+            "group" : "action",
+            "key" : "view",
+            "text" : "{\"en\": \"View\", \"ru\": \"Просмотр\", \"uz\": \"Ko`rish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 49,
+            "group" : "action",
+            "key" : "view_code",
+            "text" : "{\"en\": \"View code\", \"ru\": \"Просмотр кода\", \"uz\": \"Kodni ko'rish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 50,
+            "group" : "action",
+            "key" : "yes_delete",
+            "text" : "{\"en\": \"Yes delete\", \"ru\": \"Да удалить\", \"uz\": \"Ha o'chirish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 51,
+            "group" : "confidence",
+            "key" : "about_service",
+            "text" : "{\"en\": \"Information about the service\", \"ru\": \"Информация об услуге\", \"uz\": \"Xizmat haqida ma'lumot\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 52,
+            "group" : "confidence",
+            "key" : "confidential_information",
+            "text" : "{\"en\": \"Confidential information\", \"ru\": \"Конфиденциальная информация\", \"uz\": \"Maxfiy ma'lumot\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 53,
+            "group" : "confidence",
+            "key" : "open_informatiob",
+            "text" : "{\"en\": \"Open information\", \"ru\": \"Открытая информация\", \"uz\": \"Ochiq ma'lumot\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 54,
+            "group" : "confidence",
+            "key" : "top_secret_information",
+            "text" : "{\"en\": \"Top Secret Information\", \"ru\": \"Сверхсекретная информация\", \"uz\": \"O'ta maxfiy ma'lumot\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 55,
+            "group" : "control",
+            "key" : "control",
+            "text" : "{\"en\": \"Execution control\", \"ru\": \"Контроль производительности\", \"uz\": \"Ijro nazorati\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 56,
+            "group" : "data",
+            "key" : "tel_in",
+            "text" : "{\"en\": \"Tel in\", \"ru\": \"Телефон в\", \"uz\": \"Telefon\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 57,
+            "group" : "data",
+            "key" : "tel_number",
+            "text" : "{\"en\": \"Tel number\", \"ru\": \"Номер телефона\", \"uz\": \"Telefon raqam\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 58,
+            "group" : "doc_role",
+            "key" : "applicant",
+            "text" : "{\"en\": \"Applicant\", \"ru\": \"Заявитель\", \"uz\": \"Ariza beruvchi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 59,
+            "group" : "doc_role",
+            "key" : "executor",
+            "text" : "{\"en\": \"Executor\", \"ru\": \"Исполнитель\", \"uz\": \"Ijro etuvchi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 60,
+            "group" : "document",
+            "key" : "app",
+            "text" : "{\"en\": \"App\", \"ru\": \"Заявление\", \"uz\": \"Ariza\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 61,
+            "group" : "document",
+            "key" : "app_mt",
+            "text" : "{\"en\": \"App labour leave\", \"ru\": \"Трудовой отпуск\", \"uz\": \"Mehnat ta'tili\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 62,
+            "group" : "document",
+            "key" : "app_mt2",
+            "text" : "{\"en\": \"App for leaving without pay\", \"ru\": \"Отпуск без сохранения заработной платы\", \"uz\": \"Ish haqqi saqlanmagan holda ta`til\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 63,
+            "group" : "document",
+            "key" : "command",
+            "text" : "{\"en\": \"Command\", \"ru\": \"Приказ\", \"uz\": \"Buyruq\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 64,
+            "group" : "document",
+            "key" : "comment_history",
+            "text" : "{\"en\": \"Comment history\", \"ru\": \"История комментариев\", \"uz\": \"Izohlar tarixi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 65,
+            "group" : "document",
+            "key" : "confidentiality",
+            "text" : "{\"en\": \"Confidentiality\", \"ru\": \"Конфиденциальный\", \"uz\": \"Konfidensiallik\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 66,
+            "group" : "document",
+            "key" : "created_at",
+            "text" : "{\"en\": \"Created at\", \"ru\": \"Создан в\", \"uz\": \"Yaratilgan vaqti\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 67,
+            "group" : "document",
+            "key" : "creator",
+            "text" : "{\"en\": \"Creator\", \"ru\": \"Создатель\", \"uz\": \"Yaratuvchi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 68,
+            "group" : "document",
+            "key" : "doc_date",
+            "text" : "{\"en\": \"Doc date\", \"ru\": \"Дата документа\", \"uz\": \"Hujjat sanasi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 69,
+            "group" : "document",
+            "key" : "doc_files",
+            "text" : "{\"en\": \"Doc files\", \"ru\": \"Документальные файлы\", \"uz\": \"Hujjat fayllari\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 70,
+            "group" : "document",
+            "key" : "doc_name",
+            "text" : "{\"en\": \"Doc name\", \"ru\": \"Имя документа\", \"uz\": \"Hujjat nomi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 71,
+            "group" : "document",
+            "key" : "doc_number",
+            "text" : "{\"en\": \"Doc number\", \"ru\": \"Номер документа\", \"uz\": \"Hujjat raqami\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 72,
+            "group" : "document",
+            "key" : "doc_text",
+            "text" : "{\"en\": \"Doc text\", \"ru\": \"Текст документа\", \"uz\": \"Hujjat matni\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 73,
+            "group" : "document",
+            "key" : "document",
+            "text" : "{\"en\": \"Document\", \"ru\": \"Документ\", \"uz\": \"Hujjat\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 74,
+            "group" : "document",
+            "key" : "document_info",
+            "text" : "{\"en\": \"Document info\", \"ru\": \"Информация о документе\", \"uz\": \"Hujjat haqida ma’lumot\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 75,
+            "group" : "document",
+            "key" : "execution",
+            "text" : "{\"en\": \"Execution\", \"ru\": \"Выполнение\", \"uz\": \"Bajarish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 76,
+            "group" : "document",
+            "key" : "executor",
+            "text" : "{\"en\": \"Executor\", \"ru\": \"Исполнитель\", \"uz\": \"Bajaruvchi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 77,
+            "group" : "document",
+            "key" : "from_day",
+            "text" : "{\"en\": \"From day\", \"ru\": \"От дня\", \"uz\": \"Sanadan boshlab\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 78,
+            "group" : "document",
+            "key" : "incoming_message",
+            "text" : "{\"en\": \"Incoming message\", \"ru\": \"Входящее письмо\", \"uz\": \"Kiruvchi xat\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 79,
+            "group" : "document",
+            "key" : "message",
+            "text" : "{\"en\": \"Message\", \"ru\": \"Письмо\", \"uz\": \"Xat\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 80,
+            "group" : "document",
+            "key" : "notification",
+            "text" : "{\"en\": \"Notification\", \"ru\": \"Уведомление\", \"uz\": \"Bildirishnoma\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 81,
+            "group" : "document",
+            "key" : "order",
+            "text" : "{\"en\": \"Order\", \"ru\": \"Приказ\", \"uz\": \"Farmoyish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 82,
+            "group" : "document",
+            "key" : "organization",
+            "text" : "{\"en\": \"Name of the organization\", \"ru\": \"Название организации\", \"uz\": \"Tashkilot nomi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 83,
+            "group" : "document",
+            "key" : "others",
+            "text" : "{\"en\": \"Others\", \"ru\": \"Другие\", \"uz\": \"Boshqalar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 84,
+            "group" : "document",
+            "key" : "outgoing_message",
+            "text" : "{\"en\": \"Outgoing message\", \"ru\": \"Исходящее письмо\", \"uz\": \"Chiquvchi xat\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 85,
+            "group" : "document",
+            "key" : "performer",
+            "text" : "{\"en\": \"Performer\", \"ru\": \"Исполнитель\", \"uz\": \"Ijrochi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 86,
+            "group" : "document",
+            "key" : "report",
+            "text" : "{\"en\": \"Report\", \"ru\": \"Отчет\", \"uz\": \"Hisobot\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 87,
+            "group" : "document",
+            "key" : "signing_term",
+            "text" : "{\"en\": \"Signing term\", \"ru\": \"Срок подписания\", \"uz\": \"Imzo muddati\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 88,
+            "group" : "document",
+            "key" : "statement",
+            "text" : "{\"en\": \"Statement\", \"ru\": \"Протокол\", \"uz\": \"Bayonnoma\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 89,
+            "group" : "document",
+            "key" : "status",
+            "text" : "{\"en\": \"Status\", \"ru\": \"Статус\", \"uz\": \"Holati\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 90,
+            "group" : "document",
+            "key" : "till_day",
+            "text" : "{\"en\": \"Till day\", \"ru\": \"До дня\", \"uz\": \"Sanagacha\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 91,
+            "group" : "document",
+            "key" : "to_department",
+            "text" : "{\"en\": \"To whom (department)\", \"ru\": \"Кому (отделу)\", \"uz\": \"Kimga (bo'limga)\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 92,
+            "group" : "document",
+            "key" : "to_whom",
+            "text" : "{\"en\": \"To whom\", \"ru\": \"Кому\", \"uz\": \"Kimga\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 93,
+            "group" : "execution",
+            "key" : "agreement",
+            "text" : "{\"en\": \"Agreement\", \"ru\": \"Соглашающийся\", \"uz\": \"Kelishuvchi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 94,
+            "group" : "execution",
+            "key" : "executor",
+            "text" : "{\"en\": \"Executor\", \"ru\": \"Исполнитель\", \"uz\": \"Ijrochi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 95,
+            "group" : "execution",
+            "key" : "resolution",
+            "text" : "{\"en\": \"Resolution\", \"ru\": \"Резолюция\", \"uz\": \"Rezolyutsiya\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 96,
+            "group" : "execution",
+            "key" : "signatory",
+            "text" : "{\"en\": \"Signatory\", \"ru\": \"Подписант\", \"uz\": \"Imzolovchi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 97,
+            "group" : "field",
+            "key" : "#",
+            "text" : "{\"en\": \"#\", \"ru\": \"П\/н\", \"uz\": \"T\/r\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 98,
+            "group" : "field",
+            "key" : "absent",
+            "text" : "{\"en\": \"Absent\", \"ru\": \"Не существует\", \"uz\": \"Mavjud emas\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 99,
+            "group" : "field",
+            "key" : "act_type",
+            "text" : "{\"en\": \"Act type\", \"ru\": \"Вид действия\", \"uz\": \"Harakat turi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 100,
+            "group" : "field",
+            "key" : "action",
+            "text" : "{\"en\": \"Action\", \"ru\": \"Действие\", \"uz\": \"Harakat\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 101,
+            "group" : "field",
+            "key" : "actions",
+            "text" : "{\"en\": \"Actions\", \"ru\": \"Действия\", \"uz\": \"Harakatlar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 102,
+            "group" : "field",
+            "key" : "active",
+            "text" : "{\"en\": \"Active\", \"ru\": \"Актив\", \"uz\": \"Faol\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 103,
+            "group" : "field",
+            "key" : "aggregator",
+            "text" : "{\"en\": \"Aggregator\", \"ru\": \"Собиратель\", \"uz\": \"Jamlovchi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 104,
+            "group" : "field",
+            "key" : "app_temps",
+            "text" : "{\"en\": \"App_temps\", \"ru\": \"Шаблоны заявки\", \"uz\": \"Ariza shablonlari\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 105,
+            "group" : "field",
+            "key" : "attach_file",
+            "text" : "{\"en\": \"Attach file\", \"ru\": \"Прикрепить файл\", \"uz\": \"Fayl biriktirish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 106,
+            "group" : "field",
+            "key" : "birthday",
+            "text" : "{\"en\": \"Birth date\", \"ru\": \"Дата рождения\", \"uz\": \"Tug'ilgan sana\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 107,
+            "group" : "field",
+            "key" : "br_address",
+            "text" : "{\"en\": \"Place of birth\", \"ru\": \"Место рождения\", \"uz\": \"Tug`ilgan joyi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 108,
+            "group" : "field",
+            "key" : "br_date",
+            "text" : "{\"en\": \"Year of birth\", \"ru\": \"Год рождения\", \"uz\": \"Tug`ilgan yili\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 109,
+            "group" : "field",
+            "key" : "choose",
+            "text" : "{\"en\": \"Choose\", \"ru\": \"Выбирать\", \"uz\": \"Tanlamoq\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 110,
+            "group" : "field",
+            "key" : "choose_department",
+            "text" : "{\"en\": \"Choose department\", \"ru\": \"Выберите отдел\", \"uz\": \"Bo'limni tanlang\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 111,
+            "group" : "field",
+            "key" : "clear",
+            "text" : "{\"en\": \"Clear\", \"ru\": \"Очистить\", \"uz\": \"Tozalash\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 112,
+            "group" : "field",
+            "key" : "code",
+            "text" : "{\"en\": \"Code\", \"ru\": \"Код\", \"uz\": \"Kod\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 113,
+            "group" : "field",
+            "key" : "computer_id",
+            "text" : "{\"en\": \"Ip address\", \"ru\": \"IP-адрес\", \"uz\": \"Ip manzil\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 114,
+            "group" : "field",
+            "key" : "confirm_password",
+            "text" : "{\"en\": \"Confirm password\", \"ru\": \"Подтвердите пароль\", \"uz\": \"Parolni tasdiqlash\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 115,
+            "group" : "field",
+            "key" : "continuing",
+            "text" : "{\"en\": \"Continuing...\", \"ru\": \"Продолжается...\", \"uz\": \"Davom etmoqda...\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 116,
+            "group" : "field",
+            "key" : "controller",
+            "text" : "{\"en\": \"Controller\", \"ru\": \"Контролер\", \"uz\": \"Nazoratchi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 117,
+            "group" : "field",
+            "key" : "copyright",
+            "text" : "{\"en\": \"All rights reserved\", \"ru\": \"Все права защищены\", \"uz\": \"Barcha huquqlar himoyalangan\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 118,
+            "group" : "field",
+            "key" : "core_menu",
+            "text" : "{\"en\": \"Core menu\", \"ru\": \"Основное меню\", \"uz\": \"Asosiy menyu\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 119,
+            "group" : "field",
+            "key" : "count",
+            "text" : "{\"en\": \"Count\", \"ru\": \"Считать\", \"uz\": \"Hisoblash\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 120,
+            "group" : "field",
+            "key" : "create",
+            "text" : "{\"en\": \"Create\", \"ru\": \"Создать\", \"uz\": \"Yaratmoq\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 121,
+            "group" : "field",
+            "key" : "create_rep",
+            "text" : "{\"en\": \"Create report\", \"ru\": \"Подготовить отчет\", \"uz\": \"Hisobot tayyorlansin\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 122,
+            "group" : "field",
+            "key" : "created_at",
+            "text" : "{\"en\": \"Created time\", \"ru\": \"Дата создания\", \"uz\": \"Yaratilgan sana\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 123,
+            "group" : "field",
+            "key" : "creator",
+            "text" : "{\"en\": \"Creator\", \"ru\": \"Создатель\", \"uz\": \"Yaratuvchi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 124,
+            "group" : "field",
+            "key" : "date",
+            "text" : "{\"en\": \"Date\", \"ru\": \"Дата\", \"uz\": \"Sana\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 125,
+            "group" : "field",
+            "key" : "date_sent_for_execution",
+            "text" : "{\"en\": \"Date of sending for execution\", \"ru\": \"Дата отправки на исполнение\", \"uz\": \"Ijroga yuborilgan sana\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 126,
+            "group" : "field",
+            "key" : "date_sent_for_signature",
+            "text" : "{\"en\": \"Date sent for signature\", \"ru\": \"Дата отправки на подпись\", \"uz\": \"Imzoga yuborilgan sana\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 127,
+            "group" : "field",
+            "key" : "date_signed",
+            "text" : "{\"en\": \"Date_signed\", \"ru\": \"Дата подписания\", \"uz\": \"Imzolangan sana\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 128,
+            "group" : "field",
+            "key" : "day",
+            "text" : "{\"en\": \"Day\", \"ru\": \"Дата\", \"uz\": \"Kun\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 129,
+            "group" : "field",
+            "key" : "delete",
+            "text" : "{\"en\": \"Delete\", \"ru\": \"Удалить\", \"uz\": \"O'chirish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 130,
+            "group" : "field",
+            "key" : "dep_id",
+            "text" : "{\"en\": \"Dep id\", \"ru\": \"Dep id\", \"uz\": \"Dep id\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 131,
+            "group" : "field",
+            "key" : "department",
+            "text" : "{\"en\": \"Department\", \"ru\": \"Отдел\", \"uz\": \"Bo'lim\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 132,
+            "group" : "field",
+            "key" : "developed_by",
+            "text" : "{\"en\": \"EDOC\", \"ru\": \"EDOC\", \"uz\": \"EDOC\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 133,
+            "group" : "field",
+            "key" : "dip_name",
+            "text" : "{\"en\": \"Diploma\", \"ru\": \"Диплом\", \"uz\": \"Diplom\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 134,
+            "group" : "field",
+            "key" : "doc_#",
+            "text" : "{\"en\": \"Number\", \"ru\": \"Номер\", \"uz\": \"Raqami\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 135,
+            "group" : "field",
+            "key" : "doc_code",
+            "text" : "{\"en\": \"Doc code\", \"ru\": \"Докумен код\", \"uz\": \"Dokument kod\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 136,
+            "group" : "field",
+            "key" : "doc_date",
+            "text" : "{\"en\": \"Document date\", \"ru\": \"Дата документа\", \"uz\": \"Hujjat sanasi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 137,
+            "group" : "field",
+            "key" : "doc_files",
+            "text" : "{\"en\": \"Doc files\", \"ru\": \"Документные файлы\", \"uz\": \"Dokument fayllari\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 138,
+            "group" : "field",
+            "key" : "doc_id",
+            "text" : "{\"en\": \"Doc id\", \"ru\": \"ID документа\", \"uz\": \"Hujjat ID\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 139,
+            "group" : "field",
+            "key" : "doc_is_not_full_signed",
+            "text" : "{\"en\": \"The document is not fully signed.\", \"ru\": \"Документ не подписан полностью\", \"uz\": \"Hujjat to'liq imzolanmagan\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 140,
+            "group" : "field",
+            "key" : "doc_name",
+            "text" : "{\"en\": \"Doc name\", \"ru\": \"Имя документа\", \"uz\": \"Hujjat nomi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 141,
+            "group" : "field",
+            "key" : "doc_number",
+            "text" : "{\"en\": \"Document's number\", \"ru\": \"Номер документа\", \"uz\": \"Hujjat raqami\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 142,
+            "group" : "field",
+            "key" : "doc_org_name",
+            "text" : "{\"en\": \"Doc org name\", \"ru\": \"Наименование документальной организации\", \"uz\": \"Hujjat tashkilotining nomi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 143,
+            "group" : "field",
+            "key" : "doc_pin",
+            "text" : "{\"en\": \"PIN\", \"ru\": \"ПИНФЛ\", \"uz\": \"JSSHIR\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 144,
+            "group" : "field",
+            "key" : "doc_secretary",
+            "text" : "{\"en\": \"Document secretary\", \"ru\": \"Секретарь документа\", \"uz\": \"Hujjat kotibi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 145,
+            "group" : "field",
+            "key" : "doc_term",
+            "text" : "{\"en\": \"Doc term\", \"ru\": \"Документный срок\", \"uz\": \"Hujjat muddati\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 146,
+            "group" : "field",
+            "key" : "doc_text",
+            "text" : "{\"en\": \"Doc text\", \"ru\": \"Текст документа\", \"uz\": \"Hujjat matni\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 147,
+            "group" : "field",
+            "key" : "doc_type",
+            "text" : "{\"en\": \"Document's type\", \"ru\": \"Тип документа\", \"uz\": \"Hujjat turi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 148,
+            "group" : "field",
+            "key" : "document",
+            "text" : "{\"en\": \"Document\", \"ru\": \"Документ\", \"uz\": \"Hujjat\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 149,
+            "group" : "field",
+            "key" : "document_info",
+            "text" : "{\"en\": \"Document info\", \"ru\": \"Информация о документе\", \"uz\": \"Hujjat haqida ma’lumot\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 150,
+            "group" : "field",
+            "key" : "document_signing_history",
+            "text" : "{\"en\": \"Document signing history\", \"ru\": \"История подписания документов\", \"uz\": \"Hujjat imzolanish tarixi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 151,
+            "group" : "field",
+            "key" : "document_type",
+            "text" : "{\"en\": \"Document type\", \"ru\": \"Тип документа\", \"uz\": \"Hujjat turi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 152,
+            "group" : "field",
+            "key" : "download",
+            "text" : "{\"en\": \"Download\", \"ru\": \"Скачать\", \"uz\": \"Yuklab olish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 153,
+            "group" : "field",
+            "key" : "ecp",
+            "text" : "{\"en\": \"ECP\", \"ru\": \"ЭЦП\", \"uz\": \"ERI\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 154,
+            "group" : "field",
+            "key" : "ecp_status",
+            "text" : "{\"en\": \"Status of the digital signature (active\/passive)\", \"ru\": \"Состояние ЭЦП (активное\/пассивное)\", \"uz\": \"ERI holati (aktiv\/passiv)\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 155,
+            "group" : "field",
+            "key" : "edit",
+            "text" : "{\"en\": \"Edit\", \"ru\": \"Редактировать\", \"uz\": \"O'zgartirish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 156,
+            "group" : "field",
+            "key" : "edu_name",
+            "text" : "{\"en\": \"Education name\", \"ru\": \"Название образования\", \"uz\": \"Ta`lim nomi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 157,
+            "group" : "field",
+            "key" : "email",
+            "text" : "{\"en\": \"Email\", \"ru\": \"Email\", \"uz\": \"Email\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 158,
+            "group" : "field",
+            "key" : "employees",
+            "text" : "{\"en\": \"Employees\", \"ru\": \"Сотрудники\", \"uz\": \"Xodimlar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 159,
+            "group" : "field",
+            "key" : "empty",
+            "text" : "{\"en\": \"Empty\", \"ru\": \"Пустой\", \"uz\": \"Bo'sh\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 160,
+            "group" : "field",
+            "key" : "ended",
+            "text" : "{\"en\": \"Ended\", \"ru\": \"Завершенное\", \"uz\": \"Tugatilgan\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 161,
+            "group" : "field",
+            "key" : "ensure_exec",
+            "text" : "{\"en\": \"Ensure execution\", \"ru\": \"Обеспечить исполнение\", \"uz\": \"Ijrosi ta'minlansin\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 162,
+            "group" : "field",
+            "key" : "ensured",
+            "text" : "{\"en\": \"Ensured\", \"ru\": \"Исполнение обеспечено\", \"uz\": \"Ijrosi taminlangan\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 163,
+            "group" : "field",
+            "key" : "enter_key",
+            "text" : "{\"en\": \"Enter the key\", \"ru\": \"Введите код\", \"uz\": \"Kodni kiriting\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 164,
+            "group" : "field",
+            "key" : "esp_info_title",
+            "text" : "{\"en\": \"Information about the digital signature key\", \"ru\": \"Информация о ключе ЭЦП\", \"uz\": \"ERI kaliti haqida ma'lumot\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 165,
+            "group" : "field",
+            "key" : "executed",
+            "text" : "{\"en\": \"Executed\", \"ru\": \"Выполнено\", \"uz\": \"Bajarilgan\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 166,
+            "group" : "field",
+            "key" : "executor",
+            "text" : "{\"en\": \"Executor\", \"ru\": \"Исполнитель\", \"uz\": \"Bajaruvchi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 167,
+            "group" : "field",
+            "key" : "exp_descr",
+            "text" : "{\"en\": \"Job description\", \"ru\": \"Описание работы\", \"uz\": \"Lavozim tavsifi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 168,
+            "group" : "field",
+            "key" : "exp_name",
+            "text" : "{\"en\": \"Workplace\", \"ru\": \"Рабочее место\", \"uz\": \"Ish joyi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 169,
+            "group" : "field",
+            "key" : "expired",
+            "text" : "{\"en\": \"Expired\", \"ru\": \"Срок действия\", \"uz\": \"Muddati o'tgan\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 170,
+            "group" : "field",
+            "key" : "f_name",
+            "text" : "{\"en\": \"First name\", \"ru\": \"Имя\", \"uz\": \"Ismi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 171,
+            "group" : "field",
+            "key" : "fac_name",
+            "text" : "{\"en\": \"Faculty\", \"ru\": \"Факультет\", \"uz\": \"Fakultet\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 172,
+            "group" : "field",
+            "key" : "fam_code",
+            "text" : "{\"en\": \"Kinship\", \"ru\": \"Родство\", \"uz\": \"Qarindoshlik\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 173,
+            "group" : "field",
+            "key" : "fam_name",
+            "text" : "{\"en\": \"Full name\", \"ru\": \"Ф.И.О.\", \"uz\": \"F.I.SH.\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 174,
+            "group" : "field",
+            "key" : "familiar_staff",
+            "text" : "{\"en\": \"Familiar staff\", \"ru\": \"Знакомый персонал\", \"uz\": \"Tanishuvchi xodimlar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 175,
+            "group" : "field",
+            "key" : "fields",
+            "text" : "{\"en\": \"Fields\", \"ru\": \"Группы\", \"uz\": \"Guruhlar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 176,
+            "group" : "field",
+            "key" : "for_information",
+            "text" : "{\"en\": \"For information\", \"ru\": \"Для справки\", \"uz\": \"Ma'lumot uchun\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 177,
+            "group" : "field",
+            "key" : "from_date",
+            "text" : "{\"en\": \"From date\", \"ru\": \"Дата начала\", \"uz\": \"Sanadan boshlab\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 178,
+            "group" : "field",
+            "key" : "from_day",
+            "text" : "{\"en\": \"From day\", \"ru\": \"От дня\", \"uz\": \"Sanadan boshlab\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 179,
+            "group" : "field",
+            "key" : "from_org",
+            "text" : "{\"en\": \"From org\", \"ru\": \"Из какой организации\", \"uz\": \"Qaysi tashkilotdan\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 180,
+            "group" : "field",
+            "key" : "gender",
+            "text" : "{\"en\": \"Gender\", \"ru\": \"Пол\", \"uz\": \"Jinsi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 181,
+            "group" : "field",
+            "key" : "group",
+            "text" : "{\"en\": \"Group\", \"ru\": \"Группа\", \"uz\": \"Guruh\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 182,
+            "group" : "field",
+            "key" : "icon_id",
+            "text" : "{\"en\": \"Icon id\", \"ru\": \"ID (Значок)\", \"uz\": \"ID (Belgisi)\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 183,
+            "group" : "field",
+            "key" : "in_org",
+            "text" : "{\"en\": \"Full-time employee\", \"ru\": \"Штатный сотрудник\", \"uz\": \"Shtat xodimi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 184,
+            "group" : "field",
+            "key" : "is_org",
+            "text" : "{\"en\": \"Full-time employee\", \"ru\": \"Штатный сотрудник\", \"uz\": \"Shtat xodimi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 185,
+            "group" : "field",
+            "key" : "journal_type",
+            "text" : "{\"en\": \"Journal type\", \"ru\": \"Тип журнала\", \"uz\": \"Jurnal turi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 186,
+            "group" : "field",
+            "key" : "key",
+            "text" : "{\"en\": \"Key\", \"ru\": \"Ключ\", \"uz\": \"Kalit\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 187,
+            "group" : "field",
+            "key" : "l_name",
+            "text" : "{\"en\": \"Last name\", \"ru\": \"Фамилия\", \"uz\": \"Familiyasi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 188,
+            "group" : "field",
+            "key" : "lang_en",
+            "text" : "{\"en\": \"Language (en)\", \"ru\": \"Язык (англ.)\", \"uz\": \"Til (ingliz)\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 189,
+            "group" : "field",
+            "key" : "lang_id",
+            "text" : "{\"en\": \"ID (language)\", \"ru\": \"ID (язык)\", \"uz\": \"ID (til)\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 190,
+            "group" : "field",
+            "key" : "lang_ru",
+            "text" : "{\"en\": \"Language (ru)\", \"ru\": \"Язык (ру)\", \"uz\": \"Til (ru)\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 191,
+            "group" : "field",
+            "key" : "lang_uz",
+            "text" : "{\"en\": \"Language (uz)\", \"ru\": \"Язык (уз)\", \"uz\": \"Til (uz)\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 192,
+            "group" : "field",
+            "key" : "leave_comment",
+            "text" : "{\"en\": \"Leave comment\", \"ru\": \"Оставить комментарий\", \"uz\": \"Izoh qoldiring\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 193,
+            "group" : "field",
+            "key" : "level_number",
+            "text" : "{\"en\": \"Level number\", \"ru\": \"Уровень номера\", \"uz\": \"Tartib raqami\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 194,
+            "group" : "field",
+            "key" : "live_address",
+            "text" : "{\"en\": \"Place of residence\", \"ru\": \"Место жительства\", \"uz\": \"Yashash joyi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 195,
+            "group" : "field",
+            "key" : "log_info_text",
+            "text" : "{\"en\": \"Download to view full log data.\", \"ru\": \"Скачайте, чтобы просмотреть полные данные.\", \"uz\": \"To‘liq log ma’lumotlarini ko‘rish uchun yuklang.\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 196,
+            "group" : "field",
+            "key" : "log-in",
+            "text" : "{\"en\": \"Login\", \"ru\": \"Вход\", \"uz\": \"Kirish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 197,
+            "group" : "field",
+            "key" : "log-in-to-eai",
+            "text" : "{\"en\": \"Login\", \"ru\": \"Вход в систему\", \"uz\": \"Tizimga kirish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 198,
+            "group" : "field",
+            "key" : "logout",
+            "text" : "{\"en\": \"Logout\", \"ru\": \"Выход\", \"uz\": \"Chiqish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 199,
+            "group" : "field",
+            "key" : "m_name",
+            "text" : "{\"en\": \"Middle name\", \"ru\": \"Отчество\", \"uz\": \"Sharifi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 200,
+            "group" : "field",
+            "key" : "main_exeutor",
+            "text" : "{\"en\": \"Main performer\", \"ru\": \"Главный исполнитель\", \"uz\": \"Asosiy ijrochi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 201,
+            "group" : "field",
+            "key" : "members_role_id",
+            "text" : "{\"en\": \"Members role id\", \"ru\": \"Роли участников id\", \"uz\": \"A’zolar roli id\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 202,
+            "group" : "field",
+            "key" : "menu",
+            "text" : "{\"en\": \"Menu\", \"ru\": \"Меню\", \"uz\": \"Menyu\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 203,
+            "group" : "field",
+            "key" : "menu_name",
+            "text" : "{\"en\": \"Menu name\", \"ru\": \"Название меню\", \"uz\": \"Menyu nomi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 204,
+            "group" : "field",
+            "key" : "menu_type",
+            "text" : "{\"en\": \"Menu type\", \"ru\": \"Тип меню\", \"uz\": \"Menyu turi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 205,
+            "group" : "field",
+            "key" : "mobile_phone",
+            "text" : "{\"en\": \"Mobile phone\", \"ru\": \"Мобильный телефон\", \"uz\": \"Mobil telefon\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 206,
+            "group" : "field",
+            "key" : "my_account",
+            "text" : "{\"en\": \"My account\", \"ru\": \"Мой аккаунт\", \"uz\": \"Mening akkauntim\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 207,
+            "group" : "field",
+            "key" : "my_active_roles",
+            "text" : "{\"en\": \"My active roles\", \"ru\": \"Мои активные роли\", \"uz\": \"Mening faol rollarim\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 208,
+            "group" : "field",
+            "key" : "name",
+            "text" : "{\"en\": \"Name\", \"ru\": \"Название\", \"uz\": \"Nomi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 209,
+            "group" : "field",
+            "key" : "name_en",
+            "text" : "{\"en\": \"Name (en)\", \"ru\": \"Название (англ.)\", \"uz\": \"Nomi (en)\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 210,
+            "group" : "field",
+            "key" : "name_ru",
+            "text" : "{\"en\": \"Name (ru)\", \"ru\": \"Название (ру)\", \"uz\": \"Nomi (ru)\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 211,
+            "group" : "field",
+            "key" : "name_uz",
+            "text" : "{\"en\": \"Name (uz)\", \"ru\": \"Название(уз)\", \"uz\": \"Nomi (uz)\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 212,
+            "group" : "field",
+            "key" : "no_active",
+            "text" : "{\"en\": \"No active\", \"ru\": \"Не актив\", \"uz\": \"Faol emas\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 213,
+            "group" : "field",
+            "key" : "not_found",
+            "text" : "{\"en\": \"Not found\", \"ru\": \"Информация не найдена\", \"uz\": \"Ma'lumot topilmadi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 214,
+            "group" : "field",
+            "key" : "not_selected",
+            "text" : "{\"en\": \"Not selected\", \"ru\": \"Не выбрано\", \"uz\": \"Tanlanmagan\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 215,
+            "group" : "field",
+            "key" : "number",
+            "text" : "{\"en\": \"№\", \"ru\": \"П\/н\", \"uz\": \"T\/r\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 216,
+            "group" : "field",
+            "key" : "ord_code",
+            "text" : "{\"en\": \"Ord_code\", \"ru\": \"Тип приказа\", \"uz\": \"Buyruq turi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 217,
+            "group" : "field",
+            "key" : "ord_name",
+            "text" : "{\"en\": \"Order name\", \"ru\": \"Название приказа\", \"uz\": \"Buyruq nomi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 218,
+            "group" : "field",
+            "key" : "ord_num",
+            "text" : "{\"en\": \"Order's number\", \"ru\": \"Номер приказа\", \"uz\": \"Buyruq raqami\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 219,
+            "group" : "field",
+            "key" : "order",
+            "text" : "{\"en\": \"Order\", \"ru\": \"Порядковый номер\", \"uz\": \"Tartib raqami\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 220,
+            "group" : "field",
+            "key" : "order_number",
+            "text" : "{\"en\": \"Order number\", \"ru\": \"Порядок\", \"uz\": \"Tartibi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 221,
+            "group" : "field",
+            "key" : "other_org",
+            "text" : "{\"en\": \"An employee of another org\", \"ru\": \"Сотрудник другой организации\", \"uz\": \"Boshqa tashkilot xodimi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 222,
+            "group" : "field",
+            "key" : "overdue",
+            "text" : "{\"en\": \"overdue\", \"ru\": \"просроченный\", \"uz\": \"muddati o'tgan\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 223,
+            "group" : "field",
+            "key" : "p_num",
+            "text" : "{\"en\": \"Serial number of the passport\", \"ru\": \"Серийный номер паспорта\", \"uz\": \"Pasport seriya raqami\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 224,
+            "group" : "field",
+            "key" : "p_pin",
+            "text" : "{\"en\": \"PIN\", \"ru\": \"ПИНФЛ\", \"uz\": \"JSHSHIR\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 225,
+            "group" : "field",
+            "key" : "parent",
+            "text" : "{\"en\": \"Parent\", \"ru\": \"Parent\", \"uz\": \"Parent\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 226,
+            "group" : "field",
+            "key" : "parent_id",
+            "text" : "{\"en\": \"Upper section\", \"ru\": \"Верхний отдел\", \"uz\": \"Yuqori bo`lim\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 227,
+            "group" : "field",
+            "key" : "passive",
+            "text" : "{\"en\": \"Passive\", \"ru\": \"Пассив\", \"uz\": \"Faol emas\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 228,
+            "group" : "field",
+            "key" : "password",
+            "text" : "{\"en\": \"Password\", \"ru\": \"Пароль\", \"uz\": \"Parol\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 229,
+            "group" : "field",
+            "key" : "perf_term",
+            "text" : "{\"en\": \"Performing term\", \"ru\": \"Срок исполнения\", \"uz\": \"Ijro muddati\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 230,
+            "group" : "field",
+            "key" : "performer",
+            "text" : "{\"en\": \"Performer\", \"ru\": \"Исполнитель\", \"uz\": \"Ijrochi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 231,
+            "group" : "field",
+            "key" : "phone",
+            "text" : "{\"en\": \"Phone\", \"ru\": \"Номер телефона\", \"uz\": \"Telefon raqami\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 232,
+            "group" : "field",
+            "key" : "post_address",
+            "text" : "{\"en\": \"Workplace\", \"ru\": \"Рабочее место\", \"uz\": \"Ish joyi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 233,
+            "group" : "field",
+            "key" : "post_id",
+            "text" : "{\"en\": \"Post id\", \"ru\": \"Post id\", \"uz\": \"Post id\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 234,
+            "group" : "field",
+            "key" : "post_name",
+            "text" : "{\"en\": \"Position\", \"ru\": \"Должность\", \"uz\": \"Lavozimi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 235,
+            "group" : "field",
+            "key" : "print",
+            "text" : "{\"en\": \"Print\", \"ru\": \"Печать\", \"uz\": \"Chop etish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 236,
+            "group" : "field",
+            "key" : "process",
+            "text" : "{\"en\": \"Process\", \"ru\": \"Процесс\", \"uz\": \"Jarayonda\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 237,
+            "group" : "field",
+            "key" : "profile",
+            "text" : "{\"en\": \"Profile\", \"ru\": \"Профиль\", \"uz\": \"Profil\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 238,
+            "group" : "field",
+            "key" : "protocol-types",
+            "text" : "{\"en\": \"Protocol types\", \"ru\": \"Виды протоколов\", \"uz\": \"Protokol turlari\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 239,
+            "group" : "field",
+            "key" : "protocols",
+            "text" : "{\"en\": \"Protocols\", \"ru\": \"Протоколы\", \"uz\": \"Protokollar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 240,
+            "group" : "field",
+            "key" : "prt_doc_type",
+            "text" : "{\"en\": \"Document types\", \"ru\": \"Типы документов\", \"uz\": \"Hujjat turlari\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 241,
+            "group" : "field",
+            "key" : "public",
+            "text" : "{\"en\": \"Public\", \"ru\": \"Публичный\", \"uz\": \"Ochiq\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 242,
+            "group" : "field",
+            "key" : "public_protocols",
+            "text" : "{\"en\": \"Public protocols\", \"ru\": \"Публичный протоколы\", \"uz\": \"Ommaviy protokollar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 243,
+            "group" : "field",
+            "key" : "qr_signed_by",
+            "text" : "{\"en\": \"Signatory\", \"ru\": \"Подписывающий\", \"uz\": \"Imzolovchi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 244,
+            "group" : "field",
+            "key" : "receive_advance",
+            "text" : "{\"en\": \"Receive advance\", \"ru\": \"Получение аванса\", \"uz\": \"Bo‘nak puli olish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 245,
+            "group" : "field",
+            "key" : "registered",
+            "text" : "{\"en\": \"Registered\", \"ru\": \"Зарегистрировано\", \"uz\": \"Ro'yxatga olingan\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 246,
+            "group" : "field",
+            "key" : "remainder",
+            "text" : "{\"en\": \"remainder\", \"ru\": \"остался\", \"uz\": \"qoldi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 247,
+            "group" : "field",
+            "key" : "resolution_text",
+            "text" : "{\"en\": \"Resolution text\", \"ru\": \"Текст резолюции\", \"uz\": \"Rezolyutsiya matni\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 248,
+            "group" : "field",
+            "key" : "resolution_type",
+            "text" : "{\"en\": \"Resolution type\", \"ru\": \"Тип резолюции\", \"uz\": \"Rezolyutsiya turi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 249,
+            "group" : "field",
+            "key" : "role_all",
+            "text" : "{\"en\": \"All roles\", \"ru\": \"Все роли\", \"uz\": \"Barcha rollar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 250,
+            "group" : "field",
+            "key" : "role_id",
+            "text" : "{\"en\": \"Role id\", \"ru\": \"Рол (id)\", \"uz\": \"Rol id\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 251,
+            "group" : "field",
+            "key" : "role_name",
+            "text" : "{\"en\": \"Role name\", \"ru\": \"Имя роль\", \"uz\": \"Rol nomi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 252,
+            "group" : "field",
+            "key" : "roles",
+            "text" : "{\"en\": \"Roles\", \"ru\": \"Роли\", \"uz\": \"Rollar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 253,
+            "group" : "field",
+            "key" : "secret",
+            "text" : "{\"en\": \"Private\", \"ru\": \"Приватный\", \"uz\": \"Maxfiy\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 254,
+            "group" : "field",
+            "key" : "select_hr_order_emp",
+            "text" : "{\"en\": \"Select employees\", \"ru\": \"Выберите сотрудников\", \"uz\": \"Xodimlarni tanlang\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 255,
+            "group" : "field",
+            "key" : "select_members",
+            "text" : "{\"en\": \"Select participants\", \"ru\": \"Выберите участников\", \"uz\": \"Ishtirokchilarni tanlang\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 256,
+            "group" : "field",
+            "key" : "select_ord_type",
+            "text" : "{\"en\": \"Select order type\", \"ru\": \"Выберите тип приказа\", \"uz\": \"Buyruq turini tanlang\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 257,
+            "group" : "field",
+            "key" : "select_sub_dep",
+            "text" : "{\"en\": \"Quyi bo`limni tanlang...\", \"ru\": \"Quyi bo`limni tanlang ru...\", \"uz\": \"Quyi bo`limni tanlang...\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 258,
+            "group" : "field",
+            "key" : "selected_performers",
+            "text" : "{\"en\": \"Selected performers\", \"ru\": \"Выбранные исполнители\", \"uz\": \"Tanlangan ijrochilar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 259,
+            "group" : "field",
+            "key" : "serial_number",
+            "text" : "{\"en\": \"Serial number\", \"ru\": \"Серийный номер\", \"uz\": \"Seriya raqami\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 260,
+            "group" : "field",
+            "key" : "signed_by_whom",
+            "text" : "{\"en\": \"Signed by whom\", \"ru\": \"Кем подписано\", \"uz\": \"Kim tomondan imzolangan\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 261,
+            "group" : "field",
+            "key" : "signing_term",
+            "text" : "{\"en\": \"Signing term\", \"ru\": \"Срок подписания\", \"uz\": \"Imzo muddati\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 262,
+            "group" : "field",
+            "key" : "signing_time",
+            "text" : "{\"en\": \"Signing time\", \"ru\": \"Время подписания\", \"uz\": \"Imzolangan vaqti\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 263,
+            "group" : "field",
+            "key" : "sort",
+            "text" : "{\"en\": \"Sort\", \"ru\": \"Сортировать\", \"uz\": \"Saralash\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 264,
+            "group" : "field",
+            "key" : "spec_name",
+            "text" : "{\"en\": \"Speciality\", \"ru\": \"Специальность\", \"uz\": \"Mutaxassisligi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 265,
+            "group" : "field",
+            "key" : "status",
+            "text" : "{\"en\": \"Status\", \"ru\": \"Статус\", \"uz\": \"Status\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 266,
+            "group" : "field",
+            "key" : "status_all",
+            "text" : "{\"en\": \"All statuses\", \"ru\": \"Все статусы\", \"uz\": \"Holat barchasi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 267,
+            "group" : "field",
+            "key" : "tel_in",
+            "text" : "{\"en\": \"Tel in\", \"ru\": \"Телефон по телефону\", \"uz\": \"Telefon raqami\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 268,
+            "group" : "field",
+            "key" : "tel_number",
+            "text" : "{\"en\": \"Tel number\", \"ru\": \"Телефон номер\", \"uz\": \"Telefon nomer\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 269,
+            "group" : "field",
+            "key" : "till_day",
+            "text" : "{\"en\": \"Till day\", \"ru\": \"До настоящего времени\", \"uz\": \"Sanagacha\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 270,
+            "group" : "field",
+            "key" : "title",
+            "text" : "{\"en\": \"Title\", \"ru\": \"Название\", \"uz\": \"Nomi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 271,
+            "group" : "field",
+            "key" : "to_date",
+            "text" : "{\"en\": \"To date\", \"ru\": \"Дата окончания\", \"uz\": \"Sanagacha\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 272,
+            "group" : "field",
+            "key" : "to_org",
+            "text" : "{\"en\": \"To org\", \"ru\": \"В какую организацию\", \"uz\": \"Qaysi tashkilotga\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 273,
+            "group" : "field",
+            "key" : "total_number",
+            "text" : "{\"en\": \"Total number\", \"ru\": \"Общее количество\", \"uz\": \"Umumiy soni\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 274,
+            "group" : "field",
+            "key" : "type",
+            "text" : "{\"en\": \"Type\", \"ru\": \"Тип\", \"uz\": \"Turi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 275,
+            "group" : "field",
+            "key" : "upload_files",
+            "text" : "{\"en\": \"Upload files\", \"ru\": \"Загрузить файлы\", \"uz\": \"Fayllarni yuklash\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 276,
+            "group" : "field",
+            "key" : "url_path",
+            "text" : "{\"en\": \"Url path\", \"ru\": \"URL-адрес\", \"uz\": \"URL manzili\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 277,
+            "group" : "field",
+            "key" : "user_current_department",
+            "text" : "{\"en\": \"User current department\", \"ru\": \"Отдел сотрудника\", \"uz\": \"Xodim bo'limi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 278,
+            "group" : "field",
+            "key" : "user_current_position",
+            "text" : "{\"en\": \"User current position\", \"ru\": \"позиция пользователя\", \"uz\": \"foydalanuvchi holati\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 279,
+            "group" : "field",
+            "key" : "user_login_password",
+            "text" : "{\"en\": \"User login password\", \"ru\": \"Пароль для входа пользователя\", \"uz\": \"Foydalanuvchi hisobiga kirish paroli\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 280,
+            "group" : "field",
+            "key" : "user_personal_info",
+            "text" : "{\"en\": \"User_personal_info\", \"ru\": \"Персональные данные пользователя\", \"uz\": \"Foydalanuvchining shaxsiy ma’lumotlari\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 281,
+            "group" : "field",
+            "key" : "user_position_from_date",
+            "text" : "{\"en\": \"Current position date\", \"ru\": \"Дата текущей должности\", \"uz\": \"Joriy lavozim sanasi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 282,
+            "group" : "field",
+            "key" : "user_posts",
+            "text" : "{\"en\": \"Position\", \"ru\": \"Должность\", \"uz\": \"Lavozimi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 283,
+            "group" : "field",
+            "key" : "user_roles",
+            "text" : "{\"en\": \"User roles\", \"ru\": \"Роли пользователя\", \"uz\": \"Foydalanuvchi rollari\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 284,
+            "group" : "field",
+            "key" : "user_setting",
+            "text" : "{\"en\": \"User_setting\", \"ru\": \"Настройки пользователя\", \"uz\": \"Foydalanuvchi sozlamalari\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 285,
+            "group" : "field",
+            "key" : "user_sort",
+            "text" : "{\"en\": \"Sort\", \"ru\": \"Порядок\", \"uz\": \"Tartibi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 286,
+            "group" : "field",
+            "key" : "user_status",
+            "text" : "{\"en\": \"User status\", \"ru\": \"Статус пользователя\", \"uz\": \"Foydalanuvchi statusi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 287,
+            "group" : "field",
+            "key" : "user_working_histories",
+            "text" : "{\"en\": \"User working histories\", \"ru\": \"История работы пользователя\", \"uz\": \"Foydalanuvchi tarixi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 288,
+            "group" : "field",
+            "key" : "username",
+            "text" : "{\"en\": \"Username\", \"ru\": \"Логин\", \"uz\": \"Login\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 289,
+            "group" : "field",
+            "key" : "visibility",
+            "text" : "{\"en\": \"Privacy level\", \"ru\": \"Уровень приватности\", \"uz\": \"Maxfiylik darajasi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 290,
+            "group" : "field",
+            "key" : "wedding",
+            "text" : "{\"en\": \"Wedding\", \"ru\": \"В связи со свадьбой\", \"uz\": \"Nikoh to`yi munosabati bilan\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 291,
+            "group" : "field",
+            "key" : "without_term",
+            "text" : "{\"en\": \"Without_term\", \"ru\": \"Бессрочно\", \"uz\": \"Muddatsiz\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 292,
+            "group" : "field",
+            "key" : "work_documents",
+            "text" : "{\"en\": \"Work documents\", \"ru\": \"Документы для работы\", \"uz\": \"Ishchi xujjatlar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 293,
+            "group" : "form",
+            "key" : "lang-id",
+            "text" : "{\"en\": \"ID (language)\", \"ru\": \"ID (язык)\", \"uz\": \"ID (til)\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 294,
+            "group" : "input",
+            "key" : "doc_name",
+            "text" : "{\"en\": \"Doc_name\", \"ru\": \"Имя документа\", \"uz\": \"Hujjat nomi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 295,
+            "group" : "input",
+            "key" : "doc_org_name",
+            "text" : "{\"en\": \"Doc org name\", \"ru\": \"Оригинальное имя документа\", \"uz\": \"Hujjatning asl nomi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 296,
+            "group" : "input",
+            "key" : "from_day",
+            "text" : "{\"en\": \"From day\", \"ru\": \"От дня\", \"uz\": \"Sanadan boshlab\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 297,
+            "group" : "input",
+            "key" : "search",
+            "text" : "{\"en\": \"Search\", \"ru\": \"Искать\", \"uz\": \"Qidirish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 298,
+            "group" : "input",
+            "key" : "till_day",
+            "text" : "{\"en\": \"Till day\", \"ru\": \"До дня\", \"uz\": \"Sanagacha\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 299,
+            "group" : "menu",
+            "key" : "all_protocol_docs",
+            "text" : "{\"en\": \"All_protocol_docs\", \"ru\": \"Barcha protokollar\", \"uz\": \"Barcha protokollar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 300,
+            "group" : "menu",
+            "key" : "all_working_docs",
+            "text" : "{\"en\": \"All_working_docs\", \"ru\": \"Barcha ishchi hujjatlar\", \"uz\": \"Barcha ishchi hujjatlar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 301,
+            "group" : "menu",
+            "key" : "config",
+            "text" : "{\"en\": \"Config\", \"ru\": \"Настройки\", \"uz\": \"Sozlamalar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 302,
+            "group" : "menu",
+            "key" : "create_doc",
+            "text" : "{\"en\": \"Create document\", \"ru\": \"Создать документ\", \"uz\": \"Hujjat yaratish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 303,
+            "group" : "menu",
+            "key" : "create_document",
+            "text" : "{\"en\": \"Create document\", \"ru\": \"Создать документ\", \"uz\": \"Hujjat yaratish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 304,
+            "group" : "menu",
+            "key" : "credit_protocols",
+            "text" : "{\"en\": \"Credit committee protocols\", \"ru\": \"Протоколы кредитного комитета\", \"uz\": \"Kredit qo`mita protokollari\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 305,
+            "group" : "menu",
+            "key" : "departments",
+            "text" : "{\"en\": \"Departments\", \"ru\": \"Департаменты\", \"uz\": \"Bo`limlar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 306,
+            "group" : "menu",
+            "key" : "doc_logs",
+            "text" : "{\"en\": \"Doc logs\", \"ru\": \"Логирование программы\", \"uz\": \"Dastur loglari\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 307,
+            "group" : "menu",
+            "key" : "doc_orgs",
+            "text" : "{\"en\": \"Organizations\", \"ru\": \"Виды организаций\", \"uz\": \"Tashkilot turlari\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 308,
+            "group" : "menu",
+            "key" : "doc_types",
+            "text" : "{\"en\": \"Document types\", \"ru\": \"Типы документов\", \"uz\": \"Hujjat turlari\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 309,
+            "group" : "menu",
+            "key" : "edo_documents",
+            "text" : "{\"en\": \"Edo documents\", \"ru\": \"Документы\", \"uz\": \"Hujjatlar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 310,
+            "group" : "menu",
+            "key" : "emp_about",
+            "text" : "{\"en\": \"About Empolyee\", \"ru\": \"Информация о сотруднике\", \"uz\": \"Xodim ma'lumotlari\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 311,
+            "group" : "menu",
+            "key" : "emp_dating_orders",
+            "text" : "{\"en\": \"Dating orders\", \"ru\": \"Прикаы на знакома\", \"uz\": \"Tanishuv uchun buyruqlar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 312,
+            "group" : "menu",
+            "key" : "emp_edu",
+            "text" : "{\"en\": \"Educational information\", \"ru\": \"Образовательные данные\", \"uz\": \"Ta'lim ma'lumotlari\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 313,
+            "group" : "menu",
+            "key" : "emp_exp",
+            "text" : "{\"en\": \"Employee's experience\", \"ru\": \"Опыт работы\", \"uz\": \"Ish tajribasi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 314,
+            "group" : "menu",
+            "key" : "emp_fam",
+            "text" : "{\"en\": \"Relatives\", \"ru\": \"Родственники\", \"uz\": \"Qarindoshlari\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 315,
+            "group" : "menu",
+            "key" : "emp_info",
+            "text" : "{\"en\": \"Personal Info\", \"ru\": \"Личная информация\", \"uz\": \"Shaxsiy ma'lumotlar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 316,
+            "group" : "menu",
+            "key" : "emp_order",
+            "text" : "{\"en\": \"Employee's orders\", \"ru\": \"Приказы сотрудника\", \"uz\": \"Xodim buyruqlari\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 317,
+            "group" : "menu",
+            "key" : "for_coillaborate",
+            "text" : "{\"en\": \"For approval\", \"ru\": \"Для согласования\", \"uz\": \"Kelishish uchun\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 318,
+            "group" : "menu",
+            "key" : "for_execution",
+            "text" : "{\"en\": \"For execution\", \"ru\": \"Для выполнения\", \"uz\": \"Bajarish uchun\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 319,
+            "group" : "menu",
+            "key" : "for_resolution",
+            "text" : "{\"en\": \"To confirm\", \"ru\": \"Для подтверждения\", \"uz\": \"Tasdiqlash uchun\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 320,
+            "group" : "menu",
+            "key" : "for_sign",
+            "text" : "{\"en\": \"For_sign\", \"ru\": \"Для подписания\", \"uz\": \"Imzolash uchun\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 321,
+            "group" : "menu",
+            "key" : "hr_emp",
+            "text" : "{\"en\": \"Employees\", \"ru\": \"Сотрудники\", \"uz\": \"Xodimlar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 322,
+            "group" : "menu",
+            "key" : "hr_orders",
+            "text" : "{\"en\": \"Hr orders\", \"ru\": \"Кадр приказы\", \"uz\": \"Hr buyruqlari\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 323,
+            "group" : "menu",
+            "key" : "Hujjat nazorati",
+            "text" : "{\"en\": \"Document control\", \"ru\": \"Контроль документов\", \"uz\": \"Hujjat nazorati\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 324,
+            "group" : "menu",
+            "key" : "inbox_documents",
+            "text" : "{\"en\": \"Inbox documents\", \"ru\": \"Входящий документы\", \"uz\": \"Kiruvchi xatlar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 325,
+            "group" : "menu",
+            "key" : "incoming_messages",
+            "text" : "{\"en\": \"Incoming messages\", \"ru\": \"Входящие письма\", \"uz\": \"Kiruvchi xatlar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 326,
+            "group" : "menu",
+            "key" : "languages",
+            "text" : "{\"en\": \"List of languages\", \"ru\": \"Список языков\", \"uz\": \"Tillar ro`yhati\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 327,
+            "group" : "menu",
+            "key" : "list",
+            "text" : "{\"en\": \"List\", \"ru\": \"Список\", \"uz\": \"Ro'yxat\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 328,
+            "group" : "menu",
+            "key" : "menu",
+            "text" : "{\"en\": \"Menu\", \"ru\": \"Меню\", \"uz\": \"Menyu\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 329,
+            "group" : "menu",
+            "key" : "menu_list",
+            "text" : "{\"en\": \"Menu list\", \"ru\": \"Список меню\", \"uz\": \"Menyular ro`yhati\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 330,
+            "group" : "menu",
+            "key" : "my_docs",
+            "text" : "{\"en\": \"My documents\", \"ru\": \"Мои документы\", \"uz\": \"Mening hujjatlarim\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 331,
+            "group" : "menu",
+            "key" : "my_profile",
+            "text" : "{\"en\": \"My profile\", \"ru\": \"Мой профиль\", \"uz\": \"Mening profilim\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 332,
+            "group" : "menu",
+            "key" : "outgoing_messages",
+            "text" : "{\"en\": \"Outgoing messages\", \"ru\": \"Исходящие письма\", \"uz\": \"Chiquvchi xatlar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 333,
+            "group" : "menu",
+            "key" : "permissions",
+            "text" : "{\"en\": \"Permissions\", \"ru\": \"Разрешения\", \"uz\": \"Harakatlar (Permissions)\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 334,
+            "group" : "menu",
+            "key" : "protocol_doc_types",
+            "text" : "{\"en\": \"Protocol types\", \"ru\": \"Типы протоколов\", \"uz\": \"Protokol turlari\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 335,
+            "group" : "menu",
+            "key" : "protocol_documents",
+            "text" : "{\"en\": \"Protocol documents\", \"ru\": \"Протокольные документы\", \"uz\": \"Protokol hujjatlari\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 336,
+            "group" : "menu",
+            "key" : "prt_doc_types",
+            "text" : "{\"en\": \"Prt doc types\", \"ru\": \"Типы документов протокола\", \"uz\": \"Protokol hujjat turlari\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 337,
+            "group" : "menu",
+            "key" : "role_menus",
+            "text" : "{\"en\": \"Role menus\", \"ru\": \"Позиционирование меню\", \"uz\": \"Rolga menyu biriktirish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 338,
+            "group" : "menu",
+            "key" : "roles",
+            "text" : "{\"en\": \"Role\", \"ru\": \"Рол\", \"uz\": \"Ruxsatlar (Roles)\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 339,
+            "group" : "menu",
+            "key" : "sent_to_me",
+            "text" : "{\"en\": \"Sent to me\", \"ru\": \"Отправлено мне\", \"uz\": \"Menga yuborilgan\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 340,
+            "group" : "menu",
+            "key" : "status_list",
+            "text" : "{\"en\": \"Status list\", \"ru\": \"Список статусов\", \"uz\": \"Holatlar ro`yhati (status)\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 341,
+            "group" : "menu",
+            "key" : "user_positions",
+            "text" : "{\"en\": \"User positions\", \"ru\": \"Позиции\", \"uz\": \"Lavozimlar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 342,
+            "group" : "menu",
+            "key" : "users",
+            "text" : "{\"en\": \"Users\", \"ru\": \"Пользователи\", \"uz\": \"Foydalanuvchilar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 343,
+            "group" : "menu",
+            "key" : "view",
+            "text" : "{\"en\": \"View\", \"ru\": \"Посмотреть\", \"uz\": \"Ko‘rish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 344,
+            "group" : "menu",
+            "key" : "working_documents",
+            "text" : "{\"en\": \"Working documents\", \"ru\": \"Рабочый документы\", \"uz\": \"Ishchi hujjatlar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 345,
+            "group" : "message",
+            "key" : "comment_on_document",
+            "text" : "{\"en\": \"Comment on document\", \"ru\": \"Оставьте комментарий\", \"uz\": \"Izoh qoldiring\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 346,
+            "group" : "message",
+            "key" : "delete_confirm",
+            "text" : "{\"en\": \"Delete confirm\", \"ru\": \"Подтвердить удаление\", \"uz\": \"O'chirishni tasdqilash\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 347,
+            "group" : "message",
+            "key" : "delete_you_want_doc",
+            "text" : "{\"en\": \"Are you sure you want to delete it?\", \"ru\": \"Вы уверены, что удалите?\", \"uz\": \"Haqiqatan o'chirishni xohlaysizmi?\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 348,
+            "group" : "message",
+            "key" : "delete_you_want_document",
+            "text" : "{\"en\": \"Do you want to delete this document?\", \"ru\": \"Вы хотите удалить этот документ?\", \"uz\": \"Ushbu hujjatni oʻchirib tashlamoqchimisiz?\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 349,
+            "group" : "message",
+            "key" : "doc_deleted_success_message",
+            "text" : "{\"en\": \"Document deleted successfully\", \"ru\": \"Документ успешно удален\", \"uz\": \"Hujjat muvaffaqiyatli o'chirildi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 350,
+            "group" : "message",
+            "key" : "doc_updated_success_message",
+            "text" : "{\"en\": \"Doc updated successfully\", \"ru\": \"Документ обновлен\", \"uz\": \"Hujjat muvaffaqiyatli yangilandi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 351,
+            "group" : "message",
+            "key" : "document_deleted_system",
+            "text" : "{\"en\": \"Document not found\", \"ru\": \"Документ не найден\", \"uz\": \"Hujjat topilmadi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 352,
+            "group" : "message",
+            "key" : "error_message",
+            "text" : "{\"en\": \"Error!\", \"ru\": \"Ошибка!\", \"uz\": \"Xatolik!\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 353,
+            "group" : "message",
+            "key" : "notifications",
+            "text" : "{\"en\": \"Notifications\", \"ru\": \"Уведомления\", \"uz\": \"Bildirishnomalar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 354,
+            "group" : "message",
+            "key" : "success_message",
+            "text" : "{\"en\": \"Success message!\", \"ru\": \"Успешно!\", \"uz\": \"Muvaffaqiyatli!\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 355,
+            "group" : "message",
+            "key" : "task_completed_successfully",
+            "text" : "{\"en\": \"Task completed successfully\", \"ru\": \"Задание успешно выполнено\", \"uz\": \"Vazifa muvaffaqiyatli bajarildi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 356,
+            "group" : "message",
+            "key" : "your_comment_has_been_sent_successfully",
+            "text" : "{\"en\": \"Your comment has been sent successfully\", \"ru\": \"Ваш комментарий отправлен успешно\", \"uz\": \"Izohingiz muvaffaqiyatli yuborildi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 357,
+            "group" : "option",
+            "key" : "no",
+            "text" : "{\"en\": \"No\", \"ru\": \"Нет\", \"uz\": \"Yo'q\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 358,
+            "group" : "option",
+            "key" : "no_parent",
+            "text" : "{\"en\": \"No parent\", \"ru\": \"No parent\", \"uz\": \"No parent\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 359,
+            "group" : "option",
+            "key" : "select_menu_list",
+            "text" : "{\"en\": \"Select menu list\", \"ru\": \"Выберите список меню\", \"uz\": \"Menyuni tanlash\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 360,
+            "group" : "option",
+            "key" : "select_user_role",
+            "text" : "{\"en\": \"Select user role\", \"ru\": \"Выберите роль пользователя\", \"uz\": \"Foydalanuvchi rolini tanlang\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 361,
+            "group" : "option",
+            "key" : "yes",
+            "text" : "{\"en\": \"Yes\", \"ru\": \"Да\", \"uz\": \"Ha\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 362,
+            "group" : "org",
+            "key" : "minfin",
+            "text" : "{\"en\": \"Ministry of Finance of the Republic of Uzbekistan\", \"ru\": \"Министерство финансов Республики Узбекистан\", \"uz\": \"O`zbekiston Respublikasi Moliya vazirligi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 363,
+            "group" : "org",
+            "key" : "minjuc",
+            "text" : "{\"en\": \"Ministry of Justice of the Republic of Uzbekistan\", \"ru\": \"Министерство юстиции Республики Узбекистан\", \"uz\": \"O`zbekiston Respublikasi Adliya vazirligi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 364,
+            "group" : "org",
+            "key" : "tashfond",
+            "text" : "{\"en\": \"\\\"Tashkent\\\" Republican Stock Exchange\", \"ru\": \"Республиканская фондовая биржа «Ташкент»\", \"uz\": \"\\\"Toshkent\\\" Respublika Fond birjasi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 365,
+            "group" : "prt_role_type",
+            "key" : "chairman_prt",
+            "text" : "{\"en\": \"Chairman of the protocol\", \"ru\": \"Председатель протокола\", \"uz\": \"Protokol Raisi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 366,
+            "group" : "prt_role_type",
+            "key" : "invited_prt",
+            "text" : "{\"en\": \"Invited\", \"ru\": \"Приглашенный\", \"uz\": \"Taklif etilgan\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 367,
+            "group" : "prt_role_type",
+            "key" : "member_prt",
+            "text" : "{\"en\": \"Member of the Protocol\", \"ru\": \"Член Протокола\", \"uz\": \"Protokol A`zosi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 368,
+            "group" : "res",
+            "key" : "res_text",
+            "text" : "{\"en\": \"Res text\", \"ru\": \"Результатный текст\", \"uz\": \"Javob matni\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 369,
+            "group" : "res",
+            "key" : "res_type",
+            "text" : "{\"en\": \"Res type\", \"ru\": \"Тип ответа\", \"uz\": \"Natija turi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 370,
+            "group" : "role",
+            "key" : "admin",
+            "text" : "{\"en\": \"Admin\", \"ru\": \"Администратор\", \"uz\": \"Admin\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 371,
+            "group" : "role",
+            "key" : "dep_emp",
+            "text" : "{\"en\": \"Emp. of department\", \"ru\": \"Сотрудник отдлела\", \"uz\": \"Bo`lim xodimi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 372,
+            "group" : "role",
+            "key" : "dep_head",
+            "text" : "{\"en\": \"Head of department\", \"ru\": \"Начальник отдела\", \"uz\": \"Bo`lim boshlig`i\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 373,
+            "group" : "role",
+            "key" : "hr_dep_head",
+            "text" : "{\"en\": \"Hr_dep_head\", \"ru\": \"HR Bo`lim boshlig`i\", \"uz\": \"HR Bo`lim boshlig`i\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 374,
+            "group" : "role",
+            "key" : "it_admin",
+            "text" : "{\"en\": \"It_admin\", \"ru\": \"IT admin\", \"uz\": \"IT admin\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 375,
+            "group" : "role",
+            "key" : "main_director",
+            "text" : "{\"en\": \"Main director\", \"ru\": \"Генеральный директор\", \"uz\": \"Bosh ijrochi Direktor\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 376,
+            "group" : "role",
+            "key" : "office",
+            "text" : "{\"en\": \"Office\", \"ru\": \"Канцелярия\", \"uz\": \"Kanselariya\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 377,
+            "group" : "role",
+            "key" : "office_control",
+            "text" : "{\"en\": \"Office control\", \"ru\": \"Контроль производительности\", \"uz\": \"Ijro nazorati\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 378,
+            "group" : "role",
+            "key" : "sub_main_director",
+            "text" : "{\"en\": \"Sub_main_director\", \"ru\": \"Direktor o`rinbosari\", \"uz\": \"Direktor o`rinbosari\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 379,
+            "group" : "route",
+            "key" : "create",
+            "text" : "{\"en\": \"Create\", \"ru\": \"Создать\", \"uz\": \"Yaratmoq\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 380,
+            "group" : "route",
+            "key" : "home",
+            "text" : "{\"en\": \"Home\", \"ru\": \"Главная страница\", \"uz\": \"Bosh sahifa\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 381,
+            "group" : "route",
+            "key" : "role_menu",
+            "text" : "{\"en\": \"Role menu\", \"ru\": \"Роль меню\", \"uz\": \"Menyu roli\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 382,
+            "group" : "route",
+            "key" : "roles",
+            "text" : "{\"en\": \"Roles\", \"ru\": \"Роли\", \"uz\": \"Rollar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 383,
+            "group" : "select",
+            "key" : "status_all",
+            "text" : "{\"en\": \"Status all\", \"ru\": \"Статус все\", \"uz\": \"Barcha holatlar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 384,
+            "group" : "select",
+            "key" : "status_all_creators",
+            "text" : "{\"en\": \"All creators\", \"ru\": \"Все создатели\", \"uz\": \"Barcha yaratuvchilar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 385,
+            "group" : "status",
+            "key" : "active",
+            "text" : "{\"en\": \"Active\", \"ru\": \"Актив\", \"uz\": \"Faol\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 386,
+            "group" : "status",
+            "key" : "canceled",
+            "text" : "{\"en\": \"Canceled\", \"ru\": \"Отменено\", \"uz\": \"Bekor qilingan\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 387,
+            "group" : "status",
+            "key" : "collaborate",
+            "text" : "{\"en\": \"Collaborate\", \"ru\": \"В соглашении\", \"uz\": \"Kelishuvda\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 388,
+            "group" : "status",
+            "key" : "completed",
+            "text" : "{\"en\": \"Completed\", \"ru\": \"Выполнено\", \"uz\": \"Tugatilgan\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 389,
+            "group" : "status",
+            "key" : "created",
+            "text" : "{\"en\": \"Created\", \"ru\": \"Создан\", \"uz\": \"Yaratilgan\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 390,
+            "group" : "status",
+            "key" : "date_sent_for_execution",
+            "text" : "{\"en\": \"Date of sending for execution\", \"ru\": \"Дата отправки на исполнение\", \"uz\": \"Ijroga yuborilgan sana\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 391,
+            "group" : "status",
+            "key" : "delete",
+            "text" : "{\"en\": \"Delete\", \"ru\": \"Удалить\", \"uz\": \"O'chirish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 392,
+            "group" : "status",
+            "key" : "deleted",
+            "text" : "{\"en\": \"Deleted\", \"ru\": \"Удалено\", \"uz\": \"O`chirilgan\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 393,
+            "group" : "status",
+            "key" : "exec_date",
+            "text" : "{\"en\": \"Exec date\", \"ru\": \"Дата исполнения\", \"uz\": \"Ijro sanasi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 394,
+            "group" : "status",
+            "key" : "exec_expired",
+            "text" : "{\"en\": \"Execution expired\", \"ru\": \"Исполнение просрочено\", \"uz\": \"Ijro muddati o'tgan\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 395,
+            "group" : "status",
+            "key" : "exec_status",
+            "text" : "{\"en\": \"Exec status\", \"ru\": \"Статус исполнения\", \"uz\": \"Ijro holati\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 396,
+            "group" : "status",
+            "key" : "executed",
+            "text" : "{\"en\": \"Executed\", \"ru\": \"Исполнение обеспечено\", \"uz\": \"Ijrosi ta'minlangan\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 397,
+            "group" : "status",
+            "key" : "in_editing",
+            "text" : "{\"en\": \"Returned to editing\", \"ru\": \"Возвращено в редактирование\", \"uz\": \"Tahrirlashga qaytarilgan\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 398,
+            "group" : "status",
+            "key" : "in_process",
+            "text" : "{\"en\": \"In process\", \"ru\": \"В процессе\", \"uz\": \"Jarayonda\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 399,
+            "group" : "status",
+            "key" : "in_resolution",
+            "text" : "{\"en\": \"In resolution\", \"ru\": \"В резолюции\", \"uz\": \"Rezolyutsiyada\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 400,
+            "group" : "status",
+            "key" : "passive",
+            "text" : "{\"en\": \"Passive\", \"ru\": \"Пассив\", \"uz\": \"Faol emas\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 401,
+            "group" : "status",
+            "key" : "pending_sign",
+            "text" : "{\"en\": \"Pending sign\", \"ru\": \"Ожидается подпись\", \"uz\": \"Imzo kutilmoqda\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 402,
+            "group" : "status",
+            "key" : "pr_signed",
+            "text" : "{\"en\": \"Signed.\", \"ru\": \"Подписан.\", \"uz\": \"Imzolangan.\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 403,
+            "group" : "status",
+            "key" : "signature_pending",
+            "text" : "{\"en\": \"Signature_pending\", \"ru\": \"Ожидается подпись..\", \"uz\": \"Imzolashda\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 404,
+            "group" : "status",
+            "key" : "signed",
+            "text" : "{\"en\": \"Signed\", \"ru\": \"Подписан\", \"uz\": \"Imzolangan\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 405,
+            "group" : "status",
+            "key" : "under_exec_control",
+            "text" : "{\"en\": \"Under executive control\", \"ru\": \"Под управлением исполнения\", \"uz\": \"Ijro nazoratida\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 406,
+            "group" : "text",
+            "key" : "delete_confirm",
+            "text" : "{\"en\": \"Delete confirm\", \"ru\": \"Удалить подтверждение\", \"uz\": \"O'chirishni tasdiqlash\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 407,
+            "group" : "text",
+            "key" : "delete_confirm_text",
+            "text" : "{\"en\": \"Delete confirm text\", \"ru\": \"Удалить текст подтверждения\", \"uz\": \"Tasdiqlash matnini o‘chirish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 408,
+            "group" : "time",
+            "key" : "created_at",
+            "text" : "{\"en\": \"Created at\", \"ru\": \"Создано в\", \"uz\": \"Yaratilgan sana\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 409,
+            "group" : "title",
+            "key" : "action",
+            "text" : "{\"en\": \"Action\", \"ru\": \"Действие\", \"uz\": \"Harakat\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 410,
+            "group" : "title",
+            "key" : "add_additional_performers",
+            "text" : "{\"en\": \"Add additional performers\", \"ru\": \"Добавить дополнительных исполнителей\", \"uz\": \"Qo'shimcha ijrochilarni qo'shish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 411,
+            "group" : "title",
+            "key" : "additional_performers",
+            "text" : "{\"en\": \"Additional performers\", \"ru\": \"Дополнительные исполнители\", \"uz\": \"Qo'shimcha ijrochilar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 412,
+            "group" : "title",
+            "key" : "agreement_employees",
+            "text" : "{\"en\": \"Agreement employees\", \"ru\": \"Соглашающийся\", \"uz\": \"Kelishuvchi xodimlar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 413,
+            "group" : "title",
+            "key" : "answer_letters",
+            "text" : "{\"en\": \"Answer letters\", \"ru\": \"Ответы на письма\", \"uz\": \"Javob xatlari\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 414,
+            "group" : "title",
+            "key" : "approval_documents",
+            "text" : "{\"en\": \"Working documents (for approval)\", \"ru\": \"Рабочие документы (для согласования)\", \"uz\": \"Ishchi hujjatlar (kelishish uchun)\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 415,
+            "group" : "title",
+            "key" : "confirm_document",
+            "text" : "{\"en\": \"Confirm document\", \"ru\": \"Подтверждение документа\", \"uz\": \"Hujjatni tasdqilash\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 416,
+            "group" : "title",
+            "key" : "confirm_documents",
+            "text" : "{\"en\": \"Working documents (for confirmation)\", \"ru\": \"Рабочие документы (для подтверждения)\", \"uz\": \"Ishchi hujjatlar (tasdiqlash uchun)\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 417,
+            "group" : "title",
+            "key" : "coordination",
+            "text" : "{\"en\": \"Agreeing\", \"ru\": \"Соглашающийся\", \"uz\": \"Kelishuvchi xodimlar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 418,
+            "group" : "title",
+            "key" : "doc_type",
+            "text" : "{\"en\": \"Doc type\", \"ru\": \"Тип документа\", \"uz\": \"Hujjat turi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 419,
+            "group" : "title",
+            "key" : "doc_type_name",
+            "text" : "{\"en\": \"Doc type name\", \"ru\": \"Наименование типа документа\", \"uz\": \"Hujjat turi nomi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 420,
+            "group" : "title",
+            "key" : "emp",
+            "text" : "{\"en\": \"Employee\", \"ru\": \"Сотрудник\", \"uz\": \"Xodim\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 421,
+            "group" : "title",
+            "key" : "emp_exp",
+            "text" : "{\"en\": \"Work experience\", \"ru\": \"Опыт работы\", \"uz\": \"Ish tajribasi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 422,
+            "group" : "title",
+            "key" : "emp_order",
+            "text" : "{\"en\": \"Employee's orders\", \"ru\": \"Приказы сотрудника\", \"uz\": \"Xodim buyruqlari\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 423,
+            "group" : "title",
+            "key" : "exec_document",
+            "text" : "{\"en\": \"Execution of the document\", \"ru\": \"Исполнение документа\", \"uz\": \"Hujjat ijrosi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 424,
+            "group" : "title",
+            "key" : "execution",
+            "text" : "{\"en\": \"Execution\", \"ru\": \"Исполнение\", \"uz\": \"Ijro\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 425,
+            "group" : "title",
+            "key" : "expired",
+            "text" : "{\"en\": \"Expired\", \"ru\": \"Просрочен\", \"uz\": \"Muddati o‘tib ketgan\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 426,
+            "group" : "title",
+            "key" : "inbox",
+            "text" : "{\"en\": \"Inbox\", \"ru\": \"Входящий\", \"uz\": \"Kiruvchi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 427,
+            "group" : "title",
+            "key" : "language",
+            "text" : "{\"en\": \"Languages\", \"ru\": \"Языки\", \"uz\": \"Tillar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 428,
+            "group" : "title",
+            "key" : "outgoing",
+            "text" : "{\"en\": \"Outgoing messages\", \"ru\": \"Исходящие письма\", \"uz\": \"Chiquvchi xatlar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 429,
+            "group" : "title",
+            "key" : "res_text",
+            "text" : "{\"en\": \"Text of the resolution\", \"ru\": \"Текст резолюции\", \"uz\": \"Rezolyutsiya matni\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 430,
+            "group" : "title",
+            "key" : "res_type",
+            "text" : "{\"en\": \"Resolution type\", \"ru\": \"Тип резолюции\", \"uz\": \"Rezolyutsiya turi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 431,
+            "group" : "title",
+            "key" : "resolution_text",
+            "text" : "{\"en\": \"Text of the resolution\", \"ru\": \"Текст резолюции\", \"uz\": \"Rezolyutsiya matni\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 432,
+            "group" : "title",
+            "key" : "selected_performers",
+            "text" : "{\"en\": \"Selected performers\", \"ru\": \"Выбранные исполнители\", \"uz\": \"Tanlangan ijrochilar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 433,
+            "group" : "title",
+            "key" : "sign_documents",
+            "text" : "{\"en\": \"Working documents (for signature)\", \"ru\": \"Рабочие документы (для подписи)\", \"uz\": \"Ishchi hujjatlar (imzo uchun)\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 434,
+            "group" : "title",
+            "key" : "signing_status",
+            "text" : "{\"en\": \"Signing status\", \"ru\": \"Состояние подписи\", \"uz\": \"Imzo holati\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 435,
+            "group" : "title",
+            "key" : "work_documents",
+            "text" : "{\"en\": \"Work documents\", \"ru\": \"Рабочый документы\", \"uz\": \"Ishchi hujjatlar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 436,
+            "group" : "title",
+            "key" : "working_documents",
+            "text" : "{\"en\": \"Working_documents\", \"ru\": \"Рабочие документы\", \"uz\": \"Ishchi hujjatlar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 437,
+            "group" : "translation",
+            "key" : "name",
+            "text" : "{\"en\": \"Name\", \"ru\": \"Название\", \"uz\": \"Nomi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 438,
+            "group" : "translation",
+            "key" : "role_name",
+            "text" : "{\"en\": \"Role name\", \"ru\": \"Имя роль\", \"uz\": \"Rol nomi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 439,
+            "group" : "validate",
+            "key" : "create_document",
+            "text" : "{\"en\": \"Enter the document text\", \"ru\": \"Введите текст документа\", \"uz\": \"Hujjat matnini kiriting\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 440,
+            "group" : "validate",
+            "key" : "doc_date_mandatory",
+            "text" : "{\"en\": \"Doc date mandatory\", \"ru\": \"Введите  дата документа\", \"uz\": \"Hujjat vaqtini kiriting\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 441,
+            "group" : "validate",
+            "key" : "doc_name_mandatory",
+            "text" : "{\"en\": \"Doc name is mandatory\", \"ru\": \"Введите текст документа\", \"uz\": \"Dokument matnini kiriting\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 442,
+            "group" : "validate",
+            "key" : "doc_pin_mandatory",
+            "text" : "{\"en\": \"Doc pin mandatory\", \"ru\": \"Введите номер документа\", \"uz\": \"Hujjat raqamini kiriting\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 443,
+            "group" : "validate",
+            "key" : "doc_type_mandatory",
+            "text" : "{\"en\": \"Doc type mandatory\", \"ru\": \"Выберите тип документа\", \"uz\": \"Hujjat turini kiriting\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 444,
+            "group" : "validate",
+            "key" : "email_mandatory",
+            "text" : "{\"en\": \"Enter the user's email\", \"ru\": \"Введите email пользователя\", \"uz\": \"Foydalanuvchi emailini kiriting\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 445,
+            "group" : "validate",
+            "key" : "f_name_mandatory",
+            "text" : "{\"en\": \"Enter the first name\", \"ru\": \"Введите имя пользователя\", \"uz\": \"Foydalanuvchi ismini kiriting\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 446,
+            "group" : "validate",
+            "key" : "j_number_mandatory",
+            "text" : "{\"en\": \"Choose type of document\", \"ru\": \"Выберите тип документа\", \"uz\": \"Hujjat turini tanlang\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 447,
+            "group" : "validate",
+            "key" : "jdoc_name_mandatory",
+            "text" : "{\"en\": \"Journal doc name mandatory\", \"ru\": \"Введите имя документа\", \"uz\": \"Hujjat nomini kiriting\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 448,
+            "group" : "validate",
+            "key" : "journal_type_mandatory",
+            "text" : "{\"en\": \"Choose type of document\", \"ru\": \"Выберите тип документа\", \"uz\": \"Dokument turini tanlang\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 449,
+            "group" : "validate",
+            "key" : "l_name_mandatory",
+            "text" : "{\"en\": \"Enter the last name\", \"ru\": \"Введите имя пользователя\", \"uz\": \"Foydalanuvchi familyasini kiriting\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 450,
+            "group" : "validate",
+            "key" : "m_name_mandatory",
+            "text" : "{\"en\": \"Enter the middle name\", \"ru\": \"Введите отчество пользователя\", \"uz\": \"Foydalanuvchini otasini ismi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 451,
+            "group" : "validate",
+            "key" : "phone_mandatory",
+            "text" : "{\"en\": \"Enter the phone nmber\", \"ru\": \"Введите номер телефона пользователя\", \"uz\": \"Foydalanuvchi telefon raqamini kiriting\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 452,
+            "group" : "validate",
+            "key" : "resolution_user_mandatory",
+            "text" : "{\"en\": \"Enter the resolution user\", \"ru\": \"Введите пользователя резолюции\", \"uz\": \"Rezolutsiya foydalanuvchisini kiriting\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 453,
+            "group" : "validate",
+            "key" : "unique_email",
+            "text" : "{\"en\": \"The email address is already in use.\", \"ru\": \"Адрес электронной почты уже используется\", \"uz\": \"Email manzili allaqachon ishlatilmoqda.\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 454,
+            "group" : "validate",
+            "key" : "user_id_document",
+            "text" : "{\"en\": \"Choose the user\", \"ru\": \"Выберите пользователя\", \"uz\": \"Foydalanuvchini tanlang\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 455,
+            "group" : "validate",
+            "key" : "user_id_mandatory",
+            "text" : "{\"en\": \"User_id_mandatory\", \"ru\": \"Выберите пользователя\", \"uz\": \"Foydalanuvchini tanlang\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 456,
+            "group" : "validate",
+            "key" : "user_role_mandatory",
+            "text" : "{\"en\": \"User  role mandatory\", \"ru\": \"Выберите роль пользователя\", \"uz\": \"Foydalanuvchi rolini tanlang\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 457,
+            "group" : "menu",
+            "key" : "programm_settings",
+            "text" : "{\"en\": \"Programm settings\", \"ru\": \"Настройки программы\", \"uz\": \"Dastur sozlamalari\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 458,
+            "group" : "field",
+            "key" : "name_kr",
+            "text" : "{\"en\": \"Name (kr)\", \"ru\": \"Название(кр)\", \"uz\": \"Nomi (kr)\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 459,
+            "group" : "title",
+            "key" : "images",
+            "text" : "{\"en\": \"Images\", \"ru\": \"Картинки\", \"uz\": \"Rasmlar\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 460,
+            "group" : "field",
+            "key" : "type_text",
+            "text" : "{\"en\": \"Type or paste your content here\", \"ru\": \"Введите или вставьте текст здесь\", \"uz\": \"Matnni shu yerga yozing yoki joylashtiring\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 461,
+            "group" : "field",
+            "key" : "signer",
+            "text" : "{\"en\": \"Signer\", \"ru\": \"Подписывающий\", \"uz\": \"Imzolovchi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 462,
+            "group" : "field",
+            "key" : "agreement_person",
+            "text" : "{\"en\": \"Agreement person\", \"ru\": \"Соглашающийся\", \"uz\": \"Kelishuvchi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 463,
+            "group" : "field",
+            "key" : "creator",
+            "text" : "{\"en\": \"Creator\", \"ru\": \"Создатель\", \"uz\": \"Yaratuvchi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 464,
+            "group" : "field",
+            "key" : "verifier",
+            "text" : "{\"en\": \"Verifier\", \"ru\": \"Утверждающий\", \"uz\": \"Tasdiqlovchi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 465,
+            "group" : "field",
+            "key" : "document_steps",
+            "text" : "{\"en\": \"Document steps\", \"ru\": \"Последовательность процессов\", \"uz\": \"Jarayonlar ketma-ketligi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 466,
+            "group" : "status",
+            "key" : "pending_sending",
+            "text" : "{\"en\": \"Pending sending to sign\", \"ru\": \"Ожидание отправки документа на подпись\", \"uz\": \"Hujjat imzoga yuborilishi kutilmoqda\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 467,
+            "group" : "status",
+            "key" : "document_declined",
+            "text" : "{\"en\": \"Document declined\", \"ru\": \"Документ отменён\", \"uz\": \"Hujjat bekor qilingan\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 468,
+            "group" : "status",
+            "key" : "pending_editing",
+            "text" : "{\"en\": \"Waiting for document editing\", \"ru\": \"Ожидание редактирования документа\", \"uz\": \"Hujjat tahrirlanishi kutilmoqda\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 469,
+            "group" : "status",
+            "key" : "document_deleted",
+            "text" : "{\"en\": \"Document was deleted\", \"ru\": \"Документ удалён\", \"uz\": \"Hujjat o'chirilgan\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 470,
+            "group" : "status",
+            "key" : "pending_signing",
+            "text" : "{\"en\": \"Waiting for the document to be signed\", \"ru\": \"Ожидание подписания документа\", \"uz\": \"Hujjat imzolanishi kutilmoqda\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 471,
+            "group" : "status",
+            "key" : "pending_agreement",
+            "text" : "{\"en\": \"Waiting for document approval\", \"ru\": \"Ожидание согласования документа\", \"uz\": \"Hujjat kelishilishi kutilmoqda\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 472,
+            "group" : "status",
+            "key" : "pending_control",
+            "text" : "{\"en\": \"Document under control of execution\", \"ru\": \"Документ под контролем исполнения\", \"uz\": \"Hujjat ijro nazoratida\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 473,
+            "group" : "status",
+            "key" : "pending_resolution",
+            "text" : "{\"en\": \"Document in resolution\", \"ru\": \"Документ в резолюции\", \"uz\": \"Hujjat rezolyutsiyada\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 474,
+            "group" : "status",
+            "key" : "pending_execution",
+            "text" : "{\"en\": \"Document in execution\", \"ru\": \"Документ в исполнении\", \"uz\": \"Hujjat ijro jarayonida\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 475,
+            "group" : "lang",
+            "key" : "uzbek",
+            "text" : "{\"en\": \"Uzbek(latin)\", \"ru\": \"Узбекский(латиница)\", \"uz\": \"O'zbekcha(lotin)\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 476,
+            "group" : "lang",
+            "key" : "cyrillic",
+            "text" : "{\"en\": \"Uzbek(cyrillic)\", \"ru\": \"Узбекский(кириллица)\", \"uz\": \"O'zbekcha(kirill)\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 477,
+            "group" : "lang",
+            "key" : "russian",
+            "text" : "{\"en\": \"Russian\", \"ru\": \"Русский\", \"uz\": \"Ruscha\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 478,
+            "group" : "lang",
+            "key" : "english",
+            "text" : "{\"en\": \"English\", \"ru\": \"Английский\", \"uz\": \"Inglizcha\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 479,
+            "group" : "field",
+            "key" : "doc_lang",
+            "text" : "{\"en\": \"Document language\", \"ru\": \"Язык документа\", \"uz\": \"Hujjat tili\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 480,
+            "group" : "document",
+            "key" : "assigment",
+            "text" : "{\"en\": \"Assigment\", \"ru\": \"Задание\", \"uz\": \"Topshiriq\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 481,
+            "group" : "document",
+            "key" : "claim",
+            "text" : "{\"en\": \"Claim\", \"ru\": \"Требование\", \"uz\": \"Talabnoma\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 482,
+            "group" : "document",
+            "key" : "reference",
+            "text" : "{\"en\": \"Reference\", \"ru\": \"Справка\", \"uz\": \"Ma'lumotnoma\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 483,
+            "group" : "document",
+            "key" : "termination_app",
+            "text" : "{\"en\": \"Termination of employment contract\", \"ru\": \"Прекращение трудового договора\", \"uz\": \"Mehnat shartnomasini bekor qilish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 484,
+            "group" : "document",
+            "key" : "fin_assistance",
+            "text" : "{\"en\": \"Providing financial assistance\", \"ru\": \"Предоставление материальной помощи\", \"uz\": \"Moddiy yordam puli berish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 485,
+            "group" : "document",
+            "key" : "study_app",
+            "text" : "{\"en\": \"Granting study leave\", \"ru\": \"Предоставление учебного отпуска\", \"uz\": \"O'quv ta'tili berish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 486,
+            "group" : "document",
+            "key" : "maternity_app",
+            "text" : "{\"en\": \"Going on maternity leave\", \"ru\": \"Выход в декретный отпуск\", \"uz\": \"Dekret ta'tiliga chiqish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 487,
+            "group" : "document",
+            "key" : "return_mat_leave",
+            "text" : "{\"en\": \"Return from maternity leave\", \"ru\": \"Возвращение из декретного отпуска\", \"uz\": \"Dekret ta'tilidan qaytish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 488,
+            "group" : "document",
+            "key" : "based_on_agree",
+            "text" : "{\"en\": \"Based on an employment agreement\", \"ru\": \"На основании трудового договора\", \"uz\": \"Mehnat kelishuvi asosida\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 489,
+            "group" : "document",
+            "key" : "transfer_pos",
+            "text" : "{\"en\": \"Transfer to another position\", \"ru\": \"Перейти на другую должность\", \"uz\": \"Boshqa lavozimga o'tish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 490,
+            "group" : "message",
+            "key" : "doc_created_success_message",
+            "text" : "{\"en\": \"Created successfully\", \"ru\": \"Создано успешно\", \"uz\": \"Muvaffaqiyatli yaratildi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 491,
+            "group" : "field",
+            "key" : "user_not_fount",
+            "text" : "{\"en\": \"User not found\", \"ru\": \"Сотрудник не найден\", \"uz\": \"Xodim topilmadi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 492,
+            "group" : "action",
+            "key" : "to_leave_comment",
+            "text" : "{\"en\": \"Leaving comment\", \"ru\": \"Оставить комментарий\", \"uz\": \"Izoh qoldirish\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 493,
+            "group" : "document",
+            "key" : "test-hujjat-turi",
+            "text" : "{\"en\": \"Test hujjat turi EN\", \"ru\": \"Test hujjat turi RU\", \"uz\": \"Test hujjat turi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 494,
+            "group" : "document",
+            "key" : "bos-direktor",
+            "text" : "{\"en\": \"Бош директор\", \"ru\": \"Бош директор\", \"uz\": \"Бош директор\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 495,
+            "group" : "document",
+            "key" : "buxgalteriya-bolimi",
+            "text" : "{\"en\": \"Buxgalteriya bo'limiEN\", \"ru\": \"Buxgalteriya bo'limi RU\", \"uz\": \"Buxgalteriya bo'limi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 496,
+            "group" : "document",
+            "key" : "bos-direktorning-birinci-rinbos",
+            "text" : "{\"en\": \"Buxgalteriya bo'limiEN\", \"ru\": \"Buxgalteriya bo'limi RU\", \"uz\": \"Buxgalteriya bo'limi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 497,
+            "group" : "document",
+            "key" : "buxgalteriya-bolimi-1",
+            "text" : "{\"en\": \"Buxgalteriya bo'limi EN\", \"ru\": \"Buxgalteriya bo'limi RU\", \"uz\": \"Buxgalteriya bo'limi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 498,
+            "group" : "document",
+            "key" : "bos-direktorning-birinci-rinbosa",
+            "text" : "{\"en\": \"Buxgalteriya bo'limiEN\", \"ru\": \"Buxgalteriya bo'limi RU\", \"uz\": \"Buxgalteriya bo'limi\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 499,
+            "group" : "document",
+            "key" : "kredit-protokoli",
+            "text" : "{\"en\": \"Kredit protokoli EN\", \"ru\": \"Kredit protokoli RU\", \"uz\": \"Kredit protokoli\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 500,
+            "group" : "menu",
+            "key" : "org-structure",
+            "text" : "{\"en\": \"Organizational structure\", \"ru\": \"Tashkiliy tuzilma RU\", \"uz\": \"Tashkiliy tuzilma\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 501,
+            "group" : "role",
+            "key" : "super-admin",
+            "text" : "{\"en\": \"super_admin EN\", \"ru\": \"super_admin RU\", \"uz\": \"super_admin\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 502,
+            "group" : "field",
+            "key" : "background_image",
+            "text" : "{\"en\": \"Background image\", \"ru\": \"Баннер\", \"uz\": \"Banner\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 503,
+            "group" : "field",
+            "key" : "logo",
+            "text" : "{\"en\": \"Logo\", \"ru\": \"Логотип\", \"uz\": \"Logotip\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 504,
+            "group" : "field",
+            "key" : "out_doc_banner",
+            "text" : "{\"en\": \"Out doc banner\", \"ru\": \"Баннер исх, документа\", \"uz\": \"Chiquvchi xat banneri\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 505,
+            "group" : "title",
+            "key" : "sign_employee",
+            "text" : "{\"en\": \"Sign employee\", \"ru\": \"Подписывающий персонал\", \"uz\": \"Imzolovchi xodim\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 506,
+            "group" : "field",
+            "key" : "created_date",
+            "text" : "{\"en\": \"Created date\", \"ru\": \"Дата создания\", \"uz\": \"Yaratilgan sana\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 507,
+            "group" : "role",
+            "key" : "super_emp",
+            "text" : "{\"en\": \"Super Emp\", \"ru\": \"Super Emp\", \"uz\": \"Super Emp\"}",
+            "created_at" : "2025-05-26T12:12:59.000Z",
+            "updated_at" : "2025-05-26T12:12:59.000Z"
+        },
+        {
+            "id" : 509,
+            "group" : "document",
+            "key" : "hr-buyruqlari",
+            "text" : "{\"en\": \"HR buyruqlari\", \"ru\": \"HR buyruqlari\", \"uz\": \"HR buyruqlari\"}",
+            "created_at" : "2025-05-26T12:14:21.000Z",
+            "updated_at" : "2025-05-26T12:14:21.000Z"
+        },
+        {
+            "id" : 510,
+            "group" : "menu",
+            "key" : "super_emp_menu",
+            "text" : "{\"en\": \"Kuzatuvchi bo`lim\", \"ru\": \"Kuzatuvchi bo`lim Ру\", \"uz\": \"Kuzatuvchi bo`lim\"}",
+            "created_at" : "2025-05-26T12:38:54.000Z",
+            "updated_at" : "2025-05-26T12:38:54.000Z"
+        }
+    ]}

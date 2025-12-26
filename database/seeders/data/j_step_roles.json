@@ -1,0 +1,808 @@
+{
+    "journal_execution_step_roles": [
+        {
+            "id" : 1,
+            "j_exec_step_id" : 1,
+            "role_id" : 7
+        },
+        {
+            "id" : 2,
+            "j_exec_step_id" : 1,
+            "role_id" : 6
+        },
+        {
+            "id" : 3,
+            "j_exec_step_id" : 2,
+            "role_id" : 9
+        },
+        {
+            "id" : 4,
+            "j_exec_step_id" : 2,
+            "role_id" : 8
+        },
+        {
+            "id" : 5,
+            "j_exec_step_id" : 2,
+            "role_id" : 7
+        },
+        {
+            "id" : 6,
+            "j_exec_step_id" : 3,
+            "role_id" : 9
+        },
+        {
+            "id" : 7,
+            "j_exec_step_id" : 3,
+            "role_id" : 8
+        },
+        {
+            "id" : 8,
+            "j_exec_step_id" : 3,
+            "role_id" : 7
+        },
+        {
+            "id" : 9,
+            "j_exec_step_id" : 4,
+            "role_id" : 7
+        },
+        {
+            "id" : 10,
+            "j_exec_step_id" : 4,
+            "role_id" : 6
+        },
+        {
+            "id" : 11,
+            "j_exec_step_id" : 5,
+            "role_id" : 9
+        },
+        {
+            "id" : 12,
+            "j_exec_step_id" : 5,
+            "role_id" : 8
+        },
+        {
+            "id" : 13,
+            "j_exec_step_id" : 5,
+            "role_id" : 7
+        },
+        {
+            "id" : 14,
+            "j_exec_step_id" : 6,
+            "role_id" : 9
+        },
+        {
+            "id" : 15,
+            "j_exec_step_id" : 6,
+            "role_id" : 8
+        },
+        {
+            "id" : 16,
+            "j_exec_step_id" : 6,
+            "role_id" : 7
+        },
+        {
+            "id" : 17,
+            "j_exec_step_id" : 7,
+            "role_id" : 9
+        },
+        {
+            "id" : 18,
+            "j_exec_step_id" : 7,
+            "role_id" : 8
+        },
+        {
+            "id" : 19,
+            "j_exec_step_id" : 7,
+            "role_id" : 7
+        },
+        {
+            "id" : 20,
+            "j_exec_step_id" : 8,
+            "role_id" : 7
+        },
+        {
+            "id" : 21,
+            "j_exec_step_id" : 8,
+            "role_id" : 6
+        },
+        {
+            "id" : 22,
+            "j_exec_step_id" : 9,
+            "role_id" : 9
+        },
+        {
+            "id" : 23,
+            "j_exec_step_id" : 9,
+            "role_id" : 8
+        },
+        {
+            "id" : 24,
+            "j_exec_step_id" : 9,
+            "role_id" : 7
+        },
+        {
+            "id" : 25,
+            "j_exec_step_id" : 10,
+            "role_id" : 9
+        },
+        {
+            "id" : 26,
+            "j_exec_step_id" : 10,
+            "role_id" : 8
+        },
+        {
+            "id" : 27,
+            "j_exec_step_id" : 10,
+            "role_id" : 7
+        },
+        {
+            "id" : 28,
+            "j_exec_step_id" : 11,
+            "role_id" : 7
+        },
+        {
+            "id" : 29,
+            "j_exec_step_id" : 11,
+            "role_id" : 6
+        },
+        {
+            "id" : 30,
+            "j_exec_step_id" : 12,
+            "role_id" : 9
+        },
+        {
+            "id" : 31,
+            "j_exec_step_id" : 12,
+            "role_id" : 8
+        },
+        {
+            "id" : 32,
+            "j_exec_step_id" : 12,
+            "role_id" : 7
+        },
+        {
+            "id" : 33,
+            "j_exec_step_id" : 13,
+            "role_id" : 9
+        },
+        {
+            "id" : 34,
+            "j_exec_step_id" : 13,
+            "role_id" : 8
+        },
+        {
+            "id" : 35,
+            "j_exec_step_id" : 13,
+            "role_id" : 7
+        },
+        {
+            "id" : 36,
+            "j_exec_step_id" : 14,
+            "role_id" : 9
+        },
+        {
+            "id" : 37,
+            "j_exec_step_id" : 14,
+            "role_id" : 8
+        },
+        {
+            "id" : 38,
+            "j_exec_step_id" : 14,
+            "role_id" : 7
+        },
+        {
+            "id" : 39,
+            "j_exec_step_id" : 15,
+            "role_id" : 7
+        },
+        {
+            "id" : 40,
+            "j_exec_step_id" : 15,
+            "role_id" : 6
+        },
+        {
+            "id" : 41,
+            "j_exec_step_id" : 16,
+            "role_id" : 9
+        },
+        {
+            "id" : 42,
+            "j_exec_step_id" : 16,
+            "role_id" : 8
+        },
+        {
+            "id" : 43,
+            "j_exec_step_id" : 16,
+            "role_id" : 7
+        },
+        {
+            "id" : 44,
+            "j_exec_step_id" : 17,
+            "role_id" : 9
+        },
+        {
+            "id" : 45,
+            "j_exec_step_id" : 17,
+            "role_id" : 8
+        },
+        {
+            "id" : 46,
+            "j_exec_step_id" : 17,
+            "role_id" : 7
+        },
+        {
+            "id" : 47,
+            "j_exec_step_id" : 18,
+            "role_id" : 7
+        },
+        {
+            "id" : 48,
+            "j_exec_step_id" : 18,
+            "role_id" : 6
+        },
+        {
+            "id" : 49,
+            "j_exec_step_id" : 19,
+            "role_id" : 9
+        },
+        {
+            "id" : 50,
+            "j_exec_step_id" : 19,
+            "role_id" : 8
+        },
+        {
+            "id" : 51,
+            "j_exec_step_id" : 19,
+            "role_id" : 7
+        },
+        {
+            "id" : 52,
+            "j_exec_step_id" : 20,
+            "role_id" : 9
+        },
+        {
+            "id" : 53,
+            "j_exec_step_id" : 20,
+            "role_id" : 8
+        },
+        {
+            "id" : 54,
+            "j_exec_step_id" : 20,
+            "role_id" : 7
+        },
+        {
+            "id" : 55,
+            "j_exec_step_id" : 21,
+            "role_id" : 7
+        },
+        {
+            "id" : 56,
+            "j_exec_step_id" : 21,
+            "role_id" : 6
+        },
+        {
+            "id" : 57,
+            "j_exec_step_id" : 22,
+            "role_id" : 9
+        },
+        {
+            "id" : 58,
+            "j_exec_step_id" : 22,
+            "role_id" : 8
+        },
+        {
+            "id" : 59,
+            "j_exec_step_id" : 22,
+            "role_id" : 7
+        },
+        {
+            "id" : 60,
+            "j_exec_step_id" : 23,
+            "role_id" : 9
+        },
+        {
+            "id" : 61,
+            "j_exec_step_id" : 23,
+            "role_id" : 8
+        },
+        {
+            "id" : 62,
+            "j_exec_step_id" : 23,
+            "role_id" : 7
+        },
+        {
+            "id" : 63,
+            "j_exec_step_id" : 24,
+            "role_id" : 7
+        },
+        {
+            "id" : 64,
+            "j_exec_step_id" : 24,
+            "role_id" : 6
+        },
+        {
+            "id" : 65,
+            "j_exec_step_id" : 25,
+            "role_id" : 9
+        },
+        {
+            "id" : 66,
+            "j_exec_step_id" : 25,
+            "role_id" : 8
+        },
+        {
+            "id" : 67,
+            "j_exec_step_id" : 25,
+            "role_id" : 7
+        },
+        {
+            "id" : 68,
+            "j_exec_step_id" : 26,
+            "role_id" : 7
+        },
+        {
+            "id" : 69,
+            "j_exec_step_id" : 26,
+            "role_id" : 6
+        },
+        {
+            "id" : 70,
+            "j_exec_step_id" : 27,
+            "role_id" : 9
+        },
+        {
+            "id" : 71,
+            "j_exec_step_id" : 27,
+            "role_id" : 8
+        },
+        {
+            "id" : 72,
+            "j_exec_step_id" : 27,
+            "role_id" : 7
+        },
+        {
+            "id" : 73,
+            "j_exec_step_id" : 28,
+            "role_id" : 9
+        },
+        {
+            "id" : 74,
+            "j_exec_step_id" : 28,
+            "role_id" : 8
+        },
+        {
+            "id" : 75,
+            "j_exec_step_id" : 28,
+            "role_id" : 7
+        },
+        {
+            "id" : 76,
+            "j_exec_step_id" : 29,
+            "role_id" : 7
+        },
+        {
+            "id" : 77,
+            "j_exec_step_id" : 29,
+            "role_id" : 6
+        },
+        {
+            "id" : 78,
+            "j_exec_step_id" : 30,
+            "role_id" : 9
+        },
+        {
+            "id" : 79,
+            "j_exec_step_id" : 30,
+            "role_id" : 8
+        },
+        {
+            "id" : 80,
+            "j_exec_step_id" : 30,
+            "role_id" : 7
+        },
+        {
+            "id" : 81,
+            "j_exec_step_id" : 31,
+            "role_id" : 9
+        },
+        {
+            "id" : 82,
+            "j_exec_step_id" : 31,
+            "role_id" : 8
+        },
+        {
+            "id" : 83,
+            "j_exec_step_id" : 31,
+            "role_id" : 7
+        },
+        {
+            "id" : 84,
+            "j_exec_step_id" : 32,
+            "role_id" : 9
+        },
+        {
+            "id" : 85,
+            "j_exec_step_id" : 32,
+            "role_id" : 8
+        },
+        {
+            "id" : 86,
+            "j_exec_step_id" : 32,
+            "role_id" : 7
+        },
+        {
+            "id" : 87,
+            "j_exec_step_id" : 33,
+            "role_id" : 7
+        },
+        {
+            "id" : 88,
+            "j_exec_step_id" : 33,
+            "role_id" : 6
+        },
+        {
+            "id" : 89,
+            "j_exec_step_id" : 34,
+            "role_id" : 9
+        },
+        {
+            "id" : 90,
+            "j_exec_step_id" : 34,
+            "role_id" : 8
+        },
+        {
+            "id" : 91,
+            "j_exec_step_id" : 34,
+            "role_id" : 7
+        },
+        {
+            "id" : 95,
+            "j_exec_step_id" : 35,
+            "role_id" : 8
+        },
+        {
+            "id" : 96,
+            "j_exec_step_id" : 35,
+            "role_id" : 7
+        },
+        {
+            "id" : 97,
+            "j_exec_step_id" : 36,
+            "role_id" : 7
+        },
+        {
+            "id" : 98,
+            "j_exec_step_id" : 36,
+            "role_id" : 6
+        },
+        {
+            "id" : 99,
+            "j_exec_step_id" : 37,
+            "role_id" : 9
+        },
+        {
+            "id" : 100,
+            "j_exec_step_id" : 37,
+            "role_id" : 8
+        },
+        {
+            "id" : 101,
+            "j_exec_step_id" : 37,
+            "role_id" : 7
+        },
+        {
+            "id" : 102,
+            "j_exec_step_id" : 38,
+            "role_id" : 8
+        },
+        {
+            "id" : 103,
+            "j_exec_step_id" : 38,
+            "role_id" : 7
+        },
+        {
+            "id" : 104,
+            "j_exec_step_id" : 39,
+            "role_id" : 7
+        },
+        {
+            "id" : 105,
+            "j_exec_step_id" : 39,
+            "role_id" : 6
+        },
+        {
+            "id" : 106,
+            "j_exec_step_id" : 40,
+            "role_id" : 9
+        },
+        {
+            "id" : 107,
+            "j_exec_step_id" : 40,
+            "role_id" : 8
+        },
+        {
+            "id" : 108,
+            "j_exec_step_id" : 40,
+            "role_id" : 7
+        },
+        {
+            "id" : 109,
+            "j_exec_step_id" : 41,
+            "role_id" : 8
+        },
+        {
+            "id" : 110,
+            "j_exec_step_id" : 41,
+            "role_id" : 7
+        },
+        {
+            "id" : 111,
+            "j_exec_step_id" : 42,
+            "role_id" : 7
+        },
+        {
+            "id" : 112,
+            "j_exec_step_id" : 42,
+            "role_id" : 6
+        },
+        {
+            "id" : 113,
+            "j_exec_step_id" : 43,
+            "role_id" : 9
+        },
+        {
+            "id" : 114,
+            "j_exec_step_id" : 43,
+            "role_id" : 8
+        },
+        {
+            "id" : 115,
+            "j_exec_step_id" : 43,
+            "role_id" : 7
+        },
+        {
+            "id" : 116,
+            "j_exec_step_id" : 44,
+            "role_id" : 8
+        },
+        {
+            "id" : 117,
+            "j_exec_step_id" : 44,
+            "role_id" : 7
+        },
+        {
+            "id" : 118,
+            "j_exec_step_id" : 45,
+            "role_id" : 7
+        },
+        {
+            "id" : 119,
+            "j_exec_step_id" : 45,
+            "role_id" : 6
+        },
+        {
+            "id" : 120,
+            "j_exec_step_id" : 46,
+            "role_id" : 9
+        },
+        {
+            "id" : 121,
+            "j_exec_step_id" : 46,
+            "role_id" : 8
+        },
+        {
+            "id" : 122,
+            "j_exec_step_id" : 46,
+            "role_id" : 7
+        },
+        {
+            "id" : 123,
+            "j_exec_step_id" : 47,
+            "role_id" : 8
+        },
+        {
+            "id" : 124,
+            "j_exec_step_id" : 47,
+            "role_id" : 7
+        },
+        {
+            "id" : 125,
+            "j_exec_step_id" : 48,
+            "role_id" : 7
+        },
+        {
+            "id" : 126,
+            "j_exec_step_id" : 48,
+            "role_id" : 6
+        },
+        {
+            "id" : 127,
+            "j_exec_step_id" : 49,
+            "role_id" : 9
+        },
+        {
+            "id" : 128,
+            "j_exec_step_id" : 49,
+            "role_id" : 8
+        },
+        {
+            "id" : 129,
+            "j_exec_step_id" : 49,
+            "role_id" : 7
+        },
+        {
+            "id" : 130,
+            "j_exec_step_id" : 50,
+            "role_id" : 8
+        },
+        {
+            "id" : 131,
+            "j_exec_step_id" : 50,
+            "role_id" : 7
+        },
+        {
+            "id" : 132,
+            "j_exec_step_id" : 51,
+            "role_id" : 7
+        },
+        {
+            "id" : 133,
+            "j_exec_step_id" : 51,
+            "role_id" : 6
+        },
+        {
+            "id" : 134,
+            "j_exec_step_id" : 52,
+            "role_id" : 9
+        },
+        {
+            "id" : 135,
+            "j_exec_step_id" : 52,
+            "role_id" : 8
+        },
+        {
+            "id" : 136,
+            "j_exec_step_id" : 52,
+            "role_id" : 7
+        },
+        {
+            "id" : 137,
+            "j_exec_step_id" : 53,
+            "role_id" : 8
+        },
+        {
+            "id" : 138,
+            "j_exec_step_id" : 53,
+            "role_id" : 7
+        },
+        {
+            "id" : 139,
+            "j_exec_step_id" : 54,
+            "role_id" : 7
+        },
+        {
+            "id" : 140,
+            "j_exec_step_id" : 54,
+            "role_id" : 6
+        },
+        {
+            "id" : 141,
+            "j_exec_step_id" : 55,
+            "role_id" : 9
+        },
+        {
+            "id" : 142,
+            "j_exec_step_id" : 55,
+            "role_id" : 8
+        },
+        {
+            "id" : 143,
+            "j_exec_step_id" : 55,
+            "role_id" : 7
+        },
+        {
+            "id" : 144,
+            "j_exec_step_id" : 56,
+            "role_id" : 8
+        },
+        {
+            "id" : 145,
+            "j_exec_step_id" : 56,
+            "role_id" : 7
+        },
+        {
+            "id" : 146,
+            "j_exec_step_id" : 57,
+            "role_id" : 7
+        },
+        {
+            "id" : 147,
+            "j_exec_step_id" : 57,
+            "role_id" : 6
+        },
+        {
+            "id" : 148,
+            "j_exec_step_id" : 58,
+            "role_id" : 9
+        },
+        {
+            "id" : 149,
+            "j_exec_step_id" : 58,
+            "role_id" : 8
+        },
+        {
+            "id" : 150,
+            "j_exec_step_id" : 58,
+            "role_id" : 7
+        },
+        {
+            "id" : 151,
+            "j_exec_step_id" : 59,
+            "role_id" : 8
+        },
+        {
+            "id" : 152,
+            "j_exec_step_id" : 59,
+            "role_id" : 7
+        },
+        {
+            "id" : 153,
+            "j_exec_step_id" : 60,
+            "role_id" : 7
+        },
+        {
+            "id" : 154,
+            "j_exec_step_id" : 60,
+            "role_id" : 6
+        },
+        {
+            "id" : 155,
+            "j_exec_step_id" : 61,
+            "role_id" : 9
+        },
+        {
+            "id" : 156,
+            "j_exec_step_id" : 61,
+            "role_id" : 8
+        },
+        {
+            "id" : 157,
+            "j_exec_step_id" : 61,
+            "role_id" : 7
+        },
+        {
+            "id" : 159,
+            "j_exec_step_id" : 63,
+            "role_id" : 8
+        },
+        {
+            "id" : 160,
+            "j_exec_step_id" : 63,
+            "role_id" : 7
+        },
+        {
+            "id" : 161,
+            "j_exec_step_id" : 64,
+            "role_id" : 7
+        },
+        {
+            "id" : 162,
+            "j_exec_step_id" : 64,
+            "role_id" : 6
+        },
+        {
+            "id" : 163,
+            "j_exec_step_id" : 65,
+            "role_id" : 9
+        },
+        {
+            "id" : 164,
+            "j_exec_step_id" : 65,
+            "role_id" : 8
+        },
+        {
+            "id" : 165,
+            "j_exec_step_id" : 65,
+            "role_id" : 7
+        }
+    ]}

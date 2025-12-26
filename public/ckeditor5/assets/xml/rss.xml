@@ -1,0 +1,157 @@
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title>CKEditor 5</title>
+    <link href="https://ckeditor.com/rss.xml" rel="self"/>
+    <link href="https://ckeditor.com/"/>
+    <updated>2023-07-11T08:41:18.940Z</updated>
+    <id>https://ckeditor.com/</id>
+    <author>
+        <name>The Website Team</name>
+    </author>
+    <generator uri="https://hexo.io/">Hexo</generator>
+    <entry>
+        <title>How to get remote collaboration right</title>
+        <link href="https://ckeditor.com/blog/remote-work-collaboration/"/>
+        <id>https://ckeditor.com/blog/remote-work-collaboration/</id>
+        <published>2023-07-11T08:41:18.000Z</published>
+        <updated>2023-07-11T08:41:18.940Z</updated>
+        <summary type="html"><p>Many remote workers aren’t going anywhere – and not only because they’ve cut out their commute. While people have returned to the office, the prevalence of hybrid work arrangements means remote <a href="https://ckeditor.com/collaboration/">collaboration</a> is now the norm for most businesses. But companies still struggle to get remote teams collaborating effectively. Here’s what you need to know to get it right.</p> <p>Despite the obvious benefits for individuals, remote collaboration is sti</summary>
+        <category term="Articles" scheme="https://ckeditor.com/blog/categories/articles/"/>
+    </entry>
+    <entry>
+        <title>How Slash Commands give quick access to key functions in CKEditor 5</title>
+        <link href="https://ckeditor.com/blog/slash-commands/"/>
+        <id>https://ckeditor.com/blog/slash-commands/</id>
+        <published>2023-07-10T04:21:43.000Z</published>
+        <updated>2023-07-11T06:35:06.084Z</updated>
+        <summary type="html"><p>If you’ve ever been frustrated by trying to get seemingly quick tasks done through a maze of menus, then you’ve experienced life without slash commands. Recently popularized by applications such as Slack, Discord and Notion, slash commands increase efficiency by allowing you to perform actions without  navigating toolbars or menus. Sounds great: let’s get building!</p> <p>For those who are new to the concept, slash commands are a powerful function that can significantly enhance your user expe</summary>
+        <category term="Articles" scheme="https://ckeditor.com/blog/categories/articles/"/>
+        <category term="CKEditor 5" scheme="https://ckeditor.com/blog/tags/ckeditor-5/"/>
+    </entry>
+    <entry>
+        <title>JavaScript to TypeScript: CKEditor is a TypeScript rich text editor</title>
+        <link href="https://ckeditor.com/blog/typescript-rich-text-editor/"/>
+        <id>https://ckeditor.com/blog/typescript-rich-text-editor/</id>
+        <published>2023-07-05T13:44:06.000Z</published>
+        <updated>2023-07-06T06:31:26.141Z</updated>
+        <summary type="html"><p>Ever wondered about the benefits of rewriting a rich text editor like CKEditor 5, from JavaScript to TypeScript? You probably have, since TypeScript offers a more enjoyable programming environment. However, the level of effort required for such a transition is pretty intimidating, so it might have held you back. Let’s see what we overcame during CKEditor’s journey to become a TypeScript rich text editor.</p> <p>The primary reason for undertaking such a migration, is to enhance the Developer E</summary>
+        <category term="Articles" scheme="https://ckeditor.com/blog/categories/articles/"/>
+        <category term="CKEditor 5" scheme="https://ckeditor.com/blog/tags/ckeditor-5/"/>
+    </entry>
+    <entry>
+        <title>5 key CMS features every business needs</title>
+        <link href="https://ckeditor.com/blog/cms-features/"/>
+        <id>https://ckeditor.com/blog/cms-features/</id>
+        <published>2023-06-30T05:19:40.000Z</published>
+        <updated>2023-06-30T05:19:40.588Z</updated>
+        <summary type="html"><p>If content is king, then your content management system is its castle. In other words, there’s no point focusing on making your blog posts or company docs look great while neglecting the CMS they live in. Your <a href="https://ckeditor.com/solutions/content-management/">CMS</a> is a critical part of your business – it has to be easy to navigate and update. And likewise, it’s crucial to know what your CMS is for and the key features needed when choosing a CMS.</p> <p>With <a href="https://meet</summary>
+<category term="Articles" scheme="https://ckeditor.com/blog/categories/articles/"/>
+    </entry>
+    <entry>
+        <title>CKBox latest releases: store and manage file assets in one place</title>
+        <link href="https://ckeditor.com/blog/ckbox-latest-releases/"/>
+        <id>https://ckeditor.com/blog/ckbox-latest-releases/</id>
+        <published>2023-06-27T11:17:16.000Z</published>
+        <updated>2023-06-27T11:21:26.707Z</updated>
+        <summary type="html"><p>Launched in 2022, CKBox is a digital asset management (DAM) platform where you can store and manage your images and files in one place. Combined with CKEditor, they’re perfect for many content related uses – but particularly as companion solutions for building CMSs – thanks to a native integration between both components.</p> <p>Users benefit from a range of leading-edge DAM features including:</p> <ul> <li> <p><strong>SAVE:</strong> time hunting for the right file by organizing your assets i</summary>
+        <category term="Articles" scheme="https://ckeditor.com/blog/categories/articles/"/>
+        <category term="CKBox" scheme="https://ckeditor.com/blog/tags/ckbox/"/>
+    </entry>
+    <entry>
+        <title>Streamline your document navigation: CKEditor's powerful features</title>
+        <link href="https://ckeditor.com/blog/document-navigation/"/>
+        <id>https://ckeditor.com/blog/document-navigation/</id>
+        <published>2023-06-22T10:33:53.000Z</published>
+        <updated>2023-06-22T10:33:53.218Z</updated>
+        <summary type="html"><p>Ever felt like you’re lost in a jungle of text? We’ve all been there, trying to find and fix that one key section in a big, extensive document that just won’t cooperate. But scanning for information in a digital document doesn’t have to be a chore. We’re going to cover the best practices for creating content that’s easy to navigate, and show you how CKEditor’s document navigation features can help clear up the confusion.</p> <p>Navigating a document is the kind of thing you never notice – unt</summary>
+        <category term="Articles" scheme="https://ckeditor.com/blog/categories/articles/"/>
+        <category term="CKEditor 5" scheme="https://ckeditor.com/blog/tags/ckeditor-5/"/>
+    </entry>
+    <entry>
+        <title>3 tools for better workplace productivity</title>
+        <link href="https://ckeditor.com/blog/workplace-productivity-tools/"/>
+        <id>https://ckeditor.com/blog/workplace-productivity-tools/</id>
+        <published>2023-05-29T22:00:00.000Z</published>
+        <updated>2023-05-29T22:00:00.000Z</updated>
+        <summary type="html"> <p class="u-fs-4">Improved productivity at work – everybody wants it, but figuring out the best way to get it is another matter. Even the most streamlined business process can be full of hidden inefficiencies, costing small amounts of time that eventually add up to millions of dollars.</p> <p>The right workplace productivity tools can help boost communication, <a href="https://ckeditor.com/collaboration/">collaboration</a>, project management, content creation and more. But only if they’re </summary>
+        <category term="Articles" scheme="https://ckeditor.com/blog/categories/articles/"/>
+        <category term="CKEditor 5" scheme="https://ckeditor.com/blog/tags/ckeditor-5/"/>
+    </entry>
+    <entry>
+        <title>CKEditor 5 v37.0.0 – officially a TypeScript rich text editor</title>
+        <link href="https://ckeditor.com/blog/ckeditor-release-37.0.0/"/>
+        <id>https://ckeditor.com/blog/ckeditor-release-37.0.0/</id>
+        <published>2023-04-20T14:00:00.000Z</published>
+        <updated>2023-04-20T14:00:00.000Z</updated>
+        <summary type="html"> <p class="u-fs-4">Often releases are full of lots of small improvements, but the release of CKEditor v37.0.0 completes our months-long effort to migrate CKEditor to TypeScript. It also includes a feature update to the Comments plugin, with the addition of Archive functionality. Read on to find out more….</p> <h2 id="typescript-migration-complete"><a class="b-blog-article__header-anchor" href="#typescript-migration-complete">#</a> TypeScript migration complete</h2> <p>Let’s start with the ex</summary>
+        <category term="Releases" scheme="https://ckeditor.com/blog/categories/releases/"/>
+        <category term="CKEditor 5" scheme="https://ckeditor.com/blog/tags/ckeditor-5/"/>
+    </entry>
+    <entry>
+        <title>News flash! The inaugural 2023 State of Collaborative Editing Developer Survey now live</title>
+        <link href="https://ckeditor.com/blog/collaborative-editing-developer-survey/"/>
+        <id>https://ckeditor.com/blog/collaborative-editing-developer-survey/</id>
+        <published>2023-04-13T07:27:04.887Z</published>
+        <updated>2023-04-13T07:27:04.887Z</updated>
+        <summary type="html"> <p class="u-fs-4">We're excited to announce the inaugural 2023 State of Collaborative Editing Developer Survey. The only industry survey where you, the engineers, can have your say on both the future of rich text editors (RTEs) and directly influence the direction of collaborative editing industry-wide.</p> <p>This new initiative for CKEditor is working to provide an industry report on what’s important when it comes to collaborative editing experiences. This is your chance to provide valuab</summary>
+        <category term="Articles" scheme="https://ckeditor.com/blog/categories/articles/"/>
+        <category term="CKEditor 5" scheme="https://ckeditor.com/blog/tags/ckeditor-5/"/>
+    </entry>
+    <entry>
+        <title>How to upgrade from CKEditor 4 to CKEditor 5</title>
+        <link href="https://ckeditor.com/blog/upgrade-ckeditor-4-to-5/"/>
+        <id>https://ckeditor.com/blog/upgrade-ckeditor-4-to-5/</id>
+        <published>2023-03-31T03:52:25.398Z</published>
+        <updated>2023-03-31T03:52:25.398Z</updated>
+        <summary type="html"> <p class="u-fs-4">The End of Life for CKEditor 4 is very close – from June 2023, CKEditor 4 no longer receives any upgrades or fixes, including security updates. That means, it’s time to upgrade to CKEditor 5 – the next-generation rich text editor.</p> <h2 id="why-should-you-upgrade"><a class="b-blog-article__header-anchor" href="#why-should-you-upgrade">#</a> Why should you upgrade?</h2> <p>Yes, you’re probably thinking, “If it ain’t broke, don’t fix it” when it comes to upgrading from CKE</summary>
+        <category term="Articles" scheme="https://ckeditor.com/blog/categories/articles/"/>
+        <category term="CKEditor 4" scheme="https://ckeditor.com/blog/tags/ckeditor-4/"/>
+    </entry>
+    <entry>
+        <title>CKEditor 4: End of Life June 2023</title>
+        <link href="https://ckeditor.com/blog/ckeditor-4-end-of-life/"/>
+        <id>https://ckeditor.com/blog/ckeditor-4-end-of-life/</id>
+        <published>2023-03-30T03:45:33.747Z</published>
+        <updated>2023-03-30T03:45:33.747Z</updated>
+        <summary type="html"> <p class="u-fs-4">CKEditor 4 reaches its End of Life (EOL) in June 2023. From then onwards, it’ll no longer be updated, have security patches and bug fixes, or new features. Given this, projects with CKEditor 4 implementations need to take action to ensure a secure and uninterrupted editing experience beyond its EOL.</p> <p>Since its launch in November 2012, CKEditor 4 has served millions of users and transformed content creation processes. However, its end of life has come. No matter wheth</summary>
+        <category term="Articles" scheme="https://ckeditor.com/blog/categories/articles/"/>
+        <category term="CKEditor 4" scheme="https://ckeditor.com/blog/tags/ckeditor-4/"/>
+    </entry>
+    <entry>
+        <title>Why migrate from CKEditor 4 to CKEditor 5?</title>
+        <link href="https://ckeditor.com/blog/why-migrate-ckeditor-4-to-5/"/>
+        <id>https://ckeditor.com/blog/why-migrate-ckeditor-4-to-5/</id>
+        <published>2023-03-29T05:47:00.000Z</published>
+        <updated>2023-03-29T05:47:00.000Z</updated>
+        <summary type="html"> <p class="u-fs-4">CKEditor 4 is coming to its End of Life (EOL). And while it’s natural that you’d want to avoid the possible security issues that may occur if you stick with CKEditor 4, there’s a catch. This isn’t just an upgrade – a switch from CKEditor 4 to 5 is actually a M-I-G-R-A-T-I-O-N. That’s a big word. And a big step to take. So, is it worth the hassle? And why’s there such a difference between CKEditor 4 and CKEditor 5?</p> <p>A few years back, our developers realized that if we</summary>
+        <category term="Articles" scheme="https://ckeditor.com/blog/categories/articles/"/>
+        <category term="CKEditor 4" scheme="https://ckeditor.com/blog/tags/ckeditor-4/"/>
+    </entry>
+    <entry>
+        <title>Mutable immutability: creating your own Immer clone</title>
+        <link href="https://ckeditor.com/blog/immutability-with-immer-clone/"/>
+        <id>https://ckeditor.com/blog/immutability-with-immer-clone/</id>
+        <published>2023-03-23T06:54:42.163Z</published>
+        <updated>2023-03-23T06:54:42.163Z</updated>
+        <summary type="html"><p><a href="https://immerjs.github.io/immer/" target="_blank" rel="noopener noreferrer nofollow">Immer</a> is a library that lets you manage immutable state. You can compare its role in the world of immutability to that of the <code>async</code>/<code>await</code> syntax in the world of asynchronicity – it gets the job done, hiding all the complicated operations from your sight. Let’s see what happens under the hood.</p> <h2 id="what-is-immutability"><a class="b-blog-article__header-anchor" href</summary>
+        <category term="Articles" scheme="https://ckeditor.com/blog/categories/articles/"/>
+    </entry>
+    <entry>
+        <title>CKEditor 4.21 with security patches and potential breaking changes</title>
+        <link href="https://ckeditor.com/blog/ckeditor-4.21-with-security-patches-and-potential-breaking-changes/"/>
+        <id>https://ckeditor.com/blog/ckeditor-4.21-with-security-patches-and-potential-breaking-changes/</id>
+        <published>2023-03-22T09:46:26.825Z</published>
+        <updated>2023-03-22T09:46:26.825Z</updated>
+        <summary type="html"> <p class="u-fs-4">A security release that includes fixes for two editor plugins: <a href="https://ckeditor.com/cke4/addon/iframe">Iframe Dialog</a> and <a href="https://ckeditor.com/cke4/addon/embed">Media Embed</a>.</p> <p>Our team is dedicated to providing our users with the best possible editing solutions. We believe that security is of utmost importance, and we constantly work to ensure that our software is secure and safe for our users to use. We are committed to keeping our users’ dat</summary>
+        <category term="Releases" scheme="https://ckeditor.com/blog/categories/releases/"/>
+        <category term="CKEditor 4" scheme="https://ckeditor.com/blog/tags/ckeditor-4/"/>
+    </entry>
+    <entry>
+        <title>The future of CMS is collaboration</title>
+        <link href="https://ckeditor.com/blog/future-of-cms/"/>
+        <id>https://ckeditor.com/blog/future-of-cms/</id>
+        <published>2023-03-16T09:34:13.884Z</published>
+        <updated>2023-03-16T09:34:13.884Z</updated>
+        <summary type="html"> <p class="u-fs-4">A content management system, or CMS, isn’t only about handling the content an organization produces, publishes, and retrieves. In 2023, content needs to be more customized, automated, and easier to work on collaboratively. Another central theme is workflows that are purpose-fit to the needs of a remote work environment. Which of course, is where the future of CMS and collaboration interlock.</p> <p><a href="https://ckeditor.com/solutions/content-management/">Content manage</summary>
+        <category term="Articles" scheme="https://ckeditor.com/blog/categories/articles/"/>
+    </entry>
+</feed>
