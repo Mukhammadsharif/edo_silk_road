@@ -14,7 +14,7 @@ class ProtocolApiCommentController extends Controller
     * @OA\Get(
     *     path="/api/v1/protocol/{doc_hash}/comments",
     *     summary="Список комментариев к протоколу",
-    *     tags={"Protocol Comments"},
+    *     tags={"Protocols"},
     *     security={{"sanctum":{}}},
          *     @OA\Parameter(name="doc_hash", in="path", required=true, @OA\Schema(type="string")),
          *     @OA\Response(response=200, description="Список комментариев"),
@@ -43,7 +43,7 @@ class ProtocolApiCommentController extends Controller
      * @OA\Get(
      *     path="/api/v1/protocol/protocol-comments/{comment_id}",
      *     summary="Просмотр одного комментария",
-     *     tags={"Protocol Comments"},
+     *     tags={"Protocols"},
      *     security={{"sanctum":{}}},
      *     @OA\Parameter(name="comment_id", in="path", required=true, @OA\Schema(type="integer")),
      *     @OA\Response(response=200, description="Комментарий"),

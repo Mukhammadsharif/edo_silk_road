@@ -4052,7 +4052,7 @@
         "/api/v1/protocol/{doc_hash}/comments": {
             "get": {
                 "tags": [
-                    "Protocol Comments"
+                    "Protocols"
                 ],
                 "summary": "Список комментариев к протоколу",
                 "operationId": "8876f0233c2c6ae39bd398a0f3a10e1e",
@@ -4084,7 +4084,7 @@
         "/api/v1/protocol/protocol-comments/{comment_id}": {
             "get": {
                 "tags": [
-                    "Protocol Comments"
+                    "Protocols"
                 ],
                 "summary": "Просмотр одного комментария",
                 "operationId": "d629afe9679527ea0cd1e29c092dff8c",
@@ -4116,9 +4116,9 @@
         "/api/v1/protocol/hr-orders": {
             "get": {
                 "tags": [
-                    "Protocol HR Employees"
+                    "Protocols"
                 ],
-                "summary": "Получить список HR приказов",
+                "summary": "Получить список HR приказов(API для работы HR сотрудников с приказами)",
                 "operationId": "37aea119730118069fb898b8045021a1",
                 "parameters": [
                     {
@@ -4198,9 +4198,9 @@
         "/api/v1/protocol/hr-orders/{id}/{doc_hash}": {
             "get": {
                 "tags": [
-                    "Protocol HR Employees"
+                    "Protocols"
                 ],
-                "summary": "Просмотр HR приказа",
+                "summary": "Просмотр HR приказа(API для работы HR сотрудников с приказами)",
                 "operationId": "d944655ec2cf1f0b60559e68c921d96c",
                 "parameters": [
                     {
@@ -4295,9 +4295,9 @@
         "/api/v1/protocol/hr-orders/{id}/{doc_hash}/sign": {
             "post": {
                 "tags": [
-                    "Protocol HR Employees"
+                    "Protocols"
                 ],
-                "summary": "Ознакомиться с HR приказом",
+                "summary": "Ознакомиться с HR приказом(API для работы HR сотрудников с приказами)",
                 "operationId": "5bc546c18293f812edb4c70bddbda6d9",
                 "parameters": [
                     {
@@ -4382,7 +4382,7 @@
                 "tags": [
                     "Protocols"
                 ],
-                "summary": "Список протоколов",
+                "summary": "Список протоколов(API для работы участника с протоколами)",
                 "description": "Возвращает список протоколов с фильтрами",
                 "operationId": "5fd63d15c6a69da6d5e5b8e20c970eea",
                 "parameters": [
@@ -4474,7 +4474,7 @@
                 "tags": [
                     "Protocols"
                 ],
-                "summary": "Просмотр протокола",
+                "summary": "Просмотр протокола(API для работы участника с протоколами)",
                 "operationId": "2ad7a992d02d378291d1399071fcf23c",
                 "parameters": [
                     {
@@ -4529,7 +4529,7 @@
                 "tags": [
                     "Protocols"
                 ],
-                "summary": "Подпись протокола",
+                "summary": "Подпись протокола(API для работы участника с протоколами)",
                 "description": "Подписывает протокол текущим авторизованным пользователем",
                 "operationId": "de0ef61a0d9d1b5c8f0e45b123757830",
                 "parameters": [
@@ -4566,9 +4566,9 @@
         "/api/v1/protocol/secretary/{doc_type}": {
             "get": {
                 "tags": [
-                    "Protocol Secretary"
+                    "Protocols"
                 ],
-                "summary": "Получить список протоколов",
+                "summary": "Получить список протоколов(API для работы секретаря с протоколами)",
                 "operationId": "9b202ab4b9d40ce419c5018fb36b8c30",
                 "parameters": [
                     {
@@ -4710,9 +4710,9 @@
         "/api/v1/protocol/secretary/{id}/{doc_hash}": {
             "get": {
                 "tags": [
-                    "Protocol Secretary"
+                    "Protocols"
                 ],
-                "summary": "Просмотр протокола",
+                "summary": "Просмотр протокола(API для работы секретаря с протоколами)",
                 "operationId": "6bc00fc36e20c8fdb4742ecfc84d1392",
                 "parameters": [
                     {
@@ -4798,9 +4798,9 @@
         "/api/v1/protocol/secretary/{id}/{doc_hash}/send": {
             "post": {
                 "tags": [
-                    "Protocol Secretary"
+                    "Protocols"
                 ],
-                "summary": "Отправить протокол участникам",
+                "summary": "Отправить протокол участникам(API для работы секретаря с протоколами)",
                 "operationId": "9e7259f79b64ee2dd9c90def8173857c",
                 "parameters": [
                     {
@@ -5429,12 +5429,8 @@
             "description": "API для работы с протоколами"
         },
         {
-            "name": "Protocol HR Employees",
-            "description": "API для работы HR сотрудников с приказами"
-        },
-        {
-            "name": "Protocol Secretary",
-            "description": "API для работы секретаря с протоколами"
+            "name": "Protocols",
+            "description": "API для работы с протоколами"
         },
         {
             "name": "Dictionaries",
@@ -5467,14 +5463,6 @@
         {
             "name": "Outgoing Documents",
             "description": "Outgoing Documents"
-        },
-        {
-            "name": "Protocol Comments",
-            "description": "Protocol Comments"
-        },
-        {
-            "name": "Protocols",
-            "description": "Protocols"
         },
         {
             "name": "Users",

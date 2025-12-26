@@ -18,8 +18,8 @@ use Illuminate\Support\Facades\Validator;
 
 /**
  * @OA\Tag(
- *     name="Protocol Secretary",
- *     description="API для работы секретаря с протоколами"
+ *     name="Protocols",
+ *     description="API для работы с протоколами"
  * )
  */
 class ProtocolApiSecretaryController extends Controller
@@ -27,8 +27,8 @@ class ProtocolApiSecretaryController extends Controller
     /**
      * @OA\Get(
      *     path="/api/v1/protocol/secretary/{doc_type}",
-     *     summary="Получить список протоколов",
-     *     tags={"Protocol Secretary"},
+     *     summary="Получить список протоколов(API для работы секретаря с протоколами)",
+     *     tags={"Protocols"},
      *     security={{"sanctum":{}}},
      *     @OA\Parameter(
      *         name="doc_type",
@@ -226,8 +226,8 @@ class ProtocolApiSecretaryController extends Controller
     /**
      * @OA\Get(
      *     path="/api/v1/protocol/secretary/{id}/{doc_hash}",
-     *     summary="Просмотр протокола",
-     *     tags={"Protocol Secretary"},
+     *     summary="Просмотр протокола(API для работы секретаря с протоколами)",
+     *     tags={"Protocols"},
      *     security={{"sanctum":{}}},
      *     @OA\Parameter(
      *         name="id",
@@ -360,8 +360,8 @@ class ProtocolApiSecretaryController extends Controller
     /**
      * @OA\Post(
      *     path="/api/v1/protocol/secretary/{id}/{doc_hash}/send",
-     *     summary="Отправить протокол участникам",
-     *     tags={"Protocol Secretary"},
+     *     summary="Отправить протокол участникам(API для работы секретаря с протоколами)",
+     *     tags={"Protocols"},
      *     security={{"sanctum":{}}},
      *     @OA\Parameter(
      *         name="id",

@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Validator;
 
 /**
  * @OA\Tag(
- *     name="Protocol HR Employees",
+ *     name="Protocols",
  *     description="API для работы HR сотрудников с приказами"
  * )
  */
@@ -27,8 +27,8 @@ class ProtocolApiEmpHrOrdersController extends Controller
     /**
      * @OA\Get(
      *     path="/api/v1/protocol/hr-orders",
-     *     summary="Получить список HR приказов",
-     *     tags={"Protocol HR Employees"},
+     *     summary="Получить список HR приказов(API для работы HR сотрудников с приказами)",
+     *     tags={"Protocols"},
      *     security={{"sanctum":{}}},
      *     @OA\Parameter(
      *         name="s_text",
@@ -158,8 +158,8 @@ class ProtocolApiEmpHrOrdersController extends Controller
     /**
      * @OA\Get(
      *     path="/api/v1/protocol/hr-orders/{id}/{doc_hash}",
-     *     summary="Просмотр HR приказа",
-     *     tags={"Protocol HR Employees"},
+     *     summary="Просмотр HR приказа(API для работы HR сотрудников с приказами)",
+     *     tags={"Protocols"},
      *     security={{"sanctum":{}}},
      *     @OA\Parameter(
      *         name="id",
@@ -310,8 +310,8 @@ class ProtocolApiEmpHrOrdersController extends Controller
     /**
      * @OA\Post(
      *     path="/api/v1/protocol/hr-orders/{id}/{doc_hash}/sign",
-     *     summary="Ознакомиться с HR приказом",
-     *     tags={"Protocol HR Employees"},
+     *     summary="Ознакомиться с HR приказом(API для работы HR сотрудников с приказами)",
+     *     tags={"Protocols"},
      *     security={{"sanctum":{}}},
      *     @OA\Parameter(
      *         name="id",

@@ -14,7 +14,7 @@ class ProtocolApiMembersController extends Controller
     /**
      * @OA\Get(
      *     path="/api/v1/protocol/member-protocols",
-     *     summary="Список протоколов",
+     *     summary="Список протоколов(API для работы участника с протоколами)",
      *     description="Возвращает список протоколов с фильтрами",
      *     tags={"Protocols"},
      *     security={{"sanctum":{}}},
@@ -97,7 +97,7 @@ class ProtocolApiMembersController extends Controller
     /**
      * @OA\Get(
      *     path="/api/v1/protocol/member-protocol/{doc_hash}",
-     *     summary="Просмотр протокола",
+     *     summary="Просмотр протокола(API для работы участника с протоколами)",
      *     tags={"Protocols"},
      *     security={{"sanctum":{}}},
      *
@@ -139,7 +139,7 @@ class ProtocolApiMembersController extends Controller
     /**
      * @OA\Post(
      *     path="/api/v1/protocol/member-protocol/{doc_hash}/sign",
-     *     summary="Подпись протокола",
+     *     summary="Подпись протокола(API для работы участника с протоколами)",
      *     description="Подписывает протокол текущим авторизованным пользователем",
      *     tags={"Protocols"},
      *     security={{"sanctum":{}}},
