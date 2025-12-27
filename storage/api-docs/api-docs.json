@@ -2918,7 +2918,7 @@
         "/api/v1/work-documents": {
             "get": {
                 "tags": [
-                    "Work Documents"
+                    "User Documents"
                 ],
                 "summary": "Получить список рабочих документов",
                 "description": "Возвращает список рабочих документов текущего пользователя с возможностью фильтрации",
@@ -3184,7 +3184,7 @@
         "/api/v1/work-documents/{id}/{hash}": {
             "get": {
                 "tags": [
-                    "Work Documents"
+                    "User Documents"
                 ],
                 "summary": "Просмотр рабочего документа",
                 "description": "Возвращает детальную информацию о рабочем документе со всеми связанными данными",
@@ -3346,7 +3346,7 @@
         "/api/v1/inbox-documents": {
             "get": {
                 "tags": [
-                    "Inbox Documents"
+                    "User Documents"
                 ],
                 "summary": "Получить список входящих документов",
                 "description": "Возвращает список входящих документов с возможностью фильтрации",
@@ -3536,7 +3536,7 @@
         "/api/v1/inbox-documents/{id}/{hash}": {
             "get": {
                 "tags": [
-                    "Inbox Documents"
+                    "User Documents"
                 ],
                 "summary": "Просмотр входящего документа",
                 "description": "Возвращает детальную информацию о входящем документе",
@@ -3661,7 +3661,7 @@
         "/api/v1/outgoing-documents": {
             "get": {
                 "tags": [
-                    "Outgoing Documents"
+                    "User Documents"
                 ],
                 "summary": "Получить список исходящих документов",
                 "description": "Возвращает список исходящих документов текущего пользователя с возможностью фильтрации",
@@ -3863,7 +3863,7 @@
         "/api/v1/outgoing-documents/{id}/{hash}": {
             "get": {
                 "tags": [
-                    "Outgoing Documents"
+                    "User Documents"
                 ],
                 "summary": "Просмотр исходящего документа",
                 "description": "Возвращает детальную информацию об исходящем документе",
@@ -5453,16 +5453,8 @@
             "description": "Executions"
         },
         {
-            "name": "Work Documents",
-            "description": "Work Documents"
-        },
-        {
-            "name": "Inbox Documents",
-            "description": "Inbox Documents"
-        },
-        {
-            "name": "Outgoing Documents",
-            "description": "Outgoing Documents"
+            "name": "User Documents",
+            "description": "User Documents"
         },
         {
             "name": "Users",

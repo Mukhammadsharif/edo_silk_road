@@ -27,7 +27,7 @@ class JournalApiController extends Controller
      *     path="/api/v1/work-documents",
      *     summary="Получить список рабочих документов",
      *     description="Возвращает список рабочих документов текущего пользователя с возможностью фильтрации",
-     *     tags={"Work Documents"},
+     *     tags={"User Documents"},
      *     security={{"sanctum":{}}},
      *
      *     @OA\Parameter(
@@ -289,7 +289,7 @@ class JournalApiController extends Controller
      *     path="/api/v1/work-documents/{id}/{hash}",
      *     summary="Просмотр рабочего документа",
      *     description="Возвращает детальную информацию о рабочем документе со всеми связанными данными",
-     *     tags={"Work Documents"},
+     *     tags={"User Documents"},
      *     security={{"sanctum":{}}},
      *
      *     @OA\Parameter(
@@ -492,7 +492,7 @@ class JournalApiController extends Controller
      *     path="/api/v1/inbox-documents",
      *     summary="Получить список входящих документов",
      *     description="Возвращает список входящих документов с возможностью фильтрации",
-     *     tags={"Inbox Documents"},
+     *     tags={"User Documents"},
      *     security={{"sanctum":{}}},
      *
      *     @OA\Parameter(
@@ -719,7 +719,7 @@ class JournalApiController extends Controller
      *     path="/api/v1/inbox-documents/{id}/{hash}",
      *     summary="Просмотр входящего документа",
      *     description="Возвращает детальную информацию о входящем документе",
-     *     tags={"Inbox Documents"},
+     *     tags={"User Documents"},
      *     security={{"sanctum":{}}},
      *
      *     @OA\Parameter(
@@ -903,7 +903,7 @@ class JournalApiController extends Controller
      *     path="/api/v1/outgoing-documents",
      *     summary="Получить список исходящих документов",
      *     description="Возвращает список исходящих документов текущего пользователя с возможностью фильтрации",
-     *     tags={"Outgoing Documents"},
+     *     tags={"User Documents"},
      *     security={{"sanctum":{}}},
      *
      *     @OA\Parameter(
@@ -1148,7 +1148,7 @@ class JournalApiController extends Controller
      *     path="/api/v1/outgoing-documents/{id}/{hash}",
      *     summary="Просмотр исходящего документа",
      *     description="Возвращает детальную информацию об исходящем документе",
-     *     tags={"Outgoing Documents"},
+     *     tags={"User Documents"},
      *     security={{"sanctum":{}}},
      *
      *     @OA\Parameter(
