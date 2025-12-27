@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Bitrix;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin\Department;
 use App\Models\Admin\Company;
+use App\Models\Admin\Department;
 use App\Models\BitrixHashes;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class DivisionController extends Controller
 {

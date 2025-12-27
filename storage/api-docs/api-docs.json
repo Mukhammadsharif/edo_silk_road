@@ -4377,209 +4377,14 @@
                 ]
             }
         },
-        "/api/v1/protocol/member-protocols": {
+        "/api/v1/protocol/protocols": {
             "get": {
                 "tags": [
-                    "Protocols"
+                    "Protocols API"
                 ],
-                "summary": "Список протоколов(API для работы участника с протоколами)",
-                "description": "Возвращает список протоколов с фильтрами",
-                "operationId": "5fd63d15c6a69da6d5e5b8e20c970eea",
+                "summary": "Получить список всех протоколов (независимо от типа, для авторизованного пользователя)",
+                "operationId": "f337d40c39461d92694bb1e209f89a2e",
                 "parameters": [
-                    {
-                        "name": "doc_type_hash",
-                        "in": "query",
-                        "description": "Хэш типа документа",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "s_text",
-                        "in": "query",
-                        "description": "Поиск по названию/номеру",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "s_status",
-                        "in": "query",
-                        "description": "Статус (по умолчанию 2)",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "date_from",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "format": "date",
-                            "example": "01.01.2025"
-                        }
-                    },
-                    {
-                        "name": "date_till",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "format": "date",
-                            "example": "31.12.2025"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Успешный ответ",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Данные успешно получены"
-                                        },
-                                        "data": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера"
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/protocol/member-protocol/{doc_hash}": {
-            "get": {
-                "tags": [
-                    "Protocols"
-                ],
-                "summary": "Просмотр протокола(API для работы участника с протоколами)",
-                "operationId": "2ad7a992d02d378291d1399071fcf23c",
-                "parameters": [
-                    {
-                        "name": "doc_hash",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Успешный ответ",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Данные успешно получены"
-                                        },
-                                        "data": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Протокол не найден"
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка"
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/protocol/member-protocol/{doc_hash}/sign": {
-            "post": {
-                "tags": [
-                    "Protocols"
-                ],
-                "summary": "Подпись протокола(API для работы участника с протоколами)",
-                "description": "Подписывает протокол текущим авторизованным пользователем",
-                "operationId": "de0ef61a0d9d1b5c8f0e45b123757830",
-                "parameters": [
-                    {
-                        "name": "doc_hash",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Протокол успешно подписан"
-                    },
-                    "400": {
-                        "description": "Нельзя подписать"
-                    },
-                    "404": {
-                        "description": "Протокол не найден"
-                    },
-                    "500": {
-                        "description": "Ошибка сервера"
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/protocol/secretary/{doc_type}": {
-            "get": {
-                "tags": [
-                    "Protocols"
-                ],
-                "summary": "Получить список протоколов(API для работы секретаря с протоколами)",
-                "operationId": "9b202ab4b9d40ce419c5018fb36b8c30",
-                "parameters": [
-                    {
-                        "name": "doc_type",
-                        "in": "path",
-                        "description": "Хэш типа документа",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
                     {
                         "name": "s_text",
                         "in": "query",
@@ -4591,37 +4396,18 @@
                     {
                         "name": "s_status",
                         "in": "query",
-                        "description": "Фильтр по статусу",
+                        "description": "Фильтр по статусу (по умолчанию 2; 'all' для всех кроме черновиков)",
+                        "schema": {
+                            "type": "string",
+                            "default": "2"
+                        }
+                    },
+                    {
+                        "name": "doc_type",
+                        "in": "query",
+                        "description": "Фильтр по хэшу типа документа (опционально)",
                         "schema": {
                             "type": "string"
-                        }
-                    },
-                    {
-                        "name": "date_from",
-                        "in": "query",
-                        "description": "Дата от (формат: d.m.Y)",
-                        "schema": {
-                            "type": "string",
-                            "format": "date",
-                            "example": "01.12.2024"
-                        }
-                    },
-                    {
-                        "name": "date_till",
-                        "in": "query",
-                        "description": "Дата до (формат: d.m.Y)",
-                        "schema": {
-                            "type": "string",
-                            "format": "date",
-                            "example": "31.12.2025"
-                        }
-                    },
-                    {
-                        "name": "created_user",
-                        "in": "query",
-                        "description": "ID пользователя создавшего документ",
-                        "schema": {
-                            "type": "integer"
                         }
                     },
                     {
@@ -4659,29 +4445,6 @@
                                             "example": "Данные успешно получены"
                                         },
                                         "data": {
-                                            "properties": {
-                                                "current_page": {
-                                                    "type": "integer"
-                                                },
-                                                "data": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "total": {
-                                                    "type": "integer"
-                                                },
-                                                "per_page": {
-                                                    "type": "integer"
-                                                },
-                                                "last_page": {
-                                                    "type": "integer"
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "filters": {
                                             "type": "object"
                                         }
                                     },
@@ -4693,11 +4456,14 @@
                     "401": {
                         "description": "Не авторизован"
                     },
-                    "404": {
-                        "description": "Тип документа не найден"
+                    "403": {
+                        "description": "Доступ запрещен"
                     },
                     "422": {
                         "description": "Ошибка валидации"
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера"
                     }
                 },
                 "security": [
@@ -4707,13 +4473,13 @@
                 ]
             }
         },
-        "/api/v1/protocol/secretary/{id}/{doc_hash}": {
+        "/api/v1/protocol/protocols/{id}/{doc_hash}": {
             "get": {
                 "tags": [
-                    "Protocols"
+                    "Protocols API"
                 ],
-                "summary": "Просмотр протокола(API для работы секретаря с протоколами)",
-                "operationId": "6bc00fc36e20c8fdb4742ecfc84d1392",
+                "summary": "Просмотр протокола по ID и хэшу",
+                "operationId": "f4d0340251d3f7ab4d469b66fabfdc7d",
                 "parameters": [
                     {
                         "name": "id",
@@ -4754,6 +4520,9 @@
                                                 "document": {
                                                     "type": "object"
                                                 },
+                                                "member": {
+                                                    "type": "object"
+                                                },
                                                 "members": {
                                                     "type": "array",
                                                     "items": {
@@ -4784,8 +4553,14 @@
                     "401": {
                         "description": "Не авторизован"
                     },
+                    "403": {
+                        "description": "Доступ запрещен"
+                    },
                     "404": {
                         "description": "Документ не найден"
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера"
                     }
                 },
                 "security": [
@@ -4795,13 +4570,13 @@
                 ]
             }
         },
-        "/api/v1/protocol/secretary/{id}/{doc_hash}/send": {
+        "/api/v1/protocol/protocols/{id}/{doc_hash}/sign": {
             "post": {
                 "tags": [
-                    "Protocols"
+                    "Protocols API"
                 ],
-                "summary": "Отправить протокол участникам(API для работы секретаря с протоколами)",
-                "operationId": "9e7259f79b64ee2dd9c90def8173857c",
+                "summary": "Подписать/ознакомиться с протоколом",
+                "operationId": "b2940b7c7660d524023cc1423e9e6a57",
                 "parameters": [
                     {
                         "name": "id",
@@ -4822,9 +4597,26 @@
                         }
                     }
                 ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "comment": {
+                                        "description": "Комментарий",
+                                        "type": "string",
+                                        "example": "Ознакомлен"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
-                        "description": "Документ успешно отправлен",
+                        "description": "Успешно подписан/ознакомлен",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -4835,7 +4627,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Документ успешно отправлен участникам"
+                                            "example": "Вы успешно ознакомились с документом"
                                         }
                                     },
                                     "type": "object"
@@ -4846,8 +4638,17 @@
                     "401": {
                         "description": "Не авторизован"
                     },
+                    "403": {
+                        "description": "Доступ запрещен"
+                    },
                     "404": {
                         "description": "Документ не найден"
+                    },
+                    "422": {
+                        "description": "Ошибка валидации"
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера"
                     }
                 },
                 "security": [
@@ -5430,7 +5231,11 @@
         },
         {
             "name": "Protocols",
-            "description": "API для работы с протоколами"
+            "description": "API для работы HR сотрудников с приказами"
+        },
+        {
+            "name": "Protocols API",
+            "description": "API для работы с протоколами (для членов и участников)"
         },
         {
             "name": "Dictionaries",

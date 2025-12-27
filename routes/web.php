@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Admin\DocLogsController;
 use App\Http\Controllers\DocController;
-use App\Http\Controllers\ECP\EcpController;
 use App\Http\Controllers\ECP\SignDocImzoController;
 use App\Http\Controllers\ECP\SignLoginController;
 use App\Http\Controllers\ExecutionController;
@@ -21,7 +20,6 @@ use App\Http\Controllers\QrCodeDocController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TelegramWebhookController;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
@@ -42,8 +40,6 @@ use App\Http\Controllers\HR\HrEmpFamController;
 use App\Http\Controllers\HR\HrEmpOrderController;
 
 use App\Http\Controllers\Protocol\ProtocolDocTypeController;
-use App\Http\Controllers\Protocol\ProtocolSecretaryController;
-use App\Http\Controllers\Protocol\ProtocolMembersController;
 use App\Http\Controllers\Protocol\ProtocolEmpHrOrdersController;
 use App\Http\Controllers\Comment\DocumentCommentController;
 
@@ -314,7 +310,6 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('sent-doc/{doc_id}/{doc_hash}', [PdfGenerateController::class, 'sentDocument'])->name('pdf.sent-doc');
     });
 
-    //Route::post('ecp-sign-doc', [EcpController::class, 'signDocuments']);
     Route::post('ecp-sign-doc', [SignDocImzoController::class, 'signDocuments']);
     Route::post('login-sign-doc', [SignLoginController::class, 'signDocuments'])->name('login.sign.doc');
 

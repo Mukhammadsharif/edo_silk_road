@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Bitrix;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\GenerateHrOrderPdfJob;
@@ -11,6 +11,7 @@ use App\Models\DocumentTypeTemps\DocumentTypeTempMetaData;
 use App\Models\Journal\JournalTypes;
 use App\Services\DocumentService;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class DataController extends Controller
@@ -189,7 +190,7 @@ class DataController extends Controller
             ], 200);
 
         } catch (\Exception $e) {
-            \Log::error('hrOrders error: ' . $e->getMessage());
+            Log::error('hrOrders error: ' . $e->getMessage());
             return response()->json(['error' => 'Server error'], 500);
         }
     }

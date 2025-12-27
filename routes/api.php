@@ -1,20 +1,19 @@
 <?php
 
 use App\Http\Controllers\Api\Admin\DictionaryApiController;
-use App\Http\Controllers\Api\CompanyController;
-use App\Http\Controllers\Api\DataController;
-use App\Http\Controllers\Api\DivisionController;
-use App\Http\Controllers\Api\EmployeeController;
+use App\Http\Controllers\Api\Bitrix\CompanyController;
+use App\Http\Controllers\Api\Bitrix\DataController;
+use App\Http\Controllers\Api\Bitrix\DivisionController;
+use App\Http\Controllers\Api\Bitrix\EmployeeController;
+use App\Http\Controllers\Api\Bitrix\PersonController;
+use App\Http\Controllers\Api\Bitrix\PositionController;
 use App\Http\Controllers\Api\Messages\MessageApiController;
 use App\Http\Controllers\Api\Office\DocApiController;
 use App\Http\Controllers\Api\Office\ExecutionApiController;
 use App\Http\Controllers\Api\Office\JournalApiController;
-use App\Http\Controllers\Api\PersonController;
-use App\Http\Controllers\Api\PositionController;
 use App\Http\Controllers\Api\Protocol\ProtocolApiCommentController;
 use App\Http\Controllers\Api\Protocol\ProtocolApiEmpHrOrdersController;
-use App\Http\Controllers\Api\Protocol\ProtocolApiMembersController;
-use App\Http\Controllers\Api\Protocol\ProtocolApiSecretaryController;
+use App\Http\Controllers\Api\Protocol\ProtocolsApiController;
 use App\Http\Controllers\Api\User\UserApiController;
 use App\Http\Controllers\Auth\AuthController;
 use Carbon\Carbon;
@@ -144,17 +143,13 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('protocol')->group(function () {
-        Route::get('/secretary/{doc_type}', [ProtocolApiSecretaryController::class, 'index']);
-        Route::get('/secretary/{id}/{doc_hash}', [ProtocolApiSecretaryController::class, 'view']);
-        Route::post('/secretary/{id}/{doc_hash}/send', [ProtocolApiSecretaryController::class, 'sendToMembers']);
+        Route::get('/protocols', [ProtocolsApiController::class, 'index']);
+        Route::get('/protocols/{id}/{doc_hash}', [ProtocolsApiController::class, 'view']);
+        Route::post('/protocols/{id}/{doc_hash}/sign', [ProtocolsApiController::class, 'sign']);
 
         Route::get('/hr-orders', [ProtocolApiEmpHrOrdersController::class, 'index']);
         Route::get('/hr-orders/{id}/{doc_hash}', [ProtocolApiEmpHrOrdersController::class, 'view']);
         Route::post('/hr-orders/{id}/{doc_hash}/sign', [ProtocolApiEmpHrOrdersController::class, 'sign']);
-
-        Route::get('/member-protocols', [ProtocolApiMembersController::class, 'index']);
-        Route::get('/member-protocol/{doc_hash}', [ProtocolApiMembersController::class, 'show']);
-        Route::post('/member-protocol/{doc_hash}/sign', [ProtocolApiMembersController::class, 'sign']);
 
         Route::get('/{doc_hash}/comments', [ProtocolApiCommentController::class, 'index']);
         Route::get('/protocol-comments/{comment_id}', [ProtocolApiCommentController::class, 'show']);

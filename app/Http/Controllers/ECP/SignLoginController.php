@@ -23,398 +23,359 @@ use Illuminate\Http\Request;
 
 class SignLoginController extends Controller
 {
-    //
+    private array $workingDocTypes = [
+        'send_to_create_res', 'send_to_agreement', 'send_to_sign',
+        'from_signer_to_ag', 'from_signer_to_c_res', 'from_ag_to_res',
+        'sign_resolution', 'close_exec_doc',
+        'send_to_ag_out_doc', 'send_sign_out_doc', 'sign_out_doc'
+    ];
+
     public function signDocuments(Request $request): JsonResponse
     {
-        //print_r($request->all()); die;
-        $ecp_doc_id = $request->ecp_doc_id;
-
-        $ecp_doc_type = $request->ecp_doc_type;
-
-        $ecp_confirm_id = $request->ecp_confirm_id;
-
-        $ecp_r_text = $request->ecp_r_text;
-
-        $working_doc_types = ['send_to_create_res', 'send_to_agreement', 'send_to_sign', 'from_signer_to_ag', 'from_signer_to_c_res', 'from_ag_to_res',
-            'sign_resolution', 'close_exec_doc', 'send_to_ag_out_doc', 'send_sign_out_doc', 'sign_out_doc'];
-
-        if (in_array($ecp_doc_type, $working_doc_types)) {
-            $journal = DocumentJournals::where('doc_id', $ecp_doc_id)->first();
-
-            if ($journal) {
-                $isInJournalTypeControls = JournalTypeControls::where('journal_type_id', $journal->j_type)->where('status', 1)->first();
-
-                $sign_step = DocumentExecutionSteps::where('j_id', $journal->id)->whereHas('role', function ($query) {
-                    $query->where('doc_code', 'SIGN')->where('status', 1);
-                })->first();
-
-                $agreement_step = DocumentExecutionSteps::where('j_id', $journal->id)->whereHas('role', function ($query) {
-                    $query->where('doc_code', 'AGREE')->where('status', 1);
-                })->get();
-
-                $resolution_step = DocumentExecutionSteps::where('j_id', $journal->id)->whereHas('role', function ($query) {
-                    $query->where('doc_code', 'RESOL')->where('status', 1);
-                })->first();
-
-                $execution_step = DocumentExecutionSteps::where('j_id', $journal->id)->whereHas('role', function ($query) {
-                    $query->where('doc_code', 'EXEC')->where('status', 1);
-                })->get();
-
-                $current_agreement = DocumentExecutionSteps::where('j_id', $journal->id)
-                    ->where('exec_role', $this->getAgreementRole()->id)->whereIn('to_user', $this->authActiveUserIds())->first();
-
-                $signed_agreement_step = DocumentExecutionSteps::where('j_id', $journal->id)->whereHas('role', function ($query) {
-                    $query->where('doc_code', 'AGREE')->where('status', 1);
-                })->where('status', 5)->get();
-
-                $sign_url = 'documents/view-sign-document/'.$journal->id.'/'.$journal->doc->doc_hash;
-                $agreement_url = 'documents/view-approval-document/'.$journal->id.'/'.$journal->doc->doc_hash;
-                $resolution_url = 'documents/view-confirm-document/'.$journal->id.'/'.$journal->doc->doc_hash;
-                $execution_url = 'documents/view-exec-document/'.$journal->id.'/'.$journal->doc->doc_hash;
-                $control_url = 'documents/view-control-document/'.$journal->id.'/'.$journal->doc->doc_hash;
-                $journalType = $journal->journal->title??'';
-                $docName = $journal->doc->doc_name??'';
-                $fromUser = $journal->fromUser->personal->fullName()??'-';
-
-                $controller_role = Role::whereIn('name', ['Ijro nazorati', 'Control_Emp'])->first();
-                $controllers = UserWorkHistory::whereHas('user', function ($query) use ($controller_role) {
-                    $query->whereHas('userRoles', function ($query2) use ($controller_role) {
-                        $query2->where('role_id', $controller_role->id);
-                    });
-                })->get();
-
-                if ($ecp_doc_type == 'send_to_sign') {
-                    $journal->update(['status' => 5]);
-
-                    $sign_step->update(['status' => 2]);
-
-                    $this->createMailCron($sign_step->to_user, $journalType, $fromUser, $sign_url, $docName);
-
-                    $this->createLog($ecp_doc_id, 5, $journalType, $docName);
-                }
-
-                if ($ecp_doc_type == 'send_to_agreement') {
-                    $journal->update(['status' => 6]);
-
-                    foreach ($agreement_step as $agreement) {
-                        $agreement->update(['status' => 2]);
-
-                        $this->createMailCron($agreement->to_user, $journalType, $fromUser, $agreement_url, $docName);
-                    }
-
-                    $this->createLog($ecp_doc_id, 4, $journalType, $docName);
-                }
-
-                if ($ecp_doc_type == 'send_to_create_res') {
-                    $journal->update(['status' => 8]);
-
-                    $resolution_step->update(['status' => 2]);
-
-                    $this->createMailCron($resolution_step->to_user, $journalType, $fromUser, $resolution_url, $docName);
-
-                    $this->createLog($ecp_doc_id, 28, $journalType, $docName);
-                    if ($isInJournalTypeControls) {
-                        $journal->update(['status' => 7]);
-
-                        $resolution_step->update(['status' => 1]);
-
-                        if ($controllers && $controllers->count()){
-                            foreach ($controllers as $controller) {
-                                $this->createMailCron($controller->id, $journalType, $fromUser, $control_url, $docName);
-                            }
-                        }
-                    } else {
-                        $journal->update(['status' => 8]);
-
-                        $resolution_step->update(['status' => 2]);
-
-                        $this->createMailCron($resolution_step->to_user, $journalType, $fromUser, $resolution_url, $docName);
-                    }
-                }
-
-                if ($ecp_doc_type === 'from_signer_to_ag') {
-                    $sign_step->update(['status' => 5]);
-
-                    $journal->update(['status' => 6]);
-
-                    foreach ($agreement_step as $agreement) {
-                        $agreement->update(['status' => 2]);
-
-                        $this->createMailCron($agreement->to_user, $journalType, $fromUser, $agreement_url, $docName);
-                    }
-
-                    $replyCommentType = ReplyCommentTypes::where('doc_code', 'DOC_SIGNED')->first();
-
-                    $replyComment = new DocumentReplyComments();
-                    $replyComment->doc_exec_step_id = $sign_step->id;
-                    $replyComment->j_id = $journal->id;
-                    $replyComment->from_dep = $this->authActiveUser()->dep_id;
-                    $replyComment->from_user = $this->authActiveUser()->id;
-                    $replyComment->reply_comment_type = $replyCommentType->id;
-                    $replyComment->res_text = $ecp_r_text??'';
-                    $replyComment->status = 5;
-                    $replyComment->save();
-
-                    $this->createLog($ecp_doc_id, 4, $journalType, $docName);
-                }
-
-                if ($ecp_doc_type === 'from_signer_to_c_res') {
-                    $sign_step->update(['status' => 5]);
-
-                    $journal->update(['status' => 8]);
-
-                    $resolution_step->update(['status' => 2]);
-
-                    $this->createMailCron($resolution_step->to_user, $journalType, $fromUser, $resolution_url, $docName);
-
-                    if ($isInJournalTypeControls) {
-                        $journal->update(['status' => 7]);
-
-                        $resolution_step->update(['status' => 1]);
-
-                        if ($controllers && $controllers->count()){
-                            foreach ($controllers as $controller) {
-                                $this->createMailCron($controller->id, $journalType, $fromUser, $control_url, $docName);
-                            }
-                        }
-                    } else {
-                        $journal->update(['status' => 8]);
-
-                        $resolution_step->update(['status' => 2]);
-
-                        $this->createMailCron($resolution_step->to_user, $journalType, $fromUser, $resolution_url, $docName);
-                    }
-
-                    $replyCommentType = ReplyCommentTypes::where('doc_code', 'DOC_SIGNED')->first();
-
-                    $replyComment = new DocumentReplyComments();
-                    $replyComment->doc_exec_step_id = $sign_step->id;
-                    $replyComment->j_id = $journal->id;
-                    $replyComment->from_dep = $this->authActiveUser()->dep_id;
-                    $replyComment->from_user = $this->authActiveUser()->id;
-                    $replyComment->reply_comment_type = $replyCommentType->id;
-                    $replyComment->res_text = $ecp_r_text??'';
-                    $replyComment->status = 5;
-                    $replyComment->save();
-
-                    $this->createLog($ecp_doc_id, 28, $journalType, $docName);
-                }
-
-                if ($ecp_doc_type === 'from_ag_to_res') {
-                    if ($agreement_step->count() - $signed_agreement_step->count() == 1) {
-                        $journal->update(['status' => 8]);
-
-                        $resolution_step->update(['status' => 2]);
-
-                        $this->createMailCron($resolution_step->to_user, $journalType, $fromUser, $resolution_url, $docName);
-
-                        $this->createLog($ecp_doc_id, 28, $journalType, $docName);
-                        if ($isInJournalTypeControls) {
-                            $journal->update(['status' => 7]);
-
-                            $resolution_step->update(['status' => 1]);
-
-                            if ($controllers && $controllers->count()){
-                                foreach ($controllers as $controller) {
-                                    $this->createMailCron($controller->id, $journalType, $fromUser, $control_url, $docName);
-                                }
-                            }
-                        } else {
-                            $journal->update(['status' => 8]);
-
-                            $resolution_step->update(['status' => 2]);
-
-                            $this->createMailCron($resolution_step->to_user, $journalType, $fromUser, $resolution_url, $docName);
-                        }
-                    } else {
-                        $this->createLog($ecp_doc_id, 6, $journalType, $docName);
-                    }
-
-                    $current_agreement->update(['status' => 5]);
-
-                    $replyCommentType = ReplyCommentTypes::where('doc_code', 'DOC_SIGNED')->first();
-
-                    $replyComment = new DocumentReplyComments();
-                    $replyComment->doc_exec_step_id = $current_agreement->id;
-                    $replyComment->j_id = $journal->id;
-                    $replyComment->from_dep = $this->authActiveUser()->dep_id;
-                    $replyComment->from_user = $this->authActiveUser()->id;
-                    $replyComment->reply_comment_type = $replyCommentType->id;
-                    $replyComment->res_text = $ecp_r_text??'';
-                    $replyComment->status = 5;
-                    $replyComment->save();
-                }
-
-                if ($ecp_doc_type === 'sign_resolution') {
-
-                    $journal->update(['status' => 9]);
-
-                    $resolution_step->update(['status' => 5]);
-
-                    $resolution = DocumentResolutions::where('j_id', $journal->id)->first();
-
-                    if ($resolution && $ecp_r_text) {
-                        $resolution->update(['res_text' => $ecp_r_text]);
-                    }
-
-                    if ($execution_step->count()) {
-                        foreach ($execution_step as $exec) {
-                            $exec->update(['status' => 2]);
-
-                            $this->createMailCron($exec->to_user, $journalType, $fromUser, $execution_url, $docName);
-                        }
-                    }
-
-                    $hrOrderType = JournalTypes::where('doc_code', 'HR_ORD')
-                        ->where('status', 1)
-                        ->first();
-
-                    $hrOrderJournalTypes = JournalTypes::where('parent_id', $hrOrderType->id)
-                        ->where('status', 1)
-                        ->pluck('id')
-                        ->toArray();
-
-                    if (in_array($journal->j_type, $hrOrderJournalTypes)) {
-                        GenerateHrOrderPdfJob::dispatch($journal->id)->onQueue('pdf');
-                    }
-
-                    $this->createLog($ecp_doc_id, 10, $journalType, $docName);
-                }
-
-
-                if ($ecp_doc_type === 'close_exec_doc') {
-
-                    $journal->update(['status' => 10]);
-
-                    if ($execution_step->count()) {
-                        foreach ($execution_step as $exec) $exec->update(['status' => 5]);
-                    }
-
-                    $resolution_step->update(['status' => 5]);
-
-                    $resolution = DocumentResolutions::where('j_id', $journal->id)->first();
-
-                    $resolution->update(['status' => 5]);
-
-                    $act_id = $resolution_step->to_user === $this->authActiveUser()->id ? 15 : 19;
-                    $this->createLog($ecp_doc_id, $act_id, $journalType, $docName);
-                }
-
-                if ($ecp_doc_type === 'send_to_ag_out_doc') {
-
-                    $journal->update(['status' => 6]);
-
-                    foreach ($agreement_step as $agreement) {
-                        $agreement->update(['status' => 2]);
-
-                        $this->createMailCron($agreement->to_user, $journalType, $fromUser, $agreement_url, $docName);
-                    }
-
-                    $this->createLog($ecp_doc_id, 4, $journalType, $docName);
-                }
-
-                if ($ecp_doc_type === 'send_sign_out_doc') {
-
-                    $journal->update(['status' => 8]);
-
-                    $resolution_step->update(['status' => 2]);
-
-                    $this->createMailCron($resolution_step->to_user, $journalType, $fromUser, $resolution_url, $docName);
-
-                    $this->createLog($ecp_doc_id, 28, $journalType, $docName);
-                }
-
-                if ($ecp_doc_type === 'sign_out_doc') {
-
-                    $journal->update(['status' => 10]);
-
-                    $resolution_step->update(['status' => 5]);
-
-                    $this->createLog($ecp_doc_id, 10, $journalType, $docName);
-                }
-
-            }
-        } elseif ($ecp_doc_type == 'protocol_document') {
-            $document = ProtocolDocument::find($ecp_doc_id);
-            $protocolType = $document->docType;
-
-            $documentMember = ProtocolDocMember::where('doc_id', $ecp_doc_id)
-                ->whereIn('user_id', $this->authActiveUserIds())->where('status', 2)->first();
-
-            if ($document && $documentMember) {
-                if (in_array($ecp_confirm_id, [4,5,7])) {
-                    if (!trim(''.$ecp_r_text.'')){
-                        return response()->json([
-                            'success' => 201,
-                            'title' => __('message.error_message'),
-                            'message' => __('message.comment_on_document')
-                        ]);
-                    }
-                }
-
-                $documentMember->update(['status' => $ecp_confirm_id]);
-
-                $configs = ProtocolDocConfigs::where('protocol_type_id', $protocolType->id)->orderBy('order')->get();
-                $signer_roles = $configs->pluck('role_id')->toArray();
-
-                if ($protocolType->sign_type == 1) {
-                    // Parallel: check if all members are done
-                    $allMemberStatus = ProtocolDocMember::where('doc_id', $ecp_doc_id)->whereIn('role_id', $signer_roles)->whereNotIn('status', [3,5,7])->count();
-                    if (!$allMemberStatus) {
-                        $document->update(['status' => 3]);
-                    }
-                } else {
-                    // Sequential
-                    $current_role = $documentMember->role_id;
-                    $unfinished_in_role = ProtocolDocMember::where('doc_id', $ecp_doc_id)->where('role_id', $current_role)->whereNotIn('status', [3,5,7])->count();
-                    if (!$unfinished_in_role) {
-                        $current_config = $configs->where('role_id', $current_role)->first();
-                        if ($current_config) {
-                            $this->activateNextRole($document, $protocolType, $current_config->order);
-                        }
-                    }
-                }
-
-                $replHis = new ProtocolDocReplyComment();
-                $replHis->doc_id = $ecp_doc_id;
-                $replHis->doc_member_id = $documentMember->id;
-                $replHis->user_id = $this->authActiveUser()->id;
-                $replHis->doc_text = $ecp_r_text;
-                $replHis->status = $ecp_confirm_id;
-                $replHis->save();
-
-                $log_type = $document->docType->title??'Protocol Document';
-                $doc_name = $document->doc_name??$ecp_doc_id;
-                $this->createLog($ecp_doc_id, 20, $log_type, $doc_name);
-            }
-        }  else {
-            return response()->json([
-                'success' => 201,
-                'title' => __('message.error_message'),
-                'message' => __('message.document_deleted_system')
-            ]);
+        $docId     = $request->ecp_doc_id;
+        $docType   = $request->ecp_doc_type;
+        $confirmId = $request->ecp_confirm_id ?? null;
+        $resText   = $request->ecp_r_text;
+
+        if (in_array($docType, $this->workingDocTypes)) {
+            return $this->handleInternalDocument($docId, $docType, $resText);
         }
 
-        return response()->json([
-            'success' => 200,
-            'title' => __('message.success_message'),
-            'message' => __('message.task_completed_successfully'),
-        ]);
+        if ($docType === 'protocol_document') {
+            return $this->handleProtocolDocument($docId, $confirmId, $resText);
+        }
 
+        return $this->errorResponse(__('message.document_deleted_system'));
     }
 
-    private function activateNextRole($document, $protocolType, $current_order)
+    private function handleInternalDocument(int $docId, string $docType, ?string $resText): JsonResponse
     {
-        $configs = ProtocolDocConfigs::where('protocol_type_id', $protocolType->id)->orderBy('order')->get();
+        $journal = DocumentJournals::where('doc_id', $docId)->firstOrFail();
 
-        $next_config = $configs->filter(function ($c) use ($current_order) {
-            return $c->order > $current_order;
-        })->sortBy('order')->first();
+        $steps = [
+            'sign'       => $this->getStep($journal, 'SIGN'),
+            'agreement'  => $this->getSteps($journal, 'AGREE'),
+            'resolution' => $this->getStep($journal, 'RESOL'),
+            'execution'  => $this->getSteps($journal, 'EXEC'),
+        ];
+
+        $currentAgreement = DocumentExecutionSteps::where('j_id', $journal->id)
+            ->where('exec_role', $this->getAgreementRole()->id)
+            ->whereIn('to_user', $this->authActiveUserIds())
+            ->first();
+
+        $signedAgreements = $steps['agreement']->where('status', 5);
+
+        $urls = $this->buildUrls($journal);
+        $meta = [
+            'journalType' => $journal->journal->title ?? '',
+            'docName'     => $journal->doc->doc_name ?? '',
+            'fromUser'    => $journal->fromUser->personal->fullName() ?? '-',
+        ];
+
+        $hasControl = JournalTypeControls::where('journal_type_id', $journal->j_type)
+            ->where('status', 1)
+            ->exists();
+
+        $controllers = $this->getControllers();
+
+        switch ($docType) {
+            case 'send_to_sign':
+                $journal->update(['status' => 5]);
+                $this->updateStepStatus($steps['sign'], 2);
+                $this->sendNotifications([$steps['sign']->to_user], $urls['sign'], $meta);
+                $this->logAction($docId, 5, $meta);
+                break;
+
+            case 'send_to_agreement':
+            case 'send_to_ag_out_doc':
+                $journal->update(['status' => 6]);
+                $this->activateSteps($steps['agreement'], 2, $urls['agreement'], $meta);
+                $this->logAction($docId, 4, $meta);
+                break;
+
+            case 'send_to_create_res':
+            case 'send_sign_out_doc':
+                $this->handleSendToResolution($journal, $steps['resolution'], $hasControl, $controllers, $urls, $meta);
+                $this->logAction($docId, 28, $meta);
+                break;
+
+            case 'from_signer_to_ag':
+                $this->updateStepStatus($steps['sign'], 5);
+                $journal->update(['status' => 6]);
+                $this->activateSteps($steps['agreement'], 2, $urls['agreement'], $meta);
+                $this->createReplyComment($steps['sign'], $resText, 'DOC_SIGNED');
+                $this->logAction($docId, 4, $meta);
+                break;
+
+            case 'from_signer_to_c_res':
+                $this->updateStepStatus($steps['sign'], 5);
+                $this->handleSendToResolution($journal, $steps['resolution'], $hasControl, $controllers, $urls, $meta);
+                $this->createReplyComment($steps['sign'], $resText, 'DOC_SIGNED');
+                $this->logAction($docId, 28, $meta);
+                break;
+
+            case 'from_ag_to_res':
+                $this->updateStepStatus($currentAgreement, 5);
+                $this->createReplyComment($currentAgreement, $resText, 'DOC_SIGNED');
+
+                if ($steps['agreement']->count() - $signedAgreements->count() === 1) {
+                    $this->handleSendToResolution($journal, $steps['resolution'], $hasControl, $controllers, $urls, $meta);
+                    $this->logAction($docId, 28, $meta);
+                } else {
+                    $this->logAction($docId, 6, $meta);
+                }
+                break;
+
+            case 'sign_resolution':
+                $journal->update(['status' => 9]);
+                $this->updateStepStatus($steps['resolution'], 5);
+
+                if ($resText) {
+                    $resolution = DocumentResolutions::where('j_id', $journal->id)->first();
+                    if ($resolution) {
+                        $resolution->update(['res_text' => $resText]);
+                    }
+                }
+
+                $this->activateSteps($steps['execution'], 2, $urls['execution'], $meta);
+
+                if ($this->isHrOrderType($journal->j_type)) {
+                    GenerateHrOrderPdfJob::dispatch($journal->id)->onQueue('pdf');
+                }
+
+                $this->logAction($docId, 10, $meta);
+                break;
+
+            case 'close_exec_doc':
+                $journal->update(['status' => 10]);
+                $this->updateStepsStatus($steps['execution'], 5);
+                $this->updateStepStatus($steps['resolution'], 5);
+
+                $resolution = DocumentResolutions::where('j_id', $journal->id)->first();
+                if ($resolution) {
+                    $resolution->update(['status' => 5]);
+                }
+
+                $logType = ($steps['resolution']->to_user === $this->authActiveUser()->id) ? 15 : 19;
+                $this->logAction($docId, $logType, $meta);
+                break;
+
+            case 'sign_out_doc':
+                $journal->update(['status' => 10]);
+                $this->updateStepStatus($steps['resolution'], 5);
+                $this->logAction($docId, 10, $meta);
+                break;
+        }
+
+        return $this->successResponse();
+    }
+
+    private function handleProtocolDocument(int $docId, ?int $confirmId, ?string $resText): JsonResponse
+    {
+        $document = ProtocolDocument::findOrFail($docId);
+
+        $member = ProtocolDocMember::where('doc_id', $docId)
+            ->whereIn('user_id', $this->authActiveUserIds())
+            ->where('status', 2)
+            ->firstOrFail();
+
+        if (in_array($confirmId, [4, 5, 7]) && empty(trim($resText ?? ''))) {
+            return $this->errorResponse(__('message.comment_on_document'));
+        }
+
+        $member->update(['status' => $confirmId]);
+
+        $configs = ProtocolDocConfigs::where('protocol_type_id', $document->docType->id)
+            ->orderBy('order')
+            ->get();
+
+        $signerRoles = $configs->pluck('role_id')->toArray();
+
+        if ($document->docType->sign_type == 1) {
+            // Параллельное подписание
+            $pending = ProtocolDocMember::where('doc_id', $docId)
+                ->whereIn('role_id', $signerRoles)
+                ->whereNotIn('status', [3, 5, 7])
+                ->count();
+
+            if (!$pending) {
+                $document->update(['status' => 3]);
+            }
+        } else {
+            // Последовательное подписание
+            $unfinished = ProtocolDocMember::where('doc_id', $docId)
+                ->where('role_id', $member->role_id)
+                ->whereNotIn('status', [3, 5, 7])
+                ->count();
+
+            if (!$unfinished) {
+                $currentConfig = $configs->where('role_id', $member->role_id)->first();
+                $this->activateNextRole($document, $document->docType, $currentConfig?->order ?? 0);
+            }
+        }
+
+        ProtocolDocReplyComment::create([
+            'doc_id'        => $docId,
+            'doc_member_id' => $member->id,
+            'user_id'       => $this->authActiveUser()->id,
+            'doc_text'      => $resText ?? '',
+            'status'        => $confirmId,
+        ]);
+
+        $logType = $document->docType->title ?? 'Protocol Document';
+        $docName = $document->doc_name ?? $docId;
+
+        $this->logAction($docId, 20, $logType, $docName);
+
+        return $this->successResponse();
+    }
+
+    // === Вспомогательные методы ===
+
+    private function getStep($journal, string $code): ?DocumentExecutionSteps
+    {
+        return DocumentExecutionSteps::where('j_id', $journal->id)
+            ->whereHas('role', fn($q) => $q->where('doc_code', $code)->where('status', 1))
+            ->first();
+    }
+
+    private function getSteps($journal, string $code): \Illuminate\Database\Eloquent\Collection
+    {
+        return DocumentExecutionSteps::where('j_id', $journal->id)
+            ->whereHas('role', fn($q) => $q->where('doc_code', $code)->where('status', 1))
+            ->get();
+    }
+
+    private function updateStepStatus(?DocumentExecutionSteps $step, int $status): void
+    {
+        $step?->update(['status' => $status]);
+    }
+
+    private function updateStepsStatus($steps, int $status): void
+    {
+        $steps->each(fn($s) => $s->update(['status' => $status]));
+    }
+
+    private function activateSteps($steps, int $status, string $url, array $meta): void
+    {
+        $steps->each(function ($step) use ($status, $url, $meta) {
+            $step->update(['status' => $status]);
+            $this->createMailCron($step->to_user, $meta['journalType'], $meta['fromUser'], $url, $meta['docName']);
+        });
+    }
+
+    private function sendNotifications(array $userIds, string $url, array $meta): void
+    {
+        foreach ($userIds as $userId) {
+            $this->createMailCron($userId, $meta['journalType'], $meta['fromUser'], $url, $meta['docName']);
+        }
+    }
+
+    private function handleSendToResolution($journal, $resolutionStep, bool $hasControl, $controllers, array $urls, array $meta): void
+    {
+        if ($hasControl) {
+            $journal->update(['status' => 7]);
+            $this->updateStepStatus($resolutionStep, 1);
+            $this->sendNotifications($controllers->pluck('id')->toArray(), $urls['control'], $meta);
+        } else {
+            $journal->update(['status' => 8]);
+            $this->updateStepStatus($resolutionStep, 2);
+            $this->createMailCron($resolutionStep->to_user, $meta['journalType'], $meta['fromUser'], $urls['resolution'], $meta['docName']);
+        }
+    }
+
+    private function createReplyComment($step, ?string $text, string $code): void
+    {
+        $type = ReplyCommentTypes::where('doc_code', $code)->firstOrFail();
+
+        DocumentReplyComments::create([
+            'doc_exec_step_id'   => $step->id,
+            'j_id'               => $journal->id ?? $step->j_id,
+            'from_dep'           => $this->authActiveUser()->dep_id,
+            'from_user'          => $this->authActiveUser()->id,
+            'reply_comment_type' => $type->id,
+            'res_text'           => $text ?? '',
+            'status'             => 5,
+        ]);
+    }
+
+    private function getControllers(): \Illuminate\Support\Collection
+    {
+        $role = Role::whereIn('name', ['Ijro nazorati', 'Control_Emp'])->first();
+
+        return $role
+            ? UserWorkHistory::whereHas('user.userRoles', fn($q) => $q->where('role_id', $role->id))->get()
+            : collect();
+    }
+
+    private function isHrOrderType(int $jType): bool
+    {
+        $hrOrderType = JournalTypes::where('doc_code', 'HR_ORD')->where('status', 1)->first();
+        if (!$hrOrderType) return false;
+
+        return JournalTypes::where('parent_id', $hrOrderType->id)
+            ->where('status', 1)
+            ->pluck('id')
+            ->contains($jType);
+    }
+
+    private function buildUrls($journal): array
+    {
+        $base = $journal->id . '/' . $journal->doc->doc_hash;
+
+        return [
+            'sign'       => 'documents/view-sign-document/' . $base,
+            'agreement'  => 'documents/view-approval-document/' . $base,
+            'resolution' => 'documents/view-confirm-document/' . $base,
+            'execution'  => 'documents/view-exec-document/' . $base,
+            'control'    => 'documents/view-control-document/' . $base,
+        ];
+    }
+
+    /**
+     * Обёртка над parent::createLog для удобной передачи $meta
+     */
+    private function logAction(int $docId, int $actionId, array|string $logType, ?string $docName = null): void
+    {
+        $type = is_array($logType) ? ($logType['journalType'] ?? '') : $logType;
+        $name = $docName ?? (is_array($logType) ? ($logType['docName'] ?? '') : '');
+
+        parent::createLog($docId, $actionId, $type, $name);
+    }
+
+    private function successResponse(): JsonResponse
+    {
+        return response()->json([
+            'success' => 200,
+            'title'   => __('message.success_message'),
+            'message' => __('message.task_completed_successfully'),
+        ]);
+    }
+
+    private function errorResponse(string $message): JsonResponse
+    {
+        return response()->json([
+            'success' => 201,
+            'title'   => __('message.error_message'),
+            'message' => $message,
+        ]);
+    }
+
+    private function activateNextRole($document, $protocolType, int $current_order): void
+    {
+        $configs = ProtocolDocConfigs::where('protocol_type_id', $protocolType->id)
+            ->orderBy('order')
+            ->get();
+
+        $next_config = $configs->where('order', '>', $current_order)
+            ->sortBy('order')
+            ->first();
 
         while ($next_config) {
             $has_members = ProtocolDocMember::where('doc_id', $document->id)
                 ->where('role_id', $next_config->role_id)
-                ->exists(); // More efficient than count() > 0
+                ->exists();
 
             if ($has_members) {
                 ProtocolDocMember::where('doc_id', $document->id)
@@ -425,31 +386,32 @@ class SignLoginController extends Controller
                     ->where('role_id', $next_config->role_id)
                     ->get();
 
-                $url = 'protocol/' . $protocolType->doc_code . '/' . $document->id . '/' . $document->doc_hash;
+                $url = "protocol/{$protocolType->doc_code}/{$document->id}/{$document->doc_hash}";
+
+                $fromUserName = $document->created_user
+                    ? UserPersonalInfo::where('user_id', $document->created_user)->first()?->fullName() ?? '-'
+                    : '-';
 
                 foreach ($next_members as $member) {
                     $this->createMailCron(
                         $member->user_id,
-                        $document->docType->title,
-                        $document->created_user ? UserPersonalInfo::where('user_id', $document->created_user)->first()->fullName() ?? '-' : '-',
+                        $document->docType->title ?? '',
+                        $fromUserName,
                         $url,
-                        $document->doc_name
+                        $document->doc_name ?? ''
                     );
                 }
 
-                return true;
+                return;
             }
 
-            // Move to the next config
             $current_order = $next_config->order;
-            $next_config = $configs->filter(function ($c) use ($current_order) {
-                return $c->order > $current_order;
-            })->sortBy('order')->first();
+            $next_config = $configs->where('order', '>', $current_order)
+                ->sortBy('order')
+                ->first();
         }
 
-        // No more roles with members, complete the document
+        // Все роли пройдены — документ завершён
         $document->update(['status' => 3]);
-
-        return false;
     }
 }
