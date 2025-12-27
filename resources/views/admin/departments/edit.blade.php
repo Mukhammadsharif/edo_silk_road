@@ -62,10 +62,10 @@
                                         @method('PUT')
                                         <div class="form-group">
                                             <label>{{ __('field.organization') }}</label>
-                                            <select name="unit_id" class="form-control select2">
+                                            <select name="org_unit_id" class="form-control select2">
                                                 <option value="0">{{ __('field.not_selected') }}</option>
                                                 @foreach($organizations as $key => $item)
-                                                    <option value="{{ $item->id }}" {{ ($item->id == $model->unit_id ? "selected":"") }}>
+                                                    <option value="{{ $item->id }}" {{ ($item->id == $model->org_unit_id ? "selected":"") }}>
                                                         {{ $key + 1 }}. {{ $item['name_'.$lang_key] }}
                                                     </option>
                                                 @endforeach

@@ -14,7 +14,7 @@ class Department extends Model
         'name_ru',
         'name_en',
         'type',
-        'unit_id',
+        'org_unit_id',
         'parent_id',
         'order_number',
         'level_number',

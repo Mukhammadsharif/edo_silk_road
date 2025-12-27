@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('user_work_histories', function (Blueprint $table) {
             $table->id();
             $table->integer('user_id');
+            $table->integer('org_id');
             $table->integer('dep_id');
             $table->integer('post_id');
             $table->date('from_date');

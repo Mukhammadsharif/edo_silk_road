@@ -18,8 +18,10 @@ return new class extends Migration
             $table->string('name_kr', 100)->nullable();
             $table->string('name_ru', 100)->nullable();
             $table->string('name_en', 100)->nullable();
-            $table->smallInteger('level')->default(1);
+            $table->string('tax_number', 20)->nullable();
+            $table->integer('owner_user_id')->default(0);
             $table->integer('parent_id')->default(0);
+            $table->smallInteger('level')->default(1);
             $table->smallInteger('status')->default(1);
             $table->jsonb('meta_data')->nullable();
             $table->timestamps();

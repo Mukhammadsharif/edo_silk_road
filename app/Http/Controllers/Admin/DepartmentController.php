@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Department;
+use App\Models\Admin\OrganizationUnits;
 use App\Models\Admin\Role;
 use App\Models\Admin\UserWorkHistory;
 use App\Models\Journal\JournalTypes;
@@ -147,12 +148,12 @@ class DepartmentController extends Controller
                     'name_en' => $request->name_en,
                     'order_number' => $request->order_number,
                     'status' => $request->status,
-                    'unit_id' => $request->unit_id,
+                    'org_unit_id' => $request->org_unit_id,
                 ]);
 
                 foreach ($model->childs as $child) {
                     $child->update([
-                        'unit_id' => $request->unit_id,
+                        'org_unit_id' => $request->org_unit_id,
                     ]);
                 }
             }
@@ -163,7 +164,7 @@ class DepartmentController extends Controller
 
         }
 
-        return redirect()->route('departments.index', ['id' => $request->unit_id])
+        return redirect()->route('departments.index', ['id' => $request->org_unit_id])
             ->with('success', __('message.dep_updated'));
     }
 
