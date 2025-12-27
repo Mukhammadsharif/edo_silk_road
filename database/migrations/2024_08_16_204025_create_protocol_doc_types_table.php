@@ -23,6 +23,7 @@ return new class extends Migration
             $table->integer('role_id');
             $table->integer('secretary_role_id');
             $table->integer('member_role_id');
+            $table->tinyInteger('sign_type')->default(1);
             $table->smallInteger('status')->default(1);
             $table->timestamps();
         });

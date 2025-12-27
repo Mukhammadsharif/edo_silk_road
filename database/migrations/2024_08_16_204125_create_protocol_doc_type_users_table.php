@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('doc_type_id');
             $table->integer('user_id');
             $table->smallInteger('order_number')->default(1);
+            $table->tinyInteger('role_id')->default(2);
             $table->smallInteger('status')->default(1);
 
             $table->index(['doc_type_id']);

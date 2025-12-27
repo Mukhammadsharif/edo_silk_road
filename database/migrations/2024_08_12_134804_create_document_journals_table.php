@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('doc_id');
             $table->integer('j_type');
             $table->integer('j_number');
+            $table->integer('dep_j_id')->nullable();
             $table->date('j_date');
             $table->integer('confid_type');
             $table->integer('created_dep');

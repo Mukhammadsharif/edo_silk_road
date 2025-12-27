@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('doc_hash', 100)->unique();
             $table->string('doc_code', 50)->unique();
             $table->integer('doc_type_id');
+            $table->string('doc_lang', 2)->default('uz');
             $table->smallInteger('visibility')->default(1);
             $table->smallInteger('status')->default(1);
             $table->integer('created_dep');

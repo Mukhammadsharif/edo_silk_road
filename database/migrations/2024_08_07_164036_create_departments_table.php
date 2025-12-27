@@ -23,6 +23,7 @@ return new class extends Migration
             $table->integer('parent_id')->default(0);
             $table->integer('order_number')->default(1);
             $table->smallInteger('level_number')->default(1);
+            $table->integer('company_id')->nullable();
             $table->smallInteger('status')->default(1);
             $table->jsonb('meta_data')->nullable();
             $table->timestamps();

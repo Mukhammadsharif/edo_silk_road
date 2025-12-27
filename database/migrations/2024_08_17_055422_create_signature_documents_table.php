@@ -18,6 +18,8 @@ class CreateSignatureDocumentsTable extends Migration
             $table->bigInteger('doc_id');
             $table->integer('doc_type');
             $table->integer('user_id');
+            $table->integer('key_id');
+            $table->timestamp('signing_time');
             $table->timestamps();
 
             $table->index(['doc_id']);
