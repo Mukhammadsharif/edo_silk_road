@@ -10,6 +10,7 @@ class UserWorkHistory extends Model
 {
     protected $fillable = [
         'user_id',
+        'org_id',
         'dep_id',
         'post_id',
         'from_date',

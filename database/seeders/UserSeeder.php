@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Admin\Department;
+use App\Models\Admin\OrganizationUnits;
 use App\Models\Admin\Permission;
 use App\Models\Admin\Role;
 use App\Models\Admin\UserPersonalInfo;
@@ -21,12 +22,28 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         //
+        OrganizationUnits::truncate();
+        OrganizationUnits::create([
+            'code' => 'DEMO_ORG',
+            'name_uz' => 'DEMO Tashkilot',
+            'name_kr' => 'ДЕМО Ташкилот',
+            'name_ru' => 'ДЕМО Организация',
+            'name_en' => 'DEMO Organization',
+            'tax_number' => '123456789',
+            'owner_user_id' => 1,
+            'parent_id' => 0,
+            'level' => 1,
+            'status' => 1,
+            'meta_data' => null,
+        ]);
+
         Department::truncate();
         $jsonFile1 = base_path('database/seeders/data/departments.json');
         $jsonData1 = json_decode(File::get($jsonFile1), true);
         foreach ($jsonData1['departments'] as $item1) {
             Department::create([
                 'code' => $item1['code'],
+                'org_unit_id' => $item1['org_unit_id'],
                 'name_uz' => $item1['name_uz'],
                 'name_kr' => $item1['name_kr'],
                 'name_ru' => $item1['name_ru'],
@@ -70,6 +87,7 @@ class UserSeeder extends Seeder
                 'email' => $role['email'],
                 'password' => Hash::make($role['password']),
                 'user_hash' => $this->uniqueId(),
+                'org_unit_id' => 1,
                 'status' => $role['status']
             ]);
 
@@ -177,6 +195,7 @@ class UserSeeder extends Seeder
 
         $officeEmpWork = new UserWorkHistory();
         $officeEmpWork->user_id = $user_id;
+        $officeEmpWork->org_id = 1;
         $officeEmpWork->dep_id = $dep_id;
         $officeEmpWork->post_id = $post_id;
         $officeEmpWork->from_date = Carbon::now();

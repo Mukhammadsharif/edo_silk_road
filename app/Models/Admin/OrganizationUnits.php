@@ -13,6 +13,8 @@ class OrganizationUnits extends Model
         'name_kr',
         'name_ru',
         'name_en',
+        'tax_number',
+        'owner_user_id',
         'parent_id',
         'level',
         'status',

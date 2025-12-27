@@ -26,6 +26,7 @@ class User extends Authenticatable
         'email',
         'user_hash',
         'password',
+        'org_unit_id',
         'status',
     ];
 

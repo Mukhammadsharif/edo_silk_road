@@ -9,12 +9,12 @@ class Department extends Model
 {
     protected $fillable = [
         'code',
+        'org_unit_id',
         'name_uz',
         'name_kr',
         'name_ru',
         'name_en',
         'type',
-        'org_unit_id',
         'parent_id',
         'order_number',
         'level_number',

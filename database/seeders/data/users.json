@@ -7,6 +7,7 @@
             "email" : "super_admin@gmail.com",
             "f_name" : "SuperAdmin",
             "password" : "super_admin!@#",
+            "org_id" : 1,
             "dep_id" : 2,
             "post_id" : 3,
             "status" : 1
@@ -17,6 +18,7 @@
             "email" : "it_admin@gmail.com",
             "f_name" : "IT Admin",
             "password" : "123456",
+            "org_id" : 1,
             "dep_id" : 2,
             "post_id" : 3,
             "status" : 1
@@ -27,6 +29,7 @@
             "email" : "hr_admin@gmail.com",
             "f_name" : "HR Admin",
             "password" : "123456",
+            "org_id" : 1,
             "dep_id" : 3,
             "post_id" : 4,
             "status" : 1
@@ -37,6 +40,7 @@
             "email" : "office_emp@gmail.com",
             "f_name" : "Devonxona",
             "password" : "123456",
+            "org_id" : 1,
             "dep_id" : 3,
             "post_id" : 3,
             "status" : 1
@@ -47,6 +51,7 @@
             "email" : "control_emp@gmail.com",
             "f_name" : "Ijro Nazorati",
             "password" : "123456",
+            "org_id" : 1,
             "dep_id" : 2,
             "post_id" : 4,
             "status" : 1
@@ -57,6 +62,7 @@
             "email" : "director@gmail.com",
             "f_name" : "Direktor",
             "password" : "123456",
+            "org_id" : 1,
             "dep_id" : 1,
             "post_id" : 1,
             "status" : 1
@@ -67,6 +73,7 @@
             "email" : "deputy_director@gmail.com",
             "f_name" : "Direktor o`rinbosari",
             "password" : "123456",
+            "org_id" : 1,
             "dep_id" : 2,
             "post_id" : 2,
             "status" : 1
@@ -77,6 +84,7 @@
             "email" : "dep_head@gmail.com",
             "f_name" : "Bo`lim boshlig`i",
             "password" : "123456",
+            "org_id" : 1,
             "dep_id" : 4,
             "post_id" : 4,
             "status" : 1
@@ -87,6 +95,7 @@
             "email" : "dep_emp@gmail.com",
             "f_name" : "Bo`lim xodimi",
             "password" : "123456",
+            "org_id" : 1,
             "dep_id" : 4,
             "post_id" : 3,
             "status" : 1
