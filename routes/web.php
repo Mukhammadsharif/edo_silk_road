@@ -56,6 +56,9 @@ Auth::routes();
 
 Route::get('lang/{locale}', [HomeController::class, 'lang']);
 
+Route::get('e-imzo/frontend-challenge',  [SignDocImzoController::class, 'frontChallenge']);
+Route::post('e-imzo/backend-auth',  [SignDocImzoController::class, 'backendAuthLogin']);
+
 Route::group(['middleware' => ['auth']], function() {
 
     Route::get('/', [HomeController::class, 'index'])->name('home');

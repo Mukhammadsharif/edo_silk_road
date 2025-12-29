@@ -5,6 +5,8 @@ namespace App\Http\Controllers\ECP;
 use App\Helpers\Settings;
 use App\Http\Controllers\Controller;
 use App\Jobs\GenerateHrOrderPdfJob;
+use App\Models\Admin\Department;
+use App\Models\Admin\OrganizationUnits;
 use App\Models\Admin\Role;
 use App\Models\Admin\UserPersonalInfo;
 use App\Models\Admin\UserWorkHistory;
@@ -22,9 +24,14 @@ use App\Models\Protocol\ProtocolDocMember;
 use App\Models\Protocol\ProtocolDocReplyComment;
 use App\Models\Protocol\ProtocolDocument;
 use App\Models\Resolution\ReplyCommentTypes;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Ramsey\Uuid\Uuid;
 
 class SignDocImzoController extends Controller
@@ -48,17 +55,14 @@ class SignDocImzoController extends Controller
         $confirmId  = $request->ecp_confirm_id ?? null;
         $resText    = $request->ecp_r_text;
 
-        // Верификация подписи через ERI (или демо-режим)
         $eriSign = $isDemo ? ['status' => 1] : $this->backendAuth($pkData);
 
         if ($eriSign['status'] != 1 && !$isDemo) {
             return $this->errorResponse(__('Failed to parse SOAP response'), 500);
         }
 
-        // Подготовка данных подписи
         $ecpData = $this->prepareEcpData($eriSign, $isDemo);
 
-        // Основная логика обработки документа
         $result = match ($docType) {
             'protocol_document' => $this->handleProtocolDocument($docId, $confirmId, $resText),
             'pr_emp_hr_order'   => $this->handleHrEmployeeOrder($docId, $confirmId, $resText),
@@ -265,7 +269,6 @@ class SignDocImzoController extends Controller
         $signerRoles = $configs->pluck('role_id')->toArray();
 
         if ($document->docType->sign_type == 1) {
-            // Параллельное подписание
             $pending = ProtocolDocMember::where('doc_id', $document->id)
                 ->whereIn('role_id', $signerRoles)
                 ->whereNotIn('status', [3, 5, 7])
@@ -275,7 +278,6 @@ class SignDocImzoController extends Controller
                 $document->update(['status' => 3]);
             }
         } else {
-            // Последовательное
             $unfinished = ProtocolDocMember::where('doc_id', $document->id)
                 ->where('role_id', $member->role_id)
                 ->whereNotIn('status', [3, 5, 7])
@@ -336,8 +338,6 @@ class SignDocImzoController extends Controller
             'certificateVerified' => $eriSign['certificateVerified'],
         ];
     }
-
-    // === Вспомогательные методы (аналогичные SignLoginController) ===
 
     private function getStep($journal, string $code): ?DocumentExecutionSteps
     {
@@ -486,7 +486,6 @@ class SignDocImzoController extends Controller
         $document->update(['status' => 3]);
     }
 
-    // === Методы работы с ERI (оставлены почти без изменений, только немного упрощены) ===
     private function backendAuth($data): array
     {
         $response = $this->curlPost('/backend/auth', $data);
@@ -531,9 +530,139 @@ class SignDocImzoController extends Controller
         return ['status' => $json['status'] ?? 0, 'message' => $json['message'] ?? ''];
     }
 
+    public function frontChallenge()
+    {
+        return Http::get($this->eriSrvIpLoc.'/frontend/challenge?_uc='.now().'_'.rand());
+    }
+
+    public function backendAuthLogin(Request $request)
+    {
+        $pkcs7 = $request->pkcs7;
+
+        $path = '/backend/auth';
+
+        $pkInfo = $this->curlPost($path, $pkcs7);
+
+        $jsonDecodeBack = json_decode($pkInfo, true);
+        $pin = $jsonDecodeBack['subjectCertificateInfo']['subjectName']['1.2.860.3.16.1.2'];
+
+        $user = UserPersonalInfo::where('doc_pin', $pin)->first();
+
+        $status = 0;
+        $message = 'User topilmadi';
+
+        if (!$user) {
+            $subjectName = $jsonDecodeBack['subjectCertificateInfo']['subjectName'];
+
+            $isOrg = (bool)$subjectName['O'];
+
+            if ($isOrg) {
+                $organization = OrganizationUnits::create([
+                    'code' => $subjectName['UID'],
+                    'name_uz' => $subjectName['O'],
+                    'name_ru' => $subjectName['O'],
+                    'name_kr' => $subjectName['O'],
+                    'name_en' => $subjectName['O'],
+                    'tax_number' => $subjectName['1.2.860.3.16.1.1'],
+                    'owner_user_id' => 1,
+                    'parent_id' => 0,
+                    'level' => 1,
+                    'status' => 1,
+                    'meta_data' => null,
+                ]);
+
+                $jsonFile1 = base_path('database/seeders/data/departments.json');
+                $jsonData1 = json_decode(File::get($jsonFile1), true);
+                $item1 = $jsonData1['departments'][0];
+                $department = Department::create([
+                    'code' => $item1['code'].'_'.$subjectName['UID'],
+                    'org_unit_id' => $organization->id,
+                    'name_uz' => $item1['name_uz'],
+                    'name_kr' => $item1['name_kr'],
+                    'name_ru' => $item1['name_ru'],
+                    'name_en' => $item1['name_en'],
+                    'parent_id' => $item1['parent_id'],
+                    'order_number' => $item1['order_number'],
+                    'level_number' => $item1['level_number'],
+                    'status' => $item1['status'],
+                ]);
+            }
+
+            $user = User::create([
+                'username' => strtolower($subjectName['Name'])[0].'_'.strtolower($subjectName['SURNAME']),
+                'email' => strtolower($subjectName['Name']).'_'.strtolower($subjectName['SURNAME']).'@gmail.com',
+                'password' => Hash::make($jsonDecodeBack['subjectCertificateInfo']['serialNumber']),
+                'user_hash' => $this->uniqueId(),
+                'org_unit_id' => $isOrg ? $organization->id : 1,
+                'status' => 1
+            ]);
+
+            $cn = $subjectName['CN'];
+            [$lastName, $firstName, $middleName] = explode(' ', $cn, 3);
+
+            $officeEmpPersonal = new UserPersonalInfo();
+            $officeEmpPersonal->user_id = $user->id;
+            $officeEmpPersonal->is_emp = 2;
+            $officeEmpPersonal->doc_pin = $pin;
+            $officeEmpPersonal->doc_number = 'AD1234567';
+            $officeEmpPersonal->doc_type = 2;
+            $officeEmpPersonal->birthday = '1991-01-01';
+            $officeEmpPersonal->gender = 1;
+            $officeEmpPersonal->phone = 971253456;
+            $officeEmpPersonal->l_name = $lastName;
+            $officeEmpPersonal->f_name = $firstName;
+            $officeEmpPersonal->m_name = $middleName;
+            $officeEmpPersonal->lang_code = 'uz';
+            $officeEmpPersonal->doc_sign_type = 1;
+            $officeEmpPersonal->sort = 1;
+            $officeEmpPersonal->save();
+
+            $nextYear = Carbon::now()->addYear()->format('Y-m-d');
+
+            $officeEmpWork = new UserWorkHistory();
+            $officeEmpWork->user_id = $user->id;
+            $officeEmpWork->org_id = $isOrg ? $organization->id : 1;
+            $officeEmpWork->dep_id = $isOrg ? $department->id : 2;
+            $officeEmpWork->post_id = $isOrg ? 1 : 3;
+            $officeEmpWork->from_date = Carbon::now();
+            $officeEmpWork->to_date = $nextYear;
+            $officeEmpWork->status = 1;
+            $officeEmpWork->save();
+
+            if ($isOrg) {
+                $role = Role::where('name', 'IT_Admin')->first();
+            } else {
+                $role = Role::where('name', 'Dep_Emp')->first();
+            }
+
+            if ($role) {
+                $user->assignRole([$role->id]);
+            }
+
+            $organization->update(['owner_user_id' => $user->id]);
+
+            Auth::loginUsingId($user->id);
+
+            $status = 1;
+            $message = 'ok';
+        }
+
+        if ($user) {
+            Auth::loginUsingId($user->user_id);
+
+            $status = 1;
+            $message = 'ok';
+        }
+
+        return response()->json([
+            'status' => $status,
+            'message' => $message
+        ]);
+    }
+
     private function curlPost(string $path, string $postData): ?string
     {
-        $url = (in_array($_SERVER['HTTP_HOST'] ?? '', ['edo-demo.loc', '172.17.110.44', 'localhost']))
+        $url = (in_array($_SERVER['HTTP_HOST'] ?? '', ['edo-demo.loc', '172.17.110.44', 'localhost:8000']))
             ? $this->eriSrvIpLoc . $path
             : $this->eriSrvIpProd . $path;
 

@@ -1,0 +1,378 @@
+:root {
+    --primary-color: #003399;
+    --secondary-color: #0056b3;
+    --light-bg: #f8f9fa;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--light-bg);
+}
+
+.main-content {
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 0 20px;
+}
+
+.login-container {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.login-subtitle {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+.auth-tabs {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #e0e0e0;
+    overflow-x: auto;
+    width: 100%;
+}
+
+.auth-tab {
+    background: none;
+    border: none;
+    padding: 12px 20px;
+    color: #666;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s;
+    white-space: nowrap;
+    width: 50%;
+}
+
+.auth-tab.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.auth-tab:hover {
+    color: var(--primary-color);
+}
+
+.form-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    padding: 12px 15px;
+    font-size: 14px;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(0, 51, 153, 0.15);
+}
+
+.password-toggle {
+    position: absolute;
+    right: 15px;
+    top: 60%;
+    cursor: pointer;
+    color: #666;
+}
+
+.forgot-password {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 14px;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+.btn-login {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    width: 100%;
+    font-weight: 600;
+    font-size: 16px;
+    margin-top: 20px;
+    transition: all 0.3s;
+}
+
+.btn-login:hover {
+    background: var(--secondary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 51, 153, 0.3);
+}
+
+.btn-login:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-usb {
+    background: white;
+    color: #666;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 14px;
+    width: 100%;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.btn-usb:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.divider {
+    margin: 30px 0;
+    border-top: 1px solid #e0e0e0;
+}
+
+.register-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.register-link a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.register-link a:hover {
+    text-decoration: underline;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* ERI Modal Styles */
+.eri-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+
+.eri-modal.show {
+    display: flex;
+}
+
+.eri-modal-content {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.eri-modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.eri-modal-header h5 {
+    margin: 0;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.eri-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.eri-modal-body {
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.eri-item {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.eri-item:hover {
+    border-color: var(--primary-color);
+    background: #f8f9ff;
+}
+
+.eri-item.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: rgba(206,7,30,0.1) !important;
+    border-color: #ce071e;
+}
+
+.eri-item.disabled:hover {
+    border-color: #ce071e;
+    background: rgba(206,7,30,0.1) !important;
+}
+
+.eri-item-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.eri-item-header img {
+    height: 20px;
+    margin-right: 8px;
+}
+
+.eri-item-name {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.eri-item-type {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.eri-type-physical {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.eri-type-legal {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.eri-item-details {
+    display: grid;
+    gap: 5px;
+    font-size: 13px;
+    color: #666;
+}
+
+.eri-detail-row {
+    margin-bottom: 5px;
+}
+
+.eri-detail-label {
+    font-weight: 500;
+}
+
+.eri-detail-value {
+    color: #333;
+}
+
+.eri-org-info {
+    margin: 10px 0;
+    padding: 10px;
+    background: #f5f5f5;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.eri-item-footer {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.eri-expiry {
+    color: #d29404;
+    font-size: 12px;
+}
+
+.eri-expiry.expired {
+    color: #ce071e;
+}
+
+.loading-spinner {
+    text-align: center;
+    padding: 40px;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+@media (max-width: 768px) {
+    .login-container {
+        padding: 30px 20px;
+    }
+
+    .auth-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+    }
+
+    .auth-tab {
+        font-size: 14px;
+        padding: 10px 15px;
+    }
+
+    .eri-modal-content {
+        width: 95%;
+        max-height: 90vh;
+    }
+}
