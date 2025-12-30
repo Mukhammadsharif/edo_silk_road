@@ -23,6 +23,7 @@ class DocumentJournals extends Model
         'j_number',
         'j_date',
         'dep_j_id',
+        'org_unit_id',
         'confid_type',
         'created_dep',
         'created_user',

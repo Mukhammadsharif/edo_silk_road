@@ -83,6 +83,8 @@ Route::group(['middleware' => ['auth']], function() {
             Route::post('store', [DepartmentController::class, 'organizationsStore'])->name('organizations.store');
             Route::any('edit/{id}', [DepartmentController::class, 'organizationsEdit'])->name('organizations.edit');
             Route::any('update/{id}', [DepartmentController::class, 'organizationsUpdate'])->name('organizations.update');
+            Route::any('send-request', [DepartmentController::class, 'sendRequest'])->name('organizations.send.request');
+            Route::any('cancel-request', [DepartmentController::class, 'cancelRequest'])->name('organizations.cancel.request');
         });
 
         Route::prefix('departments')->group(function () {

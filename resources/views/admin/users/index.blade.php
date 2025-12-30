@@ -38,6 +38,19 @@
                         <form action="{{ route('user.search') }}" method="POST" role="search" class="form-inline w-100">
                             @csrf
 
+                            @if($isSuperUser)
+                                <div class="mb-2 mr-sm-2 w-15">
+                                    <select name="s_org" class="form-control w-100 select2">
+                                        <option value="">{{ __('field.organizations') }}</option>
+                                        @foreach($organizations as $key => $organization)
+                                            <option value="{{ $organization->id }}" {{ $s_org == $organization->id ? 'selected':''}}>
+                                                {{ ++$key }}.{{ $organization->lang($organization->id) }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            @endif
+
                             <input type="text" name="s_text" placeholder="{{ __('action.search') }}" value="{{ $s_text??'' }}" class="form-control w-25 mb-2 mr-sm-2">
 
                             <div class="mb-2 mr-sm-2 w-15">

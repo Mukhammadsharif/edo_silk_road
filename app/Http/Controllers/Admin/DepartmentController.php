@@ -5,12 +5,15 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Department;
 use App\Models\Admin\OrganizationUnits;
+use App\Models\Admin\RequestForOrgs;
 use App\Models\Admin\Role;
 use App\Models\Admin\UserWorkHistory;
 use App\Models\Journal\JournalTypes;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class DepartmentController extends Controller
 {
@@ -303,6 +306,68 @@ class DepartmentController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function sendRequest(Request $request)
+    {
+        $tax_number = $request->input('tax_number');
+
+        $validator = Validator::make($request->all(), [
+            'tax_number'=> 'required|max:191',
+        ]);
+
+        if($validator->fails())
+        {
+            return response()->json([
+                'status' => 400,
+                'errors' => $validator->messages()
+            ]);
+        } else {
+
+            $organization = OrganizationUnits::where('tax_number', $tax_number)->first();
+
+            if ($organization) {
+                RequestForOrgs::create([
+                    'user_id' => Auth::id(),
+                    'org_unit_id' => $organization->id,
+                    'tax_number' => $tax_number,
+                    'status' => 1
+                ]);
+
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'Request Sent Successfully.'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 400,
+                    'errors' => ['value' => 'Organization With this TIN is not was registered.']
+                ]);
+            }
+        }
+    }
+
+    public function cancelRequest(Request $request)
+    {
+        $userId = Auth::id();
+
+        $requestForOrg = RequestForOrgs::where('user_id', $userId)
+            ->where('status', 1) // только ожидающие
+            ->first();
+
+        if (!$requestForOrg) {
+            return response()->json([
+                'status' => 400,
+                'errors' => ['error' => 'Faol so\'rov topilmadi.']
+            ], 400);
+        }
+
+        $requestForOrg->delete();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'So\'rov muvaffaqiyatli bekor qilindi.'
+        ]);
     }
 
     public function orgStructure()

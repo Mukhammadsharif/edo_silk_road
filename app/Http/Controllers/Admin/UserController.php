@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Department;
+use App\Models\Admin\OrganizationUnits;
 use App\Models\Admin\Role;
 use App\Models\Admin\StatusList;
 use App\Models\Admin\UserPersonalInfo;
@@ -35,17 +36,28 @@ class UserController extends Controller
     public function index(Request $request)
     {
         //
-        //print_r($request->all()); die;
         $s_text = $request->input('s_text');
 
         $s_status = $request->input('s_status');
 
         $s_role = $request->input('s_role');
 
-        $search = User::orderBy('id', 'DESC');
+        $s_org = $request->input('s_org');
+
+        $isSuperUser = $this->isSuperUser();
+
+        if ($isSuperUser) {
+            $search = User::orderBy('id', 'DESC');
+        } else {
+            $search = User::where('org_unit_id', $this->organizationId())->orderBy('id', 'DESC');
+        }
 
         if (!in_array($this->admin, $this->authActiveUserRoleNames())) {
             $search->where('username', '!=', 'muksid');
+        }
+
+        if ($s_org){
+            $search->where('org_unit_id', $s_org);
         }
 
         if (trim(''.$s_text.'')) {
@@ -56,8 +68,6 @@ class UserController extends Controller
             $search->whereHas('userPersonal', function ($query) use ($s_text) {
                 $query->where(DB::raw("CONCAT_WS(' ', l_name, f_name, m_name)"), 'like', '%'.$s_text.'%');
             });
-            /*$search->orWhere('email', 'LIKE', '%'.$s_text.'%')
-                ->orWhere('username', 'LIKE', '%'.$s_text.'%');*/
         }
 
         if ($s_status){
@@ -66,7 +76,6 @@ class UserController extends Controller
 
         if ($s_role){
             $user_role_ids = UserRole::where('role_id', $s_role)->pluck('model_id')->unique()->toArray();
-            //print_r($user_role_ids); die;
 
             $search->whereIn('id', $user_role_ids);
         }
@@ -76,15 +85,18 @@ class UserController extends Controller
         $models->appends([
             's_text' => $s_text,
             's_status' => $s_status,
-            's_role' => $s_role
+            's_role' => $s_role,
+            's_org' => $s_org,
         ]);
 
         $statusList = StatusList::where('type', 'user_status')->get();
 
         $userRoles = Role::where('status', 1)->get();
 
+        $organizations = OrganizationUnits::orderBy('id', 'ASC')->get();
+
         return view('admin.users.index', compact('models', 's_text', 's_status',
-            's_role', 'statusList', 'userRoles'));
+            's_role', 'statusList', 'userRoles', 'organizations', 's_org', 'isSuperUser'));
     }
 
     public function create()
@@ -228,11 +240,6 @@ class UserController extends Controller
                 if (count($roles) > 0) {
 
                     foreach ($roles as $role) {
-
-                        //$permissions = Permission::pluck('id','id')->all();
-
-                        //$role->syncPermissions($permissions);
-
                         $user->assignRole([$role->id]);
                     }
                 }
@@ -376,7 +383,6 @@ class UserController extends Controller
 
         $last_level = Department::orderBy('level_number', 'DESC')->first();
 
-        //$positions = UserPosition::where('dep_ids', 'like', '%'.$id.'%')->where('status', 1)->orderBy('order_number')->get();
         $positions = UserPosition::select('id', $dep_name)->where('status', 1)->orderBy('order_number')->get();
 
         return response()->json([

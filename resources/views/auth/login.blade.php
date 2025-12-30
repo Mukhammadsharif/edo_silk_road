@@ -102,4 +102,8 @@
     <script src="{{ asset('js/e_imzo.js') }}"></script>
     <script src="{{ asset('js/e_imzo_client.js') }}"></script>
     <script src="{{ asset('js/login_e_imzo.js') }}"></script>
+
+    <script>
+        localStorage.clear();
+    </script>
 @endsection
