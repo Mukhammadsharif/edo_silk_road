@@ -22,6 +22,9 @@
                                 <a href="{{ route('home') }}"><i class="ik ik-home"></i></a>
                             </li>
                             <li class="breadcrumb-item">
+                                <a href="{{ route('organizations.index') }}">{{ __('menu.organizations') }}</a>
+                            </li>
+                            <li class="breadcrumb-item">
                                 <a href="#">{{ __('menu.departments') }}</a>
                             </li>
                             <li class="breadcrumb-item active" aria-current="page">{{ __('menu.list') }}</li>
@@ -34,14 +37,14 @@
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-header d-block">
-                        <a href="{{ route('departments.create') }}" class="btn btn-primary">
+                        <a href="{{ route('departments.create', ['id' => $organization_id]) }}" class="btn btn-primary">
                             <i class="ik ik-plus-circle"></i>{{ __('action.create') }}
                         </a>
                     </div>
                     <div class="card-body template-demo">
                         <div class="row">
                             <div class="col-md-4">
-                                @php $lang_key = session()->get('locale'); @endphp
+                                @php $lang_key = session()->get('locale')??'uz'; @endphp
                                 <ul><h4>{{ __('menu.departments') }}</h4></ul>
                                 <section class="list-tree">
                                     <ul>
@@ -59,7 +62,7 @@
 
                             <div class="col-md-8">
                                 <div class="dt-responsive">
-                                    <form action="{{ route('departments.search') }}" method="post" role="search" class="form-horizontal">
+                                    <form action="{{ route('departments.index', ['id' => $organization_id]) }}" method="post" role="search" class="form-horizontal">
                                         @csrf
                                         <div class="row">
                                             <div class="col-4">
@@ -68,7 +71,7 @@
                                             <button type="submit" class="btn btn-info mr-1">
                                                 <i class="ik ik-search"></i> {{ __('action.search') }} ({{ $departments->total() }})
                                             </button>
-                                            <a href="{{ route('departments.index') }}" class="btn btn-light">
+                                            <a href="{{ route('departments.index', ['id' => $organization_id]) }}" class="btn btn-light">
                                                 <i class="ik ik-refresh-ccw"></i>  {{ __('field.clear') }}
                                             </a>
                                         </div>
@@ -121,5 +124,4 @@
             </div>
         </div>
     </div>
-{{--    <script src="{{ asset('/departments/treeview.js') }}"></script>--}}
 @endsection

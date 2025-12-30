@@ -289,4 +289,15 @@ class Controller extends BaseController
         return $slug;
     }
 
+    public function isSuperUser()
+    {
+        $roles = $this->authActiveUserRoleNames();
+
+        return in_array('Super_Admin', $roles);
+    }
+
+    public function organizationId()
+    {
+        return $this->authActiveUser()->user->org_unit_id;
+    }
 }

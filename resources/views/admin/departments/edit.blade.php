@@ -22,7 +22,7 @@
                                 <a href="{{ route('home') }}"><i class="ik ik-home"></i></a>
                             </li>
                             <li class="breadcrumb-item">
-                                <a href="{{ route('departments.index') }}">{{ __('menu.departments') }}</a>
+                                <a href="{{ route('departments.index', ['id' => $model->org_unit_id]) }}">{{ __('menu.departments') }}</a>
                             </li>
                             <li class="breadcrumb-item active" aria-current="page">{{ __('action.edit') }}</li>
                         </ol>
@@ -39,7 +39,7 @@
                     <div class="card-body template-demo">
                         <div class="row">
                             <div class="col-md-6">
-                                @php $lang_key = session()->get('locale'); @endphp
+                                @php $lang_key = session()->get('locale')??'uz'; @endphp
                                 <ul><h4>{{ __('menu.departments') }}</h4></ul>
                                 <section class="list-tree">
                                     <ul>
@@ -54,83 +54,83 @@
                                     </ul>
                                 </section>
                             </div>
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-body">
-                                    <form method="POST" action="{{ route('departments.update', $model->id) }}" class="forms-sample">
-                                        @csrf
-                                        @method('PUT')
-                                        <div class="form-group">
-                                            <label>{{ __('field.organization') }}</label>
-                                            <select name="org_unit_id" class="form-control select2">
-                                                <option value="0">{{ __('field.not_selected') }}</option>
-                                                @foreach($organizations as $key => $item)
-                                                    <option value="{{ $item->id }}" {{ ($item->id == $model->org_unit_id ? "selected":"") }}>
-                                                        {{ $key + 1 }}. {{ $item['name_'.$lang_key] }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="form-group">
-                                            <label>{{ __('field.parent_id') }}</label>
-                                            <select name="parent_id" class="form-control select2">
-                                                <option value="0">{{ __('field.not_selected') }}</option>
-                                                @foreach($departments as $key => $item)
-                                                    <option value="{{ $item->id }}" {{ ($item->id == $model->parent_id ? "selected":"") }}>
-                                                        {{ $key + 1 }}. {{ $item['name_'.$lang_key] }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="form-group">
-                                            <label>{{ __('field.name_uz') }}</label>
-                                            <input type="text" name="name_uz" class="form-control" placeholder="{{ __('field.name_uz') }}" value="{{ $model->name_uz }}">
-                                        </div>
-                                        <div class="form-group">
-                                            <label>{{ __('field.name_kr') }}</label>
-                                            <input type="text" name="name_kr" class="form-control" placeholder="{{ __('field.name_kr') }}" value="{{ $model->name_kr }}">
-                                        </div>
-                                        <div class="form-group">
-                                            <label>{{ __('field.name_ru') }}</label>
-                                            <input type="text" name="name_ru" class="form-control" placeholder="{{ __('field.name_ru') }}" value="{{ $model->name_ru }}">
-                                        </div>
-                                        <div class="form-group">
-                                            <label>{{ __('field.name_en') }}</label>
-                                            <input type="text" name="name_en" class="form-control" placeholder="{{ __('field.name_en') }}" value="{{ $model->name_en }}">
-                                        </div>
-                                        <div class="form-group">
-                                            <label>{{ __('field.order_number') }}</label>
-                                            <input type="number" name="order_number" class="form-control" value="{{ $model->order_number }}">
-                                        </div>
-                                        <div class="form-radio">
-                                            <label>{{ __('field.status') }}</label>
-                                            <div class="radio radio-inline radio-success">
-                                                <label>
-                                                    <input type="radio" name="status" value="1" {{ ($model->status == 1) ? 'checked':'' }}>
-                                                    <i class="helper"></i>{{ __('status.active') }}
-                                                </label>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <form method="POST" action="{{ route('departments.update', $model->id) }}" class="forms-sample">
+                                            @csrf
+                                            @method('PUT')
+                                            <div class="form-group">
+                                                <label>{{ __('field.organization') }}</label>
+                                                <select name="org_unit_id" class="form-control select2">
+                                                    <option value="">{{ __('field.not_selected') }}</option>
+                                                    @foreach($organizations as $key => $item)
+                                                        <option value="{{ $item->id }}" {{ ($item->id == $model->org_unit_id ? "selected":"") }}>
+                                                            {{ $key + 1 }}. {{ $item['name_'.$lang_key] }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
                                             </div>
-                                            <div class="radio radio-inline radio-danger">
-                                                <label>
-                                                    <input type="radio" name="status" value="2" {{ ($model->status == 2) ? 'checked':'' }}>
-                                                    <i class="helper"></i>{{ __('status.delete') }}
-                                                </label>
+                                            <div class="form-group">
+                                                <label>{{ __('field.parent_id') }}</label>
+                                                <select name="parent_id" class="form-control select2">
+                                                    <option value="0">{{ __('field.not_selected') }}</option>
+                                                    @foreach($departments as $key => $item)
+                                                        <option value="{{ $item->id }}" {{ ($item->id == $model->parent_id ? "selected":"") }}>
+                                                            {{ $key + 1 }}. {{ $item['name_'.$lang_key] }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
                                             </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="hstack gap-2 justify-content-end">
-                                                <a href="{{ route('departments.index') }}" class="btn btn-light">
-                                                    <i class="ik ik-x"></i> {{ __('action.cancel') }}
-                                                </a>
-                                                <button type="submit" class="btn btn-primary">
-                                                    <i class="ik ik-save"></i> {{ __('action.save') }}
-                                                </button>
+                                            <div class="form-group">
+                                                <label>{{ __('field.name_uz') }}</label>
+                                                <input type="text" name="name_uz" class="form-control" placeholder="{{ __('field.name_uz') }}" value="{{ $model->name_uz }}">
                                             </div>
-                                        </div>
-                                    </form>
+                                            <div class="form-group">
+                                                <label>{{ __('field.name_kr') }}</label>
+                                                <input type="text" name="name_kr" class="form-control" placeholder="{{ __('field.name_kr') }}" value="{{ $model->name_kr }}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>{{ __('field.name_ru') }}</label>
+                                                <input type="text" name="name_ru" class="form-control" placeholder="{{ __('field.name_ru') }}" value="{{ $model->name_ru }}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>{{ __('field.name_en') }}</label>
+                                                <input type="text" name="name_en" class="form-control" placeholder="{{ __('field.name_en') }}" value="{{ $model->name_en }}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>{{ __('field.order_number') }}</label>
+                                                <input type="number" name="order_number" class="form-control" value="{{ $model->order_number }}">
+                                            </div>
+                                            <div class="form-radio">
+                                                <label>{{ __('field.status') }}</label>
+                                                <div class="radio radio-inline radio-success">
+                                                    <label>
+                                                        <input type="radio" name="status" value="1" {{ ($model->status == 1) ? 'checked':'' }}>
+                                                        <i class="helper"></i>{{ __('status.active') }}
+                                                    </label>
+                                                </div>
+                                                <div class="radio radio-inline radio-danger">
+                                                    <label>
+                                                        <input type="radio" name="status" value="2" {{ ($model->status == 2) ? 'checked':'' }}>
+                                                        <i class="helper"></i>{{ __('status.delete') }}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="hstack gap-2 justify-content-end">
+                                                    <a href="{{ route('departments.index', ['id' => $model->org_unit_id]) }}" class="btn btn-light">
+                                                        <i class="ik ik-x"></i> {{ __('action.cancel') }}
+                                                    </a>
+                                                    <button type="submit" class="btn btn-primary">
+                                                        <i class="ik ik-save"></i> {{ __('action.save') }}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
                         </div>
                     </div>
                 </div>

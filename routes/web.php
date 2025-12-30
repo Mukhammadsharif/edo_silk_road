@@ -76,9 +76,22 @@ Route::group(['middleware' => ['auth']], function() {
     });
 
     Route::prefix('admin')->group(function () {
-        // role
-        Route::resource('departments', DepartmentController::class);
-        Route::any('departments-search', [DepartmentController::class, 'index'])->name('departments.search');
+
+        Route::prefix('organizations')->group(function () {
+            Route::any('index', [DepartmentController::class, 'organizationsIndex'])->name('organizations.index');
+            Route::any('create', [DepartmentController::class, 'organizationsCreate'])->name('organizations.create');
+            Route::post('store', [DepartmentController::class, 'organizationsStore'])->name('organizations.store');
+            Route::any('edit/{id}', [DepartmentController::class, 'organizationsEdit'])->name('organizations.edit');
+            Route::any('update/{id}', [DepartmentController::class, 'organizationsUpdate'])->name('organizations.update');
+        });
+
+        Route::prefix('departments')->group(function () {
+            Route::any('index/{id}', [DepartmentController::class, 'departmentsIndex'])->name('departments.index');
+            Route::any('create/{id}', [DepartmentController::class, 'departmentsCreate'])->name('departments.create');
+            Route::post('store', [DepartmentController::class, 'departmentsStore'])->name('departments.store');
+            Route::any('edit/{id}', [DepartmentController::class, 'departmentsEdit'])->name('departments.edit');
+            Route::any('update/{id}', [DepartmentController::class, 'departmentsUpdate'])->name('departments.update');
+        });
 
         // role
         Route::resource('roles', RoleController::class);

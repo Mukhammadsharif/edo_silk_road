@@ -172,7 +172,7 @@
         {
             "id" : 52,
             "title" : "Hujjat turlari",
-            "url_path" : "\/office\/journal-type",
+            "url_path" : "\/document-settings\/document-type",
             "lang_id" : 240,
             "icon_id" : 100,
             "parent_id" : 0,
@@ -263,7 +263,7 @@
         {
             "id" : 59,
             "title" : "Protokol turlari (Protokol)",
-            "url_path" : "\/protocol\/prt-doc-types",
+            "url_path" : "\/document-settings\/protocol-types",
             "lang_id" : 334,
             "icon_id" : 100,
             "parent_id" : 0,
@@ -432,7 +432,7 @@
         {
             "id" : 72,
             "title" : "Ariza shablonlari",
-            "url_path" : "\/office\/app\/document",
+            "url_path" : "\/document-settings\/document-templates",
             "lang_id" : 104,
             "icon_id" : 100,
             "parent_id" : 0,
