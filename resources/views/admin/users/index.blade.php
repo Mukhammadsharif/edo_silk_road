@@ -147,5 +147,147 @@
                 </div>
             </div>
         </div>
+
+        @unless($isSuperUser)
+            <div class="row mt-4">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>{{ __('menu.pending_join_requests') }} ({{ count($pendingRequests) }})</h5>
+                        </div>
+                        <div class="card-body template-demo">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>{{ __('field.#') }}</th>
+                                        <th>{{ __('field.fam_name') }}</th>
+                                        <th>{{ __('field.email') }}</th>
+                                        <th>{{ __('field.tax_number') }}</th>
+                                        <th>{{ __('field.date') }}</th>
+                                        <th>{{ __('field.action') }}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @forelse($pendingRequests as $key => $request)
+                                        @php
+                                            $user = \App\Models\User::find($request->user_id);
+                                            $personal = $user ? $user->userPersonal : null;
+                                        @endphp
+                                        <tr class="text-center">
+                                            <td>{{ $key+1 }}</td>
+                                            <td>
+                                                {{ $personal->l_name ?? '-' }} {{ $personal->f_name ?? '' }}
+                                            </td>
+                                            <td class="text-primary">{{ $user->email ?? '-' }}</td>
+                                            <td>{{ $request->tax_number }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($request->created_at)->format('d.m.y H:i') }}</td>
+                                            <td>
+                                                <button type="button" class="btn btn-success btn-sm accept-btn"
+                                                        data-id="{{ $request->id }}"
+                                                        data-name="{{ $personal->l_name ?? '' }} {{ $personal->f_name ?? '' }}"
+                                                        data-url="{{ route('users.accept-request', $request->id) }}">
+                                                    <i class="ik ik-check"></i> {{ __('action.accept') }}
+                                                </button>
+
+                                                <button type="button" class="btn btn-danger btn-sm reject-btn ml-1"
+                                                        data-id="{{ $request->id }}"
+                                                        data-name="{{ $personal->l_name ?? '' }} {{ $personal->f_name ?? '' }}"
+                                                        data-url="{{ route('users.reject-request', $request->id) }}">
+                                                    <i class="ik ik-x"></i> {{ __('action.reject') }}
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="6" class="text-center">{{ __('field.no_pending_requests') }}</td>
+                                        </tr>
+                                    @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endunless
     </div>
+
+    <div class="modal fade" id="acceptModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="ik ik-check-circle"></i> Tasdiqlash</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p><strong id="acceptUserName"></strong> ni tashkilotga qo'shishni tasdiqlaysizmi?</p>
+                    <p>Bu foydalanuvchi tashkilot a'zosi bo'ladi.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-dismiss="modal">
+                        <i class="ik ik-x"></i> Bekor qilish
+                    </button>
+                    <form id="acceptForm" method="POST" style="display: inline;">
+                        @csrf
+                        <button type="submit" class="btn btn-success">
+                            <i class="ik ik-check"></i> Ha, qabul qilish
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="ik ik-x-circle"></i> Tasdiqlash</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p><strong id="rejectUserName"></strong> ning so'rovini rad etishni tasdiqlaysizmi?</p>
+                    <p>Bu amalni keyincha qaytarib bo'lmaydi.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-dismiss="modal">
+                        <i class="ik ik-x"></i> Bekor qilish
+                    </button>
+                    <form id="rejectForm" method="POST" style="display: inline;">
+                        @csrf
+                        <button type="submit" class="btn btn-danger">
+                            <i class="ik ik-trash"></i> Ha, rad etish
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('.accept-btn').on('click', function () {
+                let name = $(this).data('name').trim() || 'Foydalanuvchi';
+                let url = $(this).data('url');
+
+                $('#acceptUserName').text(name);
+                $('#acceptForm').attr('action', url);
+                $('#acceptModal').modal('show');
+            });
+
+            $('.reject-btn').on('click', function () {
+                let name = $(this).data('name').trim() || 'Foydalanuvchi';
+                let url = $(this).data('url');
+
+                $('#rejectUserName').text(name);
+                $('#rejectForm').attr('action', url);
+                $('#rejectModal').modal('show');
+            });
+        });
+    </script>
 @endsection

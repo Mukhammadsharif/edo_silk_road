@@ -118,6 +118,8 @@ Route::group(['middleware' => ['auth']], function() {
         Route::put('user/edit-user-login-password/{id}/{hash}', [UserController::class, 'editUserLoginPassword']);
         Route::put('user/edit-user-status/{id}/{hash}', [UserController::class, 'editUserStatus']);
         Route::put('user/edit-ecp-status/{id}/{hash}', [UserController::class, 'editEcpStatus']);
+        Route::post('users/accept-request/{id}', [UserController::class, 'acceptRequest'])->name('users.accept-request');
+        Route::post('users/reject-request/{id}', [UserController::class, 'rejectRequest'])->name('users.reject-request');
 
         // status name
         Route::resource('status-lists', StatusListController::class);

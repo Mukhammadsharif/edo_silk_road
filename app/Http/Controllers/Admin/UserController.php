@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Department;
 use App\Models\Admin\OrganizationUnits;
+use App\Models\Admin\RequestForOrgs;
 use App\Models\Admin\Role;
 use App\Models\Admin\StatusList;
 use App\Models\Admin\UserPersonalInfo;
@@ -95,8 +96,46 @@ class UserController extends Controller
 
         $organizations = OrganizationUnits::orderBy('id', 'ASC')->get();
 
+        // Добавляем запросы на вступление для текущей организации
+        $pendingRequests = RequestForOrgs::where('org_unit_id', $this->organizationId())
+            ->where('status', 1)
+            ->orderBy('id', 'DESC')
+            ->get();
+
         return view('admin.users.index', compact('models', 's_text', 's_status',
-            's_role', 'statusList', 'userRoles', 'organizations', 's_org', 'isSuperUser'));
+            's_role', 'statusList', 'userRoles', 'organizations', 's_org', 'isSuperUser', 'pendingRequests'));
+    }
+
+    public function acceptRequest($id)
+    {
+        $requestOrg = RequestForOrgs::findOrFail($id);
+
+        if ($requestOrg->org_unit_id !== $this->organizationId()) {
+            return redirect()->back()->with('error', 'Unauthorized action.');
+        }
+
+        $user = User::findOrFail($requestOrg->user_id);
+        $user->org_unit_id = $requestOrg->org_unit_id;
+        $user->save();
+
+        $requestOrg->status = 2; // Accepted
+        $requestOrg->save();
+
+        return redirect()->route('users.index')->with('success', 'Request accepted successfully.');
+    }
+
+    public function rejectRequest($id)
+    {
+        $requestOrg = RequestForOrgs::findOrFail($id);
+
+        if ($requestOrg->org_unit_id !== $this->organizationId()) {
+            return redirect()->back()->with('error', 'Unauthorized action.');
+        }
+
+        $requestOrg->status = 3; // Rejected
+        $requestOrg->save();
+
+        return redirect()->route('users.index')->with('success', 'Request rejected successfully.');
     }
 
     public function create()
