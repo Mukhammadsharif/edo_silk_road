@@ -4,15 +4,15 @@
             <thead>
             <tr>
                 <th>#</th>
-                <th>Tashkilot</th>
-                <th>Tarif</th>
-                <th>Narxi (oylik)</th>
-                <th>Boshlanish</th>
-                <th>Tugash</th>
-                <th>Holati</th>
-                <th>Yaratilgan</th>
+                <th>{{ __('field.organization') }}</th>
+                <th>{{ __('field.tariff') }}</th>
+                <th>{{ __('field.price_monthly') }}</th>
+                <th>{{ __('field.start_date') }}</th>
+                <th>{{ __('field.end_date') }}</th>
+                <th>{{ __('field.status') }}</th>
+                <th>{{ __('field.created_at') }}</th>
                 @if($showActions ?? true)
-                    <th>Harakat</th>
+                    <th>{{ __('field.actions') }}</th>
                 @endif
             </tr>
             </thead>
@@ -28,16 +28,16 @@
                     <td>
                         @switch($req->status)
                             @case(1)
-                                <span class="badge badge-success">Faol</span>
+                                <span class="badge badge-success">{{ __('field.active') }}</span>
                                 @if($req->ends_at < now())
-                                    <span class="badge badge-secondary ml-1">Muddat tugagan</span>
+                                    <span class="badge badge-secondary ml-1">{{ __('field.expired') }}</span>
                                 @endif
                                 @break
                             @case(2)
-                                <span class="badge badge-warning">Kutilmoqda</span>
+                                <span class="badge badge-warning">{{ __('field.pending') }}</span>
                                 @break
                             @case(0)
-                                <span class="badge badge-danger">Rad etilgan</span>
+                                <span class="badge badge-danger">{{ __('field.rejected') }}</span>
                                 @break
                         @endswitch
                     </td>
@@ -49,14 +49,14 @@
                                         data-id="{{ $req->id }}"
                                         data-org="{{ $req->organization->name_uz ?? 'Noma\'lum' }}"
                                         data-tariff="{{ $req->tariff->name }}">
-                                    <i class="ik ik-check"></i> Tasdiqlash
+                                    <i class="ik ik-check"></i> {{ __('field.approve') }}
                                 </button>
 
                                 <button type="button" class="btn btn-danger btn-sm reject-btn ml-1"
                                         data-id="{{ $req->id }}"
                                         data-org="{{ $req->organization->name_uz ?? 'Noma\'lum' }}"
                                         data-tariff="{{ $req->tariff->name }}">
-                                    <i class="ik ik-x"></i> Rad etish
+                                    <i class="ik ik-x"></i> {{ __('field.reject') }}
                                 </button>
                             @else
                                 <span class="text-muted">—</span>
@@ -72,6 +72,6 @@
 @else
     <div class="text-center py-5 text-muted">
         <i class="ik ik-package display-4 d-block mb-3"></i>
-        <p>Bu bo'limda hozircha ma'lumot yo'q</p>
+        <p>{{ __('field.no_data') }}</p>
     </div>
 @endif

@@ -49,7 +49,7 @@ class SubscriptionRequestController extends Controller
         $subscription = Subscriptions::findOrFail($id);
 
         if ($subscription->status != 2) {
-            return redirect()->back()->with('error', 'Bu so\'rov allaqachon ko\'rib chiqilgan.');
+            return redirect()->back()->with('error', __('field.subscription_request_already_reviewed'));
         }
 
         Subscriptions::where('org_unit_id', $subscription->org_unit_id)
@@ -59,7 +59,7 @@ class SubscriptionRequestController extends Controller
         $subscription->status = 1;
         $subscription->save();
 
-        return redirect()->back()->with('success', 'Obuna muvaffaqiyatli tasdiqlandi.');
+        return redirect()->back()->with('success', __('field.subscription_approved_successfully'));
     }
 
     public function reject($id)
@@ -67,12 +67,12 @@ class SubscriptionRequestController extends Controller
         $subscription = Subscriptions::findOrFail($id);
 
         if ($subscription->status != 2) {
-            return redirect()->back()->with('error', 'Bu so\'rov allaqachon ko\'rib chiqilgan.');
+            return redirect()->back()->with('error', __('field.subscription_request_already_reviewed'));
         }
 
         $subscription->status = 0;
         $subscription->save();
 
-        return redirect()->back()->with('success', 'Obuna rad etildi.');
+        return redirect()->back()->with('success', __('field.subscription_rejected'));
     }
 }

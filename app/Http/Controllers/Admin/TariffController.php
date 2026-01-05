@@ -43,7 +43,7 @@ class TariffController extends Controller
         Tariffs::create($request->all());
 
         return redirect()->route('tariffs.index')
-            ->with('success', 'Tarif muvaffaqiyatli qo\'shildi.');
+            ->with('success', __('field.tariff_created_successfully'));
     }
 
     public function edit($id)
@@ -76,7 +76,7 @@ class TariffController extends Controller
         $tariff->update($request->all());
 
         return redirect()->route('tariffs.index')
-            ->with('success', 'Tarif muvaffaqiyatli yangilandi.');
+            ->with('success', __('field.tariff_updated_successfully'));
     }
 
     public function destroy($id)
@@ -85,7 +85,7 @@ class TariffController extends Controller
         $tariff->delete();
 
         return redirect()->route('tariffs.index')
-            ->with('success', 'Tarif muvaffaqiyatli o\'chirildi.');
+            ->with('success', __('field.tariff_deleted_successfully'));
     }
 
     public function show($id)

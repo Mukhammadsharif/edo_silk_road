@@ -8,8 +8,8 @@
                     <div class="page-header-title">
                         <i class="ik ik-package bg-blue"></i>
                         <div class="d-inline">
-                            <h5>Barcha obunalar</h5>
-                            <span>Faol, kutilayotgan, rad etilgan va muddati tugagan obunalar</span>
+                            <h5>{{ __('field.all_subscriptions') }}</h5>
+                            <span>{{ __('field.active_pending_rejected_expired') }}</span>
                         </div>
                     </div>
                 </div>
@@ -20,56 +20,51 @@
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-header">
-                        <h3>Obunalar boshqaruvi</h3>
+                        <h3>{{ __('field.subscription_management') }}</h3>
                     </div>
                     <div class="card-body">
                         @include('templates.alert')
 
-                        <!-- Вкладки -->
                         <ul class="nav nav-tabs mb-4" id="subscriptionTabs" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link active" id="pending-tab" data-toggle="tab" href="#pending" role="tab">
-                                    Kutilmoqda
+                                    {{ __('field.pending') }}
                                     <span class="badge badge-warning ml-1">{{ $pendingCount }}</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="active-tab" data-toggle="tab" href="#active" role="tab">
-                                    Faol
+                                    {{ __('field.active') }}
                                     <span class="badge badge-success ml-1">{{ $activeCount }}</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="expired-tab" data-toggle="tab" href="#expired" role="tab">
-                                    Muddat tugagan
+                                    {{ __('field.expired') }}
                                     <span class="badge badge-secondary ml-1">{{ $expiredCount }}</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="rejected-tab" data-toggle="tab" href="#rejected" role="tab">
-                                    Rad etilgan
+                                    {{ __('field.rejected') }}
                                     <span class="badge badge-danger ml-1">{{ $rejectedCount }}</span>
                                 </a>
                             </li>
                         </ul>
 
                         <div class="tab-content" id="subscriptionTabContent">
-                            <!-- Вкладка: Kutilmoqda -->
                             <div class="tab-pane fade show active" id="pending" role="tabpanel">
                                 @include('admin.subscriptions.partials.table', ['subscriptions' => $pending])
                             </div>
 
-                            <!-- Вкладка: Faol -->
                             <div class="tab-pane fade" id="active" role="tabpanel">
                                 @include('admin.subscriptions.partials.table', ['subscriptions' => $active])
                             </div>
 
-                            <!-- Вкладка: Muddat tugagan -->
                             <div class="tab-pane fade" id="expired" role="tabpanel">
                                 @include('admin.subscriptions.partials.table', ['subscriptions' => $expired, 'showActions' => false])
                             </div>
 
-                            <!-- Вкладка: Rad etilgan -->
                             <div class="tab-pane fade" id="rejected" role="tabpanel">
                                 @include('admin.subscriptions.partials.table', ['subscriptions' => $rejected, 'showActions' => false])
                             </div>
@@ -80,7 +75,6 @@
         </div>
     </div>
 
-    <!-- Модалки остаются те же -->
     @include('admin.subscriptions.partials.modals')
 
     <script>

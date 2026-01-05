@@ -117,11 +117,11 @@ class UserController extends Controller
         $requestOrg = RequestForOrgs::findOrFail($id);
 
         if ($requestOrg->org_unit_id !== $this->organizationId()) {
-            return redirect()->back()->with('error', 'Ruxsat etilmagan harakat.');
+            return redirect()->back()->with('error', __('field.unauthorized_action'));
         }
 
         if ($requestOrg->status !== 1) {
-            return redirect()->back()->with('error', 'Bu so\'rov allaqachon ko\'rib chiqilgan.');
+            return redirect()->back()->with('error', 'field.subscription_request_already_reviewed');
         }
 
         $user = User::findOrFail($requestOrg->user_id);
@@ -149,7 +149,7 @@ class UserController extends Controller
         $requestOrg->save();
 
 
-        return redirect()->route('users.index')->with('success', 'Foydalanuvchi muvaffaqiyatli qabul qilindi va bo\'limga biriktirildi.');
+        return redirect()->route('users.index')->with('success', __('field.user_accepted_and_assigned'));
     }
 
     public function rejectRequest($id)
@@ -157,13 +157,13 @@ class UserController extends Controller
         $requestOrg = RequestForOrgs::findOrFail($id);
 
         if ($requestOrg->org_unit_id !== $this->organizationId()) {
-            return redirect()->back()->with('error', 'Unauthorized action.');
+            return redirect()->back()->with('error',  __('field.unauthorized_action'));
         }
 
         $requestOrg->status = 3; // Rejected
         $requestOrg->save();
 
-        return redirect()->route('users.index')->with('success', 'Request rejected successfully.');
+        return redirect()->route('users.index')->with('success', __('field.request_rejected_successfully'));
     }
 
     public function create()
@@ -215,7 +215,7 @@ class UserController extends Controller
             $this->userLogService->createUserLog($createUser->id, ['comment' => 'Created user']);
         }
 
-        return Redirect::route('users.index')->with('success', 'User created successfully');
+        return Redirect::route('users.index')->with('success', __('field.user_created_successfully'));
     }
 
     public function show($hash)

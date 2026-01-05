@@ -2,7 +2,7 @@
 @extends('layouts.app_create_doc')
 @section('content')
 
-    <div class="container-fluid mt-10">
+    <div class="container-fluid mt-40">
 
         <div class="page-header">
             <div class="row align-items-end">

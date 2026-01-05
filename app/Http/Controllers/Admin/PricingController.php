@@ -37,7 +37,7 @@ class PricingController extends Controller
             ->first();
 
         if ($existing) {
-            return redirect()->back()->with('warning', 'Sizda allaqachon faol yoki kutilayotgan obuna mavjud.');
+            return redirect()->back()->with('warning', __('field.subscription_already_exists'));
         }
 
         $startsAt = Carbon::today();

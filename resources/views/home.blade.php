@@ -21,6 +21,9 @@
                                     {{ $user_name->fullName() }}
                                 @endif
                             </h4>
+                            <h5 class="mt-20 mb-0">
+                                {{ Auth::user()->organization->name_uz??'' }}
+                            </h5>
                             <a href="#">
                                 @php($user_department = Auth::user()->currentWork->department??0)
                                 @if($user_department)

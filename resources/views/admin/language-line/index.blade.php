@@ -90,12 +90,12 @@
                                             <td>{{ $item->text['en']??'' }}</td>
                                             <td>
                                                 <button type="button" value="{{ $item->id }}" class="btn btn-info edit_btn btn-sm">
-                                                    <i class="ri-edit-line me-1"></i> <i class="ik ik-edit-1"></i> {{ __('action.edit') }}
+                                                    <i class="ri-edit-line me-1"></i> <i class="ik ik-edit-1"></i>
                                                 </button>
                                             </td>
                                             <td>
                                                 <button type="button" value="{{ $item->id }}" class="btn btn-danger delete_btn btn-sm">
-                                                    <i class="ri-delete-bin-line me-1"></i> <i class="ik ik-trash-2"></i> {{ __('action.delete') }}
+                                                    <i class="ri-delete-bin-line me-1"></i> <i class="ik ik-trash-2"></i>
                                                 </button>
                                             </td>
                                         </tr>
