@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\DocLogsController;
+use App\Http\Controllers\Admin\PricingController;
+use App\Http\Controllers\Admin\SubscriptionRequestController;
+use App\Http\Controllers\Admin\TariffController;
 use App\Http\Controllers\DocController;
 use App\Http\Controllers\ECP\SignDocImzoController;
 use App\Http\Controllers\ECP\SignLoginController;
@@ -162,6 +165,15 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('images/upload', [SettingsController::class, 'imageUpload'])->name('images.upload');
 
         Route::get('/get-positions/{id}', [UserController::class, 'getPositions'])->name('admin.get-positions');
+
+        Route::resource('tariffs', TariffController::class)->names([
+            'index'   => 'tariffs.index',
+            'create'  => 'tariffs.create',
+            'store'   => 'tariffs.store',
+            'edit'    => 'tariffs.edit',
+            'update'  => 'tariffs.update',
+            'destroy' => 'tariffs.destroy',
+        ]);
     });
 
     Route::prefix('document-settings')->group(function () {
@@ -373,6 +385,16 @@ Route::group(['middleware' => ['auth']], function() {
             Route::get('del/{id}', [MessageController::class, 'fileDelete'])->name('messages.file.delete');
         });
     });
+
+    Route::get('/pricing', [PricingController::class, 'index'])->name('pricing');
+    Route::post('/pricing/subscribe/{tariff}', [PricingController::class, 'subscribe'])->name('pricing.subscribe');
+
+    Route::get('/subscription-requests', [SubscriptionRequestController::class, 'index'])
+        ->name('admin.subscription-requests');
+    Route::post('/subscription-requests/{id}/approve', [SubscriptionRequestController::class, 'approve'])
+        ->name('admin.subscription-requests.approve');
+    Route::post('/subscription-requests/{id}/reject', [SubscriptionRequestController::class, 'reject'])
+        ->name('admin.subscription-requests.reject');
 });
 
 Route::get('p/{doc_code}', [QrCodeDocController::class, 'viewProtocolDocument']);

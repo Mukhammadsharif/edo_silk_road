@@ -143,4 +143,16 @@ class OrganizationUnits extends Model
 
         return $children;
     }
+
+    public function subscription()
+    {
+        return $this->hasOne(Subscriptions::class, 'org_unit_id');
+    }
+
+    public function currentSubscription()
+    {
+        return $this->hasOne(Subscriptions::class, 'org_unit_id')
+            ->where('status', 1)
+            ->where('ends_at', '>=', now());
+    }
 }

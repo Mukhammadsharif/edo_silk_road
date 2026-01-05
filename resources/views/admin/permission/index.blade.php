@@ -54,7 +54,7 @@
                                     <tr id="rowID{{ $model->id }}" class="text-center">
                                         <td>{{ $key+1 }}</td>
                                         <td>{{ $model->name }}</td>
-                                        <td>{{ $model->lang($model->id) }}</td>
+                                        <td>{{ $model->lang($model->lang_id) }}</td>
                                         <td>
                                             <span class="badge badge-pill @if($model->status == 1) badge-green @else badge-danger @endif text-white">
                                                 {{ $model->isActive($model->id) }}

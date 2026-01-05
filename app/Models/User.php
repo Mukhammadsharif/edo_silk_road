@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Admin\OrganizationUnits;
 use App\Models\Admin\StatusList;
+use App\Models\Admin\Subscriptions;
 use App\Models\Admin\UserPersonalInfo;
 use App\Models\Admin\UserRole;
 use App\Models\Admin\UserWorkHistory;
@@ -163,5 +165,25 @@ class User extends Authenticatable
         }
 
     }
+
+    public function organization()
+    {
+        return $this->belongsTo(OrganizationUnits::class, 'org_unit_id');
+    }
+
+    public function currentSubscription()
+    {
+        return $this->hasOneThrough(
+            Subscriptions::class,
+            OrganizationUnits::class,
+            'id',          // FK в organization_units
+            'org_unit_id', // FK в subscriptions
+            'org_unit_id', // local key в текущей модели
+            'id'           // local key в organization_units
+        )
+            ->where('subscriptions.status', 1)
+            ->where('subscriptions.ends_at', '>=', now());
+    }
+
 
 }

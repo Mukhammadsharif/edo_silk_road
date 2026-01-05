@@ -42,6 +42,21 @@
                 </div>
             @endif
 
+            @can('super_admin')
+                <div class="nav-item">
+                    <a href="{{ route('admin.subscription-requests') }}" class="nav-link">
+                        <i class="ik ik-clock"></i>
+                        <span>Obuna so'rovlari</span>
+                        @php
+                            $pendingCount = \App\Models\Admin\Subscriptions::where('status', 2)->count();
+                        @endphp
+                        @if($pendingCount > 0)
+                            <span class="badge badge-warning ml-2">{{ $pendingCount }}</span>
+                        @endif
+                    </a>
+                </div>
+            @endcan
+
             <div class="top-menu d-flex align-items-center">
                 <button type="button" class="btn-icon mobile-nav-toggle d-lg-none"><span></span></button>
                 <div class="header-search" hidden>

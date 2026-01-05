@@ -55,9 +55,25 @@
 </div>
 
 <div class="form-group">
-    <button name="action" value="file" id="submitBtn" class="btn btn-primary" onclick="setFormAction('file')">
+    @if(!Auth::user()->currentSubscription)
+        <small class="d-block text-warning mb-2">
+            <i class="ik ik-info mr-1"></i>
+            Hujjat yaratish uchun faol obuna kerak
+        </small>
+    @endif
+
+    <button name="action" value="file" id="submitBtn" class="btn btn-primary" onclick="setFormAction('file')"
+            @if(!Auth::user()->currentSubscription) disabled @endif>
         <i class="ik ik-save"></i> {{ __('action.save') }}
     </button>
+
+    @if(!Auth::user()->currentSubscription)
+        <div class="mt-2">
+            <a href="{{ route('pricing') }}" class="btn btn-outline-warning btn-sm">
+                Tariflarni ko'rish
+            </a>
+        </div>
+    @endif
 </div>
 
 <script type="text/javascript">

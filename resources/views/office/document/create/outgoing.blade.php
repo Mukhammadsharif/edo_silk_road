@@ -143,9 +143,28 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <button type="submit" id="submitBtn" class="btn btn-primary">
+                                        @if(!Auth::user()->currentSubscription)
+                                            <small class="d-block text-warning mb-2">
+                                                <i class="ik ik-info mr-1"></i>
+                                                Hujjat yaratish uchun faol obuna kerak
+                                            </small>
+                                        @endif
+
+                                        <button type="submit" id="submitBtn" class="btn btn-primary"
+                                            @if(!Auth::user()->currentSubscription)
+                                                disabled
+                                            @endif
+                                        >
                                             <i class="ik ik-save"></i> {{ __('action.save') }}
                                         </button>
+
+                                        @if(!Auth::user()->currentSubscription)
+                                            <div class="mt-2">
+                                                <a href="{{ route('pricing') }}" class="btn btn-outline-warning btn-sm">
+                                                    Tariflarni ko'rish
+                                                </a>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
