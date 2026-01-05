@@ -214,29 +214,53 @@
     </div>
 
     <div class="modal fade" id="acceptModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title"><i class="ik ik-check-circle"></i> Tasdiqlash</h5>
+                    <h5 class="modal-title"><i class="ik ik-check-circle"></i> Foydalanuvchini qabul qilish</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <p><strong id="acceptUserName"></strong> ni tashkilotga qo'shishni tasdiqlaysizmi?</p>
-                    <p>Bu foydalanuvchi tashkilot a'zosi bo'ladi.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-dismiss="modal">
-                        <i class="ik ik-x"></i> Bekor qilish
-                    </button>
-                    <form id="acceptForm" method="POST" style="display: inline;">
-                        @csrf
+                <form id="acceptForm" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <p><strong id="acceptUserName"></strong> ni tashkilotga qo'shishni tasdiqlaysizmi?</p>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="department">{{ __('field.department') }} <span class="text-danger">*</span></label>
+                                    <select name="dep_id" id="departmentSelect" class="form-control select2" required style="width: 100%;">
+                                        <option value="">{{ __('action.select') }} {{ __('field.department') }}</option>
+                                        @foreach($departments as $department)
+                                            <option value="{{ $department->id }}">
+                                                {{ $department->lang($department->id) }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="position">{{ __('field.position') }}</label>
+                                    <select name="post_id" id="positionSelect" class="form-control select2" style="width: 100%;">
+                                        <option value="">{{ __('action.select') }} {{ __('field.position') }}</option>
+                                        <!-- Должности будут загружаться динамически через AJAX -->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-dismiss="modal">
+                            <i class="ik ik-x"></i> Bekor qilish
+                        </button>
                         <button type="submit" class="btn btn-success">
                             <i class="ik ik-check"></i> Ha, qabul qilish
                         </button>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -271,12 +295,46 @@
 
     <script>
         $(document).ready(function () {
+            $('.select2').select2({
+                placeholder: "{{ __('action.select') }}",
+                allowClear: true
+            });
+
+            $('#departmentSelect').on('change', function () {
+                let depId = $(this).val();
+
+                if (depId) {
+                    $.ajax({
+                        url: '{{ route('admin.get-positions', ':id') }}'.replace(':id', depId),
+                        method: 'GET',
+                        success: function (data) {
+                            let $positionSelect = $('#positionSelect');
+                            $positionSelect.empty();
+                            $positionSelect.append('<option value="">{{ __('action.select') }} {{ __('field.position') }}</option>');
+
+                            $.each(data.positions, function (index, position) {
+                                $positionSelect.append('<option value="' + position.id + '">' + position.name + '</option>');
+                            });
+
+                            $positionSelect.trigger('change');
+                        }
+                    });
+                } else {
+                    $('#positionSelect').empty().append('<option value="">{{ __('action.select') }} {{ __('field.position') }}</option>');
+                }
+            });
+
             $('.accept-btn').on('click', function () {
                 let name = $(this).data('name').trim() || 'Foydalanuvchi';
                 let url = $(this).data('url');
 
                 $('#acceptUserName').text(name);
                 $('#acceptForm').attr('action', url);
+
+                // Сброс выбора
+                $('#departmentSelect').val(null).trigger('change');
+                $('#positionSelect').empty().append('<option value="">{{ __('action.select') }} {{ __('field.position') }}</option>');
+
                 $('#acceptModal').modal('show');
             });
 

@@ -160,6 +160,8 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('settings-set-demo', [SettingsController::class, 'updateDemoSetting'])->name('settings.set.demo');
         Route::post('settings-set-env', [SettingsController::class, 'updateEnv'])->name('settings.set.env');
         Route::post('images/upload', [SettingsController::class, 'imageUpload'])->name('images.upload');
+
+        Route::get('/get-positions/{id}', [UserController::class, 'getPositions'])->name('admin.get-positions');
     });
 
     Route::prefix('document-settings')->group(function () {

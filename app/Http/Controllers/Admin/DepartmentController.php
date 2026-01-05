@@ -327,6 +327,8 @@ class DepartmentController extends Controller
             $organization = OrganizationUnits::where('tax_number', $tax_number)->first();
 
             if ($organization) {
+                RequestForOrgs::where('user_id', Auth::id())->delete();
+
                 RequestForOrgs::create([
                     'user_id' => Auth::id(),
                     'org_unit_id' => $organization->id,
@@ -377,7 +379,10 @@ class DepartmentController extends Controller
 
     public function orgStructureData()
     {
-        $departments = Department::select('id', 'parent_id', 'name_uz', 'status', 'level_number')->where('status', '1')->get();
+        $departments = Department::select('id', 'parent_id', 'name_uz', 'status', 'level_number')
+            ->where('status', '1')
+            ->where('org_unit_id', $this->organizationId())
+            ->get();
 
         $nodeDataArray = $departments->map(function ($dept) {
             $usersList = [];

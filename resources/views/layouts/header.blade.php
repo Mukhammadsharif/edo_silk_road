@@ -1,6 +1,7 @@
 @php use App\Models\Admin\RequestForOrgs;use Illuminate\Support\Facades\Auth; @endphp
-@php $isOrganizationDemo = App\Models\User::where('id', Auth::id())->first()->org_unit_id === 1;@endphp
-@php $request = RequestForOrgs::where('user_id', Auth::id())->first()@endphp
+@php $user = App\Models\User::where('id', Auth::id())->first();@endphp
+@php $isOrganizationDemo = $user->org_unit_id === 1;@endphp
+@php $request = RequestForOrgs::where('user_id', Auth::id())->first();@endphp
 
 <header class="header-top" header-theme="light">
     <div class="container-fluid">
@@ -25,6 +26,18 @@
                     <span>Tashkilotga birikish uchun so'rovingiz ko'rib chiqilmoqda</span>
                     <button class="btn btn-danger" id="cancelButton" data-toggle="modal" data-target="#CancelModal">
                         Bekor qilish
+                    </button>
+                </div>
+            @endif
+
+            @if($isOrganizationDemo && $request && $request->status == 3)
+                <div
+                    class="alert bg-danger alert-success text-white d-flex flex-row justify-content-between align-items-center"
+                    role="alert"
+                    style="width: 35%; margin: 0 0 0 20px;">
+                    <span>Tashkilotga birikish uchun qoldirgan so'rovingiz rad etildi</span>
+                    <button class="btn btn-light" id="requestButton" data-toggle="modal" data-target="#RequestModal">
+                        So'rov qoldirish
                     </button>
                 </div>
             @endif
@@ -265,7 +278,7 @@
                     }
                 },
                 error: function (xhr) {
-                    let errors = xhr.responseJSON?.errors || { error: ['Xatolik yuz berdi. Qayta urinib ko\'ring.'] };
+                    let errors = xhr.responseJSON?.errors || {error: ['Xatolik yuz berdi. Qayta urinib ko\'ring.']};
                     save_msgList.html("");
                     save_msgList.addClass('alert alert-danger').show();
                     $.each(errors, function (key, err_value) {
