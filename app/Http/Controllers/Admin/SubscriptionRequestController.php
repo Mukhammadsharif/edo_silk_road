@@ -54,6 +54,7 @@ class SubscriptionRequestController extends Controller
 
         Subscriptions::where('org_unit_id', $subscription->org_unit_id)
             ->where('status', 1)
+            ->where('ends_at', '>=', now())
             ->update(['status' => 0]);
 
         $subscription->status = 1;

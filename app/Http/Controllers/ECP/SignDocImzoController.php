@@ -553,8 +553,7 @@ class SignDocImzoController extends Controller
 
         if (!$user) {
             $subjectName = $jsonDecodeBack['subjectCertificateInfo']['subjectName'];
-
-            $isOrg = (bool)$subjectName['O'];
+            $isOrg = !empty($subjectName['O']);
 
             if ($isOrg) {
                 $organization = OrganizationUnits::create([
@@ -639,7 +638,9 @@ class SignDocImzoController extends Controller
                 $user->assignRole([$role->id]);
             }
 
-            $organization->update(['owner_user_id' => $user->id]);
+            if ($organization) {
+                $organization->update(['owner_user_id' => $user->id]);
+            }
 
             Auth::loginUsingId($user->id);
 

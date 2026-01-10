@@ -28,7 +28,9 @@
                     <td>
                         @switch($req->status)
                             @case(1)
-                                <span class="badge badge-success">{{ __('field.active') }}</span>
+                                @if($req->ends_at > now())
+                                    <span class="badge badge-success">{{ __('field.active') }}</span>
+                                @endif
                                 @if($req->ends_at < now())
                                     <span class="badge badge-secondary ml-1">{{ __('field.expired') }}</span>
                                 @endif

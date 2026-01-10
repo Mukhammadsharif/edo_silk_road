@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin\OrganizationUnits;
 use OpenApi\Attributes as OA;
 use App\Models\Admin\DocLog;
 use App\Models\Admin\Role;
@@ -299,5 +300,12 @@ class Controller extends BaseController
     public function organizationId()
     {
         return $this->authActiveUser()->user->org_unit_id;
+    }
+
+    public function isOwner()
+    {
+        $organizations_owners_array = OrganizationUnits::where('status', 1)->pluck('owner_user_id')->toArray();
+
+        return in_array(Auth::id(), $organizations_owners_array);
     }
 }

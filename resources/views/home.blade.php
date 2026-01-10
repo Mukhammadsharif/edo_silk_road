@@ -44,6 +44,15 @@
                                     <i class="ik ik-user f-20 mr-5"></i>{{ __('field.profile') }}
                                 </a>
                             </div>
+
+                            @if($isOwner)
+                                <div class="col-6">
+                                    <a href="{{ route('pricing') }}"
+                                       class="link d-flex align-items-center justify-content-center">
+                                        <i class="ik ik ik-check-square f-20 mr-5"></i>{{ __('field.subscriptions') }}
+                                    </a>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>

@@ -156,6 +156,11 @@ class OrganizationUnits extends Model
         return $this->hasOne(Subscriptions::class, 'org_unit_id');
     }
 
+    public function pendingSubscription()
+    {
+        return $this->hasOne(Subscriptions::class, 'org_unit_id')->where('status', 2);
+    }
+
     public function currentSubscription()
     {
         return $this->hasOne(Subscriptions::class, 'org_unit_id')

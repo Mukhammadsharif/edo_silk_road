@@ -18,7 +18,9 @@ class PricingController extends Controller
 
         $currentSubscription = Auth::user()->organization->currentSubscription ?? null;
 
-        return view('pricing.index', compact('tariffs', 'currentSubscription'));
+        $pendingSubscription = Auth::user()->organization->pendingSubscription ?? null;
+
+        return view('pricing.index', compact('tariffs', 'currentSubscription', 'pendingSubscription'));
     }
 
     public function subscribe(Request $request, $tariffId)
@@ -32,26 +34,35 @@ class PricingController extends Controller
         $period = $request->input('period');
 
         $existing = Subscriptions::where('org_unit_id', $orgId)
-            ->whereIn('status', [1, 2])
+            ->where('status', 2)
             ->where('ends_at', '>=', now())
             ->first();
-
-        if ($existing) {
-            return redirect()->back()->with('warning', __('field.subscription_already_exists'));
-        }
 
         $startsAt = Carbon::today();
         $endsAt = $period === 'year'
             ? $startsAt->copy()->addYear()
             : $startsAt->copy()->addMonth();
 
-        Subscriptions::create([
-            'org_unit_id' => $orgId,
-            'tariff_id'   => $tariff->id,
-            'starts_at'   => $startsAt,
-            'ends_at'     => $endsAt,
-            'status'      => 2, // pending
-        ]);
+
+        if ($existing) {
+
+            $existing->update([
+                'tariff_id'   => $tariff->id,
+                'starts_at'   => $startsAt,
+                'ends_at'     => $endsAt,
+                'status' => 2
+            ]);
+
+        } else {
+
+            Subscriptions::create([
+                'org_unit_id' => $orgId,
+                'tariff_id'   => $tariff->id,
+                'starts_at'   => $startsAt,
+                'ends_at'     => $endsAt,
+                'status'      => 2, // pending
+            ]);
+        }
 
         $periodText = $period === 'year' ? 'yillik' : 'oylik';
         return redirect()->back()->with('success',

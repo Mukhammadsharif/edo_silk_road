@@ -88,7 +88,7 @@
             <div class="eri-modal-body" id="eriModalBody">
                 <div class="loading-spinner">
                     <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Yuklanmoqda...</span>
+                        <span class="visually-hidden">ERI kalit tekshirilmoqda...</span>
                     </div>
                     <p class="mt-3">E-IMZO yuklanmoqda...</p>
                 </div>

@@ -343,7 +343,7 @@ class DepartmentController extends Controller
             } else {
                 return response()->json([
                     'status' => 400,
-                    'errors' => ['value' => 'Organization With this TIN is not was registered.']
+                    'errors' => ['value' => __('field.org_with_tin_was_not_registered')]
                 ]);
             }
         }

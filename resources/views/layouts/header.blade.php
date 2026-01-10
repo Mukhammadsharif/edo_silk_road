@@ -11,9 +11,9 @@
                     class="alert bg-success alert-success text-white d-flex flex-row justify-content-between align-items-center"
                     role="alert"
                     style="width: 35%; margin: 0 0 0 20px;">
-                    <span>Tashkilotga birikish uchun so'rov qoldiring</span>
+                    <span>{{ __('field.send_request_for_joining') }}</span>
                     <button class="btn btn-light" id="requestButton" data-toggle="modal" data-target="#RequestModal">
-                        So'rov qoldirish
+                        {{ __('field.leave_request') }}
                     </button>
                 </div>
             @endif
@@ -23,9 +23,9 @@
                     class="alert bg-secondary alert-success text-white d-flex flex-row justify-content-between align-items-center"
                     role="alert"
                     style="width: 35%; margin: 0 0 0 20px;">
-                    <span>Tashkilotga birikish uchun so'rovingiz ko'rib chiqilmoqda</span>
+                    <span>{{ __('field.pending_request_for_joining') }}</span>
                     <button class="btn btn-danger" id="cancelButton" data-toggle="modal" data-target="#CancelModal">
-                        Bekor qilish
+                        {{ __('action.cancel') }}
                     </button>
                 </div>
             @endif
@@ -35,9 +35,9 @@
                     class="alert bg-danger alert-success text-white d-flex flex-row justify-content-between align-items-center"
                     role="alert"
                     style="width: 35%; margin: 0 0 0 20px;">
-                    <span>Tashkilotga birikish uchun qoldirgan so'rovingiz rad etildi</span>
+                    <span>{{ __('field.declined_request_for_joining') }}</span>
                     <button class="btn btn-light" id="requestButton" data-toggle="modal" data-target="#RequestModal">
-                        So'rov qoldirish
+                        {{ __('field.leave_request') }}
                     </button>
                 </div>
             @endif
@@ -46,7 +46,7 @@
                 <div class="nav-item">
                     <a href="{{ route('admin.subscription-requests') }}" class="nav-link">
                         <i class="ik ik-clock"></i>
-                        <span>Obuna so'rovlari</span>
+                        <span>{{ __('field.subscription_requests') }}</span>
                         @php
                             $pendingCount = \App\Models\Admin\Subscriptions::where('status', 2)->count();
                         @endphp
@@ -171,7 +171,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title"><i class="fa fa-plus-circle"></i> {{ __('action.create') }}</h4>
+                <h4 class="modal-title"><i class="fa fa-plus-circle"></i> {{ __('field.leave_request') }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -179,7 +179,7 @@
             <div class="modal-body">
                 <ul id="save_msgList"></ul>
                 <div class="form-group mb-3">
-                    <label for="">{{ __('field.tax_number') }}</label>
+                    <label for="">{{ __('action.fill_tax_number') }}</label>
                     <input type="number" required class="tax_number form-control">
                 </div>
             </div>
@@ -198,21 +198,21 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title"><i class="ik ik-alert-octagon text-danger"></i> So'rovni bekor qilish</h4>
+                <h4 class="modal-title"><i class="ik ik-alert-octagon text-danger"></i> {{ __('action.reject_request') }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <p>Rostdan ham tashkilotga birikish uchun yuborilgan so'rovni bekor qilmoqchimisiz?</p>
-                <p>Bu amalni ortga qaytarib bo'lmaydi.</p>
+                <p>{{ __('field.are_you_sure_reject_joining_request') }}</p>
+                <p>{{ __('field.it_cannot_undone') }}</p>
             </div>
             <div class="modal-footer justify-content-between">
                 <button type="button" class="btn btn-light" data-dismiss="modal">
-                    <i class="ik ik-x"></i> Yopish
+                    <i class="ik ik-x"></i> {{ __('action.close') }}
                 </button>
                 <button type="button" class="btn btn-danger cancel-request-btn">
-                    <i class="ik ik-trash-2"></i> Bekor qilish
+                    <i class="ik ik-trash-2"></i> {{ __('action.cancel') }}
                 </button>
             </div>
         </div>
@@ -274,7 +274,7 @@
             e.preventDefault();
 
             let modal = $('#CancelModal');
-            let save_msgList = $('#save_msgList'); // можно переиспользовать, но лучше очистить
+            let save_msgList = $('#save_msgList');
 
             $.ajax({
                 url: '/admin/organizations/cancel-request',

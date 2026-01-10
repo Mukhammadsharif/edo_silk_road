@@ -60,9 +60,9 @@ class LanguageLineController extends Controller
         $validator = Validator::make($request->all(), [
             'group_input'=> 'required|max:191',
             'key_input'=>'required|max:191',
-            'text_uz_input'=>'required|max:50',
-            'text_ru_input'=>'required|max:50',
-            'text_en_input'=>'required|max:50',
+            'text_uz_input'=>'required|max:150',
+            'text_ru_input'=>'required|max:150',
+            'text_en_input'=>'required|max:150',
         ]);
 
         if($validator->fails())
@@ -116,9 +116,9 @@ class LanguageLineController extends Controller
         $validator = Validator::make($request->all(), [
             'group_input'=> 'required|max:191',
             'key_input'=>'required|max:191',
-            'text_uz_input'=>'required|max:50',
-            'text_ru_input'=>'required|max:50',
-            'text_en_input'=>'required|max:50',
+            'text_uz_input'=>'required|max:150',
+            'text_ru_input'=>'required|max:150',
+            'text_en_input'=>'required|max:150',
         ]);
 
         if($validator->fails())

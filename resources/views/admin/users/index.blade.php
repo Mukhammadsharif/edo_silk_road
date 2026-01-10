@@ -57,7 +57,7 @@
                             @if($isSuperUser)
                                 <div class="mb-2 mr-sm-2 w-15">
                                     <select name="s_org" class="form-control w-100 select2">
-                                        <option value="">{{ __('field.organizations') }}</option>
+                                        <option value="">{{ __('field.organization') }}</option>
                                         @foreach($organizations as $key => $organization)
                                             <option
                                                 value="{{ $organization->id }}" {{ $s_org == $organization->id ? 'selected':''}}>

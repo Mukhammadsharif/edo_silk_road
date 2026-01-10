@@ -88,9 +88,11 @@ class HomeController extends Controller
             'deletedEmpCount' => $deletedEmpCount
         ];
 
+        $isOwner = $this->isOwner();
+
         $app_temps = JournalTypes::where('doc_code', 'like', 'APP_%')->where('parent_id', '<>', 0)->where('level_number', 2)->where('status', 1)->get();
 
-        return view('home', compact('authRoleName', 'docs_count', 'employees', 'app_temps'));
+        return view('home', compact('authRoleName', 'docs_count', 'employees', 'app_temps', 'isOwner'));
     }
 
     public function lang($locale)

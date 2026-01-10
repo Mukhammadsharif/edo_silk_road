@@ -83,14 +83,6 @@
             @if(!Auth::user()->currentSubscription) disabled @endif>
         <i class="ik ik-save"></i> {{ __('action.save') }}
     </button>
-
-    @if(!Auth::user()->currentSubscription)
-        <div class="mt-2">
-            <a href="{{ route('pricing') }}" class="btn btn-outline-warning btn-sm">
-                Tariflarni ko'rish
-            </a>
-        </div>
-    @endif
 </div>
 
 <script type="text/javascript">
