@@ -70,10 +70,17 @@ class HomeController extends Controller
             'my_docs_menu_id' => $my_docs_menu_id,
         ];
 
-        $users = User::all();
-        $totalEmpCount = $users->count();
-        $activeEmpCount = $users->where('status', 1)->count();
-        $deletedEmpCount = $users->where('status', 3)->count();
+        if ($this->isSuperUser()) {
+            $users = User::all();
+            $totalEmpCount = $users->count();
+            $activeEmpCount = $users->where('status', 1)->count();
+            $deletedEmpCount = $users->where('status', 3)->count();
+        } else {
+            $users = User::where('org_unit_id', $this->organizationId());
+            $totalEmpCount = $users->count();
+            $activeEmpCount = $users->where('status', 1)->count();
+            $deletedEmpCount = $users->where('status', 3)->count();
+        }
 
         $employees = [
             'totalEmpCount' => $totalEmpCount,

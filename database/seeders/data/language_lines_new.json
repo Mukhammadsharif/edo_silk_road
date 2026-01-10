@@ -4087,5 +4087,413 @@
             "text" : "{\"en\": \"Continue\", \"ru\": \"Продолжить\", \"uz\": \"Davom ettirish\"}",
             "created_at" : "2025-05-26T12:38:54.000Z",
             "updated_at" : "2025-05-26T12:38:54.000Z"
+        },
+        {
+            "id": 514,
+            "group": "field",
+            "key": "subscription_already_exists",
+            "text": "{\"en\": \"You already have an active or pending subscription.\", \"ru\": \"У вас уже есть активная или ожидающая подписка.\", \"uz\": \"Sizda allaqachon faol yoki kutilayotgan obuna mavjud.\"}",
+            "created_at": "5/1/2026 15:14:06",
+            "updated_at": "5/1/2026 15:14:06"
+        },
+        {
+            "id": 515,
+            "group": "field",
+            "key": "subscription_request_already_reviewed",
+            "text": "{\"en\": \"This request has already been reviewed.\", \"ru\": \"Этот запрос уже был рассмотрен.\", \"uz\": \"Bu so'rov allaqachon ko'rib chiqilgan.\"}",
+            "created_at": "5/1/2026 15:15:23",
+            "updated_at": "5/1/2026 15:15:23"
+        },
+        {
+            "id": 516,
+            "group": "field",
+            "key": "subscription_approved_successfully",
+            "text": "{\"en\": \"The subscription has been successfully approved.\", \"ru\": \"Подписка успешно подтверждена.\", \"uz\": \"Obuna muvaffaqiyatli tasdiqlandi.\"}",
+            "created_at": "5/1/2026 15:15:50",
+            "updated_at": "5/1/2026 15:15:50"
+        },
+        {
+            "id": 517,
+            "group": "field",
+            "key": "subscription_rejected",
+            "text": "{\"en\": \"The subscription has been rejected.\", \"ru\": \"Подписка была отклонена.\", \"uz\": \"Obuna rad etildi.\"}",
+            "created_at": "5/1/2026 15:16:42",
+            "updated_at": "5/1/2026 15:16:42"
+        },
+        {
+            "id": 518,
+            "group": "field",
+            "key": "tariff_created_successfully",
+            "text": "{\"en\": \"The tariff has been successfully added.\", \"ru\": \"Тариф успешно добавлен.\", \"uz\": \"Tarif muvaffaqiyatli qo'shildi.\"}",
+            "created_at": "5/1/2026 15:17:32",
+            "updated_at": "5/1/2026 15:17:32"
+        },
+        {
+            "id": 519,
+            "group": "field",
+            "key": "tariff_updated_successfully",
+            "text": "{\"en\": \"The tariff has been successfully updated.\", \"ru\": \"Тариф успешно обновлён.\", \"uz\": \"Tarif muvaffaqiyatli yangilandi.\"}",
+            "created_at": "5/1/2026 15:18:12",
+            "updated_at": "5/1/2026 15:18:12"
+        },
+        {
+            "id": 520,
+            "group": "field",
+            "key": "tariff_deleted_successfully",
+            "text": "{\"en\": \"The tariff has been successfully deleted.\", \"ru\": \"Тариф успешно удалён.\", \"uz\": \"Tarif muvaffaqiyatli o'chirildi.\"}",
+            "created_at": "5/1/2026 15:18:34",
+            "updated_at": "5/1/2026 15:18:34"
+        },
+        {
+            "id": 521,
+            "group": "field",
+            "key": "unauthorized_action",
+            "text": "{\"en\": \"Unauthorized action.\", \"ru\": \"Недопустимое действие.\", \"uz\": \"Ruxsat etilmagan harakat.\"}",
+            "created_at": "5/1/2026 15:19:07",
+            "updated_at": "5/1/2026 15:19:07"
+        },
+        {
+            "id": 522,
+            "group": "field",
+            "key": "user_accepted_and_assigned",
+            "text": "{\"en\": \"The user has been successfully accepted and assigned to the department.\", \"ru\": \"Пользователь успешно принят и назначен в отдел.\", \"uz\": \"Foydalanuvchi muvaffaqiyatli qabul qilindi va bo'limga biriktirildi.\"}",
+            "created_at": "5/1/2026 15:30:02",
+            "updated_at": "5/1/2026 15:30:02"
+        },
+        {
+            "id": 523,
+            "group": "field",
+            "key": "request_rejected_successfully",
+            "text": "{\"en\": \"Request rejected successfully.\", \"ru\": \"Запрос успешно отклонён.\", \"uz\": \"So'rov muvaffaqiyatli rad etildi.\"}",
+            "created_at": "5/1/2026 15:31:11",
+            "updated_at": "5/1/2026 15:31:11"
+        },
+        {
+            "id": 525,
+            "group": "field",
+            "key": "user_created_successfully",
+            "text": "{\"en\": \"User created successfully.\", \"ru\": \"Пользователь успешно создан.\", \"uz\": \"Foydalanuvchi muvaffaqiyatli yaratildi.\"}",
+            "created_at": "5/1/2026 15:33:32",
+            "updated_at": "5/1/2026 15:33:32"
+        },
+        {
+            "id": 526,
+            "group": "field",
+            "key": "subscription_approval",
+            "text": "{\"en\": \"Subscription approval\", \"ru\": \"Подтверждение подписки\", \"uz\": \"Obunani tasdiqlash\"}",
+            "created_at": "5/1/2026 15:35:45",
+            "updated_at": "5/1/2026 15:35:45"
+        },
+        {
+            "id": 527,
+            "group": "field",
+            "key": "for_organization",
+            "text": "{\"en\": \"for the organization\", \"ru\": \"для организации\", \"uz\": \"tashkiloti uchun\"}",
+            "created_at": "5/1/2026 15:36:04",
+            "updated_at": "5/1/2026 15:36:04"
+        },
+        {
+            "id": 528,
+            "group": "field",
+            "key": "subscription_request_for_tariff",
+            "text": "{\"en\": \"subscription request for the tariff\", \"ru\": \"запрос на подписку на тариф\", \"uz\": \"tarifiga obuna so'rovini\"}",
+            "created_at": "5/1/2026 15:36:30",
+            "updated_at": "5/1/2026 15:36:30"
+        },
+        {
+            "id": 529,
+            "group": "field",
+            "key": "are_you_sure_to_approve",
+            "text": "{\"en\": \"Do you want to approve?\", \"ru\": \"Вы хотите подтвердить?\", \"uz\": \"Tasdiqlamoqchimisiz?\"}",
+            "created_at": "5/1/2026 15:36:55",
+            "updated_at": "5/1/2026 15:36:55"
+        },
+        {
+            "id": 530,
+            "group": "field",
+            "key": "yes_approve",
+            "text": "{\"en\": \"Yes, approve\", \"ru\": \"Да, подтвердить\", \"uz\": \"Ha, tasdiqlash\"}",
+            "created_at": "5/1/2026 15:37:56",
+            "updated_at": "5/1/2026 15:37:56"
+        },
+        {
+            "id": 531,
+            "group": "field",
+            "key": "reject_subscription",
+            "text": "{\"en\": \"Reject subscription\", \"ru\": \"Отклонить подписку\", \"uz\": \"Obunani rad etish\"}",
+            "created_at": "5/1/2026 15:38:19",
+            "updated_at": "5/1/2026 15:38:19"
+        },
+        {
+            "id": 532,
+            "group": "field",
+            "key": "are_you_sure_to_reject",
+            "text": "{\"en\": \"Do you want to reject?\", \"ru\": \"Вы хотите отклонить?\", \"uz\": \"Rad etmoqchimisiz?\"}",
+            "created_at": "5/1/2026 15:39:03",
+            "updated_at": "5/1/2026 15:39:03"
+        },
+        {
+            "id": 533,
+            "group": "field",
+            "key": "action_cannot_be_undone",
+            "text": "{\"en\": \"This action cannot be undone.\", \"ru\": \"Это действие нельзя отменить.\", \"uz\": \"Bu amalni keyincha qaytarib bo'lmaydi.\"}",
+            "created_at": "5/1/2026 15:39:47",
+            "updated_at": "5/1/2026 15:39:47"
+        },
+        {
+            "id": 534,
+            "group": "field",
+            "key": "organization",
+            "text": "{\"en\": \"Organization\", \"ru\": \"Организация\", \"uz\": \"Tashkilot\"}",
+            "created_at": "5/1/2026 15:43:07",
+            "updated_at": "5/1/2026 15:43:07"
+        },
+        {
+            "id": 535,
+            "group": "field",
+            "key": "tariff",
+            "text": "{\"en\": \"Tariff\", \"ru\": \"Тариф\", \"uz\": \"Tarif\"}",
+            "created_at": "5/1/2026 15:43:07",
+            "updated_at": "5/1/2026 15:43:07"
+        },
+        {
+            "id": 536,
+            "group": "field",
+            "key": "price_monthly",
+            "text": "{\"en\": \"Price (monthly)\", \"ru\": \"Цена (ежемесячно)\", \"uz\": \"Narxi (oylik)\"}",
+            "created_at": "5/1/2026 15:43:07",
+            "updated_at": "5/1/2026 15:43:07"
+        },
+        {
+            "id": 537,
+            "group": "field",
+            "key": "start_date",
+            "text": "{\"en\": \"Start\", \"ru\": \"Начало\", \"uz\": \"Boshlanish\"}",
+            "created_at": "5/1/2026 15:43:07",
+            "updated_at": "5/1/2026 15:43:07"
+        },
+        {
+            "id": 538,
+            "group": "field",
+            "key": "end_date",
+            "text": "{\"en\": \"End\", \"ru\": \"Окончание\", \"uz\": \"Tugash\"}",
+            "created_at": "5/1/2026 15:43:07",
+            "updated_at": "5/1/2026 15:43:07"
+        },
+        {
+            "id": 539,
+            "group": "field",
+            "key": "status",
+            "text": "{\"en\": \"Status\", \"ru\": \"Статус\", \"uz\": \"Holati\"}",
+            "created_at": "5/1/2026 15:43:07",
+            "updated_at": "5/1/2026 15:43:07"
+        },
+        {
+            "id": 540,
+            "group": "field",
+            "key": "created_at",
+            "text": "{\"en\": \"Created\", \"ru\": \"Создано\", \"uz\": \"Yaratilgan\"}",
+            "created_at": "5/1/2026 15:43:07",
+            "updated_at": "5/1/2026 15:43:07"
+        },
+        {
+            "id": 541,
+            "group": "field",
+            "key": "actions",
+            "text": "{\"en\": \"Actions\", \"ru\": \"Действия\", \"uz\": \"Harakat\"}",
+            "created_at": "5/1/2026 15:43:07",
+            "updated_at": "5/1/2026 15:43:07"
+        },
+        {
+            "id": 542,
+            "group": "field",
+            "key": "active",
+            "text": "{\"en\": \"Active\", \"ru\": \"Активно\", \"uz\": \"Faol\"}",
+            "created_at": "5/1/2026 15:43:07",
+            "updated_at": "5/1/2026 15:43:07"
+        },
+        {
+            "id": 543,
+            "group": "field",
+            "key": "expired",
+            "text": "{\"en\": \"Expired\", \"ru\": \"Истёк\", \"uz\": \"Muddat tugagan\"}",
+            "created_at": "5/1/2026 15:43:07",
+            "updated_at": "5/1/2026 15:43:07"
+        },
+        {
+            "id": 544,
+            "group": "field",
+            "key": "pending",
+            "text": "{\"en\": \"Pending\", \"ru\": \"Ожидает\", \"uz\": \"Kutilmoqda\"}",
+            "created_at": "5/1/2026 15:43:07",
+            "updated_at": "5/1/2026 15:43:07"
+        },
+        {
+            "id": 545,
+            "group": "field",
+            "key": "rejected",
+            "text": "{\"en\": \"Rejected\", \"ru\": \"Отклонено\", \"uz\": \"Rad etilgan\"}",
+            "created_at": "5/1/2026 15:43:07",
+            "updated_at": "5/1/2026 15:43:07"
+        },
+        {
+            "id": 546,
+            "group": "field",
+            "key": "no_data",
+            "text": "{\"en\": \"No data available\", \"ru\": \"Данных нет\", \"uz\": \"Bu bo'limda hozircha ma'lumot yo'q\"}",
+            "created_at": "5/1/2026 15:43:07",
+            "updated_at": "5/1/2026 15:43:07"
+        },
+        {
+            "id": 547,
+            "group": "field",
+            "key": "approve",
+            "text": "{\"en\": \"Approve\", \"ru\": \"Подтвердить\", \"uz\": \"Tasdiqlash\"}",
+            "created_at": "5/1/2026 15:43:07",
+            "updated_at": "5/1/2026 15:43:07"
+        },
+        {
+            "id": 548,
+            "group": "field",
+            "key": "reject",
+            "text": "{\"en\": \"Reject\", \"ru\": \"Отклонить\", \"uz\": \"Rad etish\"}",
+            "created_at": "5/1/2026 15:43:07",
+            "updated_at": "5/1/2026 15:43:07"
+        },
+        {
+            "id": 549,
+            "group": "field",
+            "key": "all_subscriptions",
+            "text": "{\"en\": \"All subscriptions\", \"ru\": \"Все подписки\", \"uz\": \"Barcha obunalar\"}",
+            "created_at": "5/1/2026 16:04:19",
+            "updated_at": "5/1/2026 16:04:19"
+        },
+        {
+            "id": 550,
+            "group": "field",
+            "key": "active_pending_rejected_expired",
+            "text": "{\"en\": \"Active, pending, rejected and expired subscriptions\", \"ru\": \"Активные, ожидающие, отклонённые и истёкшие подписки\", \"uz\": \"Faol, kutilayotgan, rad etilgan va muddati tugagan obunalar\"}",
+            "created_at": "5/1/2026 16:04:19",
+            "updated_at": "5/1/2026 16:04:19"
+        },
+        {
+            "id": 551,
+            "group": "field",
+            "key": "subscription_management",
+            "text": "{\"en\": \"Subscription management\", \"ru\": \"Управление подписками\", \"uz\": \"Obunalar boshqaruvi\"}",
+            "created_at": "5/1/2026 16:04:19",
+            "updated_at": "5/1/2026 16:04:19"
+        },
+        {
+            "id": 553,
+            "group": "field",
+            "key": "active",
+            "text": "{\"en\": \"Active\", \"ru\": \"Активно\", \"uz\": \"Faol\"}",
+            "created_at": "5/1/2026 16:04:19",
+            "updated_at": "5/1/2026 16:04:19"
+        },
+        {
+            "id": 554,
+            "group": "field",
+            "key": "expired",
+            "text": "{\"en\": \"Expired\", \"ru\": \"Истёк\", \"uz\": \"Muddat tugagan\"}",
+            "created_at": "5/1/2026 16:04:19",
+            "updated_at": "5/1/2026 16:04:19"
+        },
+        {
+            "id": 555,
+            "group": "field",
+            "key": "rejected",
+            "text": "{\"en\": \"Rejected\", \"ru\": \"Отклонено\", \"uz\": \"Rad etilgan\"}",
+            "created_at": "5/1/2026 16:04:19",
+            "updated_at": "5/1/2026 16:04:19"
+        },
+        {
+            "id": 563,
+            "group": "menu",
+            "key": "organizations",
+            "text": "{\"en\": \"Organizations\", \"ru\": \"Организации\", \"uz\": \"Tashkilotlar\"}",
+            "created_at": "5/1/2026 17:04:05",
+            "updated_at": "5/1/2026 17:04:05"
+        },
+        {
+            "id": 564,
+            "group": "field",
+            "key": "no_active_subscription",
+            "text": "{\"en\": \"The organization has no active subscription\", \"ru\": \"У организации нет активной подписки\", \"uz\": \"Tashkilotda faol obuna mavjud emas\"}",
+            "created_at": "9/1/2026 12:20:46",
+            "updated_at": "9/1/2026 12:20:46"
+        },
+        {
+            "id": 565,
+            "group": "field",
+            "key": "user_limit_reached",
+            "text": "{\"en\": \"User limit reached for the current plan\", \"ru\": \"Достигнут лимит пользователей по текущему тарифу\", \"uz\": \"Tarif bo‘yicha foydalanuvchi limitiga yetildi\"}",
+            "created_at": "9/1/2026 12:21:49",
+            "updated_at": "9/1/2026 12:22:10"
+        },
+        {
+            "id": 566,
+            "group": "field",
+            "key": "document_limit_reached",
+            "text": "{\"en\": \"Document limit reached for the current plan\", \"ru\": \"Достигнут лимит документов по текущему тарифу\", \"uz\": \"Joriy tarif bo‘yicha hujjatlar limitiga yetildi\"}",
+            "created_at": "9/1/2026 12:23:03",
+            "updated_at": "9/1/2026 12:23:03"
+        },
+        {
+            "id": 567,
+            "group": "menu",
+            "key": "pending_join_requests",
+            "text": "{\"en\": \"Pending join requests\", \"ru\": \"Запросы входа в организацию\", \"uz\": \"Tashkilotga kirishga so'rovlar\"}",
+            "created_at": "9/1/2026 14:17:54",
+            "updated_at": "9/1/2026 14:17:54"
+        },
+        {
+            "id": 568,
+            "group": "field",
+            "key": "no_pending_requests",
+            "text": "{\"en\": \"No pending requests\", \"ru\": \"Запросов нет\", \"uz\": \"So'rovlar mavjud emas\"}",
+            "created_at": "9/1/2026 14:18:32",
+            "updated_at": "9/1/2026 14:18:32"
+        },
+        {
+            "id": 570,
+            "group": "field",
+            "key": "users_limit",
+            "text": "{\"en\": \"Users limit\", \"ru\": \"Лимит пользователей\", \"uz\": \"Foydalanuvchilar limiti\"}",
+            "created_at": "9/1/2026 14:35:30",
+            "updated_at": "9/1/2026 14:35:30"
+        },
+        {
+            "id": 571,
+            "group": "field",
+            "key": "available",
+            "text": "{\"en\": \"Available\", \"ru\": \"Доступно\", \"uz\": \"Mavjud\"}",
+            "created_at": "9/1/2026 14:36:22",
+            "updated_at": "9/1/2026 14:36:22"
+        },
+        {
+            "id": 572,
+            "group": "menu",
+            "key": "all_users",
+            "text": "{\"en\": \"All users\", \"ru\": \"Все пользователи\", \"uz\": \"Barcha foydalanuvchilar\"}",
+            "created_at": "10/1/2026 11:15:58",
+            "updated_at": "10/1/2026 11:15:58"
+        },
+        {
+            "id": 573,
+            "group": "menu",
+            "key": "active_users",
+            "text": "{\"en\": \"Active users\", \"ru\": \"Активные пользователи\", \"uz\": \"Faol foydalanuvchilar\"}",
+            "created_at": "10/1/2026 11:16:34",
+            "updated_at": "10/1/2026 11:16:34"
+        },
+        {
+            "id": 574,
+            "group": "menu",
+            "key": "deleted_users",
+            "text": "{\"en\": \"Deleted users\", \"ru\": \"Удалённые пользователи\", \"uz\": \"O'chirilgan foydalanuvchilar\"}",
+            "created_at": "10/1/2026 11:17:24",
+            "updated_at": "10/1/2026 11:17:24"
         }
     ]}

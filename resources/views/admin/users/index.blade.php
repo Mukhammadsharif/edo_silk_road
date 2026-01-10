@@ -1,4 +1,20 @@
+@php use Carbon\Carbon; @endphp
 @extends('layouts.app')
+
+<style>
+    .opacity-50 {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    .card.border-danger {
+        border: 2px solid #dc3545 !important;
+    }
+
+    .card-header.bg-danger {
+        background-color: #dc3545 !important;
+    }
+</style>
 
 @section('content')
     <div class="container-fluid">
@@ -43,7 +59,8 @@
                                     <select name="s_org" class="form-control w-100 select2">
                                         <option value="">{{ __('field.organizations') }}</option>
                                         @foreach($organizations as $key => $organization)
-                                            <option value="{{ $organization->id }}" {{ $s_org == $organization->id ? 'selected':''}}>
+                                            <option
+                                                value="{{ $organization->id }}" {{ $s_org == $organization->id ? 'selected':''}}>
                                                 {{ ++$key }}.{{ $organization->lang($organization->id) }}
                                             </option>
                                         @endforeach
@@ -51,7 +68,8 @@
                                 </div>
                             @endif
 
-                            <input type="text" name="s_text" placeholder="{{ __('action.search') }}" value="{{ $s_text??'' }}" class="form-control w-25 mb-2 mr-sm-2">
+                            <input type="text" name="s_text" placeholder="{{ __('action.search') }}"
+                                   value="{{ $s_text??'' }}" class="form-control w-25 mb-2 mr-sm-2">
 
                             <div class="mb-2 mr-sm-2 w-15">
                                 <select name="s_status" class="form-control w-100">
@@ -113,7 +131,8 @@
                                             </p>
                                         </td>
                                         <td>
-                                            <span class="badge badge-pill @if($item->status == 1) badge-green @else badge-danger @endif text-white">
+                                            <span
+                                                class="badge badge-pill @if($item->status == 1) badge-green @else badge-danger @endif text-white">
                                                 {{ $item->isActive($item->status) }}
                                             </span>
                                         </td>
@@ -132,7 +151,7 @@
                                                 <i class="fa fa-eye"></i> {{ __('action.view') }}
                                             </a>
                                         </td>
-                                        <td>{{ \Carbon\Carbon::parse($item->created_at)->format('d.m.y H:i') }}</td>
+                                        <td>{{ Carbon::parse($item->created_at)->format('d.m.y H:i') }}</td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -149,13 +168,32 @@
         </div>
 
         @unless($isSuperUser)
+            @php
+                $user = \App\Models\User::find(auth()->id());
+                $organization = \App\Models\Admin\OrganizationUnits::find($user->org_unit_id);
+                $canAddUsers = $organization && $organization->canAddUser();
+                $limits = $organization ? $organization->getSubscriptionLimits() : null;
+            @endphp
+
             <div class="row mt-4">
                 <div class="col-sm-12">
-                    <div class="card">
-                        <div class="card-header">
+                    <div class="card {{ !$canAddUsers ? 'border-danger' : '' }}">
+                        <div class="card-header {{ !$canAddUsers ? 'bg-danger text-white' : '' }}">
                             <h5>{{ __('menu.pending_join_requests') }} ({{ count($pendingRequests) }})</h5>
+                            @if($limits)
+                                <span class="d-block ml-10">
+                                    {{ __('field.users_limit') }}: {{ $limits['users']['current'] }} / {{ $limits['users']['max'] }}
+                                    ({{ __('field.available') }}: {{ $limits['users']['available'] }})
+                                </span>
+                            @endif
+                            @if(!$canAddUsers)
+                                <div class="alert alert-warning mt-2 mb-0">
+                                    <i class="ik ik-alert-circle"></i>
+                                    {{ __('field.user_limit_reached_warning') }}
+                                </div>
+                            @endif
                         </div>
-                        <div class="card-body template-demo">
+                        <div class="card-body template-demo {{ !$canAddUsers ? 'opacity-50' : '' }}">
                             <div class="table-responsive">
                                 <table class="table table-striped table-bordered">
                                     <thead>
@@ -181,16 +219,22 @@
                                             </td>
                                             <td class="text-primary">{{ $user->email ?? '-' }}</td>
                                             <td>{{ $request->tax_number }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($request->created_at)->format('d.m.y H:i') }}</td>
+                                            <td>{{ Carbon::parse($request->created_at)->format('d.m.y H:i') }}</td>
                                             <td>
-                                                <button type="button" class="btn btn-success btn-sm accept-btn"
+                                                <button type="button"
+                                                        class="btn btn-success btn-sm accept-btn"
                                                         data-id="{{ $request->id }}"
                                                         data-name="{{ $personal->l_name ?? '' }} {{ $personal->f_name ?? '' }}"
-                                                        data-url="{{ route('users.accept-request', $request->id) }}">
+                                                        data-url="{{ route('users.accept-request', $request->id) }}"
+                                                        {{ !$canAddUsers ? 'disabled' : '' }}
+                                                        @if(!$canAddUsers)
+                                                            title="{{ __('field.user_limit_reached') }}"
+                                                    @endif>
                                                     <i class="ik ik-check"></i> {{ __('action.accept') }}
                                                 </button>
 
-                                                <button type="button" class="btn btn-danger btn-sm reject-btn ml-1"
+                                                <button type="button"
+                                                        class="btn btn-danger btn-sm reject-btn ml-1"
                                                         data-id="{{ $request->id }}"
                                                         data-name="{{ $personal->l_name ?? '' }} {{ $personal->f_name ?? '' }}"
                                                         data-url="{{ route('users.reject-request', $request->id) }}">
@@ -200,7 +244,8 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="6" class="text-center">{{ __('field.no_pending_requests') }}</td>
+                                            <td colspan="6"
+                                                class="text-center">{{ __('field.no_pending_requests') }}</td>
                                         </tr>
                                     @endforelse
                                     </tbody>
@@ -230,8 +275,10 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="department">{{ __('field.department') }} <span class="text-danger">*</span></label>
-                                    <select name="dep_id" id="departmentSelect" class="form-control select2" required style="width: 100%;">
+                                    <label for="department">{{ __('field.department') }} <span
+                                            class="text-danger">*</span></label>
+                                    <select name="dep_id" id="departmentSelect" class="form-control select2" required
+                                            style="width: 100%;">
                                         <option value="">{{ __('action.select') }} {{ __('field.department') }}</option>
                                         @foreach($departments as $department)
                                             <option value="{{ $department->id }}">
@@ -244,9 +291,10 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="position">{{ __('field.position') }}</label>
-                                    <select name="post_id" id="positionSelect" class="form-control select2" style="width: 100%;">
+                                    <select name="post_id" id="positionSelect" class="form-control select2"
+                                            style="width: 100%;">
                                         <option value="">{{ __('action.select') }} {{ __('field.position') }}</option>
-                                        <!-- Должности будут загружаться динамически через AJAX -->
+
                                     </select>
                                 </div>
                             </div>
@@ -293,6 +341,7 @@
         </div>
     </div>
 
+
     <script>
         $(document).ready(function () {
             $('.select2').select2({
@@ -331,7 +380,6 @@
                 $('#acceptUserName').text(name);
                 $('#acceptForm').attr('action', url);
 
-                // Сброс выбора
                 $('#departmentSelect').val(null).trigger('change');
                 $('#positionSelect').empty().append('<option value="">{{ __('action.select') }} {{ __('field.position') }}</option>');
 

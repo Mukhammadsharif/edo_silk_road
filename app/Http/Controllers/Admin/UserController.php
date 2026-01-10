@@ -107,6 +107,51 @@ class UserController extends Controller
             's_role', 'statusList', 'userRoles', 'organizations', 's_org', 'isSuperUser', 'pendingRequests', 'departments'));
     }
 
+//    public function acceptRequest(Request $request, $id)
+//    {
+//        $request->validate([
+//            'dep_id' => 'required|exists:departments,id',
+//            'post_id' => 'nullable|exists:user_positions,id'
+//        ]);
+//
+//        $requestOrg = RequestForOrgs::findOrFail($id);
+//
+//        if ($requestOrg->org_unit_id !== $this->organizationId()) {
+//            return redirect()->back()->with('error', __('field.unauthorized_action'));
+//        }
+//
+//        if ($requestOrg->status !== 1) {
+//            return redirect()->back()->with('error', 'field.subscription_request_already_reviewed');
+//        }
+//
+//        $user = User::findOrFail($requestOrg->user_id);
+//
+//        $user->org_unit_id = $requestOrg->org_unit_id;
+//        $user->save();
+//
+//        $nextYear = Carbon::now()->addYear()->format('Y-m-d');
+//
+//        $oldUserWorkHistory = UserWorkHistory::where('user_id', $user->id)->first();
+//
+//        if ($oldUserWorkHistory) $oldUserWorkHistory->update(['status' => 2]);
+//
+//        UserWorkHistory::create([
+//            'user_id' => $user->id,
+//            'org_id' => $this->organizationId(),
+//            'dep_id' => $request->dep_id,
+//            'post_id' => $request->post_id ?? 3,
+//            'from_date' => Carbon::now()->format('Y-m-d'),
+//            'to_date' => $nextYear,
+//            'status' => 1
+//        ]);
+//
+//        $requestOrg->status = 2;
+//        $requestOrg->save();
+//
+//
+//        return redirect()->route('users.index')->with('success', __('field.user_accepted_and_assigned'));
+//    }
+
     public function acceptRequest(Request $request, $id)
     {
         $request->validate([
@@ -122,6 +167,16 @@ class UserController extends Controller
 
         if ($requestOrg->status !== 1) {
             return redirect()->back()->with('error', 'field.subscription_request_already_reviewed');
+        }
+
+        $organization = OrganizationUnits::find($this->organizationId());
+
+        if (!$organization->currentSubscription) {
+            return redirect()->back()->with('error', __('field.no_active_subscription'));
+        }
+
+        if (!$organization->canAddUser()) {
+            return redirect()->back()->with('error', __('field.user_limit_reached'));
         }
 
         $user = User::findOrFail($requestOrg->user_id);
@@ -147,7 +202,6 @@ class UserController extends Controller
 
         $requestOrg->status = 2;
         $requestOrg->save();
-
 
         return redirect()->route('users.index')->with('success', __('field.user_accepted_and_assigned'));
     }

@@ -182,7 +182,16 @@ class User extends Authenticatable
             'id'           // local key в organization_units
         )
             ->where('subscriptions.status', 1)
-            ->where('subscriptions.ends_at', '>=', now());
+            ->where('subscriptions.ends_at', '>=', now())
+            ->whereRaw('
+            (SELECT COUNT(*)
+             FROM document_journals
+             WHERE document_journals.org_unit_id = subscriptions.org_unit_id
+             AND document_journals.created_at BETWEEN subscriptions.starts_at AND subscriptions.ends_at
+            ) < (SELECT max_documents
+                 FROM tariffs
+                 WHERE tariffs.id = subscriptions.tariff_id)
+        ');
     }
 
 

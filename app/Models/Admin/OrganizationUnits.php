@@ -2,7 +2,9 @@
 
 namespace App\Models\Admin;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Spatie\TranslationLoader\LanguageLine;
 
 class OrganizationUnits extends Model
@@ -144,6 +146,11 @@ class OrganizationUnits extends Model
         return $children;
     }
 
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscriptions::class, 'org_unit_id');
+    }
+
     public function subscription()
     {
         return $this->hasOne(Subscriptions::class, 'org_unit_id');
@@ -152,7 +159,77 @@ class OrganizationUnits extends Model
     public function currentSubscription()
     {
         return $this->hasOne(Subscriptions::class, 'org_unit_id')
-            ->where('status', 1)
-            ->where('ends_at', '>=', now());
+            ->with('tariff')
+            ->where('subscriptions.status', 1)
+            ->where('subscriptions.ends_at', '>=', now())
+            ->whereRaw('
+                (SELECT COUNT(*)
+                 FROM document_journals
+                 WHERE document_journals.org_unit_id = subscriptions.org_unit_id
+                 AND document_journals.created_at BETWEEN subscriptions.starts_at AND subscriptions.ends_at
+                ) < (SELECT max_documents
+                     FROM tariffs
+                     WHERE tariffs.id = subscriptions.tariff_id)
+            ');
+    }
+
+    public function canAddUser()
+    {
+        $subscription = $this->currentSubscription;
+
+        if (!$subscription) {
+            return false;
+        }
+
+        $currentUsersCount = User::where('org_unit_id', $this->id)->count();
+
+        return $currentUsersCount < $subscription->tariff->max_users;
+    }
+
+    public function canCreateDocument()
+    {
+        $subscription = $this->currentSubscription;
+
+        if (!$subscription) {
+            return false;
+        }
+
+        $documentsCount = DB::table('document_journals')
+            ->where('org_unit_id', $this->id)
+            ->whereBetween('created_at', [$subscription->starts_at, $subscription->ends_at])
+            ->count();
+
+        return $documentsCount < $subscription->tariff->max_documents;
+    }
+
+    public function getSubscriptionLimits()
+    {
+        $subscription = $this->currentSubscription;
+
+        if (!$subscription) {
+            return null;
+        }
+
+        $currentUsers = User::where('org_unit_id', $this->id)->count();
+
+        $currentDocuments = DB::table('document_journals')
+            ->where('org_unit_id', $this->id)
+            ->whereBetween('created_at', [$subscription->starts_at, $subscription->ends_at])
+            ->count();
+
+        return [
+            'users' => [
+                'current' => $currentUsers,
+                'max' => $subscription->tariff->max_users,
+                'available' => $subscription->tariff->max_users - $currentUsers,
+                'percentage' => round(($currentUsers / $subscription->tariff->max_users) * 100, 2)
+            ],
+            'documents' => [
+                'current' => $currentDocuments,
+                'max' => $subscription->tariff->max_documents,
+                'available' => $subscription->tariff->max_documents - $currentDocuments,
+                'percentage' => round(($currentDocuments / $subscription->tariff->max_documents) * 100, 2)
+            ]
+        ];
     }
 }
