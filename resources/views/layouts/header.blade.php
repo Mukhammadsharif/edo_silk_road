@@ -11,7 +11,6 @@
     <div class="nav-container">
         <div class="d-flex justify-content-between align-items-center">
 
-            <!-- Логотип -->
             <div class="logo">
                 <img src="{{ asset('images/logo.svg') }}" alt="Логотип" />
                 <div class="logo-text">
@@ -23,10 +22,9 @@
             <div class="container-fluid">
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
 
-                    <!-- Блоки уведомлений о статусе заявки -->
                     @if($isOrganizationDemo && !$request)
                         <div class="alert bg-success text-white d-flex justify-content-between align-items-center flex-grow-1"
-                             style="max-width: 420px; margin: 0;">
+                             style="max-width: 500px; margin: 0 0 0 25px;">
                             <span>{{ __('field.send_request_for_joining') }}</span>
                             <button class="btn btn-light" id="requestButton" data-toggle="modal" data-target="#RequestModal">
                                 {{ __('field.leave_request') }}
@@ -36,7 +34,7 @@
 
                     @if($isOrganizationDemo && $request && $request->status == 1)
                         <div class="alert bg-secondary text-white d-flex justify-content-between align-items-center flex-grow-1"
-                             style="max-width: 420px; margin: 0;">
+                             style="max-width: 500px; margin: 0 0 0 25px;">
                             <span>{{ __('field.pending_request_for_joining') }}</span>
                             <button class="btn btn-danger" id="cancelButton" data-toggle="modal" data-target="#CancelModal">
                                 {{ __('action.cancel') }}
@@ -46,7 +44,7 @@
 
                     @if($isOrganizationDemo && $request && $request->status == 3)
                         <div class="alert bg-danger text-white d-flex justify-content-between align-items-center flex-grow-1"
-                             style="max-width: 420px; margin: 0;">
+                             style="max-width: 500px; margin: 0 0 0 25px;">
                             <span>{{ __('field.declined_request_for_joining') }}</span>
                             <button class="btn btn-light" id="requestButton" data-toggle="modal" data-target="#RequestModal">
                                 {{ __('field.leave_request') }}
@@ -68,7 +66,6 @@
                         </div>
                     @endcan
 
-                    <!-- Правая часть: язык + уведомления + профиль -->
                     <div class="top-menu d-flex align-items-center ms-auto">
 
                         <!-- Выбор языка -->
