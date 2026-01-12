@@ -1,182 +1,550 @@
-<div class="app-sidebar colored">
-    <div class="sidebar-header">
-        <a class="header-brand" href="{{ route('home') }}">
-            <span class="text ml-5 small">
-                {{ $userShortName }}
-            </span>
-        </a>
-    </div>
-    <div class="sidebar-content">
-        <div class="nav-container">
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hujjatlar Boshqaruvi</title>
 
-            <nav id="main-menu-navigation" class="navigation-main">
-                <div class="nav-item has-sub create-doc">
-                    <a href="javascript:void(0)" class=""><i class="ik ik-plus"></i><span> Hujjat yaratish</span></a>
-                    <div class="submenu-content">
-                        <a href="{{ url('/office/document/create/incoming') }}" class="menu-item"><i class="ik ik-chevrons-down"></i> Kiruvchi xat</a>
-                        <a href="{{ url('/office/document/create/outgoing') }}" class="menu-item"><i class="ik ik-chevrons-up"></i> Chiquvchi xat</a>
-                        <a href="{{ url('/office/document/create/internal') }}" class="menu-item"><i class="ik ik-edit-2"></i> Ichki hujjatlar</a>
-                    </div>
-                </div>
+  <!-- Google Fonts - Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-                @if($sidebarMenus)
-                    @foreach($sidebarMenus as $menu)
-                        @if($menu->child && $menu->child->count() > 0)
-                            <div class="nav-item has-sub {{ $isParentOpen($menu) }} parentMenu" data-menu-id="{{ $menu->id }}">
-                                <a href="javascript:void(0)">
-                                    <i class="{{ $menu->menuList->iconClass->name??'' }}"></i>
-                                    <span>{{ $menu->getMenuName($menu->menu_id) }}</span>
-                                    <span class="badge badge-danger count-parent-position1" data-id="{{ $menu->id }}"></span>
-                                </a>
-                                <div class="submenu-content" style="{{ $isParentOpen($menu) ? 'display:block;' : '' }}">
-                                    @foreach($menu->child as $child)
-                                        @php($url_path = $child->menuList->url_path??'#')
-                                        <a href="{{ $url_path }}"
-                                           class="menu-item {{ $isActiveMenu($url_path) }}">
-                                            <i class="{{ $child->menuList->iconClass->name??'' }}"></i>
-                                            {{ $child->getMenuName($child->menu_id) }}
-                                            @if($child->menuList->count && $child->menuCount($child->id) > 0)
-                                                <span class="badge badge-danger count-position">
-                                                    {{ $child->menuCount($child->id) }}
-                                                </span>
-                                            @endif
-                                        </a>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @else
-                            @php($url_path2 = $menu->menuList->url_path??'#')
-                            <div class="nav-item {{ $isActiveMenu($url_path2) }}">
-                                <a href="{{ $url_path2 }}">
-                                    <i class="{{ $menu->menuList->iconClass->name??'' }}"></i>
-                                    <span>{{ $menu->getMenuName($menu->menu_id) }}</span>
-                                    @if($menu->menuList->count && $menu->menuCount($menu->id) > 0)
-                                        <span class="badge badge-danger count-position">
-                                            {{ $menu->menuCount($menu->id) }}
-                                        </span>
-                                    @endif
-                                </a>
-                            </div>
-                        @endif
-                    @endforeach
-                @else
-                    <div class="nav-lavel">{{ __('field.empty') }}</div>
-                @endif
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
-                {{-- Protocols kategoriyasi --}}
-                @if($protocolMenus->count() > 0)
-                    <div class="nav-item has-sub {{ request()->is('protocol/*') ? 'open active' : '' }}" data-menu-id="1000">
-                        <a href="javascript:void(0)">
-                            <i class="ik ik-folder"></i>
-                            <span>{{ __('menu.protocols') }}</span>
-                            <span class="badge badge-danger count-parent-position1" data-id="1000"></span>
-                        </a>
-                        <div class="submenu-content" style="{{ request()->is('protocol/*') ? 'display:block;' : '' }}">
-                            @foreach($protocolMenus as $menu)
-                                @php($url_path2 = $menu->menuList->url_path??'#')
-                                <a href="{{ $url_path2 }}"
-                                   class="menu-item {{ $isActiveMenu($url_path2) }}">
-                                    <i class="{{ $menu->menuList->iconClass->name??'' }}"></i>
-                                    {{ $menu->getMenuName($menu->menu_id) }}
-                                    @if($menu->menuList->count && $menu->menuCount($menu->id) > 0)
-                                        <span class="badge badge-danger count-position">
-                                            {{ $menu->menuCount($menu->id) }}
-                                        </span>
-                                    @endif
-                                </a>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
-            </nav>
+    <style>
+      :root {
+        --sidebar-width: 256px;
+        --navbar-height: 64px;
+        --primary: #794DFD;
+        --primary-hover: #d9467a;
+        --primary-light: #fdf2f8;
+        --bg: #f8fafc;
+        --card-bg: #ffffff;
+        --text: #1e293b;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+      }
+
+      /* Sidebar - Light & Dark Mode */
+      .sidebar {
+        position: fixed;
+        top: 50px;
+        left: 0;
+        width: var(--sidebar-width);
+        height: calc(100vh - var(--navbar-height));
+        background-color: #ffffff; 
+        border-right: 1px solid var(--border);
+        padding: 1.5rem 0;
+        overflow-y: auto;
+        z-index: 30;
+        display: flex;
+        flex-direction: column;
+        transition: background-color 0.3s;
+      }
+
+      .sidebar.dark {
+        background-color: #794dfd;
+      }
+
+      /* Dark mode: normal menu text & icons - white */
+      .sidebar.dark .menu-header {
+        color: white;
+      }
+
+      .sidebar.dark .menu-header i:first-child,
+      .sidebar.dark .menu-header .chevron {
+        color: white;
+      }
+
+      /* Dark mode hover */
+      .sidebar.dark .menu-header:hover {
+        background-color: #ffffff1f;
+        color: #fff;
+      }
+
+      .sidebar.dark .menu-header:hover i {
+        color: var(--primary);
+      }
+
+      /* Dark mode submenu */
+      .sidebar.dark .submenu {
+        background-color: #5B39BE;
+      }
+
+      .sidebar.dark .submenu-item {
+        color: white;
+      }
+
+      .sidebar.dark .submenu-item:hover {
+        background-color: #1e293b;
+        color: var(--primary);
+      }
+
+      .sidebar.dark .submenu-item:hover i {
+        color: var(--primary);
+      }
+
+      .sidebar.dark .submenu-item i {
+        color: white;
+      }
+      
+
+      /* Dark mode logout border */
+      .sidebar.dark .logout {
+        border-top-color: #334155;
+      }
+
+      .menu-item {
+        position: relative;
+        margin: 0.25rem 1rem;
+        border-radius: 0.5rem;
+        overflow: hidden;
+      }
+
+      .menu-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between; 
+        gap: 1rem;  
+        padding:10px 1rem;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .menu-header:hover {
+        background-color: var(--primary-light);
+        color: var(--primary);
+      }
+
+      .menu-header:hover i {
+        color: var(--primary);
+      }
+
+      /* Active menu */
+      .menu-item.active > .menu-header {
+        background-color: var(--primary);
+        color: white;
+      }
+
+      .menu-item.active > .menu-header i {
+        color: white;
+      }
+
+      .menu-item.active > .menu-header .menu-text {
+        color: white;
+      }
+
+      .menu-item.active .chevron {
+        color: white;
+      }
+
+
+      /* Main icon */
+      .menu-header i:first-child {
+        width: 22px;
+        height: 22px;
+        flex-shrink: 0;
+        color: var(--text-muted);
+        transition: color 0.3s;
+      }
+
+      /* Chevron icon */
+  .chevron {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.3s, color 0.3s;
+    color: var(--text-muted); /* default color */
+  }
+
+  /* Rotate chevron when open */
+  .menu-item.open .chevron {
+    transform: rotate(90deg);
+  }
+
+  /* Active menu - chevron white */
+  .menu-item.active .chevron {
+    color: white !important;
+  }
+
+  /* Hover state for menu header - chevron becomes primary */
+  .menu-header:hover .chevron {
+    color: var(--primary) !important;
+  }
+
+  /* Dark mode - default chevron color */
+  .sidebar.dark .chevron {
+    color: white; /* default dark mode */
+  }
+
+  /* Dark mode hover - chevron becomes primary */
+  .sidebar.dark .menu-header:hover .chevron {
+    color: #fff !important;
+  }
+
+  /* Dark mode active - chevron white */
+  .sidebar.dark .menu-item.active .chevron {
+    color: white !important;
+  }
+
+      .menu-text {
+        font-size: 13px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 0;
+        flex: 1;
+      }
+
+      /* Submenu */
+      .submenu {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease;
+        background-color: #f8f9fb;
+      }
+
+      .menu-item.open .submenu {
+        max-height: 500px;
+      }
+
+      .submenu-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.65rem 1.75rem 0.65rem 3.5rem;
+        color: var(--text-muted);
+        font-size: 13.5px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .submenu-item:hover {
+        background-color: var(--primary-light);
+        color: var(--primary);
+        padding-left: 3.8rem;
+      }
+
+      .submenu-item i {
+        width: 22px;
+        height: 22px;
+        color: var(--text-muted);
+        transition: color 0.2s;
+      }
+
+      .submenu-item:hover i {
+        color: var(--primary);
+      }
+
+      .logout {
+        margin-top: auto;
+        border-top: 1px solid  var(--border);
+        padding-top: 1rem;
+        margin-top: 2rem;
+      }
+
+      .logout .menu-item:hover .menu-header {
+        background-color:#E2427E;
+        color: #fff;
+      }
+
+      .logout .menu-item:hover .menu-header i {
+        color: #dc2626;
+      }
+
+      /* Theme Toggle Tabs */
+      .theme-tabs {
+        display: flex;
+        background-color: #f1f5f9;
+        border-radius: 0.5rem;
+        margin: 6rem 1rem 1rem 1rem;
+        width: calc(100% - 2rem);
+        padding: 4px;
+      }
+
+      .sidebar.dark .theme-tabs {
+        background-color: #00000026;
+      }
+
+      .theme-tab {
+        flex: 1;
+        text-align: center;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        padding: 4px 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .theme-tab.active {
+        background-color: var(--primary);
+        color: white;
+      }
+
+      .theme-tab i {
+        width: 20px;
+        height: 20px;
+        color: var(--text-muted);
+        transition: color 0.3s;
+      }
+
+      /* Active theme tab icon - always white */
+      .theme-tab.active i {
+        color: white;
+      }
+
+      .theme-tab:hover:not(.active) i {
+        color: var(--primary);
+      }
+      /* Sidebar Icons */
+  .menu-header i:first-child,
+  .submenu-item i,
+  .chevron {
+    color: var(--primary); /* default primary color */
+    transition: color 0.3s;
+  }
+
+  /* Active menu */
+  .menu-item.active > .menu-header i,
+  .menu-item.active .chevron,
+  .menu-item.active .submenu-item i {
+    color: white; /* active icons white */
+  }
+
+  /* Hover icons */
+  .menu-header:hover i,
+  .submenu-item:hover i {
+    color: var(--primary); /* hover same as primary */
+  }
+
+  /* Dark mode adjustments */
+  .sidebar.dark .menu-header i:first-child,
+  .sidebar.dark .submenu-item i,
+  .sidebar.dark .chevron {
+    color: var(--primary); /* dark mode icons not active */
+  }
+
+  .sidebar.dark .menu-item.active > .menu-header i,
+  .sidebar.dark .menu-item.active .chevron,
+  .sidebar.dark .menu-item.active .submenu-item i {
+    color: white; /* active in dark mode */
+  }
+
+  .sidebar.dark .menu-header:hover i,
+  .sidebar.dark .submenu-item:hover i {
+    color: var(--primary); /* hover in dark mode */
+  }
+
+    </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <nav class="h-full flex flex-col">
+      <div class="flex-1">
+
+        <!-- Asosiy -->
+        <div class="menu-item active">
+          <div class="menu-header">
+            <i data-lucide="home" style="width: 22px; height: 22px;"></i>
+            <span class="menu-text">Asosiy</span>
+            
+          </div>
         </div>
-    </div>
-</div>
 
-<script src="{{ asset('/ajax/jquery.min.js') }}"></script>
+        <!-- Hujjat yaratish -->
+        <div class="menu-item">
+          <div class="menu-header">
+            <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
+              <i data-lucide="file-plus-2" style="width: 22px; height: 22px;"></i>
+              <span class="menu-text">Hujjat yaratish</span>
+            </div>
+            <i data-lucide="chevron-right" class="chevron"></i>
+          </div>
+          <div class="submenu">
+            <div class="submenu-item">
+              <i data-lucide="file-text" style="width: 18px; height: 18px;"></i>
+              <span>Yangi hujjat</span>
+            </div>
+            <div class="submenu-item">
+              <i data-lucide="copy" style="width: 18px; height: 18px;"></i>
+              <span>Shablondan</span>
+            </div>
+          </div>
+        </div>
 
-<script type="text/javascript">
-    $(document).ready(function () {
+        <!-- Hujjatlar -->
+        <div class="menu-item">
+          <div class="menu-header">
+            <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
+              <i data-lucide="folder-open" style="width: 22px; height: 22px;"></i>
+              <span class="menu-text">Hujjatlar</span>
+            </div>
+            <i data-lucide="chevron-right" class="chevron"></i>
+          </div>
+          <div class="submenu">
+            <div class="submenu-item">
+              <i data-lucide="clock" style="width: 18px; height: 18px;"></i>
+              <span>Kutayotganlar</span>
+            </div>
+            <div class="submenu-item">
+              <i data-lucide="check-circle" style="width: 18px; height: 18px;"></i>
+              <span>Tasdiqlangan</span>
+            </div>
+            <div class="submenu-item">
+              <i data-lucide="x-circle" style="width: 18px; height: 18px;"></i>
+              <span>Rad etilgan</span>
+            </div>
+          </div>
+        </div>
 
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
+        <!-- Menga yuborilgan -->
+        <div class="menu-item">
+          <div class="menu-header">
+            <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
+              <i data-lucide="mail" style="width: 22px; height: 22px;"></i>
+              <span class="menu-text">Menga yuborilgan</span>
+            </div>
+            <i data-lucide="chevron-right" class="chevron"></i>
+          </div>
+          <div class="submenu">
+            <div class="submenu-item">
+              <i data-lucide="inbox" style="width: 18px; height: 18px;"></i>
+              <span>Yangi</span>
+            </div>
+            <div class="submenu-item">
+              <i data-lucide="archive" style="width: 18px; height: 18px;"></i>
+              <span>Arxiv</span>
+            </div>
+          </div>
+        </div>
 
-        const menuItems = document.querySelectorAll('.parentMenu');
+        <!-- Mening hujjatlarim -->
+        <div class="menu-item">
+          <div class="menu-header">
+            <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
+              <i data-lucide="file-text" style="width: 22px; height: 22px;"></i>
+              <span class="menu-text">Mening hujjatlarim</span>
+            </div>
+            <i data-lucide="chevron-right" class="chevron"></i>
+          </div>
+          <div class="submenu">
+            <div class="submenu-item">
+              <i data-lucide="send" style="width: 18px; height: 18px;"></i>
+              <span>Yuborilgan</span>
+            </div>
+            <div class="submenu-item">
+              <i data-lucide="edit" style="width: 18px; height: 18px;"></i>
+              <span>Qoralama</span>
+            </div>
+          </div>
+        </div>
 
-        menuItems.forEach((item) => {
-            let id = item.getAttribute('data-menu-id')
-            let element = $(`span[data-id=${id}]`)
-            $.ajax({
-                url: "{{ route('get-menu-count') }}",
-                method: 'POST',
-                data: {id: id},
-                beforeSend: function(){
-                },
-            }).done(function(response){
-                console.log(response)
-                if (response.success === 200) {
-                   element.html(response?.count)
-                   element.show()
-                } else {
-                    element.hide()
-                }
-            }).error(function(err){
-                console.log(err)
-            })
-        })
-    });
-</script>
+        <!-- Tashkiliy tuzilma -->
+        <div class="menu-item">
+          <div class="menu-header">
+            <i data-lucide="users" style="width: 22px; height: 22px;"></i>
+            <span class="menu-text">Tashkiliy tuzilma</span>
+          </div>
+        </div>
 
+        <!-- Sozlamalar -->
+        <div class="menu-item">
+          <div class="menu-header">
+            <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
+              <i data-lucide="settings" style="width: 22px; height: 22px;"></i>
+              <span class="menu-text">Sozlamalar</span>
+            </div>
+            <i data-lucide="chevron-right" class="chevron"></i>
+          </div>
+          <div class="submenu">
+            <div class="submenu-item">
+              <i data-lucide="user" style="width: 18px; height: 18px;"></i>
+              <span>Profil</span>
+            </div>
+            <div class="submenu-item">
+              <i data-lucide="shield" style="width: 18px; height: 18px;"></i>
+              <span>Xavfsizlik</span>
+            </div>
+          </div>
+        </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        getActiveMenu()
+      </div>
 
-        function getActiveMenu() {
-            const activeMenuId = localStorage.getItem('activeMenu');
+      <!-- Logout -->
+      <div class="logout">
+        <div class="menu-item">
+          <div class="menu-header">
+            <i data-lucide="log-out" style="width: 22px; height: 22px;"></i>
+            <span class="menu-text">Chiqish</span>
+          </div>
+        </div>
+      </div>
 
-            const menuItems = document.querySelectorAll('.parentMenu');
+      <!-- Theme Toggle Tabs -->
+      <div class="theme-tabs">
+        <div class="theme-tab active" data-theme="light">
+          <i data-lucide="sun" style="width: 20px; height: 20px;"></i>
+        </div>
+        <div class="theme-tab" data-theme="dark">
+          <i data-lucide="moon" style="width: 20px; height: 20px;"></i>
+        </div>
+      </div>
+    </nav>
+  </aside>
 
-            menuItems.forEach((item) => {
-                if(item.getAttribute('data-menu-id') !== activeMenuId) {
-                    // item.classList.remove('open')
-                }
-            })
+  <script>
+    lucide.createIcons();
 
-            if (activeMenuId) {
-                const activeMenuElement = document.querySelector(`[data-menu-id="${activeMenuId}"]`);
-                if (activeMenuElement) {
-                    const countBadge = activeMenuElement.querySelector('.count-parent-position');
-                    if(countBadge) countBadge.style.display = 'none';
-                }
-            }
+    // Dropdown toggle
+    document.querySelectorAll('.menu-header').forEach(header => {
+      header.addEventListener('click', function() {
+        const menuItem = this.parentElement;
+        
+        if (this.querySelector('.chevron')) {
+          menuItem.classList.toggle('open');
         }
-
-        const menuItems = document.querySelectorAll('.parentMenu');
-
-        menuItems.forEach(function (menuItem) {
-            menuItem.addEventListener('click', function (e) {
-
-                const currentId = menuItem.getAttribute('data-menu-id')
-
-                menuItems.forEach((item) => {
-                    if(item.getAttribute('data-menu-id') !== currentId) {
-                        // item.classList.remove('open')
-                    }
-                })
-
-                localStorage.setItem('activeMenu', menuItem.getAttribute('data-menu-id'));
-            });
+        
+        document.querySelectorAll('.menu-item').forEach(item => {
+          item.classList.remove('active');
         });
+        menuItem.classList.add('active');
+      });
     });
 
-</script>
+    // Theme toggle - only affects sidebar
+    const sidebar = document.getElementById('sidebar');
+    const themeTabs = document.querySelectorAll('.theme-tab');
 
+    themeTabs.forEach(tab => {
+      tab.addEventListener('click', function() {
+        themeTabs.forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
 
-
-
-
-
+        const theme = this.getAttribute('data-theme');
+        if (theme === 'dark') {
+          sidebar.classList.add('dark');
+        } else {
+          sidebar.classList.remove('dark');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

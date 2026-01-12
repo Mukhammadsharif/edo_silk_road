@@ -2952,7 +2952,7 @@ body {
       .wrapper .page-wrap .app-sidebar.colored .sidebar-header .header-brand {
         color: #ffffff !important; }
     .wrapper .page-wrap .app-sidebar.colored .sidebar-content {
-      background-color: #404E67; }
+      background-color: white; }
       .wrapper .page-wrap .app-sidebar.colored .sidebar-content .nav-container .navigation-main .nav-item {
         border-color: rgba(243, 243, 243, 0.15); }
         .wrapper .page-wrap .app-sidebar.colored .sidebar-content .nav-container .navigation-main .nav-item a {
@@ -2960,7 +2960,7 @@ body {
           .wrapper .page-wrap .app-sidebar.colored .sidebar-content .nav-container .navigation-main .nav-item a i {
             color: #bcc8d8; }
         .wrapper .page-wrap .app-sidebar.colored .sidebar-content .nav-container .navigation-main .nav-item .submenu-content {
-          background-color: #4a5872; }
+          background-color: #fff !important; }
         .wrapper .page-wrap .app-sidebar.colored .sidebar-content .nav-container .navigation-main .nav-item.open::after, .wrapper .page-wrap .app-sidebar.colored .sidebar-content .nav-container .navigation-main .nav-item.active::after {
           background-color: #eb525d; }
     .wrapper .page-wrap .app-sidebar.hide-sidebar {

@@ -1,3 +1,21 @@
+*::-webkit-scrollbar {
+    width: 4px !important;
+}
+*::-webkit-scrollbar-thumb {
+    background: #794dfd !important;
+    border-radius: 10px !important;
+}
+
+
+
+.ps__thumb-y{
+   background: #794dfd !important;
+}
+
+.sidebar::-webkit-scrollbar {
+    display: none;
+}
+
 .auth-wrapper .lavalite-bg {
     height: 100vh;
     position: relative;
@@ -738,7 +756,9 @@ figure table {
     content: none;
 }
 .wrapper .page-wrap .app-sidebar .sidebar-content .nav-container .navigation-main .nav-item.has-sub.create-doc {
-    background: #2196F3;
+    background: #ea4c89;
+    color: #fff;
+     border-radius: 8px !important;
 }
 /*.wrapper .page-wrap .app-sidebar .sidebar-content .nav-container .navigation-main .nav-item.has-sub.create-doc a {
     font-size: 22px;
@@ -750,8 +770,9 @@ figure table {
     color: #ffffff;
 }
 .wrapper .page-wrap .app-sidebar .sidebar-content .nav-container .navigation-main .nav-item.has-sub.create-doc a span {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
+    color: #ffffff;
 }
 .wrapper .page-wrap .app-sidebar .sidebar-content .nav-container .navigation-main .nav-item.has-sub.create-doc a:hover {
     color: #ededed;
@@ -798,4 +819,16 @@ figure table {
 .web-office i {
     font-size: 30px;
     color: #FF9800;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #2196F3;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #1976D2;
+}
+
+.sidebar-content::-webkit-scrollbar {
+    width: 4px;
 }

@@ -4980,7 +4980,7 @@ body {
   top: 0;
   width: 100%;
   left: 0;
-  padding-left: 240px;
+  padding-left: 20px !important;
   -webkit-box-shadow: 0 1px 15px rgba(0, 0, 0, 0.04), 0 1px 6px rgba(0, 0, 0, 0.04);
   -moz-box-shadow: 0 1px 15px rgba(0, 0, 0, 0.04), 0 1px 6px rgba(0, 0, 0, 0.04);
   box-shadow: 0 1px 15px rgba(0, 0, 0, 0.04), 0 1px 6px rgba(0, 0, 0, 0.04); }
@@ -5129,7 +5129,7 @@ body {
       -moz-border-radius: 20px;
       margin-bottom: 0; }
       .wrapper .header-top .top-menu .header-search .input-group .input-group-addon {
-        color: #404E67;
+        color: white;
         padding: 2px 10px 2px 0px;
         font-size: 16px;
         cursor: pointer; }
@@ -5390,7 +5390,7 @@ body {
       .wrapper .page-wrap .app-sidebar.colored .sidebar-header .header-brand {
         color: #ffffff; }
     .wrapper .page-wrap .app-sidebar.colored .sidebar-content {
-      background-color: #404E67; }
+      background-color: white; }
       .wrapper .page-wrap .app-sidebar.colored .sidebar-content .nav-container .navigation-main .nav-item {
         border-color: rgba(243, 243, 243, 0.15); }
         .wrapper .page-wrap .app-sidebar.colored .sidebar-content .nav-container .navigation-main .nav-item a {
@@ -5398,7 +5398,7 @@ body {
           .wrapper .page-wrap .app-sidebar.colored .sidebar-content .nav-container .navigation-main .nav-item a i {
             color: #bcc8d8; }
         .wrapper .page-wrap .app-sidebar.colored .sidebar-content .nav-container .navigation-main .nav-item .submenu-content {
-          background-color: #4a5872; }
+          background-color: #fff !important; }
         .wrapper .page-wrap .app-sidebar.colored .sidebar-content .nav-container .navigation-main .nav-item.open::after, .wrapper .page-wrap .app-sidebar.colored .sidebar-content .nav-container .navigation-main .nav-item.active::after {
           background-color: #eb525d; }
     .wrapper .page-wrap .app-sidebar.hide-sidebar {
