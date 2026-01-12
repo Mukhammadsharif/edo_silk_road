@@ -5,23 +5,162 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Department;
 use App\Models\Admin\OrganizationUnits;
+use App\Models\Admin\RequestForOrgs;
 use App\Models\Admin\Role;
 use App\Models\Admin\UserWorkHistory;
 use App\Models\Journal\JournalTypes;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class DepartmentController extends Controller
 {
 
-    public function index(Request $request)
+    public function organizationsIndex(Request $request)
+    {
+        //
+        if (!$this->isSuperUser()) {
+            return  redirect()->route('departments.index', ['id' => $this->organizationId()]);
+        }
+
+        $s_text = $request->input('s_text');
+
+        $parentOrganizations = OrganizationUnits::where('parent_id', 0)->where('status', 1)->get();
+
+        $search = OrganizationUnits::where('status', 1);
+
+        if (trim(''.$s_text.'')) {
+            $search->where(
+                DB::raw("(name_uz || ' ' || name_kr || ' ' || name_ru || ' ' || name_en)"),
+                'ILIKE',
+                "%{$s_text}%"
+            );
+        }
+
+        $organizations = $search->paginate(25);
+
+        $organizations->appends([
+            's_text' => $s_text
+        ]);
+
+        return view('admin.organizations.index', compact('parentOrganizations', 'organizations', 's_text'))
+            ->with('i', (request()->input('page', 1) - 1) * 25);
+    }
+
+    public function organizationsCreate()
+    {
+        //
+        $parentOrganizations = OrganizationUnits::where('parent_id', 0)->where('status', 1)->get();
+
+        $organizations = OrganizationUnits::where('status', 1)->get();
+
+        $users = User::where('status', 1)->get();
+
+        return view('admin.organizations.create', compact('organizations', 'parentOrganizations', 'users'));
+    }
+
+    public function organizationsStore(Request $request)
+    {
+        //
+        $this->validate($request, [
+            'name_uz' => 'required',
+        ]);
+
+        $parent_id = empty($request->parent_id) ? 0 : $request->parent_id;
+
+        $level = 1;
+
+        $parent_organization = OrganizationUnits::find($parent_id);
+        if ($parent_organization) {
+            $level = $parent_organization->level_number + 1;
+        }
+
+        OrganizationUnits::create([
+            'code' => $this->uniqueCode(),
+            'name_uz' => $request->name_uz,
+            'name_kr' => $request->name_kr,
+            'name_ru' => $request->name_ru,
+            'name_en' => $request->name_en,
+            'parent_id' => $parent_id,
+            'tax_number' => $request->tax_number,
+            'owner_user_id' => $request->owner_user_id??1,
+            'level' => $level,
+            'status' => 1
+        ]);
+
+        return redirect()->route('organizations.index')
+            ->with('success', __('message.dep_updated'));
+
+    }
+
+    public function organizationsEdit($id)
+    {
+        //
+        $model = OrganizationUnits::findOrFail($id);
+
+        $parentOrganizations = OrganizationUnits::where('parent_id', 0)->where('status', 1)->get();
+
+        $organizations = OrganizationUnits::where('status', 1)->where('id', '!=', $id)->get();
+
+        $users = User::where('status', 1)->get();
+
+        return view('admin.organizations.edit', compact('model', 'organizations', 'parentOrganizations', 'users'));
+    }
+
+    public function organizationsUpdate(Request $request, $id)
+    {
+        //
+        $this->validate($request, [
+            'name_uz' => 'required',
+            'tax_number' => 'required',
+        ]);
+
+        $model = OrganizationUnits::find($id);
+
+        if ($model) {
+
+            $level = 1;
+
+            $parent_organization = OrganizationUnits::find($request->parent_id);
+            if ($parent_organization) {
+                $level = $parent_organization->level_number + 1;
+            }
+
+            $model->update([
+                'name_uz' => $request->name_uz,
+                'name_kr' => $request->name_kr,
+                'name_ru' => $request->name_ru,
+                'name_en' => $request->name_en,
+                'status' => $request->status??1,
+                'parent_id' => $request->parent_id,
+                'tax_number' => $request->tax_number,
+                'owner_user_id' => $request->owner_user_id??1,
+                'level' => $level
+            ]);
+
+            if ($request->status == 2) {
+                OrganizationUnits::where('parent_id', $id)->update(['status' => $request->status]);
+            }
+
+        }
+
+        return redirect()->route('organizations.index')
+            ->with('success', __('message.dep_updated'));
+    }
+    public function departmentsIndex(Request $request, $id)
     {
         //
         $s_text = $request->input('s_text');
 
-        $parentDepartments = Department::where('parent_id', 0)->where('status', 1)->orderBy('order_number')->get();
+        $parentDepartments = Department::where('org_unit_id', $id)
+            ->where('parent_id', 0)
+            ->where('status', 1)
+            ->orderBy('order_number')
+            ->get();
 
-        $search = Department::where('status', 1);
+        $search = Department::where('org_unit_id', $id)->where('status', 1);
 
         if (trim(''.$s_text.'')) {
             $search->where(DB::raw("CONCAT(`name_uz`, ' ', `name_kr`, ' ', `name_ru`, ' ', `name_en`)"), 'LIKE', "%".$s_text."%");
@@ -33,25 +172,30 @@ class DepartmentController extends Controller
             's_text' => $s_text
         ]);
 
-        return view('admin.departments.index', compact('parentDepartments', 'departments', 's_text'))
+        $organization_id = $id;
+
+        return view('admin.departments.index', compact('parentDepartments', 'departments', 's_text', 'organization_id'))
             ->with('i', (request()->input('page', 1) - 1) * 25);
     }
 
-    public function create()
+    public function departmentsCreate($id)
     {
         //
-        $parentDepartments = Department::where('parent_id', 0)->where('status', 1)->orderBy('order_number')->get();
+        $parentDepartments = Department::where('org_unit_id', $id)->where('parent_id', 0)->where('status', 1)->orderBy('order_number')->get();
 
-        $departments = Department::where('status', 1)->orderBy('order_number')->get();
+        $departments = Department::where('org_unit_id', $id)->where('status', 1)->orderBy('order_number')->get();
 
-        return view('admin.departments.create', compact('parentDepartments', 'departments'));
+        $organization_id = $id;
+
+        return view('admin.departments.create', compact('parentDepartments', 'departments', 'organization_id'));
     }
 
-    public function store(Request $request)
+    public function departmentsStore(Request $request)
     {
         //
         $this->validate($request, [
             'name_uz' => 'required',
+            'organization_id' => 'required',
         ]);
 
         $parent_id = empty($request->parent_id) ? 0 : $request->parent_id;
@@ -74,6 +218,7 @@ class DepartmentController extends Controller
         $new_ord = $last_number->order_number +1;
 
         Department::create([
+            'code' => $this->uniqueCode(),
             'name_uz' => $request->name_uz,
             'name_kr' => $request->name_kr,
             'name_ru' => $request->name_ru,
@@ -89,14 +234,14 @@ class DepartmentController extends Controller
 
     }
 
-    public function edit($id)
+    public function departmentsEdit($id)
     {
         //
         $model = Department::findOrFail($id);
 
-        $parentDepartments = Department::where('parent_id', 0)->where('status', 1)->orderBy('order_number')->get();
+        $parentDepartments = Department::where('org_unit_id', $model->org_unit_id)->where('parent_id', 0)->where('status', 1)->orderBy('order_number')->get();
 
-        $departments = Department::where('status', 1)->orderBy('order_number')->get();
+        $departments = Department::where('org_unit_id', $model->org_unit_id)->where('status', 1)->orderBy('order_number')->get();
 
         $organizations = OrganizationUnits::where('status', 1)
             ->orderBy('level')
@@ -105,63 +250,53 @@ class DepartmentController extends Controller
         return view('admin.departments.edit', compact('model', 'departments', 'parentDepartments', 'organizations'));
     }
 
-    public function update(Request $request, $id)
+    public function departmentsUpdate(Request $request, $id)
     {
         //
         $this->validate($request, [
             'name_uz' => 'required',
             'order_number' => 'required',
+            'org_unit_id' => 'required',
         ]);
 
         $model = Department::find($id);
 
         if ($model) {
 
+            $level = 1;
+
+            $parent_department = Department::find($request->parent_id);
+
+            if ($parent_department) {
+                $level = $parent_department->level_number + 1;
+            }
+
+
             if ($request->parent_id != $model->parent_id) {
-                $model->update([
-                    'status' => 2
-                ]);
-
-                $level = 1;
-
-                $parent_department = Department::find($request->parent_id);
-                if ($parent_department) {
-                    $level = $parent_department->level_number + 1;
-                }
-
-                $create = new Department();
-                $create->name_uz = $request->name_uz;
-                $create->name_kr = $request->name_kr;
-                $create->name_ru = $request->name_ru;
-                $create->name_en = $request->name_en;
-                $create->parent_id = $request->parent_id;
-                $create->status = 1;
-                $create->level_number = $level;
-                $create->order_number = $request->order_number;
-                $create->save();
-
-            } else {
                 $model->update([
                     'name_uz' => $request->name_uz,
                     'name_kr' => $request->name_kr,
                     'name_ru' => $request->name_ru,
                     'name_en' => $request->name_en,
+                    'parent_id' => $request->parent_id,
+                    'level_number' => $level,
                     'order_number' => $request->order_number,
                     'status' => $request->status,
                     'org_unit_id' => $request->org_unit_id,
                 ]);
 
-                foreach ($model->childs as $child) {
-                    $child->update([
-                        'org_unit_id' => $request->org_unit_id,
-                    ]);
+                if ($model->childs) {
+                    foreach ($model->childs as $child) {
+                        $child->update([
+                            'org_unit_id' => $request->org_unit_id,
+                        ]);
+                    }
                 }
             }
 
             if ($request->status == 2) {
                 Department::where('parent_id', $id)->update(['status' => $request->status]);
             }
-
         }
 
         return redirect()->route('departments.index', ['id' => $request->org_unit_id])
@@ -173,58 +308,81 @@ class DepartmentController extends Controller
         //
     }
 
+    public function sendRequest(Request $request)
+    {
+        $tax_number = $request->input('tax_number');
+
+        $validator = Validator::make($request->all(), [
+            'tax_number'=> 'required|max:191',
+        ]);
+
+        if($validator->fails())
+        {
+            return response()->json([
+                'status' => 400,
+                'errors' => $validator->messages()
+            ]);
+        } else {
+
+            $organization = OrganizationUnits::where('tax_number', $tax_number)->first();
+
+            if ($organization) {
+                RequestForOrgs::where('user_id', Auth::id())->delete();
+
+                RequestForOrgs::create([
+                    'user_id' => Auth::id(),
+                    'org_unit_id' => $organization->id,
+                    'tax_number' => $tax_number,
+                    'status' => 1
+                ]);
+
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'Request Sent Successfully.'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 400,
+                    'errors' => ['value' => __('field.org_with_tin_was_not_registered')]
+                ]);
+            }
+        }
+    }
+
+    public function cancelRequest(Request $request)
+    {
+        $userId = Auth::id();
+
+        $requestForOrg = RequestForOrgs::where('user_id', $userId)
+            ->where('status', 1) // только ожидающие
+            ->first();
+
+        if (!$requestForOrg) {
+            return response()->json([
+                'status' => 400,
+                'errors' => ['error' => 'Faol so\'rov topilmadi.']
+            ], 400);
+        }
+
+        $requestForOrg->delete();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'So\'rov muvaffaqiyatli bekor qilindi.'
+        ]);
+    }
+
     public function orgStructure()
     {
         return view('admin.departments.org-structure');
     }
 
-//    public function orgStructureData()
-//    {
-//        $departments = Department::select('id', 'parent_id', 'name_uz', 'status')->where('status', '1')->get();
-//
-//        $nodes = $departments->map(function ($dept) {
-//            $usersHtml = '<ul style="list-style: none;">'; // Remove default bullet points
-//
-//            $dep_head = $this->getDepHeadUser($dept->dep_id);
-//            $first_user = $dept->activeWorkers->first();
-//
-//            foreach ($dept->activeWorkers as $worker) {
-//                $fullName = optional($worker->personal)->fullName();
-//                $positionName = optional($worker->position)->name_uz;
-//
-//                // Handle localization for position
-//                $lang = session('locale', 'uz');
-//                if ($worker->position) {
-//                    if ($lang === 'ru') {
-//                        $positionName = $worker->position->name_ru;
-//                    } elseif ($lang === 'en') {
-//                        $positionName = $worker->position->name_en;
-//                    }
-//                }
-//
-//                $usersHtml .= "<li><img src='" . url('/images/profile_image1.png') .
-//                    "' style='width: 20px; height: 20px; vertical-align: middle; margin-right: 5px;'> {$fullName} ({$positionName})</li>";
-//            }
-//
-//            $usersHtml .= '</ul>';
-//
-//            return [
-//                'id' => $dept->id,
-//                'pid' => $dept->parent_id,
-//                'name' => $dept->name_uz,
-//                'users' => $usersHtml,
-//                'first_user' => $dep_head ? $dep_head->personal->shortName() : $first_user->personal->shortName(),
-//                'first_user_position' => $dep_head ? $this->getUserPosition($dep_head) : $this->getUserPosition($first_user),
-//                'img' => url('/images/profile_image1.png')
-//            ];
-//        });
-//
-//        return response()->json($nodes);
-//    }
-
     public function orgStructureData()
     {
-        $departments = Department::select('id', 'parent_id', 'name_uz', 'status', 'level_number')->where('status', '1')->get();
+        $departments = Department::select('id', 'parent_id', 'name_uz', 'status', 'level_number')
+            ->where('status', '1')
+            ->where('org_unit_id', $this->organizationId())
+            ->get();
 
         $nodeDataArray = $departments->map(function ($dept) {
             $usersList = [];
@@ -311,5 +469,10 @@ class DepartmentController extends Controller
         }
 
         return $positionName??'';
+    }
+
+    public function uniqueCode(): string
+    {
+        return fake()->regexify('[A-Z]{2}').fake()->regexify('[0-9]{8}');
     }
 }

@@ -83,7 +83,7 @@ var uiShowMessage = function (message) {
 
 var uiShowProgress = function () {
     Swal.fire({
-        title: 'Yuklanmoqda...',
+        title: 'ERI kalit tekshirilmoqda...',
         allowOutsideClick: false,
         didOpen: () => {
             Swal.showLoading();

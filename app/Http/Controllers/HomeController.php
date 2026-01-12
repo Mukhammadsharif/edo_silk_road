@@ -70,10 +70,17 @@ class HomeController extends Controller
             'my_docs_menu_id' => $my_docs_menu_id,
         ];
 
-        $users = User::all();
-        $totalEmpCount = $users->count();
-        $activeEmpCount = $users->where('status', 1)->count();
-        $deletedEmpCount = $users->where('status', 3)->count();
+        if ($this->isSuperUser()) {
+            $users = User::all();
+            $totalEmpCount = $users->count();
+            $activeEmpCount = $users->where('status', 1)->count();
+            $deletedEmpCount = $users->where('status', 3)->count();
+        } else {
+            $users = User::where('org_unit_id', $this->organizationId());
+            $totalEmpCount = $users->count();
+            $activeEmpCount = $users->where('status', 1)->count();
+            $deletedEmpCount = $users->where('status', 3)->count();
+        }
 
         $employees = [
             'totalEmpCount' => $totalEmpCount,
@@ -81,9 +88,11 @@ class HomeController extends Controller
             'deletedEmpCount' => $deletedEmpCount
         ];
 
+        $isOwner = $this->isOwner();
+
         $app_temps = JournalTypes::where('doc_code', 'like', 'APP_%')->where('parent_id', '<>', 0)->where('level_number', 2)->where('status', 1)->get();
 
-        return view('home', compact('authRoleName', 'docs_count', 'employees', 'app_temps'));
+        return view('home', compact('authRoleName', 'docs_count', 'employees', 'app_temps', 'isOwner'));
     }
 
     public function lang($locale)

@@ -14,8 +14,8 @@ class VerifyCsrfToken extends Middleware
         '/api/callback',
         'login',
         'api/*',
-        'e-imzo/*',              // <-- это покроет все подпути
-        '/e-imzo/*',             // с ведущим слешем
+        'e-imzo/*',
+        '/e-imzo/*',
         'e-imzo/backend-auth',
     ];
 

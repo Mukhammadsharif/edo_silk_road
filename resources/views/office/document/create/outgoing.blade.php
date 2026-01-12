@@ -2,7 +2,7 @@
 @extends('layouts.app_create_doc')
 @section('content')
 
-    <div class="container-fluid mt-10">
+    <div class="container-fluid mt-40">
 
         <div class="page-header">
             <div class="row align-items-end">
@@ -143,7 +143,18 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <button type="submit" id="submitBtn" class="btn btn-primary">
+                                        @if(!Auth::user()->currentSubscription)
+                                            <small class="d-block text-warning mb-2">
+                                                <i class="ik ik-info mr-1"></i>
+                                                Hujjat yaratish uchun faol obuna kerak
+                                            </small>
+                                        @endif
+
+                                        <button type="submit" id="submitBtn" class="btn btn-primary"
+                                            @if(!Auth::user()->currentSubscription)
+                                                disabled
+                                            @endif
+                                        >
                                             <i class="ik ik-save"></i> {{ __('action.save') }}
                                         </button>
                                     </div>

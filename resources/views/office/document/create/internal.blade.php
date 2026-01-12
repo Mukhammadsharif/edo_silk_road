@@ -1,7 +1,7 @@
 @extends('layouts.app_create_doc')
 @section('content')
 
-    <div class="container-fluid mt-10">
+    <div class="container-fluid mt-40">
 
         {{-- === Page Header === --}}
         <div class="page-header">

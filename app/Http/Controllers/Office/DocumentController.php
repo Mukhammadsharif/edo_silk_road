@@ -217,6 +217,7 @@ class DocumentController extends Controller
             'doc_id' => $document->id,
             'j_type' => $journal_type2?->id ?? $journal_type->id,
             'j_number' => $request->j_number ?? 1,
+            'org_unit_id' => $this->organizationId(),
             'j_date' => now(),
             'confid_type' => $request->confidence,
             'created_dep' => $this->authActiveUser()->dep_id,

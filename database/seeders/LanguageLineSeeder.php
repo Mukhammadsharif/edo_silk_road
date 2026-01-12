@@ -16,10 +16,8 @@ class LanguageLineSeeder extends Seeder
         //
         LanguageLine::truncate();
 
-        // Path to your JSON file
         $jsonFile = base_path('database/seeders/data/language_lines_new.json');
 
-        // Read and decode the JSON file
         $jsonData = json_decode(File::get($jsonFile), true);
 
         foreach ($jsonData['language_lines'] as $role) {

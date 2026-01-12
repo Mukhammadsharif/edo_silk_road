@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Department;
+use App\Models\Admin\OrganizationUnits;
+use App\Models\Admin\RequestForOrgs;
 use App\Models\Admin\Role;
 use App\Models\Admin\StatusList;
 use App\Models\Admin\UserPersonalInfo;
@@ -35,17 +37,28 @@ class UserController extends Controller
     public function index(Request $request)
     {
         //
-        //print_r($request->all()); die;
         $s_text = $request->input('s_text');
 
         $s_status = $request->input('s_status');
 
         $s_role = $request->input('s_role');
 
-        $search = User::orderBy('id', 'DESC');
+        $s_org = $request->input('s_org');
+
+        $isSuperUser = $this->isSuperUser();
+
+        if ($isSuperUser) {
+            $search = User::orderBy('id', 'DESC');
+        } else {
+            $search = User::where('org_unit_id', $this->organizationId())->orderBy('id', 'DESC');
+        }
 
         if (!in_array($this->admin, $this->authActiveUserRoleNames())) {
             $search->where('username', '!=', 'muksid');
+        }
+
+        if ($s_org){
+            $search->where('org_unit_id', $s_org);
         }
 
         if (trim(''.$s_text.'')) {
@@ -56,8 +69,6 @@ class UserController extends Controller
             $search->whereHas('userPersonal', function ($query) use ($s_text) {
                 $query->where(DB::raw("CONCAT_WS(' ', l_name, f_name, m_name)"), 'like', '%'.$s_text.'%');
             });
-            /*$search->orWhere('email', 'LIKE', '%'.$s_text.'%')
-                ->orWhere('username', 'LIKE', '%'.$s_text.'%');*/
         }
 
         if ($s_status){
@@ -66,7 +77,6 @@ class UserController extends Controller
 
         if ($s_role){
             $user_role_ids = UserRole::where('role_id', $s_role)->pluck('model_id')->unique()->toArray();
-            //print_r($user_role_ids); die;
 
             $search->whereIn('id', $user_role_ids);
         }
@@ -76,15 +86,138 @@ class UserController extends Controller
         $models->appends([
             's_text' => $s_text,
             's_status' => $s_status,
-            's_role' => $s_role
+            's_role' => $s_role,
+            's_org' => $s_org,
         ]);
 
         $statusList = StatusList::where('type', 'user_status')->get();
 
         $userRoles = Role::where('status', 1)->get();
 
+        $organizations = OrganizationUnits::orderBy('id', 'ASC')->get();
+
+        $pendingRequests = RequestForOrgs::where('org_unit_id', $this->organizationId())
+            ->where('status', 1)
+            ->orderBy('id', 'DESC')
+            ->get();
+
+        $departments = Department::where('org_unit_id', $this->organizationId())->where('status', 1)->get();
+
         return view('admin.users.index', compact('models', 's_text', 's_status',
-            's_role', 'statusList', 'userRoles'));
+            's_role', 'statusList', 'userRoles', 'organizations', 's_org', 'isSuperUser', 'pendingRequests', 'departments'));
+    }
+
+//    public function acceptRequest(Request $request, $id)
+//    {
+//        $request->validate([
+//            'dep_id' => 'required|exists:departments,id',
+//            'post_id' => 'nullable|exists:user_positions,id'
+//        ]);
+//
+//        $requestOrg = RequestForOrgs::findOrFail($id);
+//
+//        if ($requestOrg->org_unit_id !== $this->organizationId()) {
+//            return redirect()->back()->with('error', __('field.unauthorized_action'));
+//        }
+//
+//        if ($requestOrg->status !== 1) {
+//            return redirect()->back()->with('error', 'field.subscription_request_already_reviewed');
+//        }
+//
+//        $user = User::findOrFail($requestOrg->user_id);
+//
+//        $user->org_unit_id = $requestOrg->org_unit_id;
+//        $user->save();
+//
+//        $nextYear = Carbon::now()->addYear()->format('Y-m-d');
+//
+//        $oldUserWorkHistory = UserWorkHistory::where('user_id', $user->id)->first();
+//
+//        if ($oldUserWorkHistory) $oldUserWorkHistory->update(['status' => 2]);
+//
+//        UserWorkHistory::create([
+//            'user_id' => $user->id,
+//            'org_id' => $this->organizationId(),
+//            'dep_id' => $request->dep_id,
+//            'post_id' => $request->post_id ?? 3,
+//            'from_date' => Carbon::now()->format('Y-m-d'),
+//            'to_date' => $nextYear,
+//            'status' => 1
+//        ]);
+//
+//        $requestOrg->status = 2;
+//        $requestOrg->save();
+//
+//
+//        return redirect()->route('users.index')->with('success', __('field.user_accepted_and_assigned'));
+//    }
+
+    public function acceptRequest(Request $request, $id)
+    {
+        $request->validate([
+            'dep_id' => 'required|exists:departments,id',
+            'post_id' => 'nullable|exists:user_positions,id'
+        ]);
+
+        $requestOrg = RequestForOrgs::findOrFail($id);
+
+        if ($requestOrg->org_unit_id !== $this->organizationId()) {
+            return redirect()->back()->with('error', __('field.unauthorized_action'));
+        }
+
+        if ($requestOrg->status !== 1) {
+            return redirect()->back()->with('error', 'field.subscription_request_already_reviewed');
+        }
+
+        $organization = OrganizationUnits::find($this->organizationId());
+
+        if (!$organization->currentSubscription) {
+            return redirect()->back()->with('error', __('field.no_active_subscription'));
+        }
+
+        if (!$organization->canAddUser()) {
+            return redirect()->back()->with('error', __('field.user_limit_reached'));
+        }
+
+        $user = User::findOrFail($requestOrg->user_id);
+
+        $user->org_unit_id = $requestOrg->org_unit_id;
+        $user->save();
+
+        $nextYear = Carbon::now()->addYear()->format('Y-m-d');
+
+        $oldUserWorkHistory = UserWorkHistory::where('user_id', $user->id)->first();
+
+        if ($oldUserWorkHistory) $oldUserWorkHistory->update(['status' => 2]);
+
+        UserWorkHistory::create([
+            'user_id' => $user->id,
+            'org_id' => $this->organizationId(),
+            'dep_id' => $request->dep_id,
+            'post_id' => $request->post_id ?? 3,
+            'from_date' => Carbon::now()->format('Y-m-d'),
+            'to_date' => $nextYear,
+            'status' => 1
+        ]);
+
+        $requestOrg->status = 2;
+        $requestOrg->save();
+
+        return redirect()->route('users.index')->with('success', __('field.user_accepted_and_assigned'));
+    }
+
+    public function rejectRequest($id)
+    {
+        $requestOrg = RequestForOrgs::findOrFail($id);
+
+        if ($requestOrg->org_unit_id !== $this->organizationId()) {
+            return redirect()->back()->with('error',  __('field.unauthorized_action'));
+        }
+
+        $requestOrg->status = 3; // Rejected
+        $requestOrg->save();
+
+        return redirect()->route('users.index')->with('success', __('field.request_rejected_successfully'));
     }
 
     public function create()
@@ -136,7 +269,7 @@ class UserController extends Controller
             $this->userLogService->createUserLog($createUser->id, ['comment' => 'Created user']);
         }
 
-        return Redirect::route('users.index')->with('success', 'User created successfully');
+        return Redirect::route('users.index')->with('success', __('field.user_created_successfully'));
     }
 
     public function show($hash)
@@ -228,11 +361,6 @@ class UserController extends Controller
                 if (count($roles) > 0) {
 
                     foreach ($roles as $role) {
-
-                        //$permissions = Permission::pluck('id','id')->all();
-
-                        //$role->syncPermissions($permissions);
-
                         $user->assignRole([$role->id]);
                     }
                 }
@@ -376,7 +504,6 @@ class UserController extends Controller
 
         $last_level = Department::orderBy('level_number', 'DESC')->first();
 
-        //$positions = UserPosition::where('dep_ids', 'like', '%'.$id.'%')->where('status', 1)->orderBy('order_number')->get();
         $positions = UserPosition::select('id', $dep_name)->where('status', 1)->orderBy('order_number')->get();
 
         return response()->json([
@@ -399,6 +526,22 @@ class UserController extends Controller
 
         return response()->json([
             'message' => $message,
+        ]);
+    }
+
+    public function getPositions($depId)
+    {
+        $lang = session()->get('locale', 'uz');
+
+        $nameColumn = $lang === 'ru' ? 'name_ru' : ($lang === 'en' ? 'name_en' : 'name_uz');
+
+        $positions = UserPosition::select('id', DB::raw("COALESCE($nameColumn, name_uz) as name"))
+            ->where('status', 1)
+            ->orderBy('order_number')
+            ->get();
+
+        return response()->json([
+            'positions' => $positions
         ]);
     }
 

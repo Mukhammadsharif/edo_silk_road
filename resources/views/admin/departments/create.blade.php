@@ -22,7 +22,7 @@
                                 <a href="{{ route('home') }}"><i class="ik ik-home"></i></a>
                             </li>
                             <li class="breadcrumb-item">
-                                <a href="{{ route('departments.index') }}">{{ __('menu.departments') }}</a>
+                                <a href="{{ route('departments.index', ['id' => $organization_id]) }}">{{ __('menu.departments') }}</a>
                             </li>
                             <li class="breadcrumb-item active" aria-current="page">{{ __('action.create') }}</li>
                         </ol>
@@ -40,7 +40,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                @php $lang_key = session()->get('locale'); @endphp
+                                @php $lang_key = session()->get('locale')??'uz'; @endphp
                                 <ul><h4>{{ __('menu.departments') }}</h4></ul>
                                 <section class="list-tree">
                                     <ul>
@@ -58,6 +58,8 @@
                             <div class="col-md-6">
                                 <form method="POST" action="{{ route('departments.store') }}" class="forms-sample">
                                     @csrf
+                                    <input name="organization_id" value="{{ $organization_id }}" hidden>
+
                                     <div class="form-group row">
                                         <div class="col-sm-6">
                                             <label>{{ __('field.parent_id') }}</label>
@@ -94,7 +96,7 @@
                                     </div>
                                     <div>
                                         <div class="hstack gap-2 justify-content-end">
-                                            <a href="{{ route('departments.index') }}" class="btn btn-light">
+                                            <a href="{{ route('departments.index', ['id' => $organization_id]) }}" class="btn btn-light">
                                                 <i class="ik ik-x"></i> {{ __('action.cancel') }}
                                             </a>
                                             <button type="submit" class="btn btn-primary">
@@ -111,3 +113,10 @@
         </div>
     </div>
 @endsection
+
+<script src="{{ asset('/ajax/jquery.min.js') }}"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.select2').select2()
+    })
+</script>

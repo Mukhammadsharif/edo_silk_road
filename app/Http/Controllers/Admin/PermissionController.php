@@ -49,7 +49,8 @@ class PermissionController extends Controller
             'name' => $request->name,
             'guard_name' => 'web',
             'permission_name' => $request->permission_name,
-            'parent_id' => $request->parent_id
+            'parent_id' => $request->parent_id,
+            'lang_id' => $request->lang_id
         ]);
 
         return redirect('admin/permissions')->with('status','Permission Created Successfully');
@@ -78,7 +79,8 @@ class PermissionController extends Controller
         $permission->update([
             'name' => $request->name,
             'permission_name' => $request->permission_name,
-            'parent_id' => $request->parent_id
+            'parent_id' => $request->parent_id,
+            'lang_id' => $request->lang_id
         ]);
 
         return redirect('admin/permissions')->with('status','Permission Updated Successfully');

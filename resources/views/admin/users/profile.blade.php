@@ -46,6 +46,15 @@
                                     @endif
                                 </p>
                             </div>
+                            <div class="col-md-3 col-6"> <strong>{{ __('field.organization') }}</strong>
+                                <br>
+                                @php($user_organization = $user->organization??'')
+                                <p class="text-muted">
+                                    @if($user_organization)
+                                        {{ $user_organization->name_uz }}
+                                    @endif
+                                </p>
+                            </div>
                             <div class="col-md-3 col-6"> <strong>{{ __('field.department') }}</strong>
                                 <br>
                                 @php($user_department = $user->currentWork->department??0)

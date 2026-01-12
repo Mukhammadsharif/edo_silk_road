@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\DocLogsController;
+use App\Http\Controllers\Admin\PricingController;
+use App\Http\Controllers\Admin\SubscriptionRequestController;
+use App\Http\Controllers\Admin\TariffController;
 use App\Http\Controllers\DocController;
 use App\Http\Controllers\ECP\SignDocImzoController;
 use App\Http\Controllers\ECP\SignLoginController;
@@ -76,9 +79,24 @@ Route::group(['middleware' => ['auth']], function() {
     });
 
     Route::prefix('admin')->group(function () {
-        // role
-        Route::resource('departments', DepartmentController::class);
-        Route::any('departments-search', [DepartmentController::class, 'index'])->name('departments.search');
+
+        Route::prefix('organizations')->group(function () {
+            Route::any('index', [DepartmentController::class, 'organizationsIndex'])->name('organizations.index');
+            Route::any('create', [DepartmentController::class, 'organizationsCreate'])->name('organizations.create');
+            Route::post('store', [DepartmentController::class, 'organizationsStore'])->name('organizations.store');
+            Route::any('edit/{id}', [DepartmentController::class, 'organizationsEdit'])->name('organizations.edit');
+            Route::any('update/{id}', [DepartmentController::class, 'organizationsUpdate'])->name('organizations.update');
+            Route::any('send-request', [DepartmentController::class, 'sendRequest'])->name('organizations.send.request');
+            Route::any('cancel-request', [DepartmentController::class, 'cancelRequest'])->name('organizations.cancel.request');
+        });
+
+        Route::prefix('departments')->group(function () {
+            Route::any('index/{id}', [DepartmentController::class, 'departmentsIndex'])->name('departments.index');
+            Route::any('create/{id}', [DepartmentController::class, 'departmentsCreate'])->name('departments.create');
+            Route::post('store', [DepartmentController::class, 'departmentsStore'])->name('departments.store');
+            Route::any('edit/{id}', [DepartmentController::class, 'departmentsEdit'])->name('departments.edit');
+            Route::any('update/{id}', [DepartmentController::class, 'departmentsUpdate'])->name('departments.update');
+        });
 
         // role
         Route::resource('roles', RoleController::class);
@@ -103,6 +121,8 @@ Route::group(['middleware' => ['auth']], function() {
         Route::put('user/edit-user-login-password/{id}/{hash}', [UserController::class, 'editUserLoginPassword']);
         Route::put('user/edit-user-status/{id}/{hash}', [UserController::class, 'editUserStatus']);
         Route::put('user/edit-ecp-status/{id}/{hash}', [UserController::class, 'editEcpStatus']);
+        Route::post('users/accept-request/{id}', [UserController::class, 'acceptRequest'])->name('users.accept-request');
+        Route::post('users/reject-request/{id}', [UserController::class, 'rejectRequest'])->name('users.reject-request');
 
         // status name
         Route::resource('status-lists', StatusListController::class);
@@ -143,6 +163,17 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('settings-set-demo', [SettingsController::class, 'updateDemoSetting'])->name('settings.set.demo');
         Route::post('settings-set-env', [SettingsController::class, 'updateEnv'])->name('settings.set.env');
         Route::post('images/upload', [SettingsController::class, 'imageUpload'])->name('images.upload');
+
+        Route::get('/get-positions/{id}', [UserController::class, 'getPositions'])->name('admin.get-positions');
+
+        Route::resource('tariffs', TariffController::class)->names([
+            'index'   => 'tariffs.index',
+            'create'  => 'tariffs.create',
+            'store'   => 'tariffs.store',
+            'edit'    => 'tariffs.edit',
+            'update'  => 'tariffs.update',
+            'destroy' => 'tariffs.destroy',
+        ]);
     });
 
     Route::prefix('document-settings')->group(function () {
@@ -354,6 +385,16 @@ Route::group(['middleware' => ['auth']], function() {
             Route::get('del/{id}', [MessageController::class, 'fileDelete'])->name('messages.file.delete');
         });
     });
+
+    Route::get('/pricing', [PricingController::class, 'index'])->name('pricing');
+    Route::post('/pricing/subscribe/{tariff}', [PricingController::class, 'subscribe'])->name('pricing.subscribe');
+
+    Route::get('/subscription-requests', [SubscriptionRequestController::class, 'index'])
+        ->name('admin.subscription-requests');
+    Route::post('/subscription-requests/{id}/approve', [SubscriptionRequestController::class, 'approve'])
+        ->name('admin.subscription-requests.approve');
+    Route::post('/subscription-requests/{id}/reject', [SubscriptionRequestController::class, 'reject'])
+        ->name('admin.subscription-requests.reject');
 });
 
 Route::get('p/{doc_code}', [QrCodeDocController::class, 'viewProtocolDocument']);
