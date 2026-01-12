@@ -5,7 +5,7 @@ use App\Http\Controllers\Api\Bitrix\CompanyController;
 use App\Http\Controllers\Api\Bitrix\DataController;
 use App\Http\Controllers\Api\Bitrix\DivisionController;
 use App\Http\Controllers\Api\Bitrix\EmployeeController;
-use App\Http\Controllers\Api\Bitrix\PersonController;
+use App\Http\Controllers\Api\Bitrix\PersonController; 
 use App\Http\Controllers\Api\Bitrix\PositionController;
 use App\Http\Controllers\Api\Messages\MessageApiController;
 use App\Http\Controllers\Api\Office\DocApiController;

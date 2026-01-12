@@ -1,81 +1,95 @@
 @extends('layouts.app')
 
-<link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
-<link rel="stylesheet" href="{{ asset('css/all.min.css') }}">
-<link rel="stylesheet" href="{{ asset('css/login.css') }}">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
 @section('content')
-    <div class="container-fluid h-100">
-        <div class="row flex-row h-100 bg-white">
-            <div class="col-xl-8 col-lg-6 col-md-5 p-0 d-md-block d-lg-block d-sm-none d-none">
-                <div class="lavalite-bg" style="background-image: url('{{ $backgroundImage }}')">
-                    <div class="lavalite-overlay"></div>
-                </div>
-            </div>
-            <div class="col-xl-4 col-lg-6 col-md-7 my-auto p-0">
-                <div class="authentication-form mx-auto">
-                    <div class="main-content">
-                        <div class="login-container">
-                            <div class="logo-centered">
-                                <a href="/login"><img src="{{ $logoImage }}" alt=""></a>
-                            </div>
-                            <h3 class="login-subtitle">{{ __('field.log-in-to-eai') }}</h3>
 
-                            <div class="auth-tabs">
-                                <button class="auth-tab" onclick="showTab('login')">Login</button>
-                                <button class="auth-tab active" onclick="showTab('eri')">ERI</button>
-                            </div>
+  <!-- ================= CURTAIN PRELOADER ================= -->
+  <div class="cp-preloader" id="cp-preloader"></div>
+  <!-- ===================================================== -->
 
-                            <div id="login-tab" class="tab-content">
-                                <form action="{{ route('login') }}" method="POST">
-                                    @csrf
-                                    <div class="mb-3">
-                                        <label class="form-label">Login</label>
-                                        <input type="text" name="username" class="form-control" placeholder="Loginni kiriting" required>
-                                    </div>
-                                    <div class="mb-3 position-relative">
-                                        <label class="form-label">Parol</label>
-                                        <input type="password" id="password" name="password" class="form-control" placeholder="Parolni kiriting" required>
-                                        <i class="ik ik-eye password-toggle" onclick="togglePassword()"></i>
-                                    </div>
-{{--                                    <a href="{{ route('password.request') }}" class="forgot-password">Login yoki parol yodingizdan chiqidimi?</a>--}}
-                                    <button type="submit" class="btn-login">Kirish</button>
-                                </form>
-                            </div>
+  <body>
+    <main >
 
-                            <!-- ERI Tab -->
-                            <div id="eri-tab" class="tab-content active">
-                                    <input type="hidden" name="eri" id="selectedEri" value="">
+      <video class="auth-sidebar__video" playsinline autoplay loop muted
+        src="{{ asset('images/background.mp4') }}"></video>
 
-                                    <div class="mb-3">
-                                        <select class="form-select" id="eriSelect" disabled>
-                                            <option value="">Tanlanmagan</option>
-                                        </select>
-                                    </div>
+      <div class="containers">
 
-                                    <button type="button" class="btn-usb" onclick="openUsbToken()">
-                                        <img src="https://esi.uz/oauth2/assets/images/icons/pfx.ico" alt="pfx" style="height: 20px">
-{{--                                        <i class="ik ik-credit-card"></i>--}}
-                                        ERI ni tanlang
-                                    </button>
-
-                                    <button onclick="signin()" class="btn-login" id="eriLoginBtn" disabled>Kirish</button>
-                            </div>
-
-{{--                            <hr class="divider">--}}
-
-{{--                            <!-- Register Link -->--}}
-{{--                            <div class="register-link">--}}
-{{--                                <p class="mb-0 text-muted">Tizimda akkauntingiz yo'qmi?</p>--}}
-{{--                                <a href="{{ route('register') }}">Ro'yxatdan o'ting</a>--}}
-{{--                            </div>--}}
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="logo">
+          <img src="{{ asset('images/logo.svg') }}" alt="" />
+          <div class="logo-text">
+            <p>O’ZBEKISTON TEMIR YO’LLARI</p>
+            <span>AKSIYADORLIK JAMIYATI</span>
+          </div>
         </div>
-    </div>
 
+        <div class="tabs">
+          <div class="tab active" data-tab="password">
+            <i style="width: 18px; height: 18px" data-lucide="log-in"></i>
+            Password Login
+          </div>
+          <div class="tab" data-tab="eri">
+            <i style="width: 18px; height: 18px" data-lucide="shield-check"></i>
+            ERI Key Login
+          </div>
+        </div>
+
+        <div class="tab-wrapper">
+          <div class="tab-content active" id="password">
+            <form action="{{ route('login') }}" method="POST">
+              @csrf
+
+              <div class="input-group">
+                <i data-lucide="user" class="icon"></i>
+                <input type="text" name="username" placeholder="Loginni kiriting" required>
+              </div>
+
+              <div class="input-group">
+                <i data-lucide="lock" class="icon"></i>
+                <input type="password" name="password" placeholder="Parolni kiriting" required>
+              </div>
+
+              <div class="remember-forgot">
+                <label class="remember-me">
+                  <input type="checkbox">
+                  Meni eslab qolish
+                </label>
+                <div class="forgot">
+                  <a href="#">Parolni unutdingizmi?</a>
+                </div>
+              </div>
+
+              <button type="submit" class="button">
+                <i data-lucide="log-in"></i>
+                Kirish
+              </button>
+            </form>
+          </div>
+
+          <div class="tab-content" id="eri">
+            <form>
+              <div class="input-group">
+                <i data-lucide="key" class="icon"></i>
+                <select required>
+                  <option value=""></option>
+                  <option>ERI Key 1</option>
+                  <option>ERI Key 2</option>
+                </select>
+              </div>
+
+              <div class="input-group">
+                <i data-lucide="lock" class="icon"></i>
+                <input type="password" placeholder="PIN for ERI Key" required>
+              </div>
+
+              <button type="submit" class="button">
+                <i data-lucide="shield-check"></i>
+                Authenticate with ERI Key
+              </button>
+            </form>
+          </div>
     <!-- ERI Modal -->
     <div class="eri-modal" id="eriModal">
         <div class="eri-modal-content">
@@ -94,7 +108,24 @@
                 </div>
             </div>
         </div>
-    </div>
+      </div>
+
+      <script>
+        lucide.createIcons();
+
+        document.querySelectorAll(".tab").forEach(tab => {
+          tab.addEventListener("click", () => {
+            document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+            document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+            tab.classList.add("active");
+            document.getElementById(tab.dataset.tab).classList.add("active");
+            lucide.createIcons();
+          });
+        });
+      </script>
+
+    </main>
+  </body>
 
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/jquery-3.6.0.min.js') }}"></script>
@@ -106,4 +137,320 @@
     <script>
         localStorage.clear();
     </script>
+  <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ asset('js/jquery-3.6.0.min.js') }}"></script>
+  <script src="{{ asset('js/sweetalert2@11') }}"></script>
+  <script src="{{ asset('js/e_imzo.js') }}"></script>
+  <script src="{{ asset('js/e_imzo_client.js') }}"></script>
+  <script src="{{ asset('js/login_e_imzo.js') }}"></script>
+
+  <!-- ================= CURTAIN PRELOADER SCRIPT ================= -->
+  <script>
+    (function () {
+      const preloader = document.getElementById("cp-preloader");
+      const STRIPS = 16;
+
+      for (let i = 0; i < STRIPS; i++) {
+        const strip = document.createElement("div");
+        strip.className = "cp-strip";
+
+        const inner = document.createElement("span");
+        inner.style.setProperty("--i", i);
+
+        strip.appendChild(inner);
+        preloader.appendChild(strip);
+      }
+
+      setTimeout(() => {
+        preloader.style.display = "none";
+      }, 3300);
+    })();
+  </script>
+  <!-- ============================================================ -->
+
 @endsection
+
+<style>
+  /* ================= YOUR ORIGINAL STYLES (UNCHANGED) ================= */
+
+  /* ... ALL YOUR EXISTING CSS EXACTLY AS YOU SENT ... */
+
+  /* ================= CURTAIN PRELOADER STYLES ================= */
+
+/* ================= CURTAIN PRELOADER STYLES ================= */
+.cp-preloader {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    background: transparent; /* dark background looks more premium */
+}
+
+.cp-strip {
+    flex: 1;
+    overflow: hidden;
+}
+
+.cp-strip span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        135deg,
+        #6d28d9 0%,
+        #7c3aed 30%,
+        #a78bfa 60%,
+        #c084fc 100%
+    );
+    transform: translateX(-100%); /* start hidden from left */
+    will-change: transform;
+    animation: cp-slide 1.5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.cp-strip span {
+    animation-delay: calc(var(--i) * 20ms);
+}
+
+@keyframes cp-slide {
+    to {
+        transform: translateX(100%);
+    }
+}
+
+</style>
+
+
+<style>
+  .main {
+    display: flex;
+    align-items: center;
+    min-height: 100vh;
+    justify-content: center;
+
+    overflow: hidden;
+    position: relative;
+  }
+
+  .containers {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 440px;
+    padding: 40px 35px 0 35px;
+    animation: fadeIn 1.2s ease-out;
+    z-index: 1;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Tabs with tiny icons */
+  .tabs {
+    display: flex;
+    background: rgba(121, 77, 253, 0.1);
+    /* changed alpha version of new color */
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 30px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 12px 14px;
+    text-align: center;
+    color: #666;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .tab.active {
+    background: #794DFD;
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(121, 77, 253, 0.4);
+  }
+
+  .tab-wrapper {
+    position: relative;
+    min-height: 320px;
+    overflow: hidden;
+    margin-top: 40px;
+    z-index: 1000;
+  }
+
+  .tab-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: none;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  .input-group {
+    position: relative;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+  }
+
+  input,
+  select {
+    width: 100%;
+    padding: 15px 15px 15px 42px;
+    background: rgba(255, 255, 255, 0.8) !important;
+    border: 2px dashed #e3e3e3;
+    border-radius: 12px;
+    color: #333;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.4s ease;
+  }
+
+  input:focus,
+  select:focus {
+    border-color: #794DFD;
+    box-shadow: 0 0 20px rgba(121, 77, 253, 0.2);
+  }
+
+  .icon {
+    position: absolute;
+    left: 14px;
+    width: 18px;
+    height: 18px;
+    color: #999;
+    transition: color 0.4s ease;
+    pointer-events: none;
+  }
+
+  .input-group:focus-within .icon {
+    color: #794DFD;
+  }
+
+  .button {
+    width: 100%;
+    padding: 15px;
+    background: #794DFD;
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    box-shadow: 0 8px 20px rgba(121, 77, 253, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  button:hover {
+    background: #5c36c1;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(121, 77, 253, 0.4);
+  }
+
+  .forgot a {
+    color: #794DFD;
+    font-size: 14px;
+    text-decoration: none;
+  }
+
+  .forgot a:hover {
+    text-decoration: underline;
+  }
+
+  /* Yangi qator — checkbox va forgot bir qatorda */
+  .remember-forgot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0 30px 0;
+  }
+
+  .remember-me {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #666;
+    cursor: pointer;
+  }
+
+  .remember-me input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #794DFD;
+    cursor: pointer;
+  }
+
+  .auth-sidebar__video {
+    width: 50vw;
+    height: 100vh;
+    object-fit: cover;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: -1;
+  }
+
+  .logo {
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo p {
+    font-size: 16px;
+    font-weight: 600;
+    color: #515151;
+  }
+
+  .logo span {
+    font-size: 13px;
+    color: #959595;
+  }
+
+  .logo-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .logo-text p {
+    margin: 0;
+    color: #707070;
+  }
+
+  .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+
+  input:-internal-autofill-selected {
+    box-shadow: 0 0 0px 1000px white inset !important;
+    -webkit-text-fill-color: #000 !important;
+    bckground-color: white !important;
+  }
+</style>

@@ -586,7 +586,7 @@ body {
 					}
 				}
 				.sidebar-content {
-				    background-color: #404E67;
+				    background-color: white !important;
 				    .nav-container {
 						.navigation-main {
 							.nav-item {
@@ -598,7 +598,7 @@ body {
 									}
 								}
 								.submenu-content {
-								    background-color: #4a5872;
+								    background-color: #fff !important;
 								}
 								&.open::after, &.active::after {
 								    background-color: #eb525d;
@@ -1253,3 +1253,4 @@ hr {
 .user--offline:after {
     background: #bbb;
 }
+ 
