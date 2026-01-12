@@ -11,6 +11,37 @@
     <nav class="h-full flex flex-col">
         <div class="flex-1">
 
+            <div class="menu-item create-doc-menu">
+                <div class="menu-header">
+                    <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
+                        <i data-lucide="file-plus-2" style="width: 22px; height: 22px;"></i>
+                        <span class="menu-text">Hujjat yaratish</span>
+                    </div>
+                    <i data-lucide="chevron-right" class="chevron"></i>
+                </div>
+
+                <div class="submenu">
+                    <div class="submenu-item">
+                        <a href="{{ url('/office/document/create/incoming') }}">
+                            <i data-lucide="download" style="width: 18px; height: 18px;"></i>
+                            <span>Kiruvchi xat</span>
+                        </a>
+                    </div>
+                    <div class="submenu-item">
+                        <a href="{{ url('/office/document/create/outgoing') }}">
+                            <i data-lucide="upload" style="width: 18px; height: 18px;"></i>
+                            <span>Chiquvchi xat</span>
+                        </a>
+                    </div>
+                    <div class="submenu-item">
+                        <a href="{{ url('/office/document/create/internal') }}">
+                            <i data-lucide="file-edit" style="width: 18px; height: 18px;"></i>
+                            <span>Ichki hujjatlar</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             @foreach($sidebarMenus as $key => $item)
                 @php
                     $menuList = $item->menuList;
@@ -338,6 +369,49 @@
         margin: 0.25rem 1rem;
         border-radius: 0.5rem;
         overflow: hidden;
+    }
+
+    /* Create Document Menu - Special Styling */
+    .create-doc-menu {
+        background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+        margin: 0.5rem 1rem 1rem 1rem;
+        box-shadow: 0 4px 12px rgba(121, 77, 253, 0.2);
+    }
+
+    .create-doc-menu > .menu-header {
+        color: white;
+        background: transparent;
+    }
+
+    .create-doc-menu > .menu-header:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .create-doc-menu > .menu-header i,
+    .create-doc-menu > .menu-header .menu-text,
+    .create-doc-menu > .menu-header .chevron {
+        color: white !important;
+    }
+
+    .create-doc-menu .submenu {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .create-doc-menu .submenu-item a {
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .create-doc-menu .submenu-item a:hover {
+        background-color: rgba(255, 255, 255, 0.15);
+        color: white;
+    }
+
+    .create-doc-menu .submenu-item i {
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .create-doc-menu .submenu-item a:hover i {
+        color: white;
     }
 
     .menu-header {
