@@ -355,7 +355,7 @@ input:-internal-autofill-selected {
     border: none;
     border-radius: 12px;
     color: #fff;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.4s ease;
@@ -368,9 +368,8 @@ input:-internal-autofill-selected {
 .button:hover:not(:disabled) {
     background: linear-gradient(135deg,rgb(99, 61, 214) 0%,rgb(127, 74, 241) 100%);
     transform: translateY(-4px);
-
 }
-1
+
 .button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
@@ -680,7 +679,7 @@ input:-internal-autofill-selected {
 }
 
 .input-group button{
-    box-shadow: 0 0 0px 1000px white inset !important !;
+    box-shadow: 0 0 0px 1000px white inset !important;
     -webkit-text-fill-color: #000 !important;
     background-color: white !important;
     width:100%;
