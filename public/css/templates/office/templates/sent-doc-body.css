@@ -1,0 +1,259 @@
+/* Modern Sent Document Styles */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    .print-page-modern, .print-page-modern * {
+        visibility: visible;
+    }
+    .print-page-modern {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+}
+
+.sent-doc-modern {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 0.2rem;
+    background: #f8fafc;
+}
+
+.document-container-modern {
+    width: 100%;
+    /*max-width: 210mm;*/
+    background: white;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.print-page-modern {
+    padding: 40mm 20mm;
+    min-height: 297mm;
+    background: white;
+}
+
+/* Document Header */
+.document-header-modern {
+    margin-bottom: 3rem;
+    border-bottom: 3px solid #794DFD;
+    padding-bottom: 1.5rem;
+}
+
+.header-banner {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.header-banner img {
+    max-width: 100%;
+    height: auto;
+    max-height: 100px;
+}
+
+.document-meta {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+}
+
+.doc-number {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e293b;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+    border: 2px solid #794DFD;
+    border-radius: 8px;
+}
+
+.doc-date {
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    padding: 0.5rem 1rem;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+}
+
+/* Document Body */
+.document-body-modern {
+    margin-bottom: 3rem;
+    line-height: 1.8;
+}
+
+.document-content {
+    font-size: 14px;
+    color: #1e293b;
+}
+
+.document-content p {
+    margin-bottom: 1rem;
+    text-align: justify;
+}
+
+.document-content h1,
+.document-content h2,
+.document-content h3 {
+    color: #1e293b;
+    font-weight: 700;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Signature Section */
+.signature-section-modern {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #faf5ff 0%, #ffffff 100%);
+    border: 2px solid #e9d5ff;
+    border-radius: 12px;
+}
+
+.signature-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 2fr;
+    align-items: center;
+    gap: 2rem;
+}
+
+.signature-position {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.position-label {
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.position-value {
+    font-size: 14px;
+    color: #1e293b;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.signature-qr {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.qr-code-wrapper {
+    padding: 0.75rem;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.qr-code-wrapper img {
+    display: block;
+    max-width: 100px;
+    height: auto;
+}
+
+.signature-name {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.name-value {
+    font-size: 16px;
+    color: #1e293b;
+    font-weight: 700;
+    text-align: right;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #1e293b;
+    min-width: 200px;
+}
+
+/* Performer Section */
+.performer-section-modern {
+    padding: 1rem 1.5rem;
+    background: #f8fafc;
+    border-left: 4px solid #794DFD;
+    border-radius: 8px;
+}
+
+.performer-row {
+    display: flex;
+    align-items: center;
+}
+
+.performer-info {
+    display: flex;
+    gap: 0.75rem;
+    align-items: baseline;
+}
+
+.performer-label {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.performer-name {
+    font-size: 14px;
+    color: #1e293b;
+    font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sent-doc-modern {
+        padding: 1rem;
+    }
+
+    .print-page-modern {
+        padding: 20mm 15mm;
+    }
+
+    .signature-row {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .signature-name {
+        align-items: flex-start;
+    }
+
+    .name-value {
+        text-align: left;
+    }
+
+    .document-meta {
+        flex-direction: column;
+        align-items: flex-end;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .sent-doc-modern {
+        padding: 0;
+        background: white;
+    }
+
+    .document-container-modern {
+        box-shadow: none;
+        border-radius: 0;
+        max-width: 100%;
+    }
+
+    .print-page-modern {
+        padding: 20mm 15mm;
+    }
+}

@@ -1,55 +1,62 @@
 @php($key = md5(uniqid()))
 @extends('layouts.app_create_doc')
+<link rel="stylesheet" href="{{ asset('css/templates/office/document/edit/internal.css') }}">
 @section('content')
 
-    <div class="container-fluid mt-10">
-
-        <div class="page-header">
-            <div class="row align-items-end">
-                <div class="col-md-2">
-                    <div class="page-header-title">
-                        <i class="ik ik-plus-circle bg-blue"></i>
-                        <div class="d-inline">
-                            <h5>{{ __('action.edit_document') }}</h5>
-                        </div>
+    <div class="edit-document-page-modern">
+        <div class="page-header-modern">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i data-lucide="file-edit"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>{{ __('action.edit_document') }}</h1>
+                        <p>{{ __('message.edit_internal_document') ?? 'Редактирование внутреннего документа' }}</p>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="header-center">
                     @include('templates.alert')
                 </div>
-                <div class="col-md-4">
-                    <nav class="breadcrumb-container" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('home') }}"><i class="ik ik-home"></i></a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="#">{{ __('field.document') }}</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">{{ __('action.edit_document') }}</li>
-                        </ol>
+                <div class="header-right">
+                    <nav class="breadcrumb-modern">
+                        <a href="{{ route('home') }}" class="breadcrumb-item">
+                            <i data-lucide="home"></i>
+                            <span>{{ __('menu.home') ?? 'Главная' }}</span>
+                        </a>
+                        <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                        <a href="#" class="breadcrumb-item">
+                            <span>{{ __('field.document') }}</span>
+                        </a>
+                        <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                        <span class="breadcrumb-item active">{{ __('action.edit_document') }}</span>
                     </nav>
                 </div>
             </div>
         </div>
 
-        <div class="row">
-            <input hidden id="journal_id" value="{{ $journal->id }}">
-            <input hidden id="doc_hash" value="{{ $document->doc_hash }}">
-            <input hidden id="journal_type_id" value="{{ $journal->j_type }}">
-            <input hidden id="doc_code" value="{{ $journal->journal->doc_code??'' }}">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body">
-                        <form id="createForm" method="POST" action="{{ route('office.doc.update', ['j_id' => $journal->id, 'hash' => $document->doc_hash]) }}" enctype="multipart/form-data">
-                            @csrf
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <br>
-                                    <div class="form-group row" id="execution_steps"></div>
-                                </div>
+        <input hidden id="journal_id" value="{{ $journal->id }}">
+        <input hidden id="doc_hash" value="{{ $document->doc_hash }}">
+        <input hidden id="journal_type_id" value="{{ $journal->j_type }}">
+        <input hidden id="doc_code" value="{{ $journal->journal->doc_code??'' }}">
 
-                                <div class="col-md-8 document_body">
+        <div class="form-card-modern">
+            <form id="createForm" method="POST" action="{{ route('office.doc.update', ['j_id' => $journal->id, 'hash' => $document->doc_hash]) }}" enctype="multipart/form-data">
+                @csrf
+                <div class="form-layout-modern">
+                    <!-- Left Sidebar - Execution Steps -->
+                    <div class="form-sidebar-left">
+                        <div class="sidebar-section">
+                            <div class="section-header">
+                                <i data-lucide="users"></i>
+                                <h3>{{ __('field.execution_steps') ?? 'Этапы исполнения' }}</h3>
+                            </div>
+                            <div class="execution-steps-container" id="execution_steps"></div>
+                        </div>
+                    </div>
+
+                    <!-- Main Content - Document Body -->
+                    <div class="form-main-content document_body">
                                     <div class="form-group row">
                                         <div class="col-sm-3">
                                             <label for="doc_lang">{{ __('field.doc_lang') }}</label><br>
@@ -571,6 +578,14 @@
             });
         });
 
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
     </script>
 
 @endsection

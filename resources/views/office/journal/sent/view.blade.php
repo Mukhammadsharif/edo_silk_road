@@ -1,89 +1,101 @@
 @extends('layouts.app')
-
+<link rel="stylesheet" href="{{ asset('css/templates/office/journal/sent/view.css') }}">
 @section('content')
-    <div class="container-fluid">
-        <div class="page-header">
-            <div class="row align-items-end">
-                <div class="col-md-3">
-                    <div class="page-header-title">
-                        <i class="ik ik-arrow-up-right bg-blue"></i>
-                        <div class="d-inline">
-                            <h5>{{ __('title.outgoing') }}</h5>
-                        </div>
+    <div class="outgoing-view-page-modern">
+        <div class="page-header-modern">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i data-lucide="send"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>{{ __('title.outgoing') }}</h1>
+                        <p>{{ __('message.view_outgoing_document') ?? 'Просмотр исходящего документа' }}</p>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="header-center">
                     @include('templates.alert')
                 </div>
-                <div class="col-md-3">
-                    <nav class="breadcrumb-container" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('home') }}"><i class="ik ik-home"></i></a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('office.outgoing-docs') }}">{{ __('title.outgoing') }}</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">{{ __('action.view') }}</li>
-                        </ol>
+                <div class="header-right">
+                    <nav class="breadcrumb-modern">
+                        <a href="{{ route('home') }}" class="breadcrumb-item">
+                            <i data-lucide="home"></i>
+                            <span>{{ __('menu.home') ?? 'Главная' }}</span>
+                        </a>
+                        <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                        <a href="{{ route('office.outgoing-docs') }}" class="breadcrumb-item">
+                            <span>{{ __('title.outgoing') }}</span>
+                        </a>
+                        <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                        <span class="breadcrumb-item active">{{ __('action.view') }}</span>
                     </nav>
                 </div>
             </div>
         </div>
 
-        <div class="row">
+        <div class="document-view-layout">
+            <!-- Left Sidebar -->
+            <div class="view-sidebar view-sidebar-left">
+                <div class="sidebar-card-modern">
+                    @include('office.journal.view-left')
+                </div>
+            </div>
 
-            @include('office.journal.view-left')
-
-            <div class="col-md-6">
-                @include('office.templates.sent-doc-body')
+            <!-- Document Content -->
+            <div class="document-content-section">
+                <div class="document-card-modern">
+                    @include('office.templates.sent-doc-body')
+                </div>
             </div>
 
             @include('templates.mini_editor_js')
 
-            <div class="col-md-4">
+            <!-- Right Sidebar -->
+            <div class="view-sidebar view-sidebar-right">
                 @if($directorDocument)
-                    <div class="card table-card">
-                        <div class="card-header">
+                    <div class="execution-card-modern">
+                        <div class="card-header-modern">
+                            <i data-lucide="pen-tool"></i>
                             <h3>{{ __('title.signing_status') }}</h3>
                         </div>
 
-                        <div class="p-4 border-top mt-15">
-                            <div class="row text-center">
-                                <div class="col-4 border-right">
-                                    <p>{{ __('status.exec_status') }}</p>
-                                    <span class="badge {{ $journal->statusOut->badgeClass??'' }}">
-                                        {{ $journal->statusOut->lang($journal->statusOut->id)??'unk' }}
-                                    </span>
+                        <div class="execution-status-modern">
+                            <div class="status-item-modern">
+                                <div class="status-label">{{ __('status.exec_status') }}</div>
+                                <span class="status-badge-modern {{ $journal->statusOut->badgeClass??'' }}">
+                                    {{ $journal->statusOut->lang($journal->statusOut->id)??'unk' }}
+                                </span>
+                            </div>
+                            <div class="status-item-modern">
+                                <div class="status-label">
+                                    @if($journal->status === 1)
+                                        {{ __('field.created_at') }}
+                                    @else
+                                        {{ __('field.date_sent_for_signature') }}
+                                    @endif
                                 </div>
-                                <div class="col-4 border-right">
-                                    <p>
-                                        @if($journal->status === 1)
-                                            {{ __('field.created_at') }}
-                                        @else
-                                            {{ __('field.date_sent_for_signature') }}
-                                        @endif
-                                    </p>
-                                    <i class="ik ik-clock"></i>
+                                <div class="status-value">
+                                    <i data-lucide="clock"></i>
                                     {{ \Carbon\Carbon::parse($directorDocument->updated_at)->format('d.m.y, H:i') }}
                                 </div>
-                                <div class="col-4">
-                                    <p>
-                                        {{ $directorDocument->toUser->userPost->lang($directorDocument->toUser->userPost->id)??'' }}
-                                    </p>
-                                    <h6 class="fw-700">{{ $directorDocument->toUser->personal->shortName()??'' }}</h6>
+                            </div>
+                            <div class="status-item-modern">
+                                <div class="status-label">
+                                    {{ $directorDocument->toUser->userPost->lang($directorDocument->toUser->userPost->id)??'' }}
                                 </div>
+                                <div class="status-value font-bold">{{ $directorDocument->toUser->personal->shortName()??'' }}</div>
                             </div>
                         </div>
                     </div>
                 @endif
 
                 @if($replyDocuments && count($replyDocuments) > 0)
-                    <div class="card">
-                        <div class="card-header">
+                    <div class="execution-card-modern">
+                        <div class="card-header-modern">
+                            <i data-lucide="mail"></i>
                             <h3>{{ __('title.answer_letters') }}</h3>
                         </div>
-                        <div class="card-body chat-box scrollable_div">
+                        <div class="replies-list-modern">
                             @foreach($replyDocuments as $key => $doc)
                                 <div class="sl-item" id="doc_{{ $doc->id }}">
                                     <div class="sl-left fw-600 f-16">{{ $doc->fromUser->personal->shortName()??'' }}</div>
@@ -201,12 +213,13 @@
                 @endif
 
                 @if($agreement_users && $agreement_users->count())
-                    <div class="card">
-                        <div class="card-header">
+                    <div class="execution-card-modern">
+                        <div class="card-header-modern">
+                            <i data-lucide="check-circle"></i>
                             <h3>{{ __('title.coordination') }}</h3>
                         </div>
 
-                        <div class="card-block">
+                        <div class="coordination-list-modern">
                             @foreach($agreement_users as $key => $item)
                                 <div class="sl-item">
                                     <div class="sl-left fw-600 f-16">{{ $item->toUser->personal->fullName()??'' }}</div>
@@ -270,45 +283,50 @@
 
                 @include('templates.comment_form')
 
-                <div class="card table-card">
-                    <div class="card-header">
+                <div class="execution-card-modern actions-card">
+                    <div class="card-header-modern">
+                        <i data-lucide="settings"></i>
                         <h3>{{ __('action.action') }}</h3>
                     </div>
-                    <div class="card-body">
-                        <button type="button" onclick="printContent()" class="btn btn-outline-secondary btn-rounded mr-5">
-                            <i class="ik ik-printer"></i> {{ __('action.print') }}
+                    <div class="actions-body-modern">
+                        <button type="button" onclick="printContent()" class="btn-modern btn-secondary">
+                            <i data-lucide="printer"></i>
+                            <span>{{ __('action.print') }}</span>
                         </button>
 
-                        <button type="button" onclick="downloadAsPDF()" class="btn btn-outline-dark m-1 btn-rounded">
-                            <i class="ik ik-download"></i> {{ __('action.download') }}
+                        <button type="button" onclick="downloadAsPDF()" class="btn-modern btn-secondary">
+                            <i data-lucide="download"></i>
+                            <span>{{ __('action.download') }}</span>
                         </button>
                         <input id="downloadName" value="{{ $journal->journal->lang($journal->journal->lang_id)??'-' }} - {{ $journal->fromUser->personal->shortName()??'' }}" hidden/>
                         <hr>
 
                         @if(in_array($journal->status, [1, 2, 3]))
-                            <button type="button" class="btn btn-outline-danger btn-rounded mr-5 deleteItem"
+                            <button type="button" class="btn-modern btn-danger deleteItem"
                                     data-id="{{$document->id}}">
-                                <i class="ik ik-trash-2"></i> {{ __('action.delete') }}
+                                <i data-lucide="trash-2"></i>
+                                <span>{{ __('action.delete') }}</span>
                             </button>
 
                             <a href="{{ route('office.doc.edit', ['type' => $type, 'j_id' => $journal->id, 'hash' => $document->doc_hash] ) }}"
-                               class="btn btn-outline-warning btn-rounded m-1">
-                                <i class="ik ik-edit"></i> {{ __('action.edit') }}
+                               class="btn-modern btn-warning">
+                                <i data-lucide="edit"></i>
+                                <span>{{ __('action.edit') }}</span>
                             </a>
                         @endif
 
                         @if($agreement_users && $agreement_users->count())
                             @if($journal->status === (int)1)
-                                <button type="button"
-                                        class="btn btn-outline-success btn-rounded openConfirmForm">
-                                    <i class="ik ik-send"></i> {{ __('action.send_to_ag') }}
+                                <button type="button" class="btn-modern btn-success openConfirmForm">
+                                    <i data-lucide="send"></i>
+                                    <span>{{ __('action.send_to_ag') }}</span>
                                 </button>
                             @endif
                         @else
                             @if($journal->status === (int)1)
-                                <button type="button"
-                                        class="btn btn-outline-success btn-rounded openConfirmForm">
-                                    <i class="ik ik-send"></i> {{ __('action.send_for_signature') }}
+                                <button type="button" class="btn-modern btn-success openConfirmForm">
+                                    <i data-lucide="send"></i>
+                                    <span>{{ __('action.send_for_signature') }}</span>
                                 </button>
                             @endif
                         @endif
@@ -337,13 +355,15 @@
                                             <label hidden><i class="fa fa-key"></i> {{ __('action.to_sign_by_key') }}
                                             </label><br>
                                             @if($signType->doc_sign_type === 2)
-                                                <button type="submit" class="btn btn-outline-success modal-bg-class"
+                                                <button type="submit" class="btn-modern btn-success modal-bg-class"
                                                         onclick="signLogin()">
+                                                    <i data-lucide="key"></i>
                                                     <span class="confirm_type">{{ __('action.to_sign') }}</span> (LOGIN)
                                                 </button>
                                             @else
-                                                <button type="button" class="btn btn-outline-success modal-bg-class"
+                                                <button type="button" class="btn-modern btn-success modal-bg-class"
                                                         onclick="sign()">
+                                                    <i data-lucide="key"></i>
                                                     <span class="confirm_type">{{ __('action.to_sign') }}</span> (ERI)
                                                 </button>
                                             @endif
@@ -373,10 +393,18 @@
                 </div>
 
                 @include('office.templates.doc-steps')
+                </div>
             </div>
-
-        </div>
     </div>
+
+    <script>
+        // Initialize lucide icons
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+    </script>
 
     @include('modals.delete-document')
 

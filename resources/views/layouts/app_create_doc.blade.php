@@ -1,6 +1,6 @@
 <!doctype html>
 <html class="no-js" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head> 
+<head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -181,6 +181,7 @@
     <script src="{{ asset('/assets/node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js') }}"></script>
     <script src="{{ asset('/assets/node_modules/jquery.repeater/jquery.repeater.min.js') }}"></script>
     <script src="{{ asset('/assets/dist/js/theme.min.js') }}"></script>
+    <script src="{{ asset('js/lucide.min.js') }}"></script>
 
     {{--<script>
         document.getElementById('createForm').addEventListener('submit', function() {

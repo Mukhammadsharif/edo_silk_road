@@ -1,66 +1,82 @@
 @extends('layouts.app')
-
+<link rel="stylesheet" href="{{ asset('css/templates/office/journal/work/view-app.css') }}">
 @section('content')
-    <div class="container-fluid">
+    <div class="work-view-page-modern">
         @include('office.journal.work.templates.header')
 
-        <div class="row">
+        <div class="document-view-layout">
+            <div class="view-sidebar view-sidebar-left">
+                <div class="sidebar-card-modern">
+                    @include('office.journal.view-left')
+                </div>
+            </div>
 
-            @include('office.journal.view-left')
-
-            <div class="col-md-6">
-                <div class="work-doc-page">
-                    <div class="work-doc-subpage">
-                        <div id="printPage" class="printPage">
-                            @if($journal->docStatus->doc_code !== 'OPEN')
-                                <div class="doc-confidentiality">
-                                    {{ $journal->docStatus->lang($journal->docStatus->lang_id)??'-' }}
-                                </div>
-                            @endif
-
-                            <div class="table-tr-3td">
-                                <table>
-                                    <tr>
-                                        <td></td>
-                                        <td>
-                                            <p>
-                                                {!! $directorDocument->signQrCode($document->id, $directorDocument->to_user, $directorDocument->id) !!}
-                                                <br>
-                                                @if($directorDocument->status > 2)
-                                                    <span
-                                                        class="font-size-12">{{ date('d.m.Y', strtotime($directorDocument->updated_at)) }}</span>
-                                                @endif
-                                            </p>
-                                        </td>
-                                        <td>
-                                            {{ $directorDocument->toUser->userPost->docLang($directorDocument->toUser->userPost->id, $document->doc_lang)??'' }}
-                                            <p>{{ $directorDocument->toUser->personal->shortNameLang($document->doc_lang)??''}}</p>
-
-
-                                            {{ $journal->fromUser->userPost->docLang($journal->fromUser->userPost->id, $document->doc_lang)??'' }}
-                                            <p>{{ $journal->fromUser->personal->shortNameLang($document->doc_lang)??'' }}</p>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-
-                            <div class="doc-text">
-                                @if($html_doc)
-                                    {!! $html_doc !!}
+            <div class="document-content-section">
+                <div class="document-card-modern">
+                    <div class="sent-doc-modern">
+                        <div class="document-container-modern">
+                            <div id="printPage" class="print-page-modern">
+                                @if($journal->docStatus->doc_code !== 'OPEN')
+                                    <div class="doc-confidentiality">
+                                        {{ $journal->docStatus->lang($journal->docStatus->lang_id)??'-' }}
+                                    </div>
                                 @endif
+
+                                <div class="table-tr-3td">
+                                    <table>
+                                        <tr>
+                                            <td></td>
+                                            <td>
+                                                <p>
+                                                    {!! $directorDocument->signQrCode($document->id, $directorDocument->to_user, $directorDocument->id) !!}
+                                                    <br>
+                                                    @if($directorDocument->status > 2)
+                                                        <span
+                                                            class="font-size-12">{{ date('d.m.Y', strtotime($directorDocument->updated_at)) }}</span>
+                                                    @endif
+                                                </p>
+                                            </td>
+                                            <td>
+                                                {{ $directorDocument->toUser->userPost->docLang($directorDocument->toUser->userPost->id, $document->doc_lang)??'' }}
+                                                <p>{{ $directorDocument->toUser->personal->shortNameLang($document->doc_lang)??''}}</p>
+
+
+                                                {{ $journal->fromUser->userPost->docLang($journal->fromUser->userPost->id, $document->doc_lang)??'' }}
+                                                <p>{{ $journal->fromUser->personal->shortNameLang($document->doc_lang)??'' }}</p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+                                <div class="doc-text">
+                                    @if($html_doc)
+                                        {!! $html_doc !!}
+                                    @endif
+                                </div>
+
+                                @include('office.journal.work.templates.app_executor')
+
+                                @include('office.journal.work.templates.agreement')
+
                             </div>
-
-                            @include('office.journal.work.templates.app_executor')
-
-                            @include('office.journal.work.templates.agreement')
-
                         </div>
                     </div>
                 </div>
             </div>
-            @include('office.journal.view-right')
+
+            <div class="view-sidebar view-sidebar-right">
+                <div class="sidebar-card-modern">
+                    @include('office.journal.view-right')
+                </div>
+            </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof lucide !== 'undefined') { lucide.createIcons(); }
+        });
+    </script>
 
     @include('modals.delete-document')
 

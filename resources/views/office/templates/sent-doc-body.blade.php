@@ -1,71 +1,71 @@
-<div class="sent-doc-page">
-    <div class="sent-doc-subpage">
-        <div id="printPage" class="printPage">
-            <div class="sent-doc-top-banner">
-                <img src="{{ $sentDocImage }}">
+<div class="sent-doc-modern">
+    <div class="document-container-modern">
+        <div id="printPage" class="print-page-modern">
+            <!-- Document Header with Logo/Banner -->
+            <div class="document-header-modern">
+                <div class="header-banner">
+                    <img src="{{ $sentDocImage }}" alt="Organization Banner">
+                </div>
+                <div class="document-meta">
+                    <div class="doc-number">№ {{ $document->doc_number }}</div>
+                    <div class="doc-date">{{ date('d.m.Y', strtotime($document->doc_date)) }}</div>
+                </div>
             </div>
 
-            <div class="sent-doc-date-number">
-                № {{ $document->doc_number }}<br>
-                {{ date('d.m.Y', strtotime($document->doc_date)) }}
-            </div>
-
-            <div class="doc-text">
+            <!-- Document Body -->
+            <div class="document-body-modern">
                 @if($html_doc)
-                    {!! $html_doc !!}
+                    <div class="document-content">
+                        {!! $html_doc !!}
+                    </div>
                 @endif
             </div>
 
-            <div class="table-tr-3td">
-                <table>
-                    <tr>
-                        <td>
-                            {{ $directorDocument->toUser->userPost->docLang($directorDocument->toUser->userPost->id, $document->doc_lang)??'' }}
-                        </td>
-                        <td>
+            <!-- Signature Section -->
+            <div class="signature-section-modern">
+                <div class="signature-row">
+                    <div class="signature-position">
+                        <span class="position-label">Lavozim:</span>
+                        <span class="position-value">{{ $directorDocument->toUser->userPost->docLang($directorDocument->toUser->userPost->id, $document->doc_lang)??'' }}</span>
+                    </div>
+                    <div class="signature-qr">
+                        <div class="qr-code-wrapper">
                             {!! $directorDocument->signQrCode($document->id, $directorDocument->to_user, $directorDocument->id) !!}
-                        </td>
-                        <td>
-                            {{ $directorDocument->toUser->personal->shortNameLang($document->doc_lang)??'' }}
-                        </td>
-                    </tr>
-                </table>
+                        </div>
+                    </div>
+                    <div class="signature-name">
+                        <span class="name-value">{{ $directorDocument->toUser->personal->shortNameLang($document->doc_lang)??'' }}</span>
+                    </div>
+                </div>
             </div>
 
-            <div class="table-tr-3td exec-user">
-                <table>
-                    <tr>
-                        <td>
-                            <div class="text-left">
-                                <div class="doc-performer">
-                                    @switch($document->doc_lang)
-                                        @case('uz')
-                                            <span>Ijrochi:</span>
-                                            @break
-                                        @case('kr')
-                                            <span>Ижрочи:</span>
-                                            @break
-                                        @case('ru')
-                                            <span>Исполнитель:</span>
-                                            @break
-                                        @case('en')
-                                            <span>Performer:</span>
-                                            @break
-                                    @endswitch
-                                    {{ $journal->fromUser->personal->shortNameLang($document->doc_lang)??'' }}
-{{--                                    <span>{{ __('field.performer') }}:</span>--}}
-{{--                                    {{ $journal->fromUser->personal->shortName1()??'' }}--}}
-                                </div>
-                            </div>
-                        </td>
-                        <td class="hr-prt-docs-qr">
-                        </td>
-                        <td></td>
-                    </tr>
-                </table>
+            <!-- Performer Section -->
+            <div class="performer-section-modern">
+                <div class="performer-row">
+                    <div class="performer-info">
+                        <span class="performer-label">
+                            @switch($document->doc_lang)
+                                @case('uz')
+                                    Ijrochi:
+                                    @break
+                                @case('kr')
+                                    Ижрочи:
+                                    @break
+                                @case('ru')
+                                    Исполнитель:
+                                    @break
+                                @case('en')
+                                    Performer:
+                                    @break
+                            @endswitch
+                        </span>
+                        <span class="performer-name">{{ $journal->fromUser->personal->shortNameLang($document->doc_lang)??'' }}</span>
+                    </div>
+                </div>
             </div>
 
         </div>
-
     </div>
 </div>
+
+<link rel="stylesheet" href="{{ asset('css/templates/office/templates/sent-doc-body.css') }}">

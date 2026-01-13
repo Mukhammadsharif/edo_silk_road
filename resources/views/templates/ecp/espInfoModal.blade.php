@@ -1,35 +1,75 @@
 <div class="modal fade" id="infoModel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-success">
-                <h5 class="modal-title text-white"><i class="ik ik-feather"></i> {{ __('field.esp_info_title') }}</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+        <div class="modal-content modal-content-modern">
+            <div class="modal-header-modern">
+                <div class="header-title-ecp">
+                    <i data-lucide="shield-check"></i>
+                    <h5>{{ __('field.esp_info_title') }}</h5>
+                </div>
+                <button type="button" class="close-modern" data-dismiss="modal" aria-label="Close">
+                    <i data-lucide="x"></i>
                 </button>
             </div>
 
-            <div class="modal-body">
-                <h5 class="text-bold"><span id="modalText">{{ __('field.qr_signed_by') }}</span></h5>
-                <p id="qr_signed_by"></p>
+            <div class="modal-body-modern">
+                <div class="ecp-info-grid">
+                    <div class="info-card-ecp">
+                        <div class="info-label-ecp">
+                            <i data-lucide="user"></i>
+                            <span>{{ __('field.qr_signed_by') }}</span>
+                        </div>
+                        <div class="info-value-ecp" id="qr_signed_by"></div>
+                    </div>
 
-                <h5 class="text-bold"><span id="modalText">{{ __('field.registered') }}:</span></h5>
-                <p id="registered"></p>
+                    <div class="info-card-ecp">
+                        <div class="info-label-ecp">
+                            <i data-lucide="map-pin"></i>
+                            <span>{{ __('field.registered') }}</span>
+                        </div>
+                        <div class="info-value-ecp" id="registered"></div>
+                    </div>
 
-                <h5 class="text-bold"><span id="modalText">{{ __('field.serial_number') }}:</span></h5>
-                <p id="serialNumber"></p>
+                    <div class="info-card-ecp">
+                        <div class="info-label-ecp">
+                            <i data-lucide="hash"></i>
+                            <span>{{ __('field.serial_number') }}</span>
+                        </div>
+                        <div class="info-value-ecp" id="serialNumber"></div>
+                    </div>
 
-                <h5 class="text-bold"><span id="modalText">{{ __('field.signing_time') }}:</span></h5>
-                <p id="signingTime"></p>
+                    <div class="info-card-ecp">
+                        <div class="info-label-ecp">
+                            <i data-lucide="clock"></i>
+                            <span>{{ __('field.signing_time') }}</span>
+                        </div>
+                        <div class="info-value-ecp" id="signingTime"></div>
+                    </div>
+
+                    <div class="info-card-ecp full-width">
+                        <div class="info-label-ecp">
+                            <i data-lucide="fingerprint"></i>
+                            <span>{{ __('field.digest') ?? 'Хеш' }}</span>
+                        </div>
+                        <div class="info-value-ecp digest-value" id="digest"></div>
+                    </div>
+                </div>
             </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default pull-right" data-dismiss="modal">
-                    <i class="fa fa-close"></i> {{ __('action.close') }}
+            <div class="modal-footer-modern">
+                <button type="button" class="btn-modern btn-secondary" data-dismiss="modal">
+                    <i data-lucide="x"></i>
+                    <span>{{ __('action.close') }}</span>
                 </button>
             </div>
         </div>
     </div>
 </div>
 
-{{--<script src="{{ asset ("/js/jquery.validate.js") }}"></script>--}}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        $('#infoModel').on('shown.bs.modal', function () {
+            if (typeof lucide !== 'undefined') { lucide.createIcons(); }
+        });
+    });
+</script>
 

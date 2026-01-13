@@ -1,159 +1,149 @@
-<div class="col-md-4">
+<div class="view-right-modern">
     @if($journal->journal->doc_code !== 'INF_DOC')
         @if($directorResolution)
-            <div class="card table-card">
-                <div class="card-header">
+            <div class="execution-card-modern">
+                <div class="card-header-modern">
+                    <i data-lucide="users"></i>
                     <h3>{{ __('title.execution') }}</h3>
                 </div>
 
-                <div class="card-block">
-                    <div class="table-responsive scrollable_div">
-                        <table class="table mb-0 without-header">
-                            <tbody>
-                            @foreach($selectedPerformers as $key => $item)
-                                <tr>
-                                    <td>
-                                        <div class="d-inline-block align-middle">
-                                            <div class="d-inline-block">
-                                                <h6 class="mb-0">{{ $item->toUser->personal->fullName()??'' }}</h6>
-                                                <p class="text-muted mb-0">
-                                                    {{ $item->toDep->lang($item->toDep->id)??'' }},
-                                                    {{ $item->toUser->userPost->lang($item->toUser->userPost->id)??'' }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="text-right">
-                                        <h6 class="fw-500">
-                                        <span class="badge badge-primary">
-                                            {{ $item->resExecRole->lang($item->resExecRole->lang_id)??'' }}
-                                        </span>
-                                        </h6>
-                                    </td>
-                                </tr>
-                            @endforeach
-                            </tbody>
-                        </table>
+                <div class="performers-list-modern">
+                    @foreach($selectedPerformers as $key => $item)
+                        <div class="performer-item-modern">
+                            <div class="performer-avatar">
+                                <i data-lucide="user"></i>
+                            </div>
+                            <div class="performer-info">
+                                <div class="performer-name">{{ $item->toUser->personal->fullName()??'' }}</div>
+                                <div class="performer-position">
+                                    {{ $item->toDep->lang($item->toDep->id)??'' }},
+                                    {{ $item->toUser->userPost->lang($item->toUser->userPost->id)??'' }}
+                                </div>
+                            </div>
+                            <div class="performer-role">
+                                <span class="role-badge">
+                                    {{ $item->resExecRole->lang($item->resExecRole->lang_id)??'' }}
+                                </span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <div class="resolution-info-modern">
+                    <div class="info-row-modern">
+                        <span class="info-label-sm">{{ __('title.res_type') }}:</span>
+                        <span class="badge-modern badge-aqua">
+                            {{ $directorResolution->resType->lang($directorResolution->resType->lang_id)??'' }}
+                        </span>
+                    </div>
+                    <div class="resolution-text-modern">
+                        <strong>{{ __('title.res_text') }}:</strong>
+                        <div class="text-content">{!! $directorResolution->res_text??'' !!}</div>
                     </div>
                 </div>
 
-                <div class="profile-pic ml-20">
-                    <p>
-                        <strong>{{ __('title.res_type') }}:</strong>
-                        <span class="badge badge-aqua">
-                         {{ $directorResolution->resType->lang($directorResolution->resType->lang_id)??'' }}
-                    </span>
-                    </p>
-                    <strong>{{ __('title.res_text') }}:</strong> {!! $directorResolution->res_text??'' !!}
-                </div>
-
-                <div class="p-4 border-top mt-15">
-                    <div class="row text-center">
-                        <div class="col-4 border-right">
-                            <p>{{ __('status.exec_status') }}</p>
-                            <span class="badge {{ $journal->statusWork->badgeClass??'' }}">
-                                {{ $journal->statusWork->lang($journal->statusWork->id)??'unk' }}
+                <div class="execution-status-modern">
+                    <div class="status-item-modern">
+                        <div class="status-label">{{ __('status.exec_status') }}</div>
+                        <span class="status-badge-modern {{ $journal->statusWork->badgeClass??'' }}">
+                            {{ $journal->statusWork->lang($journal->statusWork->id)??'unk' }}
                         </span>
-                        </div>
-                        <div class="col-4 border-right">
-                            <p>{{ __('status.exec_date') }}</p>
-                            <i class="ik ik-clock"></i>
+                    </div>
+                    <div class="status-item-modern">
+                        <div class="status-label">{{ __('status.exec_date') }}</div>
+                        <div class="status-value">
+                            <i data-lucide="clock"></i>
                             {{ \Carbon\Carbon::parse($directorResolution->created_at)->format('d.m.y, H:i') }}
                         </div>
-                        <div class="col-4">
-                            <p>
-                                @if(session()->get('locale') === 'ru')
-                                    {{ $directorResolution->fromUser->userPost->post_name_ru??'' }}
-                                @else
-                                    {{ $directorResolution->fromUser->userPost->post_name??'' }}
-                                @endif
-                            </p>
-                            <h6 class="fw-700">{{ $directorResolution->fromUser->personal->shortName()??'' }}</h6>
+                    </div>
+                    <div class="status-item-modern">
+                        <div class="status-label">
+                            @if(session()->get('locale') === 'ru')
+                                {{ $directorResolution->fromUser->userPost->post_name_ru??'' }}
+                            @else
+                                {{ $directorResolution->fromUser->userPost->post_name??'' }}
+                            @endif
                         </div>
+                        <div class="status-value font-bold">{{ $directorResolution->fromUser->personal->shortName()??'' }}</div>
                     </div>
                 </div>
             </div>
         @else
-            <div class="card table-card">
-                <div class="card-header">
+            <div class="execution-card-modern">
+                <div class="card-header-modern">
+                    <i data-lucide="users"></i>
                     <h3>{{ __('title.execution') }}</h3>
                 </div>
 
-                <div class="p-4 border-top mt-15">
-                    <div class="row text-center">
-                        <div class="col-4 border-right">
-                            <p>{{ __('status.exec_status') }}</p>
-                            <span class="ml-10 badge {{ $journal->statusWork->badgeClass??'' }}">
+                <div class="execution-status-modern">
+                    <div class="status-item-modern">
+                        <div class="status-label">{{ __('status.exec_status') }}</div>
+                        <span class="status-badge-modern {{ $journal->statusWork->badgeClass??'' }}">
                             {{ $journal->statusWork->lang($journal->statusWork->id)??'unk' }}
                         </span>
+                    </div>
+                    <div class="status-item-modern">
+                        <div class="status-label">
+                            @if($journal->status === 1)
+                                {{ __('field.created_at') }}
+                            @else
+                                {{ __('field.date_sent_for_execution') }}
+                            @endif
                         </div>
-                        <div class="col-4 border-right">
-                            <p>
-                                @if($journal->status === 1)
-                                    {{ __('field.created_at') }}
-                                @else
-                                    {{ __('field.date_sent_for_execution') }}
-                                @endif
-                            </p>
+                        <div class="status-value">
+                            <i data-lucide="clock"></i>
                             {{ \Carbon\Carbon::parse($journal->created_at)->format('d.m.y, H:i') }}
                         </div>
-                        <div class="col-4">
-                            <p>
-                                {{ $directorDocument->toUser->userPost->lang($directorDocument->toUser->userPost->id)??'' }}
-                            </p>
-                            <h6 class="fw-700">{{ $directorDocument->toUser->personal->shortName()??'' }}</h6>
+                    </div>
+                    <div class="status-item-modern">
+                        <div class="status-label">
+                            {{ $directorDocument->toUser->userPost->lang($directorDocument->toUser->userPost->id)??'' }}
                         </div>
+                        <div class="status-value font-bold">{{ $directorDocument->toUser->personal->shortName()??'' }}</div>
                     </div>
                 </div>
             </div>
         @endif
 
         @if(isset($selectedAddPerformers) && $selectedAddPerformers && $selectedAddPerformers->count())
-            <div class="card table-card">
-                <div class="card-header">
-                    <h3><i class="ik ik-users"></i> {{ __('title.additional_performers') }}</h3>
+            <div class="execution-card-modern">
+                <div class="card-header-modern">
+                    <i data-lucide="users"></i>
+                    <h3>{{ __('title.additional_performers') }}</h3>
                 </div>
 
-                <div class="card-block">
-                    <div class="table-responsive scrollable_div">
-                        <table class="table mb-0 without-header">
-                            <tbody>
-                            @foreach($selectedAddPerformers as $key => $item)
-                                <tr>
-                                    <td>
-                                        <div class="d-inline-block align-middle">
-                                            <div class="d-inline-block">
-                                                <h6 class="mb-0">{{ $item->toUser->personal->fullName()??'' }}</h6>
-                                                <p class="text-muted mb-0">
-                                                    {{ $item->toDep->lang($item->toDep->id)??'' }},
-                                                    {{ $item->toUser->userPost->lang($item->toUser->userPost->id)??'' }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="text-right">
-                                        <h6 class="fw-500">
-                                        <span class="badge badge-primary">
-                                             {{ $item->resExecRole->lang($item->resExecRole->lang_id)??'' }}
-                                        </span>
-                                        </h6>
-                                    </td>
-                                </tr>
-                            @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="performers-list-modern">
+                    @foreach($selectedAddPerformers as $key => $item)
+                        <div class="performer-item-modern">
+                            <div class="performer-avatar">
+                                <i data-lucide="user"></i>
+                            </div>
+                            <div class="performer-info">
+                                <div class="performer-name">{{ $item->toUser->personal->fullName()??'' }}</div>
+                                <div class="performer-position">
+                                    {{ $item->toDep->lang($item->toDep->id)??'' }},
+                                    {{ $item->toUser->userPost->lang($item->toUser->userPost->id)??'' }}
+                                </div>
+                            </div>
+                            <div class="performer-role">
+                                <span class="role-badge">
+                                    {{ $item->resExecRole->lang($item->resExecRole->lang_id)??'' }}
+                                </span>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
             </div>
         @endif
     @endif
 
     @if(count($replyDocuments) > 0)
-        <div class="card">
-            <div class="card-header">
+        <div class="execution-card-modern">
+            <div class="card-header-modern">
+                <i data-lucide="mail"></i>
                 <h3>{{ __('title.answer_letters') }}</h3>
             </div>
-            <div class="card-body chat-box scrollable_div">
+            <div class="replies-list-modern">
                 @foreach($replyDocuments as $key => $doc)
                     <div class="sl-item">
                         <div class="sl-left fw-600 f-16">{{ $doc->fromUser->personal->shortName()??'' }}</div>
@@ -278,51 +268,56 @@
         @include('templates.comment_form')
     @endif
 
-    <div class="card table-card">
-        <div class="card-header">
+    <div class="execution-card-modern actions-card">
+        <div class="card-header-modern">
+            <i data-lucide="settings"></i>
             <h3>{{ __('action.action') }}</h3>
         </div>
-        <div class="card-body">
-            <button type="button" onclick="printContent()" class="btn btn-outline-secondary m-1 btn-rounded">
-                <i class="ik ik-printer"></i> {{ __('action.print') }}
+        <div class="actions-body-modern">
+            <button type="button" onclick="printContent()" class="btn-modern btn-secondary">
+                <i data-lucide="printer"></i>
+                <span>{{ __('action.print') }}</span>
             </button>
 
-            <button type="button" onclick="downloadAsPDF()" class="btn btn-outline-dark m-1 btn-rounded">
-                <i class="ik ik-download"></i> {{ __('action.download') }}
+            <button type="button" onclick="downloadAsPDF()" class="btn-modern btn-secondary">
+                <i data-lucide="download"></i>
+                <span>{{ __('action.download') }}</span>
             </button>
             <input id="downloadName" value="{{ $journal->journal->lang($journal->journal->lang_id)??'-' }} - {{ $journal->fromUser->personal->shortName()??'' }}" hidden/>
             <hr>
             @if(in_array($journal->status, [1, 2, 3]))
-                <button type="button" class="btn btn-outline-danger btn-rounded m-1 deleteItem"
+                <button type="button" class="btn-modern btn-danger deleteItem"
                         data-id="{{$document->id}}">
-                    <i class="ik ik-trash-2"></i> {{ __('action.delete') }}
+                    <i data-lucide="trash-2"></i>
+                    <span>{{ __('action.delete') }}</span>
                 </button>
 
                 <a href="{{ route('office.doc.edit', ['type' => $type, 'j_id' => $journal->id, 'hash' => $document->doc_hash] ) }}"
-                   class="btn btn-outline-warning btn-rounded m-1">
-                    <i class="ik ik-edit"></i> {{ __('action.edit') }}
+                   class="btn-modern btn-warning">
+                    <i data-lucide="edit"></i>
+                    <span>{{ __('action.edit') }}</span>
                 </a>
             @endif
 
             @if($signer)
                 @if($journal->status === (int)1)
-                    <button type="button"
-                            class="btn btn-outline-success btn-rounded m-1 openConfirmForm">
-                        <i class="ik ik-send"></i> {{ __('action.send_to_signer') }}
+                    <button type="button" class="btn-modern btn-success openConfirmForm">
+                        <i data-lucide="send"></i>
+                        <span>{{ __('action.send_to_signer') }}</span>
                     </button>
                 @endif
             @elseif($agreement_users && $agreement_users->count())
                 @if($journal->status === (int)1)
-                    <button type="button"
-                            class="btn btn-outline-success btn-rounded m-1 openConfirmForm">
-                        <i class="ik ik-send"></i> {{ __('action.send_to_ag') }}
+                    <button type="button" class="btn-modern btn-success openConfirmForm">
+                        <i data-lucide="send"></i>
+                        <span>{{ __('action.send_to_ag') }}</span>
                     </button>
                 @endif
             @else
                 @if($journal->status === (int)1)
-                    <button type="button"
-                            class="btn btn-outline-success btn-rounded m-1 openConfirmForm">
-                        <i class="ik ik-feather"></i> {{ __('action.send_for_signature') }}
+                    <button type="button" class="btn-modern btn-success openConfirmForm">
+                        <i data-lucide="pen-tool"></i>
+                        <span>{{ __('action.send_for_signature') }}</span>
                     </button>
                 @endif
             @endif
@@ -352,12 +347,14 @@
                                 <label hidden><i class="fa fa-key"></i> {{ __('action.to_sign_by_key') }}
                                 </label>
                                 @if($signType->doc_sign_type === 2)
-                                    <button type="submit" class="btn btn-outline-success modal-bg-class">
+                                    <button type="submit" class="btn-modern btn-success modal-bg-class">
+                                        <i data-lucide="key"></i>
                                         <span class="confirm_type">{{ __('action.to_sign') }}</span> (LOGIN)
                                     </button>
                                 @else
-                                    <button type="button" class="btn btn-outline-success modal-bg-class"
+                                    <button type="button" class="btn-modern btn-success modal-bg-class"
                                             onclick="sign()">
+                                        <i data-lucide="key"></i>
                                         <span class="confirm_type">{{ __('action.to_sign') }}</span> (ERI)
                                     </button>
                                 @endif
@@ -391,6 +388,8 @@
 
     @include('office.templates.doc-steps')
 </div>
+
+<link rel="stylesheet" href="{{ asset('css/templates/office/journal/view-right.css') }}">
 
 @include('templates.ecp.login-sign')
 @include('templates.download')
