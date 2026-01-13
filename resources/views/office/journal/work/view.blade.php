@@ -1,13 +1,19 @@
 @extends('layouts.app')
-
+<link rel="stylesheet" href="{{ asset('css/templates/office/journal/work/view.css') }}">
 @section('content')
-    <div class="container-fluid">
+    <div class="work-view-page-modern">
         @include('office.journal.work.templates.header')
 
-        <div class="row">
+        <div class="document-view-layout">
+            <!-- Left Sidebar -->
+            <div class="view-sidebar view-sidebar-left">
+                <div class="sidebar-card-modern">
+                    @include('office.journal.view-left')
+                </div>
+            </div>
 
-            @include('office.journal.view-left')
-            <div class="col-md-6" id="pdf1">
+            <!-- Document Content -->
+            <div class="document-content-section" id="pdf1">
                 <div class="work-doc-page" id="pdf2">
                     <div class="work-doc-subpage" id="pdf3">
                         <div id="printPage" class="printPage">
@@ -81,13 +87,24 @@
                 {{--<a href="{{ route('download-only-office.pdf', ['onlyDocId' => $model->id]) }}" class="btn btn-primary">
                     Download PDF
                 </a>--}}
-
             </div>
 
-            @include('office.journal.view-right')
+            <!-- Right Sidebar -->
+            <div class="view-sidebar view-sidebar-right">
+                <div class="sidebar-card-modern">
+                    @include('office.journal.view-right')
+                </div>
+            </div>
         </div>
-
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+    </script>
 
     @include('modals.delete-document')
 

@@ -1,0 +1,11 @@
+.hr-signer-modern { margin: 2rem 0; padding: 1.5rem; background: linear-gradient(135deg, #fef3c7 0%, #ffffff 100%); border: 2px solid #fde68a; border-radius: 12px; }
+.signature-table { width: 100%; border-collapse: collapse; }
+.signature-table td { padding: 1rem; vertical-align: middle; }
+.position-cell { width: 35%; }
+.position-label { display: block; font-size: 11px; color: #78350f; font-weight: 500; text-transform: uppercase; margin-bottom: 0.5rem; }
+.position-value { display: block; font-size: 14px; color: #1e293b; font-weight: 600; line-height: 1.4; }
+.qr-cell { width: 30%; text-align: center; }
+.qr-wrapper { display: inline-block; padding: 0.75rem; background: white; border: 2px solid #e2e8f0; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); }
+.name-cell { width: 35%; text-align: right; }
+.name-value { display: block; font-size: 16px; color: #1e293b; font-weight: 700; padding-bottom: 0.5rem; border-bottom: 2px solid #1e293b; }
+@media print { .hr-signer-modern { background: white; border: 1px solid #000; } }
