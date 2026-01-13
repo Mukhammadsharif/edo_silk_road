@@ -1,8 +1,5 @@
 @extends('layouts.app')
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-
 @section('content')
 
     <!-- ================= CURTAIN PRELOADER ================= -->
@@ -50,7 +47,7 @@
                         <div class="input-group">
                             <i data-lucide="lock" class="icon"></i>
                             <input type="password" id="password" name="password" placeholder="Parolni kiriting" required>
-                            <i class="ik ik-eye password-toggle-icon" onclick="togglePassword()" style="position: absolute; right: 15px; cursor: pointer; color: #999;"></i>
+                            <i data-lucide="eye" onclick="togglePassword()" style="position: absolute; right: 15px; top: 13px; cursor: pointer; color: #999;"></i>
                         </div>
 
                         <div class="remember-forgot">
@@ -187,6 +184,7 @@
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+        font-size: 16px;
     }
 
     body {
@@ -261,7 +259,7 @@
         padding: 12px 14px;
         text-align: center;
         color: #666;
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 500;
         cursor: pointer;
         transition: all 0.4s ease;
@@ -334,8 +332,9 @@
     .icon {
         position: absolute;
         left: 14px;
-        width: 18px;
-        height: 18px;
+        top: 13px;
+        width: 22px;
+        height: 22px;
         color: #999;
         transition: color 0.4s ease;
         pointer-events: none;
@@ -356,7 +355,7 @@
         border: none;
         border-radius: 12px;
         color: #fff;
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 600;
         cursor: pointer;
         transition: all 0.4s ease;
@@ -447,8 +446,12 @@
         background-color: #fff;
         border-radius: 12px;
         width: 90%;
+        max-height: 80vh;
         max-width: 500px;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
     }
 
     .eri-modal-header {
@@ -480,10 +483,120 @@
 
     .eri-modal-body {
         padding: 30px 25px;
+        overflow-y: auto;
     }
 
     .loading-spinner {
         text-align: center;
+    }
+
+    .eri-item {
+        border: 1px solid #e8e8e8;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(255, 255, 255, 1);
+    }
+
+    .eri-item:hover {
+        border: 1px solid #3200f6;
+        background: #f8f9ff;
+        box-shadow: 0 4px 15px rgba(121, 77, 253, 0.4);
+    }
+
+    .eri-item.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: rgba(206,7,30,0.1) !important;
+        border-color: #ce071e;
+    }
+
+    .eri-item.disabled:hover {
+        border-color: #ce071e;
+        background: rgba(206,7,30,0.1) !important;
+    }
+
+    .eri-item-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .eri-item-header img {
+        height: 20px;
+        margin-right: 8px;
+    }
+
+    .eri-item-name {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+    }
+
+    .eri-item-type {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+
+    .eri-type-physical {
+        background: #e3f2fd;
+        color: #1976d2;
+    }
+
+    .eri-type-legal {
+        background: #fff3e0;
+        color: #f57c00;
+    }
+
+    .eri-item-details {
+        display: grid;
+        gap: 5px;
+        font-size: 13px;
+        color: #666;
+    }
+
+    .eri-detail-row {
+        margin-bottom: 5px;
+    }
+
+    .eri-detail-label {
+        font-weight: 500;
+    }
+
+    .eri-detail-value {
+        color: #333;
+    }
+
+    .eri-org-info {
+        margin: 10px 0;
+        padding: 10px;
+        background: #f5f5f5;
+        border-radius: 6px;
+        font-size: 13px;
+    }
+
+    .eri-item-footer {
+        margin-top: 15px;
+        padding-top: 10px;
+        border-top: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .eri-expiry {
+        color: #d29404;
+        font-size: 12px;
+    }
+
+    .eri-expiry.expired {
+        color: #ce071e;
     }
 
     .spinner-border {
@@ -550,7 +663,7 @@
     }
 
     .cp-strip span {
-        animation-delay: calc(var(--i) * 20ms);
+        animation-delay: calc(var(--i) * 5ms);
     }
 
     @keyframes cp-slide {
