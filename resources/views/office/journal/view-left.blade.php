@@ -1,13 +1,13 @@
 <div class="view-left-modern">
     <div class="info-card-modern">
         <div class="info-card-header">
-            <i data-lucide="info"></i>
+            <i data-lucide="info" class="text-white"></i>
             <h3>{{ __('document.document_info') }}</h3>
         </div>
         <div class="info-card-body">
             <div class="info-item-modern">
                 <div class="info-label">
-                    <i data-lucide="file-text"></i>
+                    <i data-lucide="file-text" class="icon"></i>
                     <span>{{ __('document.document') }}</span>
                 </div>
                 <div class="info-value">
@@ -19,7 +19,7 @@
 
             <div class="info-item-modern">
                 <div class="info-label">
-                    <i data-lucide="shield"></i>
+                    <i data-lucide="shield" class="icon"></i>
                     <span>{{ __('document.confidentiality') }}</span>
                 </div>
                 <div class="info-value">
@@ -31,7 +31,7 @@
 
             <div class="info-item-modern">
                 <div class="info-label">
-                    <i data-lucide="file"></i>
+                    <i data-lucide="file" class="icon"></i>
                     <span>{{ __('document.doc_name') }}</span>
                 </div>
                 <div class="info-value">
@@ -41,7 +41,7 @@
             @if($document->doc_number)
                 <div class="info-item-modern">
                     <div class="info-label">
-                        <i data-lucide="hash"></i>
+                        <i data-lucide="hash" class="icon"></i>
                         <span>{{ __('document.doc_number') }}</span>
                     </div>
                     <div class="info-value">
@@ -52,7 +52,7 @@
 
             <div class="info-item-modern">
                 <div class="info-label">
-                    <i data-lucide="calendar"></i>
+                    <i data-lucide="calendar" class="icon"></i>
                     <span>{{ __('document.doc_date') }}</span>
                 </div>
                 <div class="info-value">
@@ -62,7 +62,7 @@
 
             <div class="info-item-modern">
                 <div class="info-label">
-                    <i data-lucide="timer"></i>
+                    <i data-lucide="timer" class="icon"></i>
                     <span>{{ __('document.signing_term') }}</span>
                 </div>
                 <div class="info-value">
@@ -77,12 +77,12 @@
                                      $diff = round($now->diffInDays($date)); @endphp
                                 @if($document->doc_term < date('Y-m-d', strtotime(now())))
                                     <span class="badge-modern badge-warning">
-                                        <i data-lucide="alert-circle"></i>
+                                        <i data-lucide="alert-circle" class="icon"></i>
                                         {{ __('field.overdue') }} {{ $diff }} {{ __('field.day') }}
                                     </span>
                                 @else
                                     <span class="badge-modern badge-info {{ ($diff === 0 ? 'badge-danger':'') }}">
-                                        <i data-lucide="clock"></i>
+                                        <i data-lucide="clock" class="icon"></i>
                                         {{ $diff }} {{ __('field.day') }} {{ __('field.remainder') }}
                                     </span>
                                 @endif
@@ -96,7 +96,7 @@
             @if($journal->journal->doc_code === 'BASE_INCOMING')
                 <div class="info-item-modern">
                     <div class="info-label">
-                        <i data-lucide="building"></i>
+                        <i data-lucide="building" class="icon"></i>
                         <span>{{ __('field.from_org') }}</span>
                     </div>
                     <div class="info-value">
@@ -106,7 +106,7 @@
             @elseif($journal->journal->doc_code === 'BASE_OUTGOING')
                 <div class="info-item-modern">
                     <div class="info-label">
-                        <i data-lucide="send"></i>
+                        <i data-lucide="send" class="icon"></i>
                         <span>{{ __('field.to_org') }}</span>
                     </div>
                     <div class="info-value">
@@ -117,7 +117,7 @@
 
             <div class="info-item-modern">
                 <div class="info-label">
-                    <i data-lucide="user"></i>
+                    <i data-lucide="user" class="icon"></i>
                     <span>{{ __('field.creator') }}</span>
                 </div>
                 <div class="info-value">
@@ -128,7 +128,7 @@
             @if($journal->journal->doc_code !== 'INF_DOC')
                 <div class="info-item-modern">
                     <div class="info-label">
-                        <i data-lucide="user-check"></i>
+                        <i data-lucide="user-check" class="icon"></i>
                         <span>{{ __('document.to_whom') }}</span>
                     </div>
                     <div class="info-value">
@@ -139,7 +139,7 @@
 
             <div class="info-item-modern">
                 <div class="info-label">
-                    <i data-lucide="globe"></i>
+                    <i data-lucide="globe" class="icon"></i>
                     <span>{{ __('field.doc_lang') }}</span>
                 </div>
                 <div class="info-value">
@@ -164,7 +164,7 @@
 
             <div class="info-item-modern files-section">
                 <div class="info-label">
-                    <i data-lucide="paperclip"></i>
+                    <i data-lucide="paperclip" class="icon"></i>
                     <span>{{ __('document.doc_files') }}</span>
                 </div>
                 <div class="files-list">
@@ -176,7 +176,7 @@
                             @case('pdf')
                                 <div class="file-item-modern">
                                     <div class="file-icon">
-                                        <i data-lucide="file-image"></i>
+                                        <i data-lucide="file-image" class="icon"></i>
                                     </div>
                                     <div class="file-info">
                                         <a href="{{ route('file.pre-view',['id'=>$file->id]) }}"
@@ -188,7 +188,7 @@
                                     </div>
                                     <div class="file-actions">
                                         <a href="{{ route('file.download', ['id'=>$file->id]) }}" class="btn-file-action" title="{{ __('action.download') }}">
-                                            <i data-lucide="download"></i>
+                                            <i data-lucide="download" class="icon"></i>
                                         </a>
                                     </div>
                                 </div>
@@ -197,7 +197,7 @@
                             @default
                                 <div class="file-item-modern">
                                     <div class="file-icon">
-                                        <i data-lucide="file"></i>
+                                        <i data-lucide="file" class="icon"></i>
                                     </div>
                                     <div class="file-info">
                                         <a href="{{ route('file.download', ['id'=>$file->id]) }}" class="file-link">
@@ -207,7 +207,7 @@
                                     </div>
                                     <div class="file-actions">
                                         <a href="{{ route('file.download', ['id'=>$file->id]) }}" class="btn-file-action" title="{{ __('action.download') }}">
-                                            <i data-lucide="download"></i>
+                                            <i data-lucide="download" class="icon"></i>
                                         </a>
                                     </div>
                                 </div>

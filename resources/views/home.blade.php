@@ -8,7 +8,7 @@
         <!-- <div class="row clearfix">
             <div class="col-md-3">
                 <div class="card" style="">
-                    <div class="card-body text-center"> 
+                    <div class="card-body text-center">
                         <div class="profile-pic mb-20">
                             @if(file_exists(public_path().'/profile_img/'.'img_'.Auth::user()->id.'.png'))
                                 <img src="{{ url('/profile_img/'.'img_'.Auth::user()->id.'.png') }}" width="150"
@@ -275,40 +275,40 @@
                 </div>
             </div>
         </div> -->
-    
+
  <div class="profile-container">
-   
+
  <div class="layer-container">
      <div class="profile-layer">
      <img style="width: 150px" src="{{ asset('images/layer.svg') }}" alt="Layer">
-     <div class="layer-content"> 
+     <div class="layer-content">
         <span>25</span>
         <p>Kelgan xabarlar</p>
-       
+
      </div>
   </div>
    <div class="profile-layer">
      <img style="width: 150px" src="{{ asset('images/layer.svg') }}" alt="Layer">
-     <div class="layer-content"> 
+     <div class="layer-content">
         <span>25</span>
         <p>Kelgan xabarlar</p>
-       
+
      </div>
   </div>
    <div class="profile-layer">
      <img style="width: 150px" src="{{ asset('images/layer.svg') }}" alt="Layer">
-     <div class="layer-content"> 
+     <div class="layer-content">
         <span>25</span>
         <p>Kelgan xabarlar</p>
-       
+
      </div>
   </div>
    <div class="profile-layer">
      <img style="width: 150px" src="{{ asset('images/layer.svg') }}" alt="Layer">
-     <div class="layer-content"> 
+     <div class="layer-content">
         <span>25</span>
         <p>Kelgan xabarlar</p>
-       
+
      </div>
   </div>
  </div>
@@ -316,10 +316,10 @@
 
      <div class="chart-container">
         <svg id="donutChart" viewBox="0 0 240 240"></svg>
-        
+
     </div>
  </div>
-        
+
      <div class="container">
 
     <!-- ================= TABS ================= -->
@@ -362,9 +362,9 @@
                 <td>Xodimlar ro'yxati</td>
                 <td>HR Bo'limi</td>
                 <td>2024-01-15</td>
-                <td><span class="badge-status badge-yuborildi">Yuborildi</span></td>
+                <td><span class="badge-status btn-sent">Yuborildi</span></td>
                 <td>
-                    <button class="btn-korish">
+                    <button class="btn-view">
                         <i class="fas fa-file-alt"></i> Ko'rish
                     </button>
                 </td>
@@ -376,9 +376,9 @@
                 <td>Moliyaviy hisobot</td>
                 <td>Moliya Bo'limi</td>
                 <td>2024-01-14</td>
-                <td><span class="badge-status badge-korib">Ko'rib chiqilmoqda</span></td>
+                <td><span class="badge-status badge-view">Ko'rib chiqilmoqda</span></td>
                 <td>
-                    <button class="btn-korish">
+                    <button class="btn-view">
                         <i class="fas fa-file-alt"></i> Ko'rish
                     </button>
                 </td>
@@ -390,9 +390,9 @@
                 <td>Shartnoma loyihasi</td>
                 <td>Yuridik Bo'lim</td>
                 <td>2024-01-13</td>
-                <td><span class="badge-status badge-tasdiq">Tasdiqlandi</span></td>
+                <td><span class="badge-status badge-confirm">Tasdiqlandi</span></td>
                 <td>
-                    <button class="btn-korish">
+                    <button class="btn-view">
                         <i class="fas fa-file-alt"></i> Ko'rish
                     </button>
                 </td>
@@ -404,9 +404,9 @@
                 <td>Shartnoma</td>
                 <td>Direktor</td>
                 <td>2024-01-12</td>
-                <td><span class="badge-status badge-imzo">Imzolangan</span></td>
+                <td><span class="badge-status badge-sign">Imzolangan</span></td>
                 <td>
-                    <button class="btn-korish">
+                    <button class="btn-view">
                         <i class="fas fa-file-alt"></i> Ko'rish
                     </button>
                 </td>
@@ -418,9 +418,9 @@
                 <td>Buyruq</td>
                 <td>Kadrlar</td>
                 <td>2024-01-11</td>
-                <td><span class="badge-status badge-tasdiq">Tasdiqlandi</span></td>
+                <td><span class="badge-status badge-confirm">Tasdiqlandi</span></td>
                 <td>
-                    <button class="btn-korish">
+                    <button class="btn-view">
                         <i class="fas fa-file-alt"></i> Ko'rish
                     </button>
                 </td>
@@ -476,9 +476,9 @@ tabs.forEach(tab => {
             var end = polarToCartesian(120, 120, outerRadius, startAngle);
             var innerStart = polarToCartesian(120, 120, innerRadius, endAngle);
             var innerEnd = polarToCartesian(120, 120, innerRadius, startAngle);
-            
+
             var largeArcFlag = endAngle - startAngle <= 180 ? 0 : 1;
-            
+
             var d = [
                 'M ' + start.x + ' ' + start.y,
                 'A ' + outerRadius + ' ' + outerRadius + ' 0 ' + largeArcFlag + ' 0 ' + end.x + ' ' + end.y,
@@ -486,7 +486,7 @@ tabs.forEach(tab => {
                 'A ' + innerRadius + ' ' + innerRadius + ' 0 ' + largeArcFlag + ' 1 ' + innerStart.x + ' ' + innerStart.y,
                 'Z'
             ].join(' ');
-            
+
             return d;
         }
 
@@ -495,22 +495,22 @@ tabs.forEach(tab => {
             var total = data.reduce(function(sum, item) {
                 return sum + item.value;
             }, 0);
-            
+
             svg.innerHTML = '';
-            
+
             var currentAngle = -90;
             var outerRadius = 100;
             var innerRadius = 65;
-            
+
             data.forEach(function(item) {
                 var angle = (item.value / total) * 360;
                 var endAngle = currentAngle + angle;
-                
+
                 var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                 path.setAttribute('d', createDonutSegment(currentAngle, endAngle, outerRadius, innerRadius));
                 path.setAttribute('fill', item.color);
                 path.classList.add('segment');
-                
+
                 svg.appendChild(path);
                 currentAngle = endAngle;
             });
@@ -563,7 +563,7 @@ renderChart();
 </script>
 
 
-  
+
 @endsection
 
 
@@ -581,8 +581,8 @@ renderChart();
         position: relative;
 
   transition: all 0.3s ease;
-        display: inline-block;  
-      
+        display: inline-block;
+
     }
 
     .profile-layer:hover{
@@ -599,7 +599,7 @@ renderChart();
         color:#fff;
         font-size: 20px;
         font-weight: 700;
-    }   
+    }
     .layer-content p{
         position: absolute;
         top: 60%;
@@ -608,7 +608,7 @@ renderChart();
         text-align: left;
         color:#fff;
         font-size: 14px;
-        font-weight: 600;  
+        font-weight: 600;
         white-space: nowrap ;
 
 
@@ -644,7 +644,7 @@ renderChart();
             margin: 0 auto;
         }
 
-      
+
 
         .segment {
             transition: opacity 0.3s;
@@ -654,7 +654,7 @@ renderChart();
         .segment:hover {
             opacity: 0.8;
         }
-   
+
         .container {
             padding: 40px;
         }
@@ -784,28 +784,28 @@ renderChart();
             min-width: 120px;
         }
 
-        .badge-yuborildi {
+        .btn-sent {
             background-color: #e3f2fd;
             color: #1976d2;
         }
 
-        .badge-korib {
+        .badge-view {
             background-color: #fff8e1;
             color: #f9a825;
         }
 
-        .badge-tasdiq {
+        .badge-confirm {
             background-color: #e8f5e9;
             color: #388e3c;
         }
 
-        .badge-imzo {
+        .badge-sign {
             background-color: #fbe9e7;
             color: #d84315;
         }
 
         /* ================= BUTTON ================= */
-        .btn-korish {
+        .btn-view {
             background: none;
             border: none;
             color: #9c27b0;
@@ -819,7 +819,7 @@ renderChart();
             margin: 0 auto;
         }
 
-        .btn-korish:hover {
+        .btn-view:hover {
             color: #ea4c89;
         }
         tbody td{

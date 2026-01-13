@@ -1,6 +1,6 @@
 <div class="comments-card-modern">
     <div class="comments-header-modern">
-        <i data-lucide="message-square"></i>
+        <i data-lucide="message-square" class="text-white"></i>
         <h3>{{ __('document.comment_history') }}</h3>
     </div>
 
@@ -9,7 +9,7 @@
             @foreach($documentComments as $key => $comment)
                 <div class="comment-item-modern">
                     <div class="comment-avatar">
-                        <i data-lucide="user"></i>
+                        <i data-lucide="user" class="text-white"></i>
                     </div>
                     <div class="comment-content">
                         <div class="comment-author">
@@ -51,7 +51,7 @@
 
         <div class="comment-form-section">
             <button type="button" class="btn-modern btn-success" id="openForm">
-                <i data-lucide="message-circle"></i>
+                <i data-lucide="message-circle" class="icon"></i>
                 <span>{{ __('action.to_leave_comment') }}</span>
             </button>
 

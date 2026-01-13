@@ -6,7 +6,7 @@
             <div class="header-content">
                 <div class="header-left">
                     <div class="header-icon">
-                        <i data-lucide="send"></i>
+                        <i data-lucide="send" class="text-white"></i>
                     </div>
                     <div class="header-text">
                         <h1>{{ __('title.outgoing') }}</h1>
@@ -55,7 +55,7 @@
                 @if($directorDocument)
                     <div class="execution-card-modern">
                         <div class="card-header-modern">
-                            <i data-lucide="pen-tool"></i>
+                            <i data-lucide="pen-tool" class="text-white"></i>
                             <h3>{{ __('title.signing_status') }}</h3>
                         </div>
 
@@ -92,7 +92,7 @@
                 @if($replyDocuments && count($replyDocuments) > 0)
                     <div class="execution-card-modern">
                         <div class="card-header-modern">
-                            <i data-lucide="mail"></i>
+                            <i data-lucide="mail" class="text-white"></i>
                             <h3>{{ __('title.answer_letters') }}</h3>
                         </div>
                         <div class="replies-list-modern">
@@ -215,7 +215,7 @@
                 @if($agreement_users && $agreement_users->count())
                     <div class="execution-card-modern">
                         <div class="card-header-modern">
-                            <i data-lucide="check-circle"></i>
+                            <i data-lucide="check-circle" class="text-white"></i>
                             <h3>{{ __('title.coordination') }}</h3>
                         </div>
 
@@ -285,32 +285,34 @@
 
                 <div class="execution-card-modern actions-card">
                     <div class="card-header-modern">
-                        <i data-lucide="settings"></i>
+                        <i data-lucide="settings" class="text-white"></i>
                         <h3>{{ __('action.action') }}</h3>
                     </div>
-                    <div class="actions-body-modern">
-                        <button type="button" onclick="printContent()" class="btn-modern btn-secondary">
-                            <i data-lucide="printer"></i>
+
+                    <div class="actions-body-modern-print">
+                        <button type="button" onclick="printContent()" class="btn-modern btn-primary">
+                            <i data-lucide="printer" class="icon"></i>
                             <span>{{ __('action.print') }}</span>
                         </button>
 
-                        <button type="button" onclick="downloadAsPDF()" class="btn-modern btn-secondary">
-                            <i data-lucide="download"></i>
+                        <button type="button" onclick="downloadAsPDF()" class="btn-modern btn-primary">
+                            <i data-lucide="download" class="icon"></i>
                             <span>{{ __('action.download') }}</span>
                         </button>
                         <input id="downloadName" value="{{ $journal->journal->lang($journal->journal->lang_id)??'-' }} - {{ $journal->fromUser->personal->shortName()??'' }}" hidden/>
-                        <hr>
+                    </div>
 
+                    <div class="actions-body-modern">
                         @if(in_array($journal->status, [1, 2, 3]))
                             <button type="button" class="btn-modern btn-danger deleteItem"
                                     data-id="{{$document->id}}">
-                                <i data-lucide="trash-2"></i>
+                                <i data-lucide="trash-2" class="icon"></i>
                                 <span>{{ __('action.delete') }}</span>
                             </button>
 
                             <a href="{{ route('office.doc.edit', ['type' => $type, 'j_id' => $journal->id, 'hash' => $document->doc_hash] ) }}"
                                class="btn-modern btn-warning">
-                                <i data-lucide="edit"></i>
+                                <i data-lucide="edit" class="icon"></i>
                                 <span>{{ __('action.edit') }}</span>
                             </a>
                         @endif
@@ -318,14 +320,14 @@
                         @if($agreement_users && $agreement_users->count())
                             @if($journal->status === (int)1)
                                 <button type="button" class="btn-modern btn-success openConfirmForm">
-                                    <i data-lucide="send"></i>
+                                    <i data-lucide="send" class="icon"></i>
                                     <span>{{ __('action.send_to_ag') }}</span>
                                 </button>
                             @endif
                         @else
                             @if($journal->status === (int)1)
                                 <button type="button" class="btn-modern btn-success openConfirmForm">
-                                    <i data-lucide="send"></i>
+                                    <i data-lucide="send" class="icon"></i>
                                     <span>{{ __('action.send_for_signature') }}</span>
                                 </button>
                             @endif
@@ -357,13 +359,13 @@
                                             @if($signType->doc_sign_type === 2)
                                                 <button type="submit" class="btn-modern btn-success modal-bg-class"
                                                         onclick="signLogin()">
-                                                    <i data-lucide="key"></i>
+                                                    <i data-lucide="key" class="icon"></i>
                                                     <span class="confirm_type">{{ __('action.to_sign') }}</span> (LOGIN)
                                                 </button>
                                             @else
                                                 <button type="button" class="btn-modern btn-success modal-bg-class"
                                                         onclick="sign()">
-                                                    <i data-lucide="key"></i>
+                                                    <i data-lucide="key" class="icon"></i>
                                                     <span class="confirm_type">{{ __('action.to_sign') }}</span> (ERI)
                                                 </button>
                                             @endif

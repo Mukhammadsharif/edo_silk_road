@@ -20,7 +20,7 @@
             </div>
 
             <div class="container-fluid">
-                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div class="d-flex {{ $isOrganizationDemo ?  'justify-content-between' : 'justify-content-end'}} align-items-center flex-wrap gap-3">
 
                     @if($isOrganizationDemo && !$request)
                         <div class="alert bg-success text-white d-flex justify-content-between align-items-center flex-grow-1"
