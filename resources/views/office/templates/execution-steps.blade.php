@@ -7,7 +7,7 @@
         </div>
         <div class="search-box-modern">
             <i data-lucide="search"></i>
-            <input type="text" class="form-control-modern" id="allUserToSearch" onkeyup="searchToAllUserFunction()" placeholder="{{ __('action.search') }}...">
+            <input type="text" class="form-control-modern border-none" id="allUserToSearch" onkeyup="searchToAllUserFunction()" placeholder="{{ __('action.search') }}...">
         </div>
         <div class="users-list-modern">
             @foreach($signatory_users as $key => $signatory_user)
@@ -38,7 +38,7 @@
         </div>
         <div class="search-box-modern">
             <i data-lucide="search"></i>
-            <input type="text" class="form-control-modern" id="userSearch" onkeyup="searchUserFunction()" placeholder="{{ __('action.search') }}...">
+            <input type="text" class="form-control-modern border-none" id="userSearch" onkeyup="searchUserFunction()" placeholder="{{ __('action.search') }}...">
         </div>
         <div class="users-list-modern">
             @foreach($agreement_users as $key => $agreement_user)
@@ -70,7 +70,7 @@
         </div>
         <div class="search-box-modern">
             <i data-lucide="search"></i>
-            <input type="text" class="form-control-modern" id="userToSearch" onkeyup="searchToUserFunction()" placeholder="{{ __('action.search') }}...">
+            <input type="text" class="form-control-modern border-none" id="userToSearch" onkeyup="searchToUserFunction()" placeholder="{{ __('action.search') }}...">
         </div>
         <div class="users-list-modern">
             @foreach($resolution_users as $key => $resolution_user)

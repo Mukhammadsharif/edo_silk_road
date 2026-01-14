@@ -11,20 +11,14 @@
     <div class="nav-container">
         <div class="d-flex justify-content-between align-items-center">
 
-            <div class="logo">
-                <img src="{{ asset('images/logo.svg') }}" alt="Логотип" />
-                <div class="logo-text">
-                    <p>O’ZBEKISTON TEMIR YO’LLARI</p>
-                    <span>AKSIYADORLIK JAMIYATI</span>
-                </div>
-            </div>
+          
 
             <div class="container-fluid">
-                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div class="d-flex justify-content-between align-items-center gap-3">
 
                     @if($isOrganizationDemo && !$request)
                         <div class="alert bg-success text-white d-flex justify-content-between align-items-center flex-grow-1"
-                             style="max-width: 500px; margin: 0 0 0 25px;">
+                             style="max-width: 500px; margin: 0 0 0 225px;">
                             <span>{{ __('field.send_request_for_joining') }}</span>
                             <button class="btn btn-light" id="requestButton" data-toggle="modal" data-target="#RequestModal">
                                 {{ __('field.leave_request') }}

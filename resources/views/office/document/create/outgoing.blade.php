@@ -11,7 +11,7 @@
             <div class="header-content">
                 <div class="header-left">
                     <div class="page-icon">
-                        <i data-lucide="send"></i>
+                        <i data-lucide="send" class="icon-white"></i>
                     </div>
                     <div class="page-info">
                         <h1>{{ __('action.create_document') }}</h1>

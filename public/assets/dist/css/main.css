@@ -453,7 +453,32 @@ table thead tr th a {
     background: #ffffff;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
+.border-none{
+    border:none !important;
+    outline:none !important;
+}
+.icon-white   {
+    color:#fff !important;
+}
+.file-icon{
+    color:#fff !important;
+}
+.btn-add-file{
+    color:#fff !important;
+}
+.page-icon{
+    color:#fff !important;  
+}
 
+.upload-icon{
+    color:#fff !important;
+}
+.header-icon{
+    color:#fff !important;
+}
+.user-avatar{
+    color:#fff !important;
+}
 .prt-doc-subpage {
     padding: 0;
     min-height: 29.7cm;

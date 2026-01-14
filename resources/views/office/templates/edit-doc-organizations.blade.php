@@ -4,7 +4,7 @@
         {{ __('document.organization') }}
         <span class="required">*</span>
     </label>
-    <select name="doc_org" class="form-control-modern select2" required>
+    <select name="doc_org" class="form-control-modern border-none select2" required>
         @foreach($doc_organizations as $key => $doc_organization)
             <option value="{{ $doc_organization->id }}" {{ $journal->docOrg->doc_org_id === $doc_organization->id ? "selected" : ''}}>
                 {{ $key+1 }}. {{ $doc_organization->lang($doc_organization->id) }}

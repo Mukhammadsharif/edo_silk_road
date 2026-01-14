@@ -637,12 +637,7 @@ renderChart();
             margin-left: auto;
         }
 
-        svg {
-            width: 100%;
-            max-width: 200px;
-            display: block;
-            margin: 0 auto;
-        }
+      
 
       
 

@@ -92,7 +92,7 @@
                                 <i data-lucide="activity"></i>
                                 {{ __('document.status') }}
                             </label>
-                            <select name="status" class="form-control-modern">
+                            <select name="status" class="form-control-modern ">
                                 <option value="">{{ __('select.status_all') }}</option>
                                 @forelse($statusNames as $key => $val)
                                     <option value="{{ $val->code }}" {{ ($status == $val->code ? "selected":"") }}>

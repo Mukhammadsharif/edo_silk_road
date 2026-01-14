@@ -22,7 +22,23 @@ body {
     margin-bottom: 2rem;
     box-shadow: 0 8px 24px rgba(121, 77, 253, 0.2);
 }
+.page-icon{
+    color:#fff !important;
+}
+.file-icon{
+    color:#fff !important;
+}
 
+.btn-remove-file{
+    color:#fff !important;
+    background-color: coral !important;
+}
+.user-avatar{
+    color:#fff !important;
+}
+.add-file-input{
+    color:#fff !important;
+}
 .header-content {
     display: flex;
     justify-content: space-between;
@@ -124,7 +140,6 @@ body {
 /* Section Header */
 .section-header {
     display: flex;
-    align-items: center;
     gap: 0.75rem;
     margin-bottom: 2rem;
     padding-bottom: 1rem;
@@ -171,14 +186,20 @@ body {
 
 .form-control-modern {
     width: 100%;
-    padding: 0.875rem 1rem;
-    border: 2px solid #e2e8f0;
+    padding: 10px 20px;
+    border:none;
+    outline:none;
+    background: transparent;
+    border: 2px solid rgb(226, 232, 240);
     border-radius: 10px;
-    font-size: 14px;
-    color: #1e293b;
-    transition: all 0.3s;
-    background: white;
+    min-height: 48px;
+    box-shadow: none;
+    
 }
+
+.form-control-modern:focus {
+    border-color: none; 
+  }
 
 .form-control-modern:focus {
     outline: none;

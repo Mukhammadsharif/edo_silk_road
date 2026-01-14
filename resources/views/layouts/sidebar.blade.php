@@ -11,7 +11,7 @@
 
             <div class="menu-item create-doc-menu">
                 <div class="menu-header">
-                    <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
+                    <div style="display: flex; align-items: center; gap:10px; flex: 1;">
                         <i data-lucide="file-plus-2" style="width: 22px; height: 22px;"></i>
                         <span class="menu-text">Hujjat yaratish</span>
                     </div>

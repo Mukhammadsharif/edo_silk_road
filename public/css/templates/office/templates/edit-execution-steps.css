@@ -103,7 +103,6 @@
 .user-checkbox-card:hover .user-card-content {
     border-color: #794DFD;
     background: #faf5ff;
-    transform: translateX(4px);
 }
 
 .user-radio-card input[type="radio"]:checked ~ .user-card-content {

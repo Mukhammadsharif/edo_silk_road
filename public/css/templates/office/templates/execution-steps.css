@@ -31,6 +31,17 @@
 .search-box-modern {
     position: relative;
     margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0px 14px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #1e293b;
+    transition: all 0.3s;
+    background: white;
+
 }
 
 .search-box-modern i {
@@ -103,16 +114,15 @@
 .user-checkbox-card:hover .user-card-content {
     border-color: #794DFD;
     background: #faf5ff;
-    transform: translateX(4px);
 }
 
-.user-radio-card input[type="radio"]:checked ~ .user-card-content {
+.user-radio-card input[type="radio"]:checked~.user-card-content {
     border-color: #794DFD;
     background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
     box-shadow: 0 4px 12px rgba(121, 77, 253, 0.15);
 }
 
-.user-checkbox-card input[type="checkbox"]:checked ~ .user-card-content {
+.user-checkbox-card input[type="checkbox"]:checked~.user-card-content {
     border-color: #22c55e;
     background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
     box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
@@ -174,12 +184,12 @@
     border-radius: 6px;
 }
 
-.user-radio-card input[type="radio"]:checked ~ .user-card-content .radio-indicator {
+.user-radio-card input[type="radio"]:checked~.user-card-content .radio-indicator {
     border-color: #794DFD;
     background: #794DFD;
 }
 
-.user-radio-card input[type="radio"]:checked ~ .user-card-content .radio-indicator::after {
+.user-radio-card input[type="radio"]:checked~.user-card-content .radio-indicator::after {
     content: '';
     width: 10px;
     height: 10px;
@@ -187,7 +197,7 @@
     border-radius: 50%;
 }
 
-.user-checkbox-card input[type="checkbox"]:checked ~ .user-card-content .checkbox-indicator {
+.user-checkbox-card input[type="checkbox"]:checked~.user-card-content .checkbox-indicator {
     border-color: #22c55e;
     background: #22c55e;
 }
@@ -200,6 +210,6 @@
     transition: opacity 0.3s;
 }
 
-.user-checkbox-card input[type="checkbox"]:checked ~ .user-card-content .checkbox-indicator i {
+.user-checkbox-card input[type="checkbox"]:checked~.user-card-content .checkbox-indicator i {
     opacity: 1;
 }

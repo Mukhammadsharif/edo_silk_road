@@ -4,7 +4,7 @@
         {{ __('document.organization') }}
         <span class="required">*</span>
     </label>
-    <select name="doc_org" class="form-control-modern select2" required>
+    <select name="doc_org" class="form-control-modern border-none select2" required>
         <option value="">{{ __('action.choose') }}</option>
         @foreach($doc_organizations as $key => $doc_organization)
             <option value="{{ $doc_organization->id }}">

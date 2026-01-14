@@ -80,7 +80,7 @@
 }
 
 .create-doc-menu .submenu {
-    background-color: rgba(255, 255, 255, 0.05);
+    background: #462d93;
 }
 
 .create-doc-menu .submenu-item a {
@@ -110,11 +110,11 @@
     cursor: pointer;
     transition: all 0.3s;
     text-decoration: none;
+    position: relative;
 }
 
 .menu-header:hover {
-    background-color: var(--primary-light);
-    color: var(--primary);
+    background-color: #ecdafd;
     text-decoration: none;
 }
 
@@ -124,7 +124,7 @@
 
 /* Active menu */
 .menu-item.active > .menu-header {
-    background-color: var(--primary);
+    background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
     color: white;
 }
 
@@ -165,14 +165,16 @@
 
 /* Badge Count */
 .badge-count {
-    background-color: #dc2626;
-    color: white;
-    font-size: 10px;
-    font-weight: 600;
-    padding: 2px 6px;
-    border-radius: 10px;
-    line-height: 1;
-    margin-left: auto;
+    background-color: red !important;
+    color: white !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    padding: 2px 6px !important;
+    border-radius: 10px !important;
+    position: absolute;
+    top:30%;
+    right:10px;
+
 }
 
 .menu-item.active .badge-count {
@@ -199,24 +201,22 @@
 .submenu-item a {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 0.65rem 1.75rem 0.65rem 3.5rem;
+    gap: 10px;
+    padding: 10.4px 28px 10.4px 25px;
     color: var(--text-muted);
     font-size: 15px;
     cursor: pointer;
     transition: all 0.2s;
     text-decoration: none;
+    white-space: nowrap;
 }
 
 .submenu-item a:hover {
-    background-color: var(--primary-light);
-    color: var(--primary);
-    padding-left: 3.8rem;
     text-decoration: none;
 }
 
 .submenu-item a.active-link {
-    background-color: var(--primary);
+    background-color: #462d93;
     color: white;
 }
 
@@ -232,9 +232,7 @@
     flex-shrink: 0;
 }
 
-.submenu-item a:hover i {
-    color: var(--primary);
-}
+
 
 /* Nested Submenu */
 .nested-submenu {
@@ -279,6 +277,10 @@
     margin: 1rem 1rem 1rem 1rem;
     width: calc(100% - 2rem);
     padding: 4px;
+    position: absolute;
+    bottom:15px;
+    left:43%;
+    transform:translate(-50%,-50%)
 }
 
 .sidebar.dark .theme-tabs {
