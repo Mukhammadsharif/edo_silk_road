@@ -10,12 +10,12 @@
     <div class="steps-card-modern">
         <div class="steps-header-modern">
             <div class="header-title">
-                <i data-lucide="workflow"></i>
+                <i data-lucide="workflow" class="text-white"></i>
                 <h3>{{ __('field.document_steps') }}</h3>
             </div>
             <div class="header-actions">
                 <button type="button" class="btn-icon" onclick="toggleStepsCard()">
-                    <i data-lucide="chevron-up" id="toggleIcon"></i>
+                    <i data-lucide="chevron-up" id="toggleIcon" class="text-white"></i>
                 </button>
             </div>
         </div>
@@ -24,7 +24,7 @@
                     <div class="step-item completed">
                         <div class="step-indicator">
                             <div class="step-icon bg-success">
-                                <i data-lucide="check"></i>
+                                <i data-lucide="check" class="text-white"></i>
                             </div>
                             <div class="step-line"></div>
                         </div>
@@ -42,7 +42,7 @@
                         <div class="step-item {{ $journal->status == 1 ? 'pending' : 'completed' }}">
                             <div class="step-indicator">
                                 <div class="step-icon {{ $journal->status == 1 ? 'bg-warning' : 'bg-success' }}">
-                                    <i data-lucide="send"></i>
+                                    <i data-lucide="send" class="text-white"></i>
                                 </div>
                                 <div class="step-line"></div>
                             </div>
@@ -61,7 +61,7 @@
                         <div class="step-item {{ $journal->status > 5 ? 'completed' : 'pending' }}">
                             <div class="step-indicator">
                                 <div class="step-icon {{ $journal->status > 5 ? 'bg-success' : 'bg-warning' }}">
-                                    <i data-lucide="pen-tool"></i>
+                                    <i data-lucide="pen-tool" class="text-white"></i>
                                 </div>
                                 <div class="step-line"></div>
                             </div>
@@ -80,7 +80,7 @@
                         <div class="step-item {{ $journal->status > 6 ? 'completed' : 'pending' }}">
                             <div class="step-indicator">
                                 <div class="step-icon {{ $journal->status > 6 ? 'bg-success' : 'bg-warning' }}">
-                                    <i data-lucide="users"></i>
+                                    <i data-lucide="users" class="text-white"></i>
                                 </div>
                                 <div class="step-line"></div>
                             </div>
@@ -123,7 +123,7 @@
                         <div class="step-item {{ $journal->status > 7 ? 'completed' : 'pending' }}">
                             <div class="step-indicator">
                                 <div class="step-icon {{ $journal->status > 7 ? 'bg-success' : 'bg-warning' }}">
-                                    <i data-lucide="shield-check"></i>
+                                    <i data-lucide="shield-check" class="text-white"></i>
                                 </div>
                                 <div class="step-line"></div>
                             </div>
@@ -148,7 +148,7 @@
                         <div class="step-item {{ $journal->status > 8 ? 'completed' : 'pending' }}">
                             <div class="step-indicator">
                                 <div class="step-icon {{ $journal->status > 8 ? 'bg-success' : 'bg-warning' }}">
-                                    <i data-lucide="file-check"></i>
+                                    <i data-lucide="file-check" class="text-white"></i>
                                 </div>
                                 <div class="step-line"></div>
                             </div>
@@ -191,7 +191,7 @@
                     <div class="step-item {{ $journal->status == 10 ? 'completed' : 'pending' }}">
                         <div class="step-indicator">
                             <div class="step-icon {{ $journal->status == 10 ? 'bg-success' : 'bg-warning' }}">
-                                <i data-lucide="check-circle"></i>
+                                <i data-lucide="check-circle" class="text-white"></i>
                             </div>
                         </div>
                         <div class="step-content">

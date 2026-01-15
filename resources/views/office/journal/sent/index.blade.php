@@ -1,5 +1,6 @@
 @extends('layouts.app')
 <link rel="stylesheet" href="{{ asset('css/templates/office/journal/sent/index.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/select2.css') }}">
 @section('content')
     <div class="outgoing-page-modern">
         <div class="page-header-modern">
@@ -129,67 +130,69 @@
                 <div class="table-wrapper-modern">
                     <table class="modern-table">
                         <thead>
-                            <tr>
-                                <th><i data-lucide="hash"></i> {{ __('field.#') }}</th>
-                                <th><i data-lucide="clock"></i> {{ __('field.created_at') }}</th>
-                                <th><i data-lucide="building-2"></i> {{ __('field.to_org') }}</th>
-                                <th><i data-lucide="file-text"></i> {{ __('field.doc_name') }}</th>
-                                <th><i data-lucide="calendar"></i> {{ __('field.doc_date') }}</th>
-                                <th><i data-lucide="activity"></i> {{ __('field.status') }}</th>
-                                <th><i data-lucide="timer"></i> {{ __('field.signing_term') }}</th>
-                                <th><i data-lucide="user"></i> {{ __('field.creator') }}</th>
-                            </tr>
+                        <tr>
+                            <th><i data-lucide="hash"></i> {{ __('field.#') }}</th>
+                            <th><i data-lucide="clock"></i> {{ __('field.created_at') }}</th>
+                            <th><i data-lucide="building-2"></i> {{ __('field.to_org') }}</th>
+                            <th><i data-lucide="file-text"></i> {{ __('field.doc_name') }}</th>
+                            <th><i data-lucide="calendar"></i> {{ __('field.doc_date') }}</th>
+                            <th><i data-lucide="activity"></i> {{ __('field.status') }}</th>
+                            <th><i data-lucide="timer"></i> {{ __('field.signing_term') }}</th>
+                            <th><i data-lucide="user"></i> {{ __('field.creator') }}</th>
+                            <th><i data-lucide="eye"></i> {{ __('action.view') }}</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            @forelse($models as $key => $model)
-                                <tr class="table-row-modern">
-                                    <td class="td-number">
-                                        {{ $model->createdUser->department->dep_code_doc??'' }}{{ $model->j_number }}
-                                    </td>
-                                    <td class="td-datetime">
-                                        <div class="datetime-cell">
-                                            <span class="date">{{ \Carbon\Carbon::parse($model->created_at)->format('d.m.y') }}</span>
-                                            <span class="time">{{ \Carbon\Carbon::parse($model->created_at)->format('H:i') }}</span>
-                                        </div>
-                                    </td>
-                                    <td class="td-organization">
-                                        <div class="org-cell">
-                                            <i data-lucide="building-2"></i>
-                                            <span>{{ $model->docOrg ? $model->docOrg->organization->lang($model->docOrg->organization->id)??'' : '' }}</span>
-                                        </div>
-                                    </td>
-                                    <td class="td-doc-name">
-                                        <a href="{{ route('office.view-sent-doc', [$model->id, $model->doc->doc_hash??'-']) }}" class="doc-link">
-                                            <i data-lucide="file-text"></i>
-                                            <span>{{ $model->doc->doc_name??__('unk') }}</span>
-                                            <i data-lucide="arrow-right" class="arrow-icon"></i>
-                                        </a>
-                                    </td>
-                                    <td class="td-date">{{ date('d.m.Y', strtotime($model->doc->doc_date??now())) }}</td>
-                                    <td class="td-status">
-                                        <span class="status-badge-modern {{ $model->statusOut->badgeClass??'' }}">
+                        @forelse($models as $key => $model)
+                            <tr class="table-row-modern">
+                                <td class="td-number">
+                                    {{ $model->createdUser->department->dep_code_doc??'' }}{{ $model->j_number }}
+                                </td>
+                                <td class="td-datetime">
+                                    <div class="datetime-cell">
+                                        <span class="date">{{ \Carbon\Carbon::parse($model->created_at)->format('d.m.y') }}</span>
+                                        <span class="time">{{ \Carbon\Carbon::parse($model->created_at)->format('H:i') }}</span>
+                                    </div>
+                                </td>
+                                <td class="td-organization">
+                                    <div class="org-cell">
+                                        <i data-lucide="building-2"></i>
+                                        <span>{{ $model->docOrg ? $model->docOrg->organization->lang($model->docOrg->organization->id)??'' : '' }}</span>
+                                    </div>
+                                </td>
+                                <td class="td-doc-name">
+                                    <span>{{ $model->doc->doc_name??__('unk') }}</span>
+                                </td>
+                                <td class="td-date">{{ date('d.m.Y', strtotime($model->doc->doc_date??now())) }}</td>
+                                <td class="td-status">
+                                        <span class="badge-status {{ $model->statusOut->badgeClass??'' }}">
                                             <i data-lucide="circle"></i>
                                             {{ $model->statusOut->lang($model->statusOut->id)??'unk' }}
                                         </span>
-                                    </td>
-                                    <td class="td-term">@include('templates.execution-time')</td>
-                                    <td class="td-creator">
-                                        <div class="creator-cell">
-                                            <i data-lucide="user"></i>
-                                            <span>{{ $model->fromUser->personal->shortName()??'' }}</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="8" class="empty-state">
-                                        <div class="empty-state-content">
-                                            <i data-lucide="send"></i>
-                                            <p>{{ __('field.not_found') }}</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforelse
+                                </td>
+                                <td class="td-term">@include('templates.execution-time')</td>
+                                <td class="td-creator">
+                                    <div class="creator-cell">
+                                        <i data-lucide="user"></i>
+                                        <span>{{ $model->fromUser->personal->shortName()??'' }}</span>
+                                    </div>
+                                </td>
+                                <td class="td-action">
+                                    <a href="{{ route('office.view-sent-doc', [$model->id, $model->doc->doc_hash??'-']) }}" class="btn-view">
+                                        <i class="fas fa-file-alt"></i> Ko'rish
+                                    </a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="9" class="empty-state">
+                                    <div class="empty-state-content">
+                                        <i data-lucide="send"></i>
+                                        <p>{{ __('field.not_found') }}</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
                         </tbody>
                     </table>
                 </div>

@@ -220,7 +220,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
+    padding: 0.5rem 0.75rem;
     border: none;
     border-radius: 8px;
     font-size: 14px;
@@ -231,8 +231,14 @@
 }
 
 .btn-modern i {
-    width: 18px;
-    height: 18px;
+    width: 15px;
+    height: 15px;
+}
+
+.icon {
+    width: 15px;
+    height: 15px;
+    color: white;
 }
 
 .btn-modern:hover {

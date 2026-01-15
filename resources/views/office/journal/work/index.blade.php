@@ -1,5 +1,6 @@
 @extends('layouts.app')
 <link rel="stylesheet" href="{{ asset('css/templates/office/journal/work/index.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/select2.css') }}">
 @section('content')
     <div class="work-docs-page-modern">
         <div class="page-header-modern">
@@ -50,7 +51,7 @@
                                 <i data-lucide="folder"></i>
                                 {{ __('document.document') }}
                             </label>
-                            <select name="doc_type" class="form-control-modern">
+                            <select name="doc_type" class="form-control-modern select2">
                                     <option value="all">{{ __('document.document') }}</option>
                                     @forelse($journal_types as $key => $journal_type)
                                         <option value="{{ $journal_type->id }}" {{ ($doc_type == $journal_type->id ? "selected":"") }}>
@@ -59,7 +60,7 @@
                                         </option>
                                 @empty
                                     <option>{{ __('field.not_found') }}</option>
-                                @endforelse
+                                @endforelse 
                             </select>
                         </div>
 
@@ -92,7 +93,9 @@
                                 <i data-lucide="activity"></i>
                                 {{ __('document.status') }}
                             </label>
-                            <select name="status" class="form-control-modern ">
+
+                            <select name="status" class="form-control-modern select2">
+
                                 <option value="">{{ __('select.status_all') }}</option>
                                 @forelse($statusNames as $key => $val)
                                     <option value="{{ $val->code }}" {{ ($status == $val->code ? "selected":"") }}>

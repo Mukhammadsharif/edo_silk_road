@@ -137,6 +137,8 @@
 </script>
 <!-- ============================================================ -->
 
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
 <script>
 localStorage.clear();
 lucide.createIcons();
