@@ -1,5 +1,5 @@
 @extends('layouts.app')
-<link rel="stylesheet" href="{{ asset('css/templates/office/journal/work/view-hr-order.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/universal-document-view.css') }}">
 @section('content')
     <div class="work-view-page-modern">
         @include('office.journal.work.templates.header')
@@ -88,7 +88,7 @@
                     confirm_type = "{{ __('re-editing') }}";
                     modal_bg_class = "btn-outline-warning";
                 }
-                $('.modal-bg-class').removeClass().addClass(`btn modal-bg-class ${modal_bg_class}`);
+                $('.modal-bg-class').removeClass().addClass(`btn-modern modal-bg-class ${modal_bg_class}`);
                 $('.confirm_type').html(confirm_type);
                 $('#ecp_confirm_id').val();
             });

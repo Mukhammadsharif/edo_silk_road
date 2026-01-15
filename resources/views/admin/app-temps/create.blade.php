@@ -63,7 +63,7 @@
                                 {!! $errors->first('t_text', '<p class="text-danger">:message</p>') !!}
                             </div>
                             <a href="{{ route('app-temps.index') }}" class="btn btn-outline-secondary mr-2">{{ __('cancel') }}</a>
-                            <button type="submit" class="btn btn-outline-primary"><i class="ik ik-save"></i>{{ __('save') }}</button>
+                            <button type="submit" class="btn btn-outline-primary"><i data-lucide="save"></i>{{ __('save') }}</button>
                         </form>
                     </div>
                 </div>

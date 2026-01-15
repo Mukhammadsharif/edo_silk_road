@@ -28,7 +28,7 @@
             </div>
             <div class="feed-item">
                 <a href="#">
-                    <div class="feeds-left"><i class="ik ik-clock"></i></div>
+                    <div class="feeds-left"><i data-lucide="clock"></i></div>
                     <div class="feeds-body">
                         @if($journal)
                             @if($journal->journal->doc_code == 'BASE_OUTGOING')

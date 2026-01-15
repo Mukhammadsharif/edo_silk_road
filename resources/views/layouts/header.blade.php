@@ -56,7 +56,7 @@
                     @can('super_admin')
                         <div class="nav-item">
                             <a href="{{ route('admin.subscription-requests') }}" class="nav-link d-flex align-items-center">
-                                <i class="ik ik-clock"></i>
+                                <i data-lucide="clock"></i>
                                 <span class="ml-2">{{ __('field.subscription_requests') }}</span>
                                 @php $pendingCount = \App\Models\Admin\Subscriptions::where('status', 2)->count(); @endphp
                                 @if($pendingCount > 0)
@@ -162,7 +162,7 @@
             <div class="modal-footer justify-content-between">
                 <button type="button" class="btn btn-light" data-dismiss="modal"><i
                         class="ik ik-x"></i>{{ __('action.cancel') }}</button>
-                <button class="btn btn-outline-info modal_btn"><i class="ik ik-save"></i>{{ __('action.save') }}
+                <button class="btn btn-outline-info modal_btn"><i data-lucide="save"></i>{{ __('action.save') }}
                 </button>
             </div>
         </div>

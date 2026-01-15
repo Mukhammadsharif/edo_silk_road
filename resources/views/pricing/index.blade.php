@@ -67,7 +67,7 @@
                 <div class="col-lg-8">
                     <div class="card border-warning shadow-sm">
                         <div class="card-header bg-warning text-light text-center">
-                            <h4 class="mb-0"><i class="ik ik-clock"></i> {{ __('field.subscription_request_pending') }}</h4>
+                            <h4 class="mb-0"><i data-lucide="clock"></i> {{ __('field.subscription_request_pending') }}</h4>
                         </div>
                         <div class="card-body text-center py-4">
                             <h4 class="text-warning">{{ $pendingSubscription->tariff->name }}</h4>

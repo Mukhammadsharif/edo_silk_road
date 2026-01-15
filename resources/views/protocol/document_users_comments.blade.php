@@ -29,7 +29,7 @@
                     </p>
                     <div class="like-comm mt-10">
                         <span>
-                            <i class="ik ik-clock"></i> {{ date('d.m.Y, H:i', strtotime($comment->created_date)) }}
+                            <i data-lucide="clock"></i> {{ date('d.m.Y, H:i', strtotime($comment->created_date)) }}
                         </span>
 
                         <span class="pull-right">

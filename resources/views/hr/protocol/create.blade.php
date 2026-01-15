@@ -109,7 +109,7 @@
                                                 {{ __('cancel') }}
                                             </a>
                                             <button type="submit" id="submitBtn" class="btn btn-outline-primary float-right">
-                                                <i class="ik ik-save"></i> {{ __('save') }}
+                                                <i data-lucide="save"></i> {{ __('save') }}
                                             </button>
                                         </div>
                                     </div>

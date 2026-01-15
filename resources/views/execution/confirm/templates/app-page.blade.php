@@ -1,5 +1,5 @@
-<div class="work-doc-page">
-    <div class="work-doc-subpage">
+<div class="work-doc-page" id="pdf2">
+    <div class="work-doc-subpage" id="pdf3">
         <div id="printPage" class="printPage">
 
             @if($journal->docStatus->doc_code !== 'OPEN')
@@ -39,13 +39,10 @@
                 @endif
             </div>
 
-{{--            @include('office.journal.work.templates.document-files')--}}
-
             @include('office.journal.work.templates.app_executor')
 
             @include('office.journal.work.templates.agreement')
 
-            {{--@include('office.journal.work.templates.executor')--}}
         </div>
     </div>
 </div>

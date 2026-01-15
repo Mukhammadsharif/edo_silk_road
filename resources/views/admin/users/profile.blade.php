@@ -136,7 +136,7 @@
                                         </div>
                                     </div>
                                     <button type="submit" class="btn btn-primary">
-                                        <i class="ik ik-save"></i> {{ __('action.save') }}
+                                        <i data-lucide="save"></i> {{ __('action.save') }}
                                     </button>
                                     <hr>
                                     <h4>{{ __('field.my_active_roles') }}</h4>
