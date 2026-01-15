@@ -33,14 +33,14 @@
                             </span>
                             @if($comment && $comment->status == 3 && $document->protocolEcpInfo($document->id, $comment->user_id)
                                                     && $document->protocolEcpInfo($document->id, $comment->user_id)->docInfo)
-                                <i class="ik ik-feather ml-10" style="font-size: 18px; cursor: pointer" onclick="showEspInfo({{ $comment->id }})"></i>
+                                <i data-lucide="feather" style="font-size: 18px; cursor: pointer" onclick="showEspInfo({{ $comment->id }})"></i>
 
                                 @include('templates.ecp.protocol-ecp-information')
                             @endif
                         </div>
                         <div class="like-comm mt-10">
                             <span>
-                                <i class="ik ik-clock"></i> {{ date('d.m.Y, H:i', strtotime($comment->created_at)) }}
+                                <i data-lucide="clock"></i> {{ date('d.m.Y, H:i', strtotime($comment->created_at)) }}
                             </span>
                         </div>
                     </div>

@@ -263,7 +263,7 @@
 
                                     <div class="form-group">
                                         <button name="action" value="file" id="submitBtn" class="btn btn-primary" onclick="setFormAction('file')">
-                                            <i class="ik ik-save"></i> {{ __('action.save') }}
+                                            <i data-lucide="save"></i> {{ __('action.save') }}
                                         </button>
                                     </div>
                                 </div>

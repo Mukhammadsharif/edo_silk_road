@@ -33,7 +33,7 @@
                     </div>
                     @if($signType->doc_sign_type === 1)
                         <div class="col-sm-12" id="ecpContainer">
-                            <label><i class="fa fa-key"></i> {{ __('action.select_ecp_key') }}
+                            <label><i data-lucide="key-round"></i> {{ __('action.select_ecp_key') }}
                             </label><br>
                             <label id="message"></label>
                             <select name="key" class="form-control form-control-primary select2" style="width: 100%"
@@ -41,7 +41,7 @@
                         </div>
                     @endif
                     <div class="col-sm-8 mt-5">
-                        <label hidden><i class="fa fa-key"></i> {{ __('action.to_sign_by_key') }}
+                        <label hidden><i data-lucide="key-round"></i> {{ __('action.to_sign_by_key') }}
                         </label><br>
                         @if($signType->doc_sign_type === 2)
                         <button type="submit" class="btn btn-outline-success modal-bg-class"
@@ -113,7 +113,7 @@
                 // viaLogin.show()
                 ecpContainer.hide()
             }
-            $('.modal-bg-class').removeClass().addClass(`btn modal-bg-class ${modal_bg_class}`);
+            $('.modal-bg-class').removeClass().addClass(`btn-modern modal-bg-class ${modal_bg_class}`);
             $('.confirm_type').html(confirm_type);
             $('#ecp_confirm_id').val(btn_id);
         });

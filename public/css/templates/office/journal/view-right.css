@@ -254,6 +254,15 @@
     border-color: #e2e8f0;
 }
 
+.actions-body-modern-print {
+    padding: 1rem 1.5rem 1rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    border-bottom: 1px solid #e2e8f0;
+    background-color: #f1f3f6;
+}
+
 .btn-modern {
     display: flex;
     align-items: center;
@@ -272,6 +281,18 @@
 .btn-modern i {
     width: 20px;
     height: 20px;
+}
+
+.modal-backdrop {
+    z-index: 1040 !important;
+}
+
+.modal {
+    z-index: 1050 !important;
+}
+
+.modal-dialog {
+    z-index: 1060 !important;
 }
 
 /* Responsive */

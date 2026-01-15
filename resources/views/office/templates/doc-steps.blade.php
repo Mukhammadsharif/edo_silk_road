@@ -32,9 +32,8 @@
                             <div class="step-title">{{ __('status.created') }}</div>
                             <div class="step-user">
                                 <i data-lucide="user"></i>
-                                <span>{{ $journal->fromUser->personal->shortName()??'' }}</span>
+                                <span>{{ $journal->fromUser->personal->shortName()??'' }} - {{ $journal->fromUser->userPost->lang($journal->fromUser->userPost->id)??'' }}</span>
                             </div>
-                            <div class="step-position">{{ $journal->fromUser->userPost->lang($journal->fromUser->userPost->id)??'' }}</div>
                         </div>
                     </div>
 
@@ -50,9 +49,8 @@
                                 <div class="step-title">{{ __('status.pending_sending') }}</div>
                                 <div class="step-user">
                                     <i data-lucide="user"></i>
-                                    <span>{{ $journal->fromUser->personal->shortName()??'' }}</span>
+                                    <span>{{ $journal->fromUser->personal->shortName()??'' }} - {{ $journal->fromUser->userPost->lang($journal->fromUser->userPost->id)??'' }}</span>
                                 </div>
-                                <div class="step-position">{{ $journal->fromUser->userPost->lang($journal->fromUser->userPost->id)??'' }}</div>
                             </div>
                         </div>
                     @endif
@@ -69,9 +67,8 @@
                                 <div class="step-title">{{ __('field.signer') }}</div>
                                 <div class="step-user">
                                     <i data-lucide="user"></i>
-                                    <span>{{ $signer->toSign->personal->shortName()??'' }}</span>
+                                    <span>{{ $signer->toSign->personal->shortName()??'' }} - {{ $signer->toSign->userPost->lang($signer->toSign->userPost->id)??'' }}</span>
                                 </div>
-                                <div class="step-position">{{ $signer->toSign->userPost->lang($signer->toSign->userPost->id)??'' }}</div>
                             </div>
                         </div>
                     @endif
@@ -91,9 +88,8 @@
                                         <div class="step-user-item">
                                             <div class="step-user">
                                                 <i data-lucide="user"></i>
-                                                <span>{{ $item->toUser->personal->shortName()??'' }}</span>
+                                                <span>{{ $item->toUser->personal->shortName()??'' }} - {{ $item->toUser->userPost->lang($item->toUser->userPost->id)??'' }}</span>
                                             </div>
-                                            <div class="step-position">{{ $item->toUser->userPost->lang($item->toUser->userPost->id)??'' }}</div>
                                             <div class="step-status">
                                                 @if(in_array($item->status, [1,2]))
                                                     <span class="status-badge status-pending">
@@ -134,9 +130,8 @@
                                         <div class="step-user-item">
                                             <div class="step-user">
                                                 <i data-lucide="user"></i>
-                                                <span>{{ $item->personal->shortName()??'' }}</span>
+                                                <span>{{ $item->personal->shortName()??'' }} - {{ $item->userPost->lang($item->userPost->id)??'' }}</span>
                                             </div>
-                                            <div class="step-position">{{ $item->userPost->lang($item->userPost->id)??'' }}</div>
                                         </div>
                                     @endforeach
                                 </div>
@@ -156,9 +151,8 @@
                                 <div class="step-title">{{ __('field.verifier') }}</div>
                                 <div class="step-user">
                                     <i data-lucide="user"></i>
-                                    <span>{{ $directorDocument->toSign->personal->shortName()??'' }}</span>
+                                    <span>{{ $directorDocument->toSign->personal->shortName()??'' }} - {{ $directorDocument->toUser->userPost->lang($directorDocument->toUser->userPost->id)??'' }}</span>
                                 </div>
-                                <div class="step-position">{{ $directorDocument->toUser->userPost->lang($directorDocument->toUser->userPost->id)??'' }}</div>
                             </div>
                         </div>
                     @endif
@@ -178,9 +172,8 @@
                                         <div class="step-user-item">
                                             <div class="step-user">
                                                 <i data-lucide="user"></i>
-                                                <span>{{ $performer->toSign->personal->shortName()??'' }}</span>
+                                                <span>{{ $performer->toSign->personal->shortName()??'' }} - {{ $performer->toUser->userPost->lang($performer->toUser->userPost->id)??'' }}</span>
                                             </div>
-                                            <div class="step-position">{{ $performer->toUser->userPost->lang($performer->toUser->userPost->id)??'' }}</div>
                                         </div>
                                     @endforeach
                                 </div>
@@ -198,9 +191,8 @@
                             <div class="step-title">{{ __('status.completed') }}</div>
                             <div class="step-user">
                                 <i data-lucide="user"></i>
-                                <span>{{ $directorDocument->toSign->personal->shortName()??'' }}</span>
+                                <span>{{ $directorDocument->toSign->personal->shortName()??'' }} - {{ $directorDocument->toUser->userPost->lang($directorDocument->toUser->userPost->id)??'' }}</span>
                             </div>
-                            <div class="step-position">{{ $directorDocument->toUser->userPost->lang($directorDocument->toUser->userPost->id)??'' }}</div>
                         </div>
                     </div>
             </div>

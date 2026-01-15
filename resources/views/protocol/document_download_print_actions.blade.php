@@ -1,10 +1,10 @@
 <div class="card table-card">
     <div class="card-header">
-        <h5><i class="ik ik-printer"></i> {{ __('action.print') }}</h5>
+        <h5><i data-lucide="printer"></i> {{ __('action.print') }}</h5>
     </div>
     <div class="card-body">
         <button type="button" onclick="printContent()" class="btn btn-outline-secondary btn-rounded mr-5">
-            <i class="ik ik-printer"></i> {{ __('field.print') }}
+            <i data-lucide="printer"></i> {{ __('field.print') }}
         </button>
 
         @if(in_array('IT admin', $authrole) && $document->status != 6)
@@ -14,13 +14,13 @@
         @endif
 
         <button type="button" onclick="downloadAsPDF()" class="btn btn-outline-dark m-1 btn-rounded">
-            <i class="ik ik-download"></i> {{ __('action.download') }}
+            <i data-lucide="download"></i> {{ __('action.download') }}
         </button>
         <input id="downloadName" value="{{ $document->docType->lang($document->docType->id)??'' }} - {{ $document->doc_number??'' }}" hidden/>
 
         {{--<a href="{{ route('pdf.hr-prt-doc', [$document->id, $document->doc_hash]) }}"
            class="btn btn-outline-secondary btn-rounded">
-            <i class="ik ik-download"></i> {{ __('field.download') }}
+            <i data-lucide="download"></i> {{ __('field.download') }}
         </a>--}}
 
         @if($document->status == 3)

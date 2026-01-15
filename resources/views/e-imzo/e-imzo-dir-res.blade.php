@@ -3,7 +3,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-yellow">
-                <h4 class="modal-title"><i class="fa fa-key"></i> e-imzo</h4>
+                <h4 class="modal-title"><i data-lucide="key-round"></i> e-imzo</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>

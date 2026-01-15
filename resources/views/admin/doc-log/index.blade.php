@@ -52,7 +52,7 @@
                                 <div class="col-3">
                                     <div class="form-group mt-30">
                                         <button type="submit" class="btn btn-outline-success">
-                                            <i class="ik ik-download"></i> {{ __('action.download') }}
+                                            <i data-lucide="download"></i> {{ __('action.download') }}
                                         </button>
                                     </div>
                                 </div>

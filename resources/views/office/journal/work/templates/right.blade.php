@@ -87,7 +87,7 @@
                     </div>
                     <div class="col-4 border-right">
                         <p>{{ __('status.date_sent_for_execution') }}</p>
-                        <i class="ik ik-clock"></i>
+                        <i data-lucide="clock"></i>
                         {{ \Carbon\Carbon::parse($directorResolution->created_at)->format('d.m.y, H:i') }}
                     </div>
                     <div class="col-4">
@@ -284,7 +284,7 @@
 
                             <div class="like-comm mt-20">
                                         <span class="mr-10">
-                                            <i class="ik ik-clock"></i> {{ date('d.m.y, H:i', strtotime($doc->created_at)) }}
+                                            <i data-lucide="clock"></i> {{ date('d.m.y, H:i', strtotime($doc->created_at)) }}
                                         </span>
                             </div>
                         </div>
@@ -378,12 +378,12 @@
         </div>
         <div class="card-body">
             <button type="button" onclick="" class="btn btn-outline-secondary btn-rounded mr-5" id="printButton">
-                <i class="ik ik-printer"></i> {{ __('action.print') }}
+                <i data-lucide="printer"></i> {{ __('action.print') }}
             </button>
 
 {{--            <a href="{{ route('pdf.work-doc', [$document->id, $document->doc_hash]) }}"--}}
 {{--               class="btn btn-outline-secondary btn-rounded">--}}
-{{--                <i class="ik ik-download"></i> {{ __('action.download') }}--}}
+{{--                <i data-lucide="download"></i> {{ __('action.download') }}--}}
 {{--            </a>--}}
             <br><br>
             @if($journal->status === (int)1)
@@ -430,14 +430,14 @@
                     <form name=testform>
                         <div class="form-group row">
                             <div class="col-sm-12">
-                                <label><i class="fa fa-key"></i> {{ __('action.select_ecp_key') }}
+                                <label><i data-lucide="key-round"></i> {{ __('action.select_ecp_key') }}
                                 </label><br>
                                 <label id="message"></label>
                                 <select name="key" class="form-control form-control-primary select21" style="width: 100%"
                                         onchange="cbChanged(this)"></select>
                             </div>
                             <div class="col-sm-8 mt-5">
-                                <label hidden><i class="fa fa-key"></i> {{ __('type.to_sign_by_key') }}
+                                <label hidden><i data-lucide="key-round"></i> {{ __('type.to_sign_by_key') }}
                                 </label><br>
                                 <button type="button" class="btn btn-outline-success modal-bg-class"
                                         onclick="signLogin()" hidden>

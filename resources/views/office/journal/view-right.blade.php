@@ -3,7 +3,7 @@
         @if($directorResolution)
             <div class="execution-card-modern">
                 <div class="card-header-modern">
-                    <i data-lucide="users"></i>
+                    <i data-lucide="users" class="text-white"></i>
                     <h3>{{ __('title.execution') }}</h3>
                 </div>
 
@@ -11,7 +11,7 @@
                     @foreach($selectedPerformers as $key => $item)
                         <div class="performer-item-modern">
                             <div class="performer-avatar">
-                                <i data-lucide="user"></i>
+                                <i data-lucide="user" class="text-white"></i>
                             </div>
                             <div class="performer-info">
                                 <div class="performer-name">{{ $item->toUser->personal->fullName()??'' }}</div>
@@ -71,7 +71,7 @@
         @else
             <div class="execution-card-modern">
                 <div class="card-header-modern">
-                    <i data-lucide="users"></i>
+                    <i data-lucide="users" class="text-white"></i>
                     <h3>{{ __('title.execution') }}</h3>
                 </div>
 
@@ -108,7 +108,7 @@
         @if(isset($selectedAddPerformers) && $selectedAddPerformers && $selectedAddPerformers->count())
             <div class="execution-card-modern">
                 <div class="card-header-modern">
-                    <i data-lucide="users"></i>
+                    <i data-lucide="users" class="text-white"></i>
                     <h3>{{ __('title.additional_performers') }}</h3>
                 </div>
 
@@ -140,7 +140,7 @@
     @if(count($replyDocuments) > 0)
         <div class="execution-card-modern">
             <div class="card-header-modern">
-                <i data-lucide="mail"></i>
+                <i data-lucide="mail" class="text-white"></i>
                 <h3>{{ __('title.answer_letters') }}</h3>
             </div>
             <div class="replies-list-modern">
@@ -242,7 +242,7 @@
                                     </span>
                                     @if($doc && $doc->status == 5 && $journal->workEcpInfo($document->id, $doc->from_user)
                                             && $journal->workEcpInfo($document->id, $doc->from_user)->docInfo)
-                                        <i class="ik ik-feather ml-10" style="font-size: 18px; cursor: pointer"
+                                        <i data-lucide="feather" style="font-size: 18px; cursor: pointer"
                                            onclick="showEspInfo({{ $doc->id }})"></i>
 
                                         @include('templates.ecp.ecp-information')
@@ -251,7 +251,7 @@
                             @endif
                             <div class="like-comm mt-20">
                                 <span class="mr-10">
-                                    <i class="ik ik-clock"></i> {{ date('d.m.y, H:i', strtotime($doc->updated_at)) }}
+                                    <i data-lucide="clock"></i> {{ date('d.m.y, H:i', strtotime($doc->updated_at)) }}
                                 </span>
                             </div>
                         </div>
@@ -270,10 +270,11 @@
 
     <div class="execution-card-modern actions-card">
         <div class="card-header-modern">
-            <i data-lucide="settings"></i>
+            <i data-lucide="settings" class="text-white"></i>
             <h3>{{ __('action.action') }}</h3>
         </div>
-        <div class="actions-body-modern">
+
+        <div class="actions-body-modern-print">
             <button type="button" onclick="printContent()" class="btn-modern btn-secondary">
                 <i data-lucide="printer"></i>
                 <span>{{ __('action.print') }}</span>
@@ -283,8 +284,12 @@
                 <i data-lucide="download"></i>
                 <span>{{ __('action.download') }}</span>
             </button>
-            <input id="downloadName" value="{{ $journal->journal->lang($journal->journal->lang_id)??'-' }} - {{ $journal->fromUser->personal->shortName()??'' }}" hidden/>
-            <hr>
+            <input id="downloadName"
+                   value="{{ $journal->journal->lang($journal->journal->lang_id)??'-' }} - {{ $journal->fromUser->personal->shortName()??'' }}"
+                   hidden/>
+        </div>
+
+        <div class="actions-body-modern">
             @if(in_array($journal->status, [1, 2, 3]))
                 <button type="button" class="btn-modern btn-danger deleteItem"
                         data-id="{{$document->id}}">
@@ -322,11 +327,6 @@
                 @endif
             @endif
 
-            @if(in_array($journal->status, [9,10,11]) && $journal->journal->doc_code !== 'BASE_INCOMING')
-                @include('qr-code-doc.qr-code-view')
-                <input id="doc_id" value="{{ $document->id }}" hidden>
-                <input id="doc_type" value="work_doc" hidden>
-            @endif
             @if($journal->status === (int)1)
                 <div class="card-body1 confirmForm mt-2" style="display: none">
                     <div id="loading" class="loading-gif" style="display: none"></div>
@@ -335,16 +335,16 @@
                         <div class="form-group row">
                             @if($signType->doc_sign_type === 1)
                                 <div class="col-sm-12">
-                                    <label><i class="fa fa-key"></i> {{ __('action.select_ecp_key') }}
+                                    <label><i data-lucide="key-round"></i> {{ __('action.select_ecp_key') }}
                                     </label>
                                     <label id="message"></label>
-                                    <select name="key" class="form-control form-control-primary select21"
+                                    <select name="key" class="form-control form-control-primary select2"
                                             style="width: 100%"
                                             onchange="cbChanged(this)"></select>
                                 </div>
                             @endif
                             <div class="col-sm-12 mt-2">
-                                <label hidden><i class="fa fa-key"></i> {{ __('action.to_sign_by_key') }}
+                                <label hidden><i data-lucide="key-round"></i> {{ __('action.to_sign_by_key') }}
                                 </label>
                                 @if($signType->doc_sign_type === 2)
                                     <button type="submit" class="btn-modern btn-success modal-bg-class">
@@ -384,12 +384,19 @@
                 </div>
             @endif
         </div>
+
+        @if(in_array($journal->status, [9,10,11]) && $journal->journal->doc_code !== 'BASE_INCOMING')
+            @include('qr-code-doc.qr-code-view')
+            <input id="doc_id" value="{{ $document->id }}" hidden>
+            <input id="doc_type" value="work_doc" hidden>
+        @endif
     </div>
 
     @include('office.templates.doc-steps')
 </div>
 
 <link rel="stylesheet" href="{{ asset('css/templates/office/journal/view-right.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/select2.css') }}">
 
 @include('templates.ecp.login-sign')
 @include('templates.download')

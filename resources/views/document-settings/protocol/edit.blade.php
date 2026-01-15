@@ -176,7 +176,7 @@
                                         <i class="ik ik-x"></i> {{ __('action.cancel') }}
                                     </a>
                                     <button type="submit" class="btn btn-primary">
-                                        <i class="ik ik-save"></i> {{ __('action.save') }}
+                                        <i data-lucide="save"></i> {{ __('action.save') }}
                                     </button>
                                 </div>
                             </div>
@@ -241,7 +241,7 @@
 
                         <div class="card-footer d-flex flex-row justify-content-end">
                             <button type="submit" class="btn btn-primary">
-                                <i class="ik ik-save"></i>{{ __('action.save') }}
+                                <i data-lucide="save"></i>{{ __('action.save') }}
                             </button>
                         </div>
                     </div>

@@ -51,7 +51,7 @@
 
         <div class="comment-form-section">
             <button type="button" class="btn-modern btn-success" id="openForm">
-                <i data-lucide="message-circle" class="icon"></i>
+                <i data-lucide="message-circle" class="icon text-white"></i>
                 <span>{{ __('action.to_leave_comment') }}</span>
             </button>
 
@@ -59,7 +59,7 @@
                 @csrf
                 <div class="form-editor-modern">
                     <div class="form-header">
-                        <i data-lucide="message-circle"></i>
+                        <i data-lucide="message-circle" class="text-white"></i>
                         <h5>{{ __('field.leave_comment') }}</h5>
                     </div>
                     <textarea name="r_text" id="div_editor4" required></textarea>
@@ -73,7 +73,7 @@
                             <span>{{ __('action.cancel') }}</span>
                         </button>
                         <button type="submit" class="btn-modern btn-primary">
-                            <i data-lucide="send"></i>
+                            <i data-lucide="send" class="text-white"></i>
                             <span>{{ __('action.send') }}</span>
                         </button>
                     </div>

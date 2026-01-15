@@ -216,7 +216,7 @@
                 </div>
 
                 <button type="button" onclick="printPageNew()" class="btn btn-outline-secondary btn-rounded mr-5">
-                    <i class="ik ik-printer"></i> {{ __('action.print') }}
+                    <i data-lucide="printer"></i> {{ __('action.print') }}
                 </button>
             </div>
         </div>

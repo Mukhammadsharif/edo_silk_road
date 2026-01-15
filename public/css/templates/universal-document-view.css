@@ -1,0 +1,839 @@
+/* ========================================
+   UNIVERSAL DOCUMENT VIEW STYLES
+   Modern, Clean, Professional Design
+   ======================================== */
+
+/* ========== ROOT VARIABLES ========== */
+:root {
+    /* Color Palette */
+    --color-primary: #3b82f6;
+    --color-primary-dark: #2563eb;
+    --color-primary-light: #dbeafe;
+    --color-success: #10b981;
+    --color-warning: #f59e0b;
+    --color-danger: #ef4444;
+    --color-info: #06b6d4;
+
+    /* Neutrals */
+    --color-gray-50: #f8fafc;
+    --color-gray-100: #f1f5f9;
+    --color-gray-200: #e2e8f0;
+    --color-gray-300: #cbd5e1;
+    --color-gray-400: #94a3b8;
+    --color-gray-500: #64748b;
+    --color-gray-600: #475569;
+    --color-gray-700: #334155;
+    --color-gray-800: #1e293b;
+    --color-gray-900: #0f172a;
+
+    /* Document Colors */
+    --color-white: #ffffff;
+    --color-text-primary: #1e293b;
+    --color-text-secondary: #64748b;
+    --color-text-muted: #94a3b8;
+
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+
+    /* Border Radius */
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-document: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+    /* Transitions */
+    --transition-fast: 150ms ease-in-out;
+    --transition-base: 250ms ease-in-out;
+    --transition-slow: 350ms ease-in-out;
+
+    /* Typography */
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.875rem;
+}
+
+/* ========== BASE LAYOUT ========== */
+.work-view-page-modern {
+    padding: var(--spacing-xl);
+    background: var(--color-gray-50);
+    min-height: 100vh;
+    font-family: var(--font-sans);
+}
+
+/* ========== DOCUMENT GRID LAYOUT ========== */
+.document-view-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr 450px;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+/* ========== SIDEBARS ========== */
+.view-sidebar {
+    position: sticky;
+    top: var(--spacing-xl);
+}
+
+.sidebar-card-modern {
+    overflow: hidden;
+    transition: box-shadow var(--transition-base);
+}
+
+/* ========== DOCUMENT CONTENT SECTION ========== */
+.document-content-section {
+    min-height: 600px;
+}
+
+/* ========== DOCUMENT CARDS ========== */
+.document-card-modern,
+.work-doc-page {
+    background: var(--color-white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    transition: box-shadow var(--transition-base);
+}
+
+.document-card-modern:hover,
+.work-doc-page:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+/* ========== DOCUMENT CONTAINER ========== */
+.sent-doc-modern {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: var(--spacing-sm);
+    background: var(--color-gray-50);
+}
+
+.document-container-modern {
+    width: 100%;
+    min-height: 100vh;
+    background: var(--color-white);
+    box-shadow: var(--shadow-document);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+/* ========== PRINT PAGE ========== */
+.print-page-modern,
+.printPage {
+    /*padding: 40mm 20mm;*/
+    min-height: 297mm;
+    max-width: 210mm;
+    margin: 0 auto;
+    background: var(--color-white);
+    position: relative;
+}
+
+.work-doc-subpage {
+    padding: 40mm 20mm;
+    background: var(--color-white);
+}
+
+/* ========== CONFIDENTIALITY BADGE ========== */
+.doc-confidentiality {
+    text-align: center;
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    color: var(--color-danger);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--spacing-xl);
+    padding: var(--spacing-md);
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border: 2px solid #fca5a5;
+    border-radius: var(--radius-md);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
+}
+
+/* ========== DOCUMENT DATE ========== */
+.sent-doc-date-number {
+    text-align: right;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--color-gray-50);
+    border-radius: var(--radius-sm);
+    display: inline-block;
+    float: right;
+}
+
+.mt-10 {
+    margin-top: var(--spacing-md);
+}
+
+/* ========== DOCUMENT TEXT ========== */
+.doc-text {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xl);
+    text-align: justify;
+    clear: both;
+}
+
+.doc-text p {
+    margin-bottom: var(--spacing-md);
+}
+
+.doc-text h1, .doc-text h2, .doc-text h3 {
+    color: var(--color-gray-900);
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    font-weight: 600;
+}
+
+/* ========== TABLES ========== */
+.table-tr-3td table {
+    width: 100%;
+    margin-bottom: var(--spacing-lg);
+    border-collapse: collapse;
+}
+
+.table-tr-3td td {
+    padding: var(--spacing-md);
+    vertical-align: top;
+}
+
+.table-tr-3td td:first-child {
+    width: 20%;
+}
+
+.table-tr-3td td:nth-child(2) {
+    width: 30%;
+    text-align: center;
+}
+
+.table-tr-3td td:last-child {
+    width: 50%;
+    text-align: right;
+}
+
+/* ========== SIGNATURE SECTIONS ========== */
+.signature-section-modern,
+.agreement-section-modern,
+.verifier-section-modern,
+.hr-signer-modern,
+.app-executor-modern,
+.executor-section-modern,
+.header-verifier-modern {
+    margin-top: var(--spacing-2xl);
+    padding: var(--spacing-lg);
+    background: linear-gradient(to bottom, transparent 0%, var(--color-gray-50) 100%);
+    border-radius: var(--radius-md);
+}
+
+.section-title-print {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--color-gray-800);
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 2px solid var(--color-primary);
+    display: inline-block;
+}
+
+.signature-table,
+.app-table,
+.executor-table,
+.header-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.signature-table tr,
+.app-table tr,
+.executor-table tr,
+.header-table tr {
+    transition: background-color var(--transition-fast);
+}
+
+.signature-table tr:hover,
+.app-table tr:hover,
+.executor-table tr:hover {
+    background-color: var(--color-gray-50);
+}
+
+.signature-table tr.row-alt {
+    background-color: #fafbfc;
+}
+
+.signature-table td,
+.app-table td,
+.executor-table td,
+.header-table td {
+    padding: var(--spacing-md);
+    vertical-align: middle;
+}
+
+/* ========== TABLE CELLS ========== */
+.position-cell {
+    width: 45%;
+}
+
+.position-label {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: block;
+    margin-bottom: var(--spacing-xs);
+}
+
+.position-value,
+.position-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    font-weight: 500;
+    display: block;
+}
+
+.qr-cell {
+    width: 20%;
+    text-align: center;
+}
+
+.qr-wrapper {
+    display: inline-flex;
+    padding: var(--spacing-sm);
+    background: var(--color-white);
+    border: 2px solid var(--color-gray-200);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-fast);
+}
+
+.qr-wrapper:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-md);
+}
+
+.sign-date {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    margin-top: var(--spacing-xs);
+    text-align: center;
+}
+
+.name-cell {
+    width: 35%;
+    text-align: right;
+}
+
+.name-value,
+.name-text {
+    font-size: var(--font-size-base);
+    color: var(--color-gray-900);
+    font-weight: 600;
+    display: block;
+    margin-bottom: var(--spacing-xs);
+}
+
+.status-badge-print {
+    display: inline-block;
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    border-radius: 9999px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: var(--spacing-xs);
+}
+
+/* ========== EXECUTOR SECTION ========== */
+.date-cell {
+    width: 30%;
+}
+
+.date-label {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: block;
+    margin-bottom: var(--spacing-xs);
+}
+
+.date-value {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    font-weight: 500;
+}
+
+.executor-info-cell {
+    width: 45%;
+}
+
+.executor-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.executor-role {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.executor-role span {
+    color: var(--color-gray-900);
+    font-weight: 600;
+}
+
+.executor-name {
+    margin-left: var(--spacing-xs);
+}
+
+.executor-phone {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+}
+
+.phone-number {
+    color: var(--color-primary);
+    font-weight: 500;
+    margin-left: var(--spacing-xs);
+}
+
+.empty-cell,
+.info-cell {
+    width: 35%;
+}
+
+.info-cell {
+    text-align: right;
+}
+
+/* ========== RESPONSIVE TABLE ========== */
+.table-responsive {
+    overflow-x: auto;
+    margin-top: var(--spacing-lg);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--color-white);
+}
+
+.table thead th {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: var(--color-white);
+    font-weight: 600;
+    padding: var(--spacing-md);
+    text-align: left;
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.table tbody td {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--color-gray-200);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.table tbody tr:hover {
+    background-color: var(--color-gray-50);
+}
+
+.table.table-bordered {
+    border: 1px solid var(--color-gray-300);
+}
+
+.table.table-bordered th,
+.table.table-bordered td {
+    border: 1px solid var(--color-gray-300);
+}
+
+.text-center {
+    text-align: center !important;
+}
+
+.align-middle {
+    vertical-align: middle !important;
+}
+
+.fw-bold {
+    font-weight: 700 !important;
+}
+
+/* ========== UTILITY CLASSES ========== */
+.font-size-12 {
+    font-size: 12px;
+}
+
+.mt-2 {
+    margin-top: var(--spacing-sm);
+}
+
+.mt-5 {
+    margin-top: 1.25rem;
+}
+
+.mt-10 {
+    margin-top: var(--spacing-md);
+}
+
+.mt-15 {
+    margin-top: 1.875rem;
+}
+
+.mt-20 {
+    margin-top: 2.5rem;
+}
+
+.mr-5 {
+    margin-right: 1.25rem;
+}
+
+.mr-10 {
+    margin-right: var(--spacing-md);
+}
+
+.ml-10 {
+    margin-left: var(--spacing-md);
+}
+
+.ml-20 {
+    margin-left: 2.5rem;
+}
+
+.mb-0 {
+    margin-bottom: 0;
+}
+
+.p-4 {
+    padding: 1.5rem;
+}
+
+.border-top {
+    border-top: 1px solid var(--color-gray-200);
+}
+
+.border-right {
+    border-right: 1px solid var(--color-gray-200);
+}
+
+/* ========== BADGES ========== */
+.badge {
+    display: inline-block;
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 9999px;
+    transition: all var(--transition-fast);
+}
+
+.badge-primary {
+    background-color: var(--color-primary-light);
+    color: var(--color-primary-dark);
+}
+
+.badge-success {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.badge-warning {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.badge-danger {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.badge-aqua,
+.badge-info {
+    background-color: #cffafe;
+    color: #155e75;
+}
+
+.badge-pill {
+    border-radius: 9999px;
+}
+
+/* ========================================
+   FILTERS FORM
+   ======================================== */
+.filters-form-modern {
+    padding: 1.5rem;
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.25rem;
+    align-items: end;
+}
+
+.filter-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filter-item label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 13px;
+    font-weight: 500;
+    color: #475569;
+    margin: 0;
+}
+
+.filter-item label i {
+    width: 16px;
+    height: 16px;
+    color: #794DFD;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 0.75rem;
+    grid-column: span 2;
+}
+
+/* ========================================
+   FORM CONTROLS
+   ======================================== */
+.form-control-modern {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #1e293b;
+    transition: all 0.3s;
+    background: white;
+}
+
+.form-control-modern:focus {
+    outline: none;
+    border-color: #794DFD;
+    box-shadow: 0 0 0 3px rgba(121, 77, 253, 0.1);
+}
+
+.form-control-modern::placeholder {
+    color: #94a3b8;
+}
+
+/* ========== PRINT STYLES ========== */
+@media print {
+    .work-view-page-modern {
+        padding: 0;
+        background: var(--color-white);
+    }
+
+    .document-view-layout {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .view-sidebar {
+        display: none !important;
+    }
+
+    .document-card-modern,
+    .work-doc-page {
+        box-shadow: none;
+        border-radius: 0;
+    }
+
+    .sent-doc-modern {
+        background: var(--color-white);
+        padding: 0;
+    }
+
+    .document-container-modern {
+        box-shadow: none;
+        border-radius: 0;
+    }
+
+    .qr-wrapper {
+        border: 1px solid var(--color-gray-400);
+        box-shadow: none;
+    }
+
+    * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+@media (max-width: 1600px) {
+    .document-view-layout {
+        grid-template-columns: 280px 1fr 480px;
+    }
+}
+
+@media (max-width: 1400px) {
+    .document-view-layout {
+        grid-template-columns: 260px 1fr 420px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .document-view-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .view-sidebar {
+        position: relative;
+        top: 0;
+    }
+
+    .view-sidebar-right {
+        order: -1;
+    }
+}
+
+@media (max-width: 768px) {
+    .work-view-page-modern {
+        padding: var(--spacing-md);
+    }
+
+    .print-page-modern,
+    .printPage,
+    .work-doc-subpage {
+        padding: 20mm 10mm;
+    }
+
+    .table-tr-3td table {
+        font-size: var(--font-size-sm);
+    }
+
+    .signature-table td,
+    .app-table td,
+    .executor-table td {
+        padding: var(--spacing-sm);
+        font-size: var(--font-size-sm);
+    }
+
+    .doc-text {
+        font-size: var(--font-size-sm);
+    }
+}
+
+@media (max-width: 480px) {
+    .table-tr-3td td {
+        display: block;
+        width: 100% !important;
+        text-align: left !important;
+    }
+
+    .signature-table,
+    .app-table,
+    .executor-table {
+        display: block;
+    }
+
+    .signature-table tr,
+    .app-table tr,
+    .executor-table tr {
+        display: block;
+        margin-bottom: var(--spacing-md);
+        border: 1px solid var(--color-gray-200);
+        border-radius: var(--radius-sm);
+        padding: var(--spacing-sm);
+    }
+
+    .signature-table td,
+    .app-table td,
+    .executor-table td {
+        display: block;
+        width: 100% !important;
+        text-align: left !important;
+        border: none;
+    }
+
+    .qr-cell {
+        text-align: left;
+        margin: var(--spacing-sm) 0;
+    }
+}
+
+/* ========== ANIMATIONS ========== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.document-card-modern,
+.work-doc-page,
+.sidebar-card-modern {
+    animation: fadeIn var(--transition-base) ease-out;
+}
+
+/* ========== ACCESSIBILITY ========== */
+*:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+*:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* ========== CUSTOM SCROLLBAR ========== */
+.table-responsive::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: var(--color-gray-100);
+    border-radius: var(--radius-sm);
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: var(--color-gray-400);
+    border-radius: var(--radius-sm);
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: var(--color-gray-500);
+}

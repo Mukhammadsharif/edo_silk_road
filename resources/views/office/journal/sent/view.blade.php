@@ -194,14 +194,14 @@
                                             </span>
                                             @if($doc && $doc->status == 5 && $journal->workEcpInfo($document->id, $doc->from_user)
                                                     && $journal->workEcpInfo($document->id, $doc->from_user)->docInfo)
-                                                <i class="ik ik-feather ml-10" style="font-size: 18px; cursor: pointer" onclick="showEspInfo({{ $doc->id }})"></i>
+                                                <i data-lucide="feather" style="font-size: 18px; cursor: pointer" onclick="showEspInfo({{ $doc->id }})"></i>
 
                                                 @include('templates.ecp.ecp-information')
                                             @endif
                                         </div>
                                         <div class="like-comm mt-20">
                                             <span class="mr-10">
-                                                <i class="ik ik-clock"></i> {{ date('d.m.y, H:i', strtotime($doc->created_at)) }}
+                                                <i data-lucide="clock"></i> {{ date('d.m.y, H:i', strtotime($doc->created_at)) }}
                                             </span>
                                         </div>
                                     </div>
@@ -241,13 +241,13 @@
                                                     </span>
                                                     @if($doc && $doc->status == 5 && $journal->workEcpInfo($document->id, $doc->from_user)
                                                         && $journal->workEcpInfo($document->id, $doc->from_user)->docInfo)
-                                                        <i class="ik ik-feather ml-10" style="font-size: 18px; cursor: pointer" onclick="showEspInfo({{ $doc->id }})"></i>
+                                                        <i data-lucide="feather" style="font-size: 18px; cursor: pointer" onclick="showEspInfo({{ $doc->id }})"></i>
 
                                                         @include('templates.ecp.ecp-information')
                                                     @endif
                                                 </div>
                                                 <div class="mt-10">
-                                                <span class="sl-date pull-right"><i class="ik ik-clock"></i>
+                                                <span class="sl-date pull-right"><i data-lucide="clock"></i>
                                                     {{ date('d.m.y, H:i', strtotime($doc->created_at)) }}
                                                 </span>
                                                 </div><hr>
@@ -260,14 +260,14 @@
                                                 @php($sign_user = $item)
                                                 @if($sign_user && $sign_user->status == 5 && $journal->workEcpInfo($document->id, $sign_user->to_user)
                                                     && $journal->workEcpInfo($document->id, $sign_user->to_user)->docInfo)
-                                                    <i class="ik ik-feather ml-10" style="font-size: 18px; cursor: pointer" onclick="showEspInfo({{ $sign_user->id }})"></i>
+                                                    <i data-lucide="feather" style="font-size: 18px; cursor: pointer" onclick="showEspInfo({{ $sign_user->id }})"></i>
 
                                                     @include('templates.ecp.signer-ecp-information')
                                                 @endif
                                             </div>
                                             @if($item->status != (int)1)
                                                 <div class="mt-10">
-                                                    <span class="sl-date pull-right"><i class="ik ik-clock"></i>
+                                                    <span class="sl-date pull-right"><i data-lucide="clock"></i>
                                                         {{ date('d.m.y, H:i', strtotime($item->updated_at)) }}
                                                     </span>
                                                 </div>
@@ -333,12 +333,6 @@
                             @endif
                         @endif
 
-                        @if($journal->status == 10)
-                            @include('qr-code-doc.qr-code-view')
-                            <input id="doc_id" value="{{ $document->id }}" hidden>
-                            <input id="doc_type" value="out_doc" hidden>
-                        @endif
-
                         @if($journal->status === (int)1)
                             <div class="card-body confirmForm bg-light mt-5" style="display: none">
                                 <div id="loading" class="loading-gif" style="display: none"></div>
@@ -346,7 +340,7 @@
                                     <div class="form-group row">
                                         @if($signType->doc_sign_type === 1)
                                             <div class="col-sm-12">
-                                                <label><i class="fa fa-key"></i> {{ __('action.select_ecp_key') }}
+                                                <label><i data-lucide="key-round"></i> {{ __('action.select_ecp_key') }}
                                                 </label><br>
                                                 <label id="message"></label>
                                                 <select name="key" class="form-control form-control-primary select2" style="width: 100%"
@@ -354,7 +348,7 @@
                                             </div>
                                         @endif
                                         <div class="col-sm-12 mt-5">
-                                            <label hidden><i class="fa fa-key"></i> {{ __('action.to_sign_by_key') }}
+                                            <label hidden><i data-lucide="key-round"></i> {{ __('action.to_sign_by_key') }}
                                             </label><br>
                                             @if($signType->doc_sign_type === 2)
                                                 <button type="submit" class="btn-modern btn-success modal-bg-class"
@@ -392,6 +386,12 @@
                             </div>
                         @endif
                     </div>
+
+                    @if($journal->status == 10)
+                        @include('qr-code-doc.qr-code-view')
+                        <input id="doc_id" value="{{ $document->id }}" hidden>
+                        <input id="doc_type" value="out_doc" hidden>
+                    @endif
                 </div>
 
                 @include('office.templates.doc-steps')
@@ -443,7 +443,7 @@
                     confirm_type = "{{ __('re-editing') }}";
                     modal_bg_class = "btn-outline-warning";
                 }
-                $('.modal-bg-class').removeClass().addClass(`btn modal-bg-class ${modal_bg_class}`);
+                $('.modal-bg-class').removeClass().addClass(`btn-modern modal-bg-class ${modal_bg_class}`);
                 $('.confirm_type').html(confirm_type);
                 $('#ecp_confirm_id').val();
             });
