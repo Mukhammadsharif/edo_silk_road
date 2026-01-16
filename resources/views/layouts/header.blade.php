@@ -10,17 +10,13 @@
 <header class="header-top" header-theme="light">
     <div class="nav-container">
         <div class="d-flex justify-content-between align-items-center">
-
-          
-
             <div class="container-fluid">
-
                 <div class="d-flex {{ $isOrganizationDemo ?  'justify-content-between' : 'justify-content-end'}} align-items-center flex-wrap gap-3">
                     @if($isOrganizationDemo && !$request)
-                        <div class="alert bg-success text-white d-flex justify-content-between align-items-center flex-grow-1"
+                        <div class="alert alert-box"
                              style="max-width: 500px; margin: 0 0 0 225px;">
                             <span>{{ __('field.send_request_for_joining') }}</span>
-                            <button class="btn btn-light" id="requestButton" data-toggle="modal" data-target="#RequestModal">
+                            <button class="btn btn-lights" id="requestButton" data-toggle="modal" data-target="#RequestModal">
                                 {{ __('field.leave_request') }}
                             </button>
                         </div>
@@ -112,8 +108,8 @@
                         <div class="dropdown ms-3">
                             <a class="dropdown-toggle d-flex align-items-center justify-content-center text-white"
                                href="#" id="userDropdown" role="button" data-toggle="dropdown"
-                               style="background: linear-gradient(to right, #ea4c89, #d6336c); width:32px; height:32px; border-radius:50%; font-weight:bold;">
-                                SK
+                               style="background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%); width:32px; height:32px; border-radius:50%; font-weight:bold;">
+                                A
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
@@ -574,5 +570,23 @@
 .d-flex{
     align-items:center;
 }
+
+
+
+.alert-box{
+    background-color:#2dce89 !important;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.btn-lights{
+    background-color:#fff;
+    color:#794DFD ;
+    font-size:13px;
+    font-weight:700;
+}
+   
 
 </style>

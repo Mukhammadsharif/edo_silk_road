@@ -65,17 +65,13 @@
                 <div class="tab-content" id="eri-tab">
                     <input type="hidden" name="eri" id="selectedEri" value="">
 
-                    <div class="input-group">
-                        <i data-lucide="key" class="icon"></i>
-                        <select class="form-select" id="eriSelect" disabled required>
-                            <option value="">Tanlanmagan</option>
-                        </select>
-                    </div>
+                
+                
 
-                    <button type="button" class="button btn-usb" onclick="openUsbToken()">
+                    <div class="button btn-usb input-group" onclick="openUsbToken()">
                         <img src="https://esi.uz/oauth2/assets/images/icons/pfx.ico" alt="pfx" style="height: 20px">
                         ERI ni tanlang
-                    </button>
+                    </div>
 
                     <button onclick="signin()" class="button" id="eriLoginBtn" disabled style="margin-top: 15px;">
                         <i data-lucide="shield-check"></i>
@@ -364,7 +360,6 @@ input:-internal-autofill-selected {
 
 .button:hover:not(:disabled) {
     background: linear-gradient(135deg, rgb(99, 61, 214) 0%, rgb(127, 74, 241) 100%);
-    transform: translateY(-4px);
 }
 
 .button:disabled {

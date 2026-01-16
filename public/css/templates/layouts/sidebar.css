@@ -14,15 +14,15 @@
 /* Sidebar */
 .sidebar {
     position: fixed;
-    top: 64px;
+    top: 0px;
     left: 0;
     width: var(--sidebar-width);
-    height: calc(100vh - 64px);
+    height: 100vh;
     background-color: #ffffff;
     border-right: 1px solid var(--border);
-    padding: 1.5rem 0;
+    padding: 10px 0 1.5rem 0;
     overflow-y: auto;
-    z-index: 30;
+    z-index: 30000;
     display: flex;
     flex-direction: column;
     transition: background-color 0.3s;
@@ -277,11 +277,14 @@
     margin: 1rem 1rem 1rem 1rem;
     width: calc(100% - 2rem);
     padding: 4px;
-    position: absolute;
+    position: fixed;
     bottom:15px;
-    left:43%;
+    left:111px;
+    max-width:210px;
     transform:translate(-50%,-50%)
 }
+
+
 
 .sidebar.dark .theme-tabs {
     background-color: #00000026;

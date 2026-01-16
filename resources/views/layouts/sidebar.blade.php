@@ -40,125 +40,128 @@
                 </div>
             </div>
 
+
             @foreach($sidebarMenus as $key => $item)
-                @php
-                    $menuList = $item->menuList;
-                    $hasChildren = $item && $item->child && $item->child->count() > 0;
-                    $isKolOrg = $menuList && in_array($menuList->code, ['KOL_ORG_S', 'KOL_ORG']);
-                    $isPrtDocs = $menuList && $menuList->code === 'PRT_DOCS_S';
-                    $icon = $menuList && $menuList->iconClass ? $menuList->iconClass->name : 'file-text';
-                    $menuCount = $item->menuCount($item->id);
-                    $isActive = $menuList && str_contains(url()->current(), $menuList->url_path);
-                @endphp
+            @php
+            $menuList = $item->menuList;
+            $hasChildren = $item && $item->child && $item->child->count() > 0;
+            $isKolOrg = $menuList && in_array($menuList->code, ['KOL_ORG_S', 'KOL_ORG']);
+            $isPrtDocs = $menuList && $menuList->code === 'PRT_DOCS_S';
+            $icon = $menuList && $menuList->iconClass ? $menuList->iconClass->name : 'file-text';
+            $menuCount = $item->menuCount($item->id);
+            $isActive = $menuList && str_contains(url()->current(), $menuList->url_path);
+            @endphp
 
-                    <!-- Menu Item with Children or Special Types -->
-                @if($hasChildren || $isKolOrg || $isPrtDocs)
+            <!-- Menu Item with Children or Special Types -->
+            @if($hasChildren || $isKolOrg || $isPrtDocs)
 
-                    <div class="menu-item {{ $isActive ? 'active' : '' }}" data-menu-id="{{ $item->id }}">
-                        <div class="menu-header">
-                            <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
-                                <i data-lucide="{{ $icon }}" class="{{ $icon }}" style="width: 22px; height: 22px;"></i>
-                                <span class="menu-text">{{ $menuList->lang($menuList->id) }}</span>
-                                @if($menuCount > 0)
-                                    <span class="badge-count menu-count-{{ $item->id }}">{{ $menuCount }}</span>
-                                @endif
-                            </div>
-                            <i data-lucide="chevron-right" class="chevron"></i>
-                        </div>
-
-                        <div class="submenu">
-                            <!-- Regular Children -->
-                            @if($hasChildren)
-                                @foreach($item->child as $child)
-                                    @php
-                                        $childCount = method_exists($child, 'menuCount') ? $child->menuCount($child->id) : 0;
-                                        $childIsActive = str_contains(url()->current(), $child->url_path);
-                                    @endphp
-                                    <div class="submenu-item">
-                                        <a href="{{ $child->menuList->url_path }}"
-                                           class="{{ $childIsActive ? 'active-link' : '' }}">
-                                            <i data-lucide="{{ $child->menuList->iconClass ? $child->menuList->iconClass->name : 'circle' }}" class="{{ $child->menuList->iconClass ? $child->menuList->iconClass->name : 'circle' }}" style="width: 18px; height: 18px;"></i>
-                                            <span>{{ \App\Models\Admin\MenuList::lang($child->menuList->id) }}</span>
-                                            @if($childCount > 0)
-                                                <span class="badge-count">{{ $childCount }}</span>
-                                            @endif
-                                        </a>
-                                    </div>
-                                @endforeach
-                            @endif
-
-                            <!-- KOL_ORG Submenu -->
-                            @if($isKolOrg)
-                                @php
-                                    $col_org = $item->getKolOrg($item->menu_id);
-                                    $route = $menuList->code === 'KOL_ORG' ? 'protocol-members' : 'prt-secretary';
-                                @endphp
-                                @if($col_org && $col_org->child)
-                                    @foreach($col_org->child as $item2)
-                                        <div class="submenu-item tree-item">
-                                            <a href="{{ route($route, $item2->doc_hash) }}"
-                                               class="{{ str_contains(url()->current(), $item2->doc_hash) ? 'active-link' : '' }}">
-                                                <i data-lucide="folder" style="width: 18px; height: 18px;"></i>
-                                                <span>{{ $item2->lang($item2->id) }}</span>
-                                                @php
-                                                    $itemCount = $route == 'protocol-members'
-                                                        ? $item2->menuCountMem($item2->id)
-                                                        : $item2->menuCount($item2->id);
-                                                @endphp
-                                                @if($itemCount > 0)
-                                                    <span class="badge-count">{{ $itemCount }}</span>
-                                                @endif
-                                            </a>
-
-                                            <!-- Nested Children -->
-                                            @if(count($item2->child) > 0)
-                                                <div class="nested-submenu">
-                                                    @include('layouts.sidebarChild', ['childs' => $item2->child, 'route' => $route])
-                                                </div>
-                                            @endif
-                                        </div>
-                                    @endforeach
-                                @endif
-                            @endif
-
-                            <!-- PRT_DOCS Submenu -->
-                            @if($isPrtDocs)
-                                @php($prt_docs = $item->getPrtDocs($item->menu_id))
-                                    @if($prt_docs && $prt_docs->child)
-                                        @foreach($prt_docs->child as $item3)
-                                            <div class="submenu-item tree-item">
-                                                <a href="{{ route('prt-secretary', $item3->doc_hash) }}"
-                                                   class="{{ str_contains(url()->current(), $item3->doc_hash) ? 'active-link' : '' }}">
-                                                    <i data-lucide="file-text" style="width: 18px; height: 18px;"></i>
-                                                    <span>{{ $item3->lang($item3->id) }}</span>
-                                                </a>
-
-                                                @if(count($item3->child) > 0)
-                                                    <div class="nested-submenu">
-                                                        @include('layouts.sidebarChildPrtDocs', ['childs' => $item3->child, 'route' => 'prt-secretary'])
-                                                    </div>
-                                                @endif
-                                            </div>
-                                        @endforeach
-                                    @endif
-                                    @endif
-                        </div>
+            <div class="menu-item {{ $isActive ? 'active' : '' }}" data-menu-id="{{ $item->id }}">
+                <div class="menu-header">
+                    <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
+                        <i data-lucide="{{ $icon }}" class="{{ $icon }}" style="width: 22px; height: 22px;"></i>
+                        <span class="menu-text">{{ $menuList->lang($menuList->id) }}</span>
+                        @if($menuCount > 0)
+                        <span class="badge-count menu-count-{{ $item->id }}">{{ $menuCount }}</span>
+                        @endif
                     </div>
+                    <i data-lucide="chevron-right" class="chevron"></i>
+                </div>
 
-                @else
-                    <!-- Simple Menu Item (No Children) -->
-                    @if($menuList)
-                        <div class="menu-item {{ $isActive ? 'active' : '' }}" data-menu-id="{{ $item->id }}">
-                            <a href="{{ $menuList->url_path }}" class="menu-header">
-                                <i data-lucide="{{ $icon }}" class="{{ $icon }}" style="width: 22px; height: 22px;"></i>
-                                <span class="menu-text">{{ $item->menuList->lang($item->menuList->id) }}</span>
-                                @if($menuCount > 0)
-                                    <span class="badge-count menu-count-{{ $item->id }}">{{ $menuCount }}</span>
-                                @endif
-                            </a>
-                        </div>
+                <div class="submenu">
+                    <!-- Regular Children -->
+                    @if($hasChildren)
+                    @foreach($item->child as $child)
+                    @php
+                    $childCount = method_exists($child, 'menuCount') ? $child->menuCount($child->id) : 0;
+                    $childIsActive = str_contains(url()->current(), $child->url_path);
+                    @endphp
+                    <div class="submenu-item">
+                        <a href="{{ $child->menuList->url_path }}" class="{{ $childIsActive ? 'active-link' : '' }}">
+                            <i data-lucide="{{ $child->menuList->iconClass ? $child->menuList->iconClass->name : 'circle' }}"
+                                class="{{ $child->menuList->iconClass ? $child->menuList->iconClass->name : 'circle' }}"
+                                style="width: 18px; height: 18px;"></i>
+                            <span>{{ \App\Models\Admin\MenuList::lang($child->menuList->id) }}</span>
+                            @if($childCount > 0)
+                            <span class="badge-count">{{ $childCount }}</span>
+                            @endif
+                        </a>
+                    </div>
+                    @endforeach
                     @endif
-                @endif
+
+                    <!-- KOL_ORG Submenu -->
+                    @if($isKolOrg)
+                    @php
+                    $col_org = $item->getKolOrg($item->menu_id);
+                    $route = $menuList->code === 'KOL_ORG' ? 'protocol-members' : 'prt-secretary';
+                    @endphp
+                    @if($col_org && $col_org->child)
+                    @foreach($col_org->child as $item2)
+                    <div class="submenu-item tree-item">
+                        <a href="{{ route($route, $item2->doc_hash) }}"
+                            class="{{ str_contains(url()->current(), $item2->doc_hash) ? 'active-link' : '' }}">
+                            <i data-lucide="folder" style="width: 18px; height: 18px;"></i>
+                            <span>{{ $item2->lang($item2->id) }}</span>
+                            @php
+                            $itemCount = $route == 'protocol-members'
+                            ? $item2->menuCountMem($item2->id)
+                            : $item2->menuCount($item2->id);
+                            @endphp
+                            @if($itemCount > 0)
+                            <span class="badge-count">{{ $itemCount }}</span>
+                            @endif
+                        </a>
+
+                        <!-- Nested Children -->
+                        @if(count($item2->child) > 0)
+                        <div class="nested-submenu">
+                            @include('layouts.sidebarChild', ['childs' => $item2->child, 'route' => $route])
+                        </div>
+                        @endif
+                    </div>
+                    @endforeach
+                    @endif
+                    @endif
+
+                    <!-- PRT_DOCS Submenu -->
+                    @if($isPrtDocs)
+                    @php($prt_docs = $item->getPrtDocs($item->menu_id))
+                    @if($prt_docs && $prt_docs->child)
+                    @foreach($prt_docs->child as $item3)
+                    <div class="submenu-item tree-item">
+                        <a href="{{ route('prt-secretary', $item3->doc_hash) }}"
+                            class="{{ str_contains(url()->current(), $item3->doc_hash) ? 'active-link' : '' }}">
+                            <i data-lucide="file-text" style="width: 18px; height: 18px;"></i>
+                            <span>{{ $item3->lang($item3->id) }}</span>
+                        </a>
+
+                        @if(count($item3->child) > 0)
+                        <div class="nested-submenu">
+                            @include('layouts.sidebarChildPrtDocs', ['childs' => $item3->child, 'route' =>
+                            'prt-secretary'])
+                        </div>
+                        @endif
+                    </div>
+                    @endforeach
+                    @endif
+                    @endif
+                </div>
+            </div>
+
+            @else
+            <!-- Simple Menu Item (No Children) -->
+            @if($menuList)
+            <div class="menu-item {{ $isActive ? 'active' : '' }}" data-menu-id="{{ $item->id }}">
+                <a href="{{ $menuList->url_path }}" class="menu-header">
+                    <i data-lucide="{{ $icon }}" class="{{ $icon }}" style="width: 22px; height: 22px;"></i>
+                    <span class="menu-text">{{ $item->menuList->lang($item->menuList->id) }}</span>
+                    @if($menuCount > 0)
+                    <span class="badge-count menu-count-{{ $item->id }}">{{ $menuCount }}</span>
+                    @endif
+                </a>
+            </div>
+            @endif
+            @endif
             @endforeach
 
         </div>
@@ -167,13 +170,16 @@
         <div class="logout">
             <div class="menu-item">
                 <a href="{{ route('logout') }}"
-                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-                   class="menu-header">
+                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                    class="menu-header">
                     <i data-lucide="log-out" style="width: 22px; height: 22px;"></i>
                     <span class="menu-text">{{ __('field.logout') }}</span>
                 </a>
             </div>
         </div>
+
+     
+        
 
         <!-- Theme Toggle Tabs -->
         <div class="theme-tabs">
@@ -192,121 +198,126 @@
 </form>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        lucide.createIcons();
+document.addEventListener('DOMContentLoaded', function() {
+    lucide.createIcons();
 
-        // Dropdown toggle
-        document.querySelectorAll('.menu-header').forEach(header => {
-            header.addEventListener('click', function(e) {
-                // Don't toggle if it's a link
-                if (this.tagName === 'A') return;
+    // Dropdown toggle
+    document.querySelectorAll('.menu-header').forEach(header => {
+        header.addEventListener('click', function(e) {
+            // Don't toggle if it's a link
+            if (this.tagName === 'A') return;
 
-                e.preventDefault();
-                const menuItem = this.parentElement;
+            e.preventDefault();
+            const menuItem = this.parentElement;
 
-                if (this.querySelector('.chevron')) {
-                    // Close other open menus
-                    document.querySelectorAll('.menu-item.open').forEach(item => {
-                        if (item !== menuItem) {
-                            item.classList.remove('open');
-                        }
-                    });
-
-                    menuItem.classList.toggle('open');
-                }
-
-                // Set active
-                document.querySelectorAll('.menu-item').forEach(item => {
-                    if (!item.classList.contains('open')) {
-                        item.classList.remove('active');
+            if (this.querySelector('.chevron')) {
+                // Close other open menus
+                document.querySelectorAll('.menu-item.open').forEach(item => {
+                    if (item !== menuItem) {
+                        item.classList.remove('open');
                     }
                 });
-                menuItem.classList.add('active');
-            });
-        });
 
-        // Theme toggle
-        const sidebar = document.getElementById('sidebar');
-        const themeTabs = document.querySelectorAll('.theme-tab');
+                menuItem.classList.toggle('open');
+            }
 
-        themeTabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                themeTabs.forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-
-                const theme = this.getAttribute('data-theme');
-                if (theme === 'dark') {
-                    sidebar.classList.add('dark');
-                    localStorage.setItem('sidebar-theme', 'dark');
-                } else {
-                    sidebar.classList.remove('dark');
-                    localStorage.setItem('sidebar-theme', 'light');
+            // Set active
+            document.querySelectorAll('.menu-item').forEach(item => {
+                if (!item.classList.contains('open')) {
+                    item.classList.remove('active');
                 }
             });
+            menuItem.classList.add('active');
         });
+    });
 
-        // Load saved theme
-        const savedTheme = localStorage.getItem('sidebar-theme');
-        if (savedTheme === 'dark') {
-            sidebar.classList.add('dark');
-            themeTabs.forEach(tab => {
-                if (tab.getAttribute('data-theme') === 'dark') {
-                    tab.classList.add('active');
-                } else {
-                    tab.classList.remove('active');
-                }
-            });
-        }
+    // Theme toggle
+    const sidebar = document.getElementById('sidebar');
+    const themeTabs = document.querySelectorAll('.theme-tab');
 
-        // Auto-open active menu
-        document.querySelectorAll('.menu-item.active').forEach(item => {
-            if (item.querySelector('.submenu')) {
-                item.classList.add('open');
+    themeTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            themeTabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+
+            const theme = this.getAttribute('data-theme');
+            if (theme === 'dark') {
+                sidebar.classList.add('dark');
+                localStorage.setItem('sidebar-theme', 'dark');
+            } else {
+                sidebar.classList.remove('dark');
+                localStorage.setItem('sidebar-theme', 'light');
             }
         });
+    });
 
-        // Update menu counts periodically
-        function updateMenuCounts() {
-            document.querySelectorAll('.menu-item[data-menu-id]').forEach(menuItem => {
-                const menuId = menuItem.getAttribute('data-menu-id');
+    // Load saved theme
+    const savedTheme = localStorage.getItem('sidebar-theme');
+    if (savedTheme === 'dark') {
+        sidebar.classList.add('dark');
+        themeTabs.forEach(tab => {
+            if (tab.getAttribute('data-theme') === 'dark') {
+                tab.classList.add('active');
+            } else {
+                tab.classList.remove('active');
+            }
+        });
+    }
 
-                fetch('/get-menu-count', {
+    // Auto-open active menu
+    document.querySelectorAll('.menu-item.active').forEach(item => {
+        if (item.querySelector('.submenu')) {
+            item.classList.add('open');
+        }
+    });
+
+    // Update menu counts periodically
+    function updateMenuCounts() {
+        document.querySelectorAll('.menu-item[data-menu-id]').forEach(menuItem => {
+            const menuId = menuItem.getAttribute('data-menu-id');
+
+            fetch('/get-menu-count', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     },
-                    body: JSON.stringify({ id: menuId })
+                    body: JSON.stringify({
+                        id: menuId
+                    })
                 })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success === 200) {
-                            const badge = menuItem.querySelector('.menu-count-' + menuId);
-                            if (badge) {
-                                badge.textContent = data.count;
-                                if (data.count === 0) {
-                                    badge.style.display = 'none';
-                                } else {
-                                    badge.style.display = 'inline-block';
-                                }
-                            } else if (data.count > 0) {
-                                const countContainer = menuItem.querySelector('.menu-text');
-                                if (countContainer) {
-                                    const newBadge = document.createElement('span');
-                                    newBadge.className = 'badge-count menu-count-' + menuId;
-                                    newBadge.textContent = data.count;
-                                    countContainer.parentNode.insertBefore(newBadge, countContainer.nextSibling);
-                                }
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success === 200) {
+                        const badge = menuItem.querySelector('.menu-count-' + menuId);
+                        if (badge) {
+                            badge.textContent = data.count;
+                            if (data.count === 0) {
+                                badge.style.display = 'none';
+                            } else {
+                                badge.style.display = 'inline-block';
+                            }
+                        } else if (data.count > 0) {
+                            const countContainer = menuItem.querySelector('.menu-text');
+                            if (countContainer) {
+                                const newBadge = document.createElement('span');
+                                newBadge.className = 'badge-count menu-count-' + menuId;
+                                newBadge.textContent = data.count;
+                                countContainer.parentNode.insertBefore(newBadge, countContainer
+                                    .nextSibling);
                             }
                         }
-                    })
-                    .catch(error => console.error('Error updating menu count:', error));
-            });
-        }
+                    }
+                })
+                .catch(error => console.error('Error updating menu count:', error));
+        });
+    }
 
-        // Update counts every 30 seconds
-        setInterval(updateMenuCounts, 30000);
-    });
+    // Update counts every 30 seconds
+    setInterval(updateMenuCounts, 30000);
+});
 </script>
+
+
 
 
