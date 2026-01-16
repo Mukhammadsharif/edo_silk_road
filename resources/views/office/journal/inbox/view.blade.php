@@ -1,7 +1,10 @@
 @extends('layouts.app')
-<link rel="stylesheet" href="{{ asset('css/templates/office/journal/inbox/view.css') }}">
+
+<link rel="stylesheet" href="{{ asset('css/templates/universal-document-view.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/office/journal/work/templates/header.css') }}">
+
 @section('content')
-    <div class="document-view-page-modern">
+    <div class="work-view-page-modern">
         <div class="page-header-modern">
             <div class="header-content">
                 <div class="header-left">
@@ -43,14 +46,14 @@
 
             <!-- Document Content -->
             <div class="document-content-section">
-                <div class="document-card-modern" id="printPage">
-                    <div class="document-card-header">
+                <div class="work-doc-page" id="printPage">
+                    <div class="work-doc-subpage">
                         <div class="header-title">
                             <i data-lucide="file-text"></i>
                             <h3>{{ __('field.doc_text') }}</h3>
                         </div>
                     </div>
-                    <div class="document-card-body">
+                    <div class="printPage">
                         @forelse($documentFiles as $key => $file)
                             @switch(strtolower($file->file_ext))
                                 @case('jpg')

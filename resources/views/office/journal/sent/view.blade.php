@@ -291,12 +291,12 @@
 
                     <div class="actions-body-modern-print">
                         <button type="button" onclick="printContent()" class="btn-modern btn-primary">
-                            <i data-lucide="printer" class="icon"></i>
+                            <i data-lucide="printer" class="icon text-white"></i>
                             <span>{{ __('action.print') }}</span>
                         </button>
 
                         <button type="button" onclick="downloadAsPDF()" class="btn-modern btn-primary">
-                            <i data-lucide="download" class="icon"></i>
+                            <i data-lucide="download" class="icon text-white"></i>
                             <span>{{ __('action.download') }}</span>
                         </button>
                         <input id="downloadName" value="{{ $journal->journal->lang($journal->journal->lang_id)??'-' }} - {{ $journal->fromUser->personal->shortName()??'' }}" hidden/>
@@ -306,13 +306,13 @@
                         @if(in_array($journal->status, [1, 2, 3]))
                             <button type="button" class="btn-modern btn-danger deleteItem"
                                     data-id="{{$document->id}}">
-                                <i data-lucide="trash-2" class="icon"></i>
+                                <i data-lucide="trash-2" class="icon text-white"></i>
                                 <span>{{ __('action.delete') }}</span>
                             </button>
 
                             <a href="{{ route('office.doc.edit', ['type' => $type, 'j_id' => $journal->id, 'hash' => $document->doc_hash] ) }}"
                                class="btn-modern btn-warning">
-                                <i data-lucide="edit" class="icon"></i>
+                                <i data-lucide="edit" class="icon text-white"></i>
                                 <span>{{ __('action.edit') }}</span>
                             </a>
                         @endif
@@ -320,14 +320,14 @@
                         @if($agreement_users && $agreement_users->count())
                             @if($journal->status === (int)1)
                                 <button type="button" class="btn-modern btn-success openConfirmForm">
-                                    <i data-lucide="send" class="icon"></i>
+                                    <i data-lucide="send" class="icon text-white"></i>
                                     <span>{{ __('action.send_to_ag') }}</span>
                                 </button>
                             @endif
                         @else
                             @if($journal->status === (int)1)
                                 <button type="button" class="btn-modern btn-success openConfirmForm">
-                                    <i data-lucide="send" class="icon"></i>
+                                    <i data-lucide="send" class="icon text-white"></i>
                                     <span>{{ __('action.send_for_signature') }}</span>
                                 </button>
                             @endif

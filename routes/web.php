@@ -70,7 +70,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('get-menu-count', [HomeController::class, 'getMenuCount'])->name('get-menu-count');
 
     Route::prefix('profile')->group(function () {
-        Route::get('my', [ProfileController::class, 'profile']);
+        Route::get('my', [ProfileController::class, 'profile'])->name('profile.my');
         Route::post('pass-update', [ProfileController::class, 'passUpdate'])->name('my.pass-update');
         Route::post('personal-update', [ProfileController::class, 'personalUpdate'])->name('my.personal-update');
 

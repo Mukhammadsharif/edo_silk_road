@@ -55,62 +55,61 @@
             <!-- Menu Item with Children or Special Types -->
             @if($hasChildren || $isKolOrg || $isPrtDocs)
 
-            <div class="menu-item {{ $isActive ? 'active' : '' }}" data-menu-id="{{ $item->id }}">
-                <div class="menu-header">
-                    <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
-                        <i data-lucide="{{ $icon }}" class="{{ $icon }}" style="width: 22px; height: 22px;"></i>
-                        <span class="menu-text">{{ $menuList->lang($menuList->id) }}</span>
-                        @if($menuCount > 0)
-                        <span class="badge-count menu-count-{{ $item->id }}">{{ $menuCount }}</span>
-                        @endif
-                    </div>
-                    <i data-lucide="chevron-right" class="chevron"></i>
-                </div>
+                    <div class="menu-item {{ $isActive ? 'active' : '' }}" data-menu-id="{{ $item->id }}">
+                        <div class="menu-header">
+                            <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
+                                <i data-lucide="{{ $icon }}" class="{{ $icon }}" style="width: 22px; height: 22px;"></i>
+                                <span class="menu-text">{{ $menuList->lang($menuList->id) }}</span>
+                                @if($menuCount > 0)
+                                    <span class="badge-count menu-count-{{ $item->id }}">{{ $menuCount }}</span>
+                                @endif
+                            </div>
+                            <i data-lucide="chevron-right" class="chevron"></i>
+                        </div>
 
-                <div class="submenu">
-                    <!-- Regular Children -->
-                    @if($hasChildren)
-                    @foreach($item->child as $child)
-                    @php
-                    $childCount = method_exists($child, 'menuCount') ? $child->menuCount($child->id) : 0;
-                    $childIsActive = str_contains(url()->current(), $child->url_path);
-                    @endphp
-                    <div class="submenu-item">
-                        <a href="{{ $child->menuList->url_path }}" class="{{ $childIsActive ? 'active-link' : '' }}">
-                            <i data-lucide="{{ $child->menuList->iconClass ? $child->menuList->iconClass->name : 'circle' }}"
-                                class="{{ $child->menuList->iconClass ? $child->menuList->iconClass->name : 'circle' }}"
-                                style="width: 18px; height: 18px;"></i>
-                            <span>{{ \App\Models\Admin\MenuList::lang($child->menuList->id) }}</span>
-                            @if($childCount > 0)
-                            <span class="badge-count">{{ $childCount }}</span>
+                        <div class="submenu">
+                            <!-- Regular Children -->
+                            @if($hasChildren)
+                                @foreach($item->child as $child)
+                                    @php
+                                        $childCount = method_exists($child, 'menuCount') ? $child->menuCount($child->id) : 0;
+                                        $childIsActive = str_contains(url()->current(), $child->url_path);
+                                    @endphp
+                                    <div class="submenu-item">
+                                        <a href="{{ $child->menuList->url_path }}"
+                                           class="{{ $childIsActive ? 'active-link' : '' }}">
+                                            <i data-lucide="{{ $child->menuList->iconClass ? $child->menuList->iconClass->name : 'circle' }}" class="{{ $child->menuList->iconClass ? $child->menuList->iconClass->name : 'circle' }}" style="width: 18px; height: 18px;"></i>
+                                            <span>{{ \App\Models\Admin\MenuList::lang($child->menuList->id) }}</span>
+                                            @if($childCount > 0)
+                                                <span class="badge-count">{{ $childCount }}</span>
+                                            @endif
+                                        </a>
+                                    </div>
+                                @endforeach
                             @endif
-                        </a>
-                    </div>
-                    @endforeach
-                    @endif
 
-                    <!-- KOL_ORG Submenu -->
-                    @if($isKolOrg)
-                    @php
-                    $col_org = $item->getKolOrg($item->menu_id);
-                    $route = $menuList->code === 'KOL_ORG' ? 'protocol-members' : 'prt-secretary';
-                    @endphp
-                    @if($col_org && $col_org->child)
-                    @foreach($col_org->child as $item2)
-                    <div class="submenu-item tree-item">
-                        <a href="{{ route($route, $item2->doc_hash) }}"
-                            class="{{ str_contains(url()->current(), $item2->doc_hash) ? 'active-link' : '' }}">
-                            <i data-lucide="folder" style="width: 18px; height: 18px;"></i>
-                            <span>{{ $item2->lang($item2->id) }}</span>
-                            @php
-                            $itemCount = $route == 'protocol-members'
-                            ? $item2->menuCountMem($item2->id)
-                            : $item2->menuCount($item2->id);
-                            @endphp
-                            @if($itemCount > 0)
-                            <span class="badge-count">{{ $itemCount }}</span>
-                            @endif
-                        </a>
+                            <!-- KOL_ORG Submenu -->
+                            @if($isKolOrg)
+                                @php
+                                    $col_org = $item->getKolOrg($item->menu_id);
+                                    $route = $menuList->code === 'KOL_ORG' ? 'protocol-members' : 'prt-secretary';
+                                @endphp
+                                @if($col_org && $col_org->child)
+                                    @foreach($col_org->child as $item2)
+                                        <div class="submenu-item tree-item">
+                                            <a href="{{ route($route, $item2->doc_hash) }}"
+                                               class="{{ str_contains(url()->current(), $item2->doc_hash) ? 'active-link' : '' }}">
+                                                <i data-lucide="folder" style="width: 18px; height: 18px;"></i>
+                                                <span>{{ $item2->lang($item2->id) }}</span>
+                                                @php
+                                                    $itemCount = $route == 'protocol-members'
+                                                        ? $item2->menuCountMem($item2->id)
+                                                        : $item2->menuCount($item2->id);
+                                                @endphp
+                                                @if($itemCount > 0)
+                                                    <span class="badge-count">{{ $itemCount }}</span>
+                                                @endif
+                                            </a>
 
                         <!-- Nested Children -->
                         @if(count($item2->child) > 0)
@@ -148,20 +147,20 @@
                 </div>
             </div>
 
-            @else
-            <!-- Simple Menu Item (No Children) -->
-            @if($menuList)
-            <div class="menu-item {{ $isActive ? 'active' : '' }}" data-menu-id="{{ $item->id }}">
-                <a href="{{ $menuList->url_path }}" class="menu-header">
-                    <i data-lucide="{{ $icon }}" class="{{ $icon }}" style="width: 22px; height: 22px;"></i>
-                    <span class="menu-text">{{ $item->menuList->lang($item->menuList->id) }}</span>
-                    @if($menuCount > 0)
-                    <span class="badge-count menu-count-{{ $item->id }}">{{ $menuCount }}</span>
+                @else
+                    <!-- Simple Menu Item (No Children) -->
+                    @if($menuList)
+                        <div class="menu-item {{ $isActive ? 'active' : '' }}" data-menu-id="{{ $item->id }}">
+                            <a href="{{ $menuList->url_path }}" class="menu-header">
+                                <i data-lucide="{{ $icon }}" class="{{ $icon }}" style="width: 22px; height: 22px;"></i>
+                                <span class="menu-text">{{ $item->menuList->lang($item->menuList->id) }}</span>
+                                @if($menuCount > 0)
+                                    <span class="badge-count menu-count-{{ $item->id }}">{{ $menuCount }}</span>
+                                @endif
+                            </a>
+                        </div>
                     @endif
-                </a>
-            </div>
-            @endif
-            @endif
+                @endif
             @endforeach
 
         </div>

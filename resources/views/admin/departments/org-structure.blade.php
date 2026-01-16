@@ -1,72 +1,115 @@
 @extends('layouts.app')
 
 @section('content')
-    <div style="height: 80vh; display: flex;">
-        <div id="myDiagramDiv" style="flex: 1; height: 100%;"></div>
-        <div id="inspector" style="width: 200px; padding: 10px;"></div>
+    <div style="padding: 1.5rem; background: #f8fafc; min-height: 100vh;">
+
+        <!-- Simple Header -->
+        <div style="margin-bottom: 1.5rem;">
+            <h1 style="margin: 0 0 0.5rem 0; font-size: 24px; font-weight: 700; color: #1e293b;">Организационная структура</h1>
+            <p style="margin: 0; font-size: 14px; color: #64748b;">Интерактивная схема департаментов и сотрудников</p>
+        </div>
+
+        <!-- Main Card -->
+        <div style="background: white; border-radius: 16px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); overflow: hidden;">
+
+            <!-- Card Header -->
+            <div style="padding: 1.5rem; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-bottom: 2px solid #e2e8f0;">
+                <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 16px; font-weight: 600; color: #1e293b;">
+                    <span style="color: #794DFD;">●</span>
+                    Структура компании
+                </div>
+            </div>
+
+            <!-- Diagram and Inspector Layout -->
+            <div style="display: flex; height: calc(100vh - 250px);">
+                <!-- Main Diagram Area -->
+                <div id="myDiagramDiv" style="flex: 1; background: #f8fafc;"></div>
+
+                <!-- Inspector Sidebar -->
+                <div id="inspector" style="width: 300px; background: white; border-left: 2px solid #e2e8f0; overflow-y: auto; padding: 1.5rem;"></div>
+            </div>
+
+        </div>
     </div>
 
     <style>
-        body { font-family: Arial, sans-serif; }
+        /* Inspector Styles */
+        .inspector-empty {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #94a3b8;
+        }
+
+        .inspector-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0 0 1.5rem 0;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #794DFD;
+        }
+
+        .user-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .user-item {
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            background: #f8fafc;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .user-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(121, 77, 253, 0.15);
+            border-color: #794DFD;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-position {
+            font-size: 13px;
+            color: #64748b;
+            font-style: italic;
+        }
+
+        .no-users {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: #94a3b8;
+            font-size: 14px;
+        }
     </style>
 
     <script src="{{ asset('/js/go.js') }}"></script>
     <script src="{{ asset('/js/DataInspector.js') }}"></script>
 
-
     <script>
         const light = {
             colors: {
-                background: '#fff',
-                text: '#111827',
-                textHighlight: '#11a8cd',
-                subtext: '#6b7280',
-                badge: '#f0fdf4',
-                badgeBorder: '#16a34a33',
-                badgeText: '#15803d',
-                divider: '#6b7280',
-                shadow: '#9ca3af',
-                tooltip: '#1f2937',
+                background: '#f8fafc',
+                text: '#1e293b',
+                subtext: '#64748b',
                 levels: [
                     '#AC193D', '#2672EC', '#8C0095', '#5133AB',
                     '#008299', '#D24726', '#008A00', '#094AB2'
-                ],
-                dragOver: '#f0f9ff',
-                link: '#9ca3af',
-                div: '#f3f4f6'
-            },
-            fonts: {
-                title: '600 1.2rem InterVariable, sans-serif',
-                name: '600 1rem InterVariable, sans-serif',
-                normal: '0.875rem InterVariable, sans-serif',
-                badge: '500 0.75rem InterVariable, sans-serif',
-                link: '600 0.875rem InterVariable, sans-serif',
-                italic: 'italic 400 0.875rem InterVariable, sans-serif',
-            }
-        };
-
-        const dark = {
-            colors: {
-                background: '#111827',
-                text: '#fff',
-                subtext: '#d1d5db',
-                badge: '#22c55e19',
-                badgeBorder: '#22c55e21',
-                badgeText: '#4ade80',
-                shadow: '#111827',
-                dragOver: '#082f49',
-                link: '#6b7280',
-                div: '#1f2937',
-                levels: [
-                    '#ff4d4f', '#4da8ff', '#cc33ff', '#7b68ee',
-                    '#00b7eb', '#ff7f50', '#32cd32', '#4682b4'
                 ]
             },
             fonts: {
-                name: '500 0.875rem InterVariable, sans-serif',
-                normal: '0.875rem InterVariable, sans-serif',
-                badge: '500 0.75rem InterVariable, sans-serif',
-                link: '600 0.875rem InterVariable, sans-serif'
+                title: '600 1.1rem Arial, sans-serif',
+                name: '600 0.95rem Arial, sans-serif',
+                normal: '0.875rem Arial, sans-serif',
+                italic: 'italic 400 0.85rem Arial, sans-serif'
             }
         };
 
@@ -76,106 +119,86 @@
             myDiagram = $(go.Diagram, "myDiagramDiv", {
                 initialAutoScale: go.Diagram.Uniform,
                 "undoManager.isEnabled": true,
-                layout: $(go.TreeLayout, { angle: 90, nodeSpacing: 10, layerSpacing: 30 })
+                layout: $(go.TreeLayout, { angle: 90, nodeSpacing: 10, layerSpacing: 40 })
             });
 
-            // Attach ThemeManager
-            myDiagram.themeManager = new go.ThemeManager({
-                initialTheme: "light",
-                themes: {
-                    light: {
-                        colors: { background: "white" }
-                    },
-                    dark: {
-                        colors: { background: "black" }
-                    }
-                }
-            });
-
-            // Node template with click event
+            // Node template
             myDiagram.nodeTemplate = $(go.Node, "Auto",
                 { deletable: false, click: showUsersInSidebar },
-                new go.Binding("background", "", function (node) {
-                    const theme = node.diagram.themeManager.currentTheme;
-                    return node.diagram.themeManager.themes[theme].colors.background;
-                }).ofObject(),
-                $(go.Shape, "Rectangle",
-                    { stroke: null },
+                $(go.Shape, "RoundedRectangle",
+                    {
+                        stroke: null,
+                        parameter1: 10
+                    },
                     new go.Binding("fill", "", function (node) {
-                        const theme = node.diagram.themeManager.currentTheme;
-                        const levels = node.diagram.themeManager.themes[theme].colors.levels || ['#0e94df'];
                         const level = node.part.findTreeLevel();
-                        return levels[level % levels.length];
+                        return light.colors.levels[level % light.colors.levels.length];
                     }).ofObject()
                 ),
                 $(go.Panel, "Table",
-                    { padding: 5 },
+                    { padding: 12 },
                     $(go.RowColumnDefinition, { column: 1}),
+
+                    // Department
                     $(go.TextBlock,
                         {
                             row: 0,
                             column: 1,
                             textAlign: "center",
                             alignment: go.Spot.Center,
-                            margin: 5,
+                            margin: 8,
                             wrap: go.TextBlock.WrapDesiredSize,
                             isMultiline: false
                         },
-                        new go.Binding("font", "", function (node) {
+                        new go.Binding("font", "", function () {
                             return light.fonts.title;
                         }).ofObject(),
-                        new go.Binding("stroke", "", function (node) {
-                            return light.colors.background;
+                        new go.Binding("stroke", "", function () {
+                            return '#ffffff';
                         }).ofObject(),
                         new go.Binding("text", "dept")
                     ),
+
+                    // Picture
                     $(go.Picture,
-                        { row: 1, rowSpan: 2, column: 0, width: 45, height: 45, margin: 4 },
+                        { row: 1, rowSpan: 2, column: 0, width: 50, height: 50, margin: 4 },
                         new go.Binding("source", "pic")
                     ),
+
+                    // Name
                     $(go.TextBlock,
                         { row: 1, column: 2, margin: 4 },
-                        new go.Binding("font", "", function (node) {
+                        new go.Binding("font", "", function () {
                             return light.fonts.name;
                         }).ofObject(),
-                        new go.Binding("stroke", "", function (node) {
-                            return light.colors.background;
+                        new go.Binding("stroke", "", function () {
+                            return '#ffffff';
                         }).ofObject(),
                         new go.Binding("text", "name")
                     ),
+
+                    // Title
                     $(go.TextBlock,
                         { row: 2, column: 2 },
-                        new go.Binding("font", "", function (node) {
+                        new go.Binding("font", "", function () {
                             return light.fonts.italic;
                         }).ofObject(),
-                        new go.Binding("stroke", "", function (node) {
-                            return light.colors.background;
+                        new go.Binding("stroke", "", function () {
+                            return '#ffffff';
                         }).ofObject(),
                         new go.Binding("text", "title", t => t && t.trim() !== "" ? "(" + t + ")" : "")
                     )
                 )
             );
 
-            // Context menu (unchanged)
-            myDiagram.contextMenu = $(go.Adornment, "Vertical",
-                new go.Binding("background", "", function (adorn) {
-                    const theme = adorn.diagram.themeManager.currentTheme;
-                    return adorn.diagram.themeManager.themes[theme].colors.background;
-                }).ofObject(),
+            // Link template
+            myDiagram.linkTemplate = $(go.Link,
+                { routing: go.Link.Orthogonal, corner: 5 },
+                $(go.Shape, { strokeWidth: 2, stroke: "#cbd5e1" })
             );
 
-            // Set diagram background initially
-            myDiagram.div.style.backgroundColor = myDiagram.themeManager.findValue("background");
-
-            // React when theme changes
-            myDiagram.themeManager.themeChanged = function () {
-                const themeColors = light.colors;
-                myDiagram.div.style.backgroundColor = themeColors.background;
-
-                const inspectorEl = document.getElementById("inspector");
-                inspectorEl.style.backgroundColor = themeColors.background;
-                inspectorEl.style.color = themeColors.text;
-            };
+            // Set background
+            myDiagram.div.style.backgroundColor = light.colors.background;
 
             // Load data
             fetch("/org-structure-data")
@@ -185,67 +208,67 @@
                     myDiagram.commandHandler.zoomToFit();
                 });
 
-            // Clear sidebar when clicking on diagram background
+            // Clear sidebar on background click
             myDiagram.addDiagramListener("BackgroundSingleClicked", function (e) {
                 updateSidebar(null);
             });
         }
 
-        // Function to handle node click and show users in sidebar
         function showUsersInSidebar(e, node) {
             updateSidebar(node.data);
         }
 
-        // Function to update the sidebar content
         function updateSidebar(nodeData) {
             const inspector = document.getElementById("inspector");
-            inspector.innerHTML = ''; // Clear previous content
+            inspector.innerHTML = '';
 
             if (!nodeData) {
-                const noSelection = document.createElement('p');
-                noSelection.textContent = 'Select a department to view users.';
-                noSelection.style.padding = '10px';
-                noSelection.style.font = light.fonts.normal;
-                noSelection.style.color = light.colors.subtext;
-                inspector.appendChild(noSelection);
+                inspector.innerHTML = '<div class="inspector-empty">Выберите департамент для просмотра сотрудников</div>';
                 return;
             }
 
-            // Create a title for the department
+            // Title
             const title = document.createElement('h3');
-            title.textContent = nodeData.dept || 'Department';
-            title.style.margin = '0 0 10px 0';
-            title.style.font = light.fonts.title;
-            title.style.color = light.colors.text;
+            title.className = 'inspector-title';
+            title.textContent = nodeData.dept || 'Департамент';
             inspector.appendChild(title);
 
-            // Use usersHtml if available, otherwise show no users message
+            // Users
             const usersHtml = nodeData.usersHtml || '';
-            if (!usersHtml) {
-                const noUsers = document.createElement('p');
-                noUsers.textContent = 'No users in this department.';
-                noUsers.style.font = light.fonts.normal;
-                noUsers.style.color = light.colors.subtext;
-                inspector.appendChild(noUsers);
+
+            if (!usersHtml || usersHtml.trim() === '') {
+                inspector.innerHTML += '<div class="no-users">В департаменте нет сотрудников</div>';
                 return;
             }
 
-            // Create a container for the users HTML
-            const ul = document.createElement('div');
-            ul.style.listStyle = 'none';
-            ul.style.padding = '0';
-            ul.style.margin = '0';
-            ul.innerHTML = usersHtml; // Inject the pre-formatted HTML
+            // Create temp container to parse HTML
+            const temp = document.createElement('div');
+            temp.innerHTML = usersHtml;
 
-            // Apply theme styles to list items
-            const listItems = ul.getElementsByTagName('li');
-            for (let li of listItems) {
-                li.style.padding = '5px 0';
-                li.style.font = light.fonts.normal;
-                li.style.color = light.colors.text;
+            const usersList = document.createElement('ul');
+            usersList.className = 'user-list';
+
+            const items = temp.getElementsByTagName('li');
+            for (let li of items) {
+                const text = li.textContent || li.innerText;
+                const parts = text.split(' - ');
+
+                const item = document.createElement('li');
+                item.className = 'user-item';
+
+                if (parts.length >= 2) {
+                    item.innerHTML = `
+                        <div class="user-name">${parts[0].trim()}</div>
+                        <div class="user-position">${parts.slice(1).join(' - ').trim()}</div>
+                    `;
+                } else {
+                    item.innerHTML = `<div class="user-name">${text}</div>`;
+                }
+
+                usersList.appendChild(item);
             }
 
-            inspector.appendChild(ul);
+            inspector.appendChild(usersList);
         }
 
         window.addEventListener('DOMContentLoaded', init);

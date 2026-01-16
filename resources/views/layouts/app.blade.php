@@ -184,6 +184,10 @@
             format: "dd.mm.yyyy",
             todayHighlight: true
         });
+
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
     });
 
     // SELECT FILE
