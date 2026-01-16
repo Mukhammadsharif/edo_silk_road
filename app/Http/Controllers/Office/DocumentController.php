@@ -320,7 +320,7 @@ class DocumentController extends Controller
 
         $organizations = DocumentOrganizations::where('for_doc_type', $journal->journal->id)->get();
 
-        $departmentJournals = DepartmentJournals::where('dep_id', $authUser->dep_id)->where('status', 1)->get();
+        $departmentJournals = DepartmentJournals::where('status', 1)->get();
 
         if ($type == 'incoming') {
 

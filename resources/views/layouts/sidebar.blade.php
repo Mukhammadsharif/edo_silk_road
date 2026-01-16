@@ -57,7 +57,7 @@
                     <div class="menu-item {{ $isActive ? 'active' : '' }}" data-menu-id="{{ $item->id }}">
                         <div class="menu-header">
                             <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
-                                <i data-lucide="{{ $icon }}" class="{{ $icon }}" style="width: 22px; height: 22px;"></i>
+                                <i data-lucide="{{ $icon }}"></i>
                                 <span class="menu-text">{{ $menuList->lang($menuList->id) }}</span>
                                 @if($menuCount > 0)
                                     <span class="badge-count menu-count-{{ $item->id }}">{{ $menuCount }}</span>
@@ -77,7 +77,7 @@
                                     <div class="submenu-item">
                                         <a href="{{ $child->menuList->url_path }}"
                                            class="{{ $childIsActive ? 'active-link' : '' }}">
-                                            <i data-lucide="{{ $child->menuList->iconClass ? $child->menuList->iconClass->name : 'circle' }}" class="{{ $child->menuList->iconClass ? $child->menuList->iconClass->name : 'circle' }}" style="width: 18px; height: 18px;"></i>
+                                            <i data-lucide="{{ $child->menuList->iconClass ? $child->menuList->iconClass->name : 'circle' }}"></i>
                                             <span>{{ \App\Models\Admin\MenuList::lang($child->menuList->id) }}</span>
                                             @if($childCount > 0)
                                                 <span class="badge-count">{{ $childCount }}</span>
@@ -98,7 +98,7 @@
                                         <div class="submenu-item tree-item">
                                             <a href="{{ route($route, $item2->doc_hash) }}"
                                                class="{{ str_contains(url()->current(), $item2->doc_hash) ? 'active-link' : '' }}">
-                                                <i data-lucide="folder" style="width: 18px; height: 18px;"></i>
+                                                <i data-lucide="folder"></i>
                                                 <span>{{ $item2->lang($item2->id) }}</span>
                                                 @php
                                                     $itemCount = $route == 'protocol-members'
@@ -150,7 +150,7 @@
                     @if($menuList)
                         <div class="menu-item {{ $isActive ? 'active' : '' }}" data-menu-id="{{ $item->id }}">
                             <a href="{{ $menuList->url_path }}" class="menu-header">
-                                <i data-lucide="{{ $icon }}" class="{{ $icon }}" style="width: 22px; height: 22px;"></i>
+                                <i data-lucide="{{ $icon }}"></i>
                                 <span class="menu-text">{{ $item->menuList->lang($item->menuList->id) }}</span>
                                 @if($menuCount > 0)
                                     <span class="badge-count menu-count-{{ $item->id }}">{{ $menuCount }}</span>

@@ -30,7 +30,7 @@ class MenuListController extends Controller
         $languages = $this->languageService->getList();
 
         // Type 1-Icon, 2-Badge
-        $icons = IconClassList::where('type', 1)->where('status', 1)->get();
+        $icons = IconClassList::where('type', 2)->where('status', 1)->get();
 
         return view('admin.menus.menu-list', compact('models', 'parentMenu', 'languages', 'icons'))
             ->with('i', (request()->input('page', 1) - 1) * 25);
@@ -52,11 +52,11 @@ class MenuListController extends Controller
 
         $parentMenu = MenuList::where('parent_id', 0)->orderBy('created_at', 'DESC')->get();
 
-        $models->appends ( array ('input' => $input) );
+        $models->appends( array ('input' => $input) );
 
         $languages = $this->languageService->getList();
 
-        $icons = [];
+        $icons = IconClassList::where('type', 2)->where('status', 1)->get();;
 
         return view('admin.menus.menu-list',
             compact('models','input', 'parentMenu', 'languages', 'icons'))
@@ -95,7 +95,7 @@ class MenuListController extends Controller
 
         $languages = $this->languageService->getList();
 
-        $iconClassList = IconClassList::where('type', 1)->where('status', 1)->get();
+        $iconClassList = IconClassList::where('type', 2)->where('status', 1)->get();
 
         return response()->json([
             'model' => $model,

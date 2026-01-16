@@ -11,7 +11,7 @@
     <div class="nav-container">
         <div class="d-flex justify-content-between align-items-center">
 
-          
+
 
             <div class="container-fluid">
 
@@ -117,7 +117,7 @@
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#"><i class="ik ik-user dropdown-icon"></i> {{ __('field.profile') }}</a>
+                                <a class="dropdown-item" href="{{ route('profile.my') }}"><i class="ik ik-user dropdown-icon"></i> {{ __('field.profile') }}</a>
                                 <a class="dropdown-item" href="{{ route('logout') }}"
                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                     <i class="ik ik-power dropdown-icon"></i> {{ __('field.logout') }}
