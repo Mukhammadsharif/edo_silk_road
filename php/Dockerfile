@@ -1,5 +1,5 @@
 # Use PHP 8.3 FPM as the base image
-FROM php:8.3-fpm
+FROM php:8.4-fpm
 
 # Set working directory
 WORKDIR /var/www/edo
