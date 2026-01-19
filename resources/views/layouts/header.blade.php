@@ -391,10 +391,7 @@
     border-radius: 2px !important;
 }
 
-/* Optional hover scale for flags */
-.language-dropdown .dropdown-item:hover .flag-rounded {
-    transform: scale(1.05);
-}
+
 
     .flag-straight {
     border-radius: 2px;         /* NOT rounded-circle */
@@ -489,10 +486,7 @@
         object-fit: cover;            /* Ensures flag fills without distortion */
     }
 
-    /* Optional: slight scale on hover */
-    .language-dropdown .dropdown-item:hover .flag-rounded {
-        transform: scale(1.05);
-    }
+   
 
     /* Notification icon container */
 .notification-dropdown .nav-link {

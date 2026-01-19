@@ -259,10 +259,6 @@
     transition: all 0.3s ease;
 }
 
-.modern-table tbody tr:hover {
-    background-color: #f5f0ff;
-    transform: scale(1.001);
-}
 
 .modern-table tbody td {
     padding: 16px 12px;
