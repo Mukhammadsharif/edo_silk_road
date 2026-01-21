@@ -524,7 +524,7 @@ figure table {
 
 .avatar-upload {
     position: relative;
-    #max-width: 305px;
+    max-width: 305px;
 }
 .avatar-upload .avatar-edit {
     position: absolute;
