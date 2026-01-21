@@ -254,8 +254,10 @@
     color: white;
 }
 
-
-
+.modern-table tbody tr {
+    border-bottom: 1px solid #eee;
+    transition: all 0.3s ease;
+}
 
 
 .modern-table tbody td {

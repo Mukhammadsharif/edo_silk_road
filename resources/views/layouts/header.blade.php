@@ -9,14 +9,18 @@
 
 <header class="header-top" header-theme="light">
     <div class="nav-container">
-        <div class="d-flex justify-content-between align-items-center">e
+        <div class="d-flex justify-content-between align-items-center">
+
+
+
             <div class="container-fluid">
+
                 <div class="d-flex {{ $isOrganizationDemo ?  'justify-content-between' : 'justify-content-end'}} align-items-center flex-wrap gap-3">
                     @if($isOrganizationDemo && !$request)
-                        <div class="alert alert-box"
+                        <div class="alert bg-success text-white d-flex justify-content-between align-items-center flex-grow-1"
                              style="max-width: 500px; margin: 0 0 0 225px;">
                             <span>{{ __('field.send_request_for_joining') }}</span>
-                            <button class="btn btn-lights" id="requestButton" data-toggle="modal" data-target="#RequestModal">
+                            <button class="btn btn-light" id="requestButton" data-toggle="modal" data-target="#RequestModal">
                                 {{ __('field.leave_request') }}
                             </button>
                         </div>
@@ -108,8 +112,8 @@
                         <div class="dropdown ms-3">
                             <a class="dropdown-toggle d-flex align-items-center justify-content-center text-white"
                                href="#" id="userDropdown" role="button" data-toggle="dropdown"
-                               style="background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%); width:32px; height:32px; border-radius:50%; font-weight:bold;">
-                                A
+                               style="background: linear-gradient(to right, #ea4c89, #d6336c); width:32px; height:32px; border-radius:50%; font-weight:bold;">
+                                SK
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
@@ -387,10 +391,7 @@
     border-radius: 2px !important;
 }
 
-/* Optional hover scale for flags */
-.language-dropdown .dropdown-item:hover .flag-rounded {
-    transform: scale(1.05);
-}
+
 
     .flag-straight {
     border-radius: 2px;         /* NOT rounded-circle */
@@ -485,10 +486,7 @@
         object-fit: cover;            /* Ensures flag fills without distortion */
     }
 
-    /* Optional: slight scale on hover */
-    .language-dropdown .dropdown-item:hover .flag-rounded {
-        transform: scale(1.05);
-    }
+
 
     /* Notification icon container */
 .notification-dropdown .nav-link {
@@ -571,22 +569,7 @@
     align-items:center;
 }
 
-
-
-.alert-box{
-    background-color:#2dce89 !important;
-    color:#fff;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
+.alert{
+    opacity: 0;
 }
-
-.btn-lights{
-    background-color:#fff;
-    color:#794DFD ;
-    font-size:13px;
-    font-weight:700;
-}
-   
-
 </style>

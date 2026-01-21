@@ -136,3 +136,10 @@
         });
     </script>
 @endsection
+
+
+<style>
+    .file-edit{
+        color:#fff !important;
+    }
+</style>

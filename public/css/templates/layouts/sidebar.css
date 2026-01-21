@@ -14,7 +14,7 @@
 /* Sidebar */
 .sidebar {
     position: fixed;
-    top: 0px;
+    top: 62px;
     left: 0;
     width: var(--sidebar-width);
     height: 100vh;
@@ -280,8 +280,6 @@
     margin: 5rem 1rem 1rem 1rem;
     padding: 4px;
 }
-
-
 
 .sidebar.dark .theme-tabs {
     background-color: #00000026;
