@@ -569,4 +569,7 @@
     align-items:center;
 }
 
+.alert{
+    opacity: 0;
+}
 </style>
