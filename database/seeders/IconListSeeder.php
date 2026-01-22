@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Admin\IconClassList;
 use App\Models\Admin\StatusList;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 
 class IconListSeeder extends Seeder
@@ -19,11 +20,7 @@ class IconListSeeder extends Seeder
         $jsonFile = base_path('database/seeders/data/icon_list.json');
         $jsonData = json_decode(File::get($jsonFile), true);
         foreach ($jsonData['icon_class_lists'] as $role) {
-            IconClassList::create([
-                'name' => $role['name'],
-                'type' => $role['type'],
-                'status' => $role['status'],
-            ]);
+            DB::table('icon_class_lists')->insert($role); // id ni saqlaydi
         }
 
         StatusList::truncate();
