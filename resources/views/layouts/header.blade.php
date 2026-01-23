@@ -11,8 +11,6 @@
     <div class="nav-container">
         <div class="d-flex justify-content-between align-items-center">
 
-
-
             <div class="container-fluid">
 
                 <div class="d-flex {{ $isOrganizationDemo ?  'justify-content-between' : 'justify-content-end'}} align-items-center flex-wrap gap-3">

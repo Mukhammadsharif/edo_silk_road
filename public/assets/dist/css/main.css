@@ -1000,6 +1000,6 @@ figure table {
     .work-doc-page {
         width: 16cm !important;
         padding: 0 !important;
-        margin-left: 200px !important;
+        margin-left: 200px;
     }
 }
