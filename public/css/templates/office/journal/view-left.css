@@ -114,13 +114,9 @@
 
 .doc-number-badge {
     display: inline-block;
-    padding: 0.375rem 0.75rem;
-    background: #f1f5f9;
-    border: 1px solid #e2e8f0;
     border-radius: 6px;
     font-weight: 600;
     font-size: 13px;
-    color: #475569;
 }
 
 /* Files Section */

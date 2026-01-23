@@ -262,6 +262,8 @@
         </div>
     </div>
 
+    @include('modals.delete-document')
+
     <script src="{{ asset('/ajax/jquery.min.js') }}"></script>
 
     <script type="text/javascript">
@@ -428,7 +430,7 @@
                 $('#item_conf_id').val(file_id);
             });
 
-            $('.deleteItemConfirm').on('click', function () {
+            $('.deleteConfItem').on('click', function () {
                 let CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
                 let id = $('#item_conf_id').val();
                 let url = '/file/del/'+id;

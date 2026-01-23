@@ -76,13 +76,13 @@
                                     <input type="text" id="searchIconCreate" onkeyup="searchIconsCreate()" placeholder="Search..." class="form-control mb-10">
                                     <div class="row icon-list-wrap">
                                         <div class="form-radio">
-                                            @foreach($iconClassList->where('type', 1) as $key => $item)
+                                            @foreach($iconClassList->where('type', 2) as $key => $item)
                                                 <div class="radio radio-inline icon_div_list_create">
                                                     <label>
                                                         <input type="radio" name="icon_id" value="{{ $item->id }}">
                                                         <i class="helper"></i>
                                                         <div class="icon-list-item">
-                                                            <i class="{{ $item->name }}"></i><div class="name">{{ $item->name }}</div>
+                                                            <i data-lucide="{{ $item->name }}"></i><div class="name">{{ $item->name }}</div>
                                                         </div>
                                                     </label>
                                                 </div>
@@ -94,7 +94,7 @@
                                     <label>Class ID</label>
                                     <div class="row icon-list-wrap">
                                         <div class="form-radio">
-                                            @foreach($iconClassList->where('type', 2) as $key => $item)
+                                            @foreach($iconClassList->where('type', 3) as $key => $item)
                                                 <div class="radio radio-inline">
                                                     <label>
                                                         <input type="radio" name="class_id" value="{{ $item->id }}">

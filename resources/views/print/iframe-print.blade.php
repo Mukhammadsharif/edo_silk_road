@@ -1,7 +1,7 @@
 <script>
     function printContent() {
-        // const iframes = document.querySelectorAll('.iframe-content')
-        // const iframe_texts = document.querySelectorAll('.iframe-text')
+        // const iframes = document.querySelectorAll('.iframe-content, .document-iframe')
+        // const iframe_texts = document.querySelectorAll('.iframe-text, .file-name-badge')
         //
         // if(iframes?.length) {
         //     iframes.forEach((item) => {
@@ -23,8 +23,10 @@
     }
 
     function printFrames() {
-        const iframes = document.querySelectorAll('.iframe-content')
-        const iframe_texts = document.querySelectorAll('.iframe-text')
+        const iframes = document.querySelectorAll('.iframe-content, .document-iframe')
+        const iframe_texts = document.querySelectorAll('.iframe-text, .file-name-badge')
+        console.log(iframes)
+        console.log(iframe_texts)
 
         if(iframes?.length) {
             iframes.forEach((item) => {

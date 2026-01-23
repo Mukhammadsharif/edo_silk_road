@@ -43,7 +43,7 @@
                     <div class="form-section">
                         <div class="section-header">
                             <i data-lucide="settings"></i>
-                            <h3>Asosiy ma'lumotlar</h3>
+                            <h3>{{ __('field.document_settings') }}</h3>
                         </div>
 
                         <input value="{{ $journal->id }}" name="journal_type" id="journal_type" hidden>
@@ -67,9 +67,9 @@
                         </div>
 
                         <!-- Journal Numbers -->
-                        <div class="form-row-modern">
-                            <div class="form-group-modern" id="last_j_number"></div>
-                            <div class="form-group-modern" id="last_j_number_2"></div>
+                        <div class="form-row-modern" hidden>
+                            <div class="form-group-modern" id="last_j_number" hidden></div>
+                            <div class="form-group-modern" id="last_j_number_2" hidden></div>
                         </div>
 
                         <!-- Execution Steps Container -->

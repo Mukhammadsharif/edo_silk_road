@@ -175,7 +175,7 @@
         var now = new Date();
         vo.expired = dates.compare(now, vo.validTo) > 0;
         var itm = document.createElement("option");
-        console.log(vo);
+        // console.log(vo);
         itm.value = itmkey;
         var CN = vo.CN;
         var PINFL = ' - (PINFL: '+vo.PINFL+ ')';

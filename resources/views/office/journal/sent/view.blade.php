@@ -1,7 +1,11 @@
 @extends('layouts.app')
-<link rel="stylesheet" href="{{ asset('css/templates/office/journal/sent/view.css') }}">
+{{--<link rel="stylesheet" href="{{ asset('css/templates/office/journal/sent/view.css') }}">--}}
+<link rel="stylesheet" href="{{ asset('css/templates/universal-document-view.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/office/journal/work/templates/header.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/office/journal/view-right.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/select2.css') }}">
 @section('content')
-    <div class="outgoing-view-page-modern">
+    <div class="work-view-page-modern">
         <div class="page-header-modern">
             <div class="header-content">
                 <div class="header-left">
@@ -43,7 +47,7 @@
 
             <!-- Document Content -->
             <div class="document-content-section">
-                <div class="document-card-modern">
+                <div class="work-doc-page" id="pdf2">
                     @include('office.templates.sent-doc-body')
                 </div>
             </div>
@@ -219,7 +223,7 @@
                             <h3>{{ __('title.coordination') }}</h3>
                         </div>
 
-                        <div class="coordination-list-modern">
+                        <div class="performers-list-modern">
                             @foreach($agreement_users as $key => $item)
                                 <div class="sl-item">
                                     <div class="sl-left fw-600 f-16">{{ $item->toUser->personal->fullName()??'' }}</div>

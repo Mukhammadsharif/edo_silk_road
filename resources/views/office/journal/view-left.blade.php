@@ -176,7 +176,7 @@
                             @case('pdf')
                                 <div class="file-item-modern">
                                     <div class="file-icon">
-                                        <i data-lucide="file-image" class="icon"></i>
+                                        <i data-lucide="file-image" class="icon text-white"></i>
                                     </div>
                                     <div class="file-info">
                                         <a href="{{ route('file.pre-view',['id'=>$file->id]) }}"

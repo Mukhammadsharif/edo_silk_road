@@ -71,7 +71,7 @@
                         </div>
 
                         <!-- Organization -->
-                        <div class="form-group-modern">
+                        <div class="form-group-modern mt-3">
                             <label>
                                 <i data-lucide="building-2"></i>
                                 {{ __('document.organization') }}
@@ -182,7 +182,7 @@
                                         @foreach($documentFiles as $key => $file)
                                             <div class="file-item-card" id="file_id_{{ $file->id }}">
                                                 <div class="file-item-icon">
-                                                    <i data-lucide="file-text"></i>
+                                                    <i data-lucide="file-text" class="text-white"></i>
                                                 </div>
                                                 <div class="file-item-info">
                                                     <a href="{{ route('file.pre-view',['id'=>$file->id]) }}" target="_blank" class="file-item-name">
@@ -203,6 +203,13 @@
                                     </div>
                                 </div>
                             @endif
+
+                            <div class="form-row-modern">
+                                <div class="form-group-modern">
+                                    <label for="doc_text"><i data-lucide="file-text"></i> {{ __('field.description') }}</label>
+                                    <textarea class="form-control-modern" name="doc_text" id="doc_text" rows="10">{!! $document->doc_text??'' !!}</textarea>
+                                </div>
+                            </div>
 
                             <!-- File Upload Section -->
                             <div class="form-group-modern file-upload-section">
@@ -247,6 +254,8 @@
             </form>
         </div>
     </div>
+
+    @include('modals.delete-document')
 
     <script src="{{ asset('/ajax/jquery.min.js') }}"></script>
 
@@ -298,7 +307,7 @@
                 $('#item_conf_id').val(file_id);
             });
 
-            $('.deleteItemConfirm').on('click', function () {
+            $('.deleteConfItem').on('click', function () {
                 let CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
                 let id = $('#item_conf_id').val();
                 let url = '/file/del/'+id;

@@ -192,6 +192,13 @@
                             </div>
                         </div>
 
+                        <div class="form-row-modern">
+                            <div class="form-group-modern">
+                                <label for="doc_text"><i data-lucide="file-text"></i> {{ __('field.description') }}</label>
+                                <textarea class="form-control-modern" name="doc_text" id="doc_text" rows="10"></textarea>
+                            </div>
+                        </div>
+
                         <!-- Subscription Warning & Submit -->
                         <div class="form-actions">
                             @if(!Auth::user()->currentSubscription)

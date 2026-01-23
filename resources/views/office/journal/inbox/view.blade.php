@@ -46,36 +46,37 @@
 
             <!-- Document Content -->
             <div class="document-content-section">
-                <div class="work-doc-page" id="printPage">
+                <div class="work-doc-page">
                     <div class="work-doc-subpage">
                         <div class="header-title">
                             <i data-lucide="file-text"></i>
-                            <h3>{{ __('field.doc_text') }}</h3>
+                            <h3 style="color: #0e0c0c">{{ __('field.doc_text') }}</h3>
                         </div>
-                    </div>
-                    <div class="printPage">
-                        @forelse($documentFiles as $key => $file)
-                            @switch(strtolower($file->file_ext))
-                                @case('jpg')
-                                @case('jpeg')
-                                @case('png')
-                                @case('pdf')
-                                    <div class="document-file-viewer">
-                                        <div class="file-name-badge">
-                                            <i data-lucide="file"></i>
-                                            <span>{{ $file->file_name }}</span>
+                        <div class="printPage" id="printPage">
+                            <div class="doc-text mt-3">{!! $document->doc_text??'' !!}</div>
+                            @forelse($documentFiles as $key => $file)
+                                @switch(strtolower($file->file_ext))
+                                    @case('jpg')
+                                    @case('jpeg')
+                                    @case('png')
+                                    @case('pdf')
+                                        <div class="document-file-viewer">
+                                            <div class="file-name-badge">
+                                                <i data-lucide="file"></i>
+                                                <span>{{ $file->file_name }}</span>
+                                            </div>
+                                            <iframe src="{{ route('file.pre-view',['id'=>$file->id]) }}"
+                                                    class="document-iframe"></iframe>
                                         </div>
-                                        <iframe src="{{ route('file.pre-view',['id'=>$file->id]) }}"
-                                                class="document-iframe"></iframe>
-                                    </div>
-                                    @break
-                            @endswitch
-                        @empty
-                            <div class="empty-document-state">
-                                <i data-lucide="file-x"></i>
-                                <p>{{ __('message.no_document_files') ?? 'Файлы документа не найдены' }}</p>
-                            </div>
-                        @endforelse
+                                        @break
+                                @endswitch
+                            @empty
+                                <div class="empty-document-state">
+                                    <i data-lucide="file-x"></i>
+                                    <p>{{ __('message.no_document_files') ?? 'Файлы документа не найдены' }}</p>
+                                </div>
+                            @endforelse
+                        </div>
                     </div>
                 </div>
             </div>
@@ -99,7 +100,7 @@
 
     <script>
         // Initialize lucide icons
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
             }
