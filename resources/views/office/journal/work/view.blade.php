@@ -139,3 +139,17 @@
     </script>
 
 @endsection
+
+<style>
+    @media screen and (max-width: 1030px) {
+        .work-doc-page {
+            margin-left: 0 !important;
+        }
+    }
+
+     @media screen and (max-width: 1024px) {
+        .work-doc-page {
+            margin-left: 0 !important;
+        }
+    }
+</style>
