@@ -194,11 +194,11 @@ body {
     border-radius: 10px;
     min-height: 48px;
     box-shadow: none;
-    
+
 }
 
 .form-control-modern:focus {
-    border-color: none; 
+    border-color: none;
   }
 
 .form-control-modern:focus {

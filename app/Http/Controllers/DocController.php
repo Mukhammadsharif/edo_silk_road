@@ -51,7 +51,11 @@ class DocController extends Controller
 
         $cr_users = User::where('status', 1)->get();
 
-        $search = DocumentJournals::whereNotIn('status', [1, 4, 13]);
+        if($this->isSuperUser()) {
+            $search = DocumentJournals::whereNotIn('status', [1, 4, 13]);
+        } else {
+            $search = DocumentJournals::where('org_unit_id', $this->organizationId())->whereNotIn('status', [1, 4, 13]);
+        }
 
         $today = Carbon::now()->format('Y-m-d');
 

@@ -17,11 +17,11 @@
             <div class="tabs">
                 <div class="tab active" data-tab="password" onclick="showTab('login')">
                     <i style="width: 18px; height: 18px" data-lucide="log-in"></i>
-                    Password Login
+                    {{ __('field.login_by_password') }}
                 </div>
                 <div class="tab" data-tab="eri" onclick="showTab('eri')">
                     <i style="width: 18px; height: 18px" data-lucide="shield-check"></i>
-                    ERI Key Login
+                    {{ __('field.login_by_key') }}
                 </div>
             </div>
 
@@ -33,12 +33,12 @@
 
                         <div class="input-group">
                             <i data-lucide="user" class="icon"></i>
-                            <input type="text" name="username" placeholder="Loginni kiriting" required>
+                            <input type="text" name="username" placeholder="{{ __('field.type_login') }}" required>
                         </div>
 
                         <div class="input-group">
                             <i data-lucide="lock" class="icon"></i>
-                            <input type="password" id="password" name="password" placeholder="Parolni kiriting"
+                            <input type="password" id="password" name="password" placeholder="{{ __('field.type_password') }}"
                                 required>
                             <i data-lucide="eye" onclick="togglePassword()"
                                 style="position: absolute; right: 15px; top: 13px; cursor: pointer; color: #999;"></i>
@@ -47,16 +47,16 @@
                         <div class="remember-forgot">
                             <label class="remember-me">
                                 <input type="checkbox">
-                                Meni eslab qolish
+                                {{ __('field.remember_me') }}
                             </label>
                             <div class="forgot">
-                                <a href="#">Parolni unutdingizmi?</a>
+                                <a href="#">{{ __('field.forget_password_question') }}</a>
                             </div>
                         </div>
 
                         <button type="submit" class="button">
                             <i data-lucide="log-in"></i>
-                            Kirish
+                            {{ __('action.login') }}
                         </button>
                     </form>
                 </div>
@@ -65,17 +65,17 @@
                 <div class="tab-content" id="eri-tab">
                     <input type="hidden" name="eri" id="selectedEri" value="">
 
-                
-                
+
+
 
                     <div class="button btn-usb input-group" onclick="openUsbToken()">
                         <img src="https://esi.uz/oauth2/assets/images/icons/pfx.ico" alt="pfx" style="height: 20px">
-                        ERI ni tanlang
+                        {{ __('action.choose_key') }}
                     </div>
 
                     <button onclick="signin()" class="button" id="eriLoginBtn" disabled style="margin-top: 15px;">
                         <i data-lucide="shield-check"></i>
-                        Kirish
+                        {{ __('action.login') }}
                     </button>
                 </div>
             </div>
@@ -85,15 +85,15 @@
         <div class="eri-modal" id="eriModal">
             <div class="eri-modal-content">
                 <div class="eri-modal-header">
-                    <h5>ERI ni tanlang</h5>
+                    <h5>{{ __('action.choose_key') }}</h5>
                     <button class="eri-modal-close" onclick="closeEriModal()">×</button>
                 </div>
                 <div class="eri-modal-body" id="eriModalBody">
                     <div class="loading-spinner">
                         <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">ERI kalit tekshirilmoqda...</span>
+                            <span class="visually-hidden">{{ __('field.key_is_being_verified') }}...</span>
                         </div>
-                        <p class="mt-3">E-IMZO yuklanmoqda...</p>
+                        <p class="mt-3">{{ __('field.eimzo_is_being_loaded') }}...</p>
                     </div>
                 </div>
             </div>

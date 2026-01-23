@@ -20,7 +20,7 @@
                 <nav class="breadcrumb-modern">
                     <a href="{{ route('home') }}">
                         <i data-lucide="home"></i>
-                        <span>Bosh sahifa</span>
+                        <span>{{ __('menu.home') }}</span>
                     </a>
                     <i data-lucide="chevron-right" class="separator"></i>
                     <a href="#">{{ __('field.document') }}</a>

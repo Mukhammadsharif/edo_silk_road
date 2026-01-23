@@ -466,6 +466,7 @@ table thead tr th a {
 .border-none {
     border: none !important;
     outline: none !important;
+    box-shadow: none !important;
 }
 .icon-white {
     color: #fff !important;
