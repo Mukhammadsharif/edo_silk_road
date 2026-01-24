@@ -20,7 +20,16 @@ class IconListSeeder extends Seeder
         $jsonFile = base_path('database/seeders/data/icon_list.json');
         $jsonData = json_decode(File::get($jsonFile), true);
         foreach ($jsonData['icon_class_lists'] as $role) {
+<<<<<<< HEAD
             DB::table('icon_class_lists')->insert($role); // id ni saqlaydi
+=======
+            IconClassList::create([
+                'name' => $role['name'],
+                'type' => $role['type'],
+                'status' => $role['status'],
+            ]);
+           DB::table('icon_class_lists')->insert($role);
+>>>>>>> 1b92276 (icon-list)
         }
 
         StatusList::truncate();

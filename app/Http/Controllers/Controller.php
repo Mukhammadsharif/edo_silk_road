@@ -22,7 +22,7 @@ use App\Jobs\SendTelegramMessageJob;
 
 #[
     OA\Info(version: "1.0.0", description: "Your API Description", title: "Your API Title"),
-    OA\Server(url: 'http://localhost:8000', description: "Local server"),
+    OA\Server(url: 'http://83.69.136.85:18084', description: "Local server"),
 ]
 
 class Controller extends BaseController

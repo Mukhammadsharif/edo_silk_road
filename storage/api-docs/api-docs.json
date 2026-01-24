@@ -7,7 +7,7 @@
     },
     "servers": [
         {
-            "url": "http://localhost:8000",
+            "url": "http://83.69.136.85:18084",
             "description": "Local server"
         }
     ],
@@ -85,7 +85,7 @@
                 ],
                 "summary": "Создание или обновление компании",
                 "description": "Создает новую компанию или обновляет существующую по Bitrix ID",
-                "operationId": "a10d6a100c3de58fc4aea89d0c37892a",
+                "operationId": "8951ffe19575d40379273c717a6ef13c",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -162,7 +162,7 @@
                 ],
                 "summary": "Получение HR приказов",
                 "description": "Возвращает список HR приказов с пагинацией и статусом PDF",
-                "operationId": "6cf2c207ef5211eb66be61ffdd644155",
+                "operationId": "dac7420501e0af836c606a244aeda429",
                 "parameters": [
                     {
                         "name": "per_page",
@@ -282,7 +282,7 @@
                 ],
                 "summary": "Создание или обновление подразделений",
                 "description": "Создает или обновляет подразделения с иерархией (parentDivisionID) по Bitrix ID",
-                "operationId": "42914a267e41ab27b722de86916aaee4",
+                "operationId": "5185c46153873da371caf1434b7df0a6",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -371,7 +371,7 @@
                 ],
                 "summary": "Создание или обновление сотрудников",
                 "description": "Создает или обновляет сотрудников (трудовую историю) по Bitrix ID",
-                "operationId": "2f037f9df004f33736e421f616d236a2",
+                "operationId": "116f3763e51ff70e294033d4b086e3dd",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -430,6 +430,82 @@
                 "responses": {
                     "201": {
                         "description": "Сотрудники успешно обработаны",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "processed_count": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации"
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/main/api-1c/v1/positions/create_update_list": {
+            "put": {
+                "tags": [
+                    "Bitrix"
+                ],
+                "summary": "Создание или обновление должностей",
+                "description": "Создает или обновляет должности пользователей по Bitrix ID",
+                "operationId": "0a981307d80aed376287cbf7740633d2",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "positions"
+                                ],
+                                "properties": {
+                                    "positions": {
+                                        "type": "array",
+                                        "items": {
+                                            "required": [
+                                                "ID",
+                                                "name"
+                                            ],
+                                            "properties": {
+                                                "ID": {
+                                                    "type": "string",
+                                                    "example": "BITRIX_PS_001"
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Менеджер по персоналу"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Должности успешно обработаны",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -3961,82 +4037,6 @@
                     },
                     "401": {
                         "description": "Неавторизован"
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера"
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/main/api-1c/v1/positions/create_update_list": {
-            "put": {
-                "tags": [
-                    "Bitrix"
-                ],
-                "summary": "Создание или обновление должностей",
-                "description": "Создает или обновляет должности пользователей по Bitrix ID",
-                "operationId": "1f99c65fac74132529ad672f45b0871c",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "positions"
-                                ],
-                                "properties": {
-                                    "positions": {
-                                        "type": "array",
-                                        "items": {
-                                            "required": [
-                                                "ID",
-                                                "name"
-                                            ],
-                                            "properties": {
-                                                "ID": {
-                                                    "type": "string",
-                                                    "example": "BITRIX_PS_001"
-                                                },
-                                                "name": {
-                                                    "type": "string",
-                                                    "example": "Менеджер по персоналу"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Должности успешно обработаны",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string"
-                                        },
-                                        "processed_count": {
-                                            "type": "integer"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Ошибка валидации"
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера"
