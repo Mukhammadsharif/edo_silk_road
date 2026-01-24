@@ -44,7 +44,7 @@ class SignDocImzoController extends Controller
     ];
 
     private string $eriSrvIpLoc  = 'http://172.16.100.124:8080';
-    private string $eriSrvIpProd = 'http://192.168.200.251:8080';
+    private string $eriSrvIpProd = 'http://172.16.100.124:8080';
 
     public function signDocuments(Request $request): JsonResponse
     {
@@ -553,7 +553,8 @@ class SignDocImzoController extends Controller
 
         if (!$user) {
             $subjectName = $jsonDecodeBack['subjectCertificateInfo']['subjectName'];
-            $isOrg = !empty($subjectName['O']);
+
+            $isOrg = (bool)$subjectName['O'];
 
             if ($isOrg) {
                 $organization = OrganizationUnits::create([
@@ -638,7 +639,7 @@ class SignDocImzoController extends Controller
                 $user->assignRole([$role->id]);
             }
 
-            if ($organization) {
+            if (isset($organization)) {
                 $organization->update(['owner_user_id' => $user->id]);
             }
 
@@ -663,7 +664,7 @@ class SignDocImzoController extends Controller
 
     private function curlPost(string $path, string $postData): ?string
     {
-        $url = (in_array($_SERVER['HTTP_HOST'] ?? '', ['edo-demo.loc', '172.17.110.44', 'localhost:8000']))
+        $url = (in_array($_SERVER['HTTP_HOST'] ?? '', ['edo-demo.loc', '172.17.110.44', 'localhost:8000', 'localhost:8082']))
             ? $this->eriSrvIpLoc . $path
             : $this->eriSrvIpProd . $path;
 

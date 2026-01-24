@@ -67,7 +67,7 @@ class LoginController extends Controller
             ]);
 
             Auth::loginUsingId($user->id);
-            return redirect('/');
+            return redirect('/edo');
         }
 
         return redirect()->back()->withErrors(['password' => 'Kalit so`z mos kelmadi!'])->withInput(['username' => $login]);
@@ -87,7 +87,17 @@ class LoginController extends Controller
 
         Auth::loginUsingId($user->id);
 
-        return redirect('/');
+        return redirect('/edo');
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/edo');
     }
 
 }

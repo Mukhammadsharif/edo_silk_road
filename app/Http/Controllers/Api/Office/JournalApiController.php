@@ -10,7 +10,9 @@ use App\Models\Document\DocumentJournals;
 use App\Models\Document\DocumentReplyComments;
 use App\Models\Document\DocumentResolutions;
 use App\Models\Document\Documents;
+use App\Models\Messages\OnlyOfficeDoc;
 use App\Models\QrCodeKeys;
+use App\Services\DocumentService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -22,6 +24,12 @@ use Illuminate\Validation\ValidationException;
 
 class JournalApiController extends Controller
 {
+    protected DocumentService $documentService;
+
+    public function __construct(DocumentService $documentService)
+    {
+        $this->documentService = $documentService;
+    }
     /**
      * @OA\Get(
      *     path="/api/v1/work-documents",
@@ -56,14 +64,14 @@ class JournalApiController extends Controller
      *         in="query",
      *         description="Дата от (формат: d.m.Y)",
      *         required=false,
-     *         @OA\Schema(type="string", format="date", example="01.12.2024")
+     *         @OA\Schema(type="string", format="date")
      *     ),
      *     @OA\Parameter(
      *         name="date_till",
      *         in="query",
      *         description="Дата до (формат: d.m.Y)",
      *         required=false,
-     *         @OA\Schema(type="string", format="date", example="31.12.2025")
+     *         @OA\Schema(type="string", format="date")
      *     ),
      *     @OA\Parameter(
      *         name="page",
@@ -318,6 +326,7 @@ class JournalApiController extends Controller
      *                 type="object",
      *                 @OA\Property(property="journal", type="object"),
      *                 @OA\Property(property="document", type="object"),
+     *                 @OA\Property(property="html_doc", type="string"),
      *                 @OA\Property(property="files", type="array", @OA\Items(type="object")),
      *                 @OA\Property(property="director_document", type="object"),
      *                 @OA\Property(property="director_resolution", type="object"),
@@ -430,6 +439,8 @@ class JournalApiController extends Controller
                 ->with(['createdUser.personal'])
                 ->get();
 
+            $html_doc = $this->documentService->getHtmlDoc($journal, $document);
+
             Log::info('Work document viewed successfully', [
                 'user_id' => Auth::id(),
                 'journal_id' => $id,
@@ -442,6 +453,7 @@ class JournalApiController extends Controller
                 'data' => [
                     'journal' => $journal,
                     'document' => $document,
+                    'html_doc' => $html_doc,
                     'files' => $documentFiles,
                     'director_document' => $directorDocument,
                     'director_resolution' => $directorResolution,
@@ -521,14 +533,14 @@ class JournalApiController extends Controller
      *         in="query",
      *         description="Дата от (формат: d.m.Y)",
      *         required=false,
-     *         @OA\Schema(type="string", format="date", example="01.12.2024")
+     *         @OA\Schema(type="string", format="date")
      *     ),
      *     @OA\Parameter(
      *         name="date_till",
      *         in="query",
      *         description="Дата до (формат: d.m.Y)",
      *         required=false,
-     *         @OA\Schema(type="string", format="date", example="31.12.2025")
+     *         @OA\Schema(type="string", format="date")
      *     ),
      *     @OA\Parameter(
      *         name="page",
@@ -748,6 +760,7 @@ class JournalApiController extends Controller
      *                 type="object",
      *                 @OA\Property(property="journal", type="object"),
      *                 @OA\Property(property="document", type="object"),
+     *                 @OA\Property(property="html_doc", type="string"),
      *                 @OA\Property(property="files", type="array", @OA\Items(type="object")),
      *                 @OA\Property(property="director_document", type="object"),
      *                 @OA\Property(property="director_resolution", type="object"),
@@ -840,6 +853,8 @@ class JournalApiController extends Controller
                 ->with(['createdUser.personal'])
                 ->get();
 
+            $html_doc = $this->documentService->getHtmlDoc($journal, $document);
+
             Log::info('Inbox document viewed successfully', [
                 'user_id' => Auth::id(),
                 'journal_id' => $id,
@@ -852,6 +867,7 @@ class JournalApiController extends Controller
                 'data' => [
                     'journal' => $journal,
                     'document' => $document,
+                    'html_doc' => $html_doc,
                     'files' => $documentFiles,
                     'director_document' => $directorDocument,
                     'director_resolution' => $directorResolution,
@@ -939,14 +955,14 @@ class JournalApiController extends Controller
      *         in="query",
      *         description="Дата от (формат: d.m.Y)",
      *         required=false,
-     *         @OA\Schema(type="string", format="date", example="01.12.2024")
+     *         @OA\Schema(type="string", format="date")
      *     ),
      *     @OA\Parameter(
      *         name="date_till",
      *         in="query",
      *         description="Дата до (формат: d.m.Y)",
      *         required=false,
-     *         @OA\Schema(type="string", format="date", example="31.12.2025")
+     *         @OA\Schema(type="string", format="date")
      *     ),
      *     @OA\Parameter(
      *         name="page",
@@ -1177,6 +1193,7 @@ class JournalApiController extends Controller
      *                 type="object",
      *                 @OA\Property(property="journal", type="object"),
      *                 @OA\Property(property="document", type="object"),
+     *                 @OA\Property(property="html_doc", type="string"),
      *                 @OA\Property(property="files", type="array", @OA\Items(type="object")),
      *                 @OA\Property(property="director_document", type="object"),
      *                 @OA\Property(property="director_resolution", type="object"),
@@ -1269,6 +1286,8 @@ class JournalApiController extends Controller
                 ->with(['createdUser.personal'])
                 ->get();
 
+            $html_doc = $this->documentService->getHtmlDoc($journal, $document);
+
             Log::info('Outgoing document viewed successfully', [
                 'user_id' => Auth::id(),
                 'journal_id' => $id,
@@ -1281,6 +1300,7 @@ class JournalApiController extends Controller
                 'data' => [
                     'journal' => $journal,
                     'document' => $document,
+                    'html_doc' => $html_doc,
                     'files' => $documentFiles,
                     'director_document' => $directorDocument,
                     'director_resolution' => $directorResolution,

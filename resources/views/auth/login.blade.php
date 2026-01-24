@@ -65,7 +65,12 @@
                 <div class="tab-content" id="eri-tab">
                     <input type="hidden" name="eri" id="selectedEri" value="">
 
-
+                    <div class="input-group">
+                        <i data-lucide="key" class="icon"></i>
+                        <select class="form-select" id="eriSelect" disabled required>
+                            <option value="">Tanlanmagan</option>
+                        </select>
+                    </div>
 
 
                     <div class="button btn-usb input-group" onclick="openUsbToken()">
