@@ -2,17 +2,18 @@
 
 @section('content')
 
-<!-- ================= CURTAIN PRELOADER ================= -->
 <div class="cp-preloader" id="cp-preloader"></div>
-<!-- ===================================================== -->
 
 <body>
     <main>
-
+ <div class="logo">
+                <img src="{{ asset('images/edofy.svg') }}" style="width: 120px" alt="">
+            </div>
         <video class="auth-sidebar__video" playsinline autoplay loop muted
             src="{{ asset('images/background.mp4') }}"></video>
 
         <div class="containers">
+           
 
             <div class="tabs">
                 <div class="tab active" data-tab="password" onclick="showTab('login')">
@@ -26,7 +27,6 @@
             </div>
 
             <div class="tab-wrapper">
-                <!-- Password Login Tab -->
                 <div class="tab-content active" id="login-tab">
                     <form action="{{ route('login') }}" method="POST">
                         @csrf
@@ -61,7 +61,6 @@
                     </form>
                 </div>
 
-                <!-- ERI Tab -->
                 <div class="tab-content" id="eri-tab">
                     <input type="hidden" name="eri" id="selectedEri" value="">
 
@@ -86,7 +85,6 @@
             </div>
         </div>
 
-        <!-- ERI Modal -->
         <div class="eri-modal" id="eriModal">
             <div class="eri-modal-content">
                 <div class="eri-modal-header">
@@ -114,7 +112,6 @@
 <script src="{{ asset('js/e_imzo_client.js') }}"></script>
 <script src="{{ asset('js/login_e_imzo.js') }}"></script>
 
-<!-- ================= CURTAIN PRELOADER SCRIPT ================= -->
 <script>
 (function() {
     const preloader = document.getElementById("cp-preloader");
@@ -136,7 +133,6 @@
     }, 3300);
 })();
 </script>
-<!-- ============================================================ -->
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 
@@ -144,13 +140,10 @@
 localStorage.clear();
 lucide.createIcons();
 
-// Tab switching function
 function showTab(tabName) {
-    // Remove active from all tabs and content
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
     document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
 
-    // Add active to selected tab
     if (tabName === 'login') {
         document.querySelector('[data-tab="password"]').classList.add("active");
         document.getElementById("login-tab").classList.add("active");
@@ -159,19 +152,15 @@ function showTab(tabName) {
         document.getElementById("eri-tab").classList.add("active");
     }
 
-    // Recreate icons
     lucide.createIcons();
 }
 
-// Password toggle function
 function togglePassword() {
     const passwordInput = document.getElementById('password');
     const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
     passwordInput.setAttribute('type', type);
 }
 
-// Functions from original login (openUsbToken, closeEriModal, signin)
-// These should be defined in your login_e_imzo.js file
 </script>
 
 @endsection
@@ -220,10 +209,9 @@ main {
 }
 
 .logo {
-    margin-bottom: 30px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    position: absolute;
+    top: 30px;
+    left: 30px;
 }
 
 .logo-text {
@@ -294,7 +282,7 @@ main {
     display: block;
 }
 
-/* Inputs */
+
 .input-group {
     position: relative;
     margin-bottom: 30px;
@@ -345,7 +333,7 @@ input:-internal-autofill-selected {
     color: #794DFD;
 }
 
-/* Button */
+
 .button {
     width: 100%;
     padding: 15px;
@@ -372,7 +360,7 @@ input:-internal-autofill-selected {
     cursor: not-allowed;
 }
 
-/* Remember and Forgot */
+
 .remember-forgot {
     display: flex;
     justify-content: space-between;
@@ -408,7 +396,7 @@ input:-internal-autofill-selected {
     text-decoration: underline;
 }
 
-/* Video Background */
+
 .auth-sidebar__video {
     width: 50vw;
     height: 100vh;
@@ -419,7 +407,7 @@ input:-internal-autofill-selected {
     z-index: -1;
 }
 
-/* ERI Modal */
+
 .eri-modal {
     display: none;
     position: fixed;
@@ -638,7 +626,6 @@ input:-internal-autofill-selected {
     border: 0;
 }
 
-/* ================= CURTAIN PRELOADER STYLES ================= */
 .cp-preloader {
     position: fixed;
     inset: 0;

@@ -212,7 +212,6 @@
     </div>
 
     <script>
-        // Initialize lucide icons
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
@@ -220,3 +219,9 @@
         });
     </script>
 @endsection
+
+<style>
+    .page-header-modern{
+        padding:10px 1rem !important;
+    }
+</style>

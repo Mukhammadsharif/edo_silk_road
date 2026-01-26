@@ -6,7 +6,7 @@
 .header-text h1 { margin: 0; font-size: 28px; font-weight: 700; color: #1e293b; }
 .header-text p { margin: 0.25rem 0 0 0; font-size: 14px; color: #64748b; }
 .header-center { flex: 1; }
-.breadcrumb-modern { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.25rem; background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); }
+.breadcrumb-modern { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.25rem;  border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); }
 .breadcrumb-item { display: flex; align-items: center; gap: 0.5rem; font-size: 14px; color: #64748b; text-decoration: none; transition: color 0.3s; }
 .breadcrumb-item i { width: 16px; height: 16px; }
 .breadcrumb-item:hover { color: #794DFD; }

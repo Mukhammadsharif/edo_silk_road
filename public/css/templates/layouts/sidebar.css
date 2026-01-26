@@ -14,6 +14,7 @@
 /* Sidebar */
 .sidebar {
     position: fixed;
+    border-top: 1px solid #eeebeb;
     top: 62px;
     left: 0;
     width: var(--sidebar-width);
@@ -26,6 +27,7 @@
     display: flex;
     flex-direction: column;
     transition: background-color 0.3s;
+    
 }
 
 .sidebar::-webkit-scrollbar {
@@ -60,7 +62,7 @@
 /* Create Document Menu - Special Styling */
 .create-doc-menu {
     background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
-    margin: 0.5rem 1rem 1rem 1rem;
+    
     box-shadow: 0 4px 12px rgba(121, 77, 253, 0.2);
 }
 
@@ -113,13 +115,14 @@
     position: relative;
 }
 
-.menu-header:hover {
+.menu-header:hover  {
     background-color: #ecdafd;
     text-decoration: none;
+    color: #794DFD;
 }
 
 .menu-header:hover i {
-    color: var(--primary);
+     color: #794DFD !important;
 }
 
 /* Active menu */
@@ -196,7 +199,14 @@
 
 .submenu-item {
     position: relative;
+    background-color: #462d93;
+    color:#fff;
 }
+
+.submenu-item a{
+    color:#fff !important;
+}
+
 
 .submenu-item a {
     display: flex;
@@ -277,8 +287,9 @@
     display: flex;
     background-color: #f1f5f9;
     border-radius: 0.5rem;
-    margin: 5rem 1rem 1rem 1rem;
     padding: 4px;
+    margin:20px;
+
 }
 
 .sidebar.dark .theme-tabs {
@@ -298,7 +309,7 @@
 }
 
 .theme-tab.active {
-    background-color: var(--primary);
+  background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
     color: white;
 }
 

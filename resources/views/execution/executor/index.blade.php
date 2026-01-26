@@ -214,7 +214,6 @@
     </div>
 
     <script>
-        // Initialize lucide icons
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
@@ -222,3 +221,4 @@
         });
     </script>
 @endsection
+

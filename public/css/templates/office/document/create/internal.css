@@ -18,7 +18,7 @@ body {
 .page-header-modern {
     background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
     border-radius: 16px;
-    padding: 2rem;
+    padding: 4px 1rem;
     margin-bottom: 2rem;
     box-shadow: 0 8px 24px rgba(121, 77, 253, 0.2);
 }
@@ -112,7 +112,7 @@ body {
 .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 3rem;
+    gap: 2rem;
 }
 
 @media (max-width: 1024px) {

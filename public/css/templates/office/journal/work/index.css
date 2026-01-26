@@ -1,11 +1,10 @@
-/* Modern Working Docs Page Styles - Reuse inbox styles with send icon */
 .work-docs-page-modern {
-    padding: 2rem;
+    padding: 0 2rem 2rem 2rem;
     background: #f8fafc;
     min-height: 100vh;
 }
 
-/* Page Header */
+
 .page-header-modern {
     margin-bottom: 2rem;
 }
@@ -58,13 +57,12 @@
     flex: 1;
 }
 
-/* Breadcrumb */
+
 .breadcrumb-modern {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1.25rem;
-    background: white;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
@@ -99,14 +97,14 @@
     color: #cbd5e1;
 }
 
-/* Content Wrapper */
+
 .content-wrapper-modern {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
 }
 
-/* Filters Card - Enhanced */
+
 .filters-card-modern {
     background: white;
     border-radius: 16px;
@@ -123,7 +121,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1.5rem;
+    padding: 14px 24px;
     background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
     border-bottom: 2px solid #e2e8f0;
 }
@@ -163,7 +161,7 @@
     color: #64748b;
 }
 
-/* Filters Form */
+
 .filters-form-modern {
     padding: 1.5rem;
 }
@@ -203,7 +201,7 @@
     grid-column: span 2;
 }
 
-/* Table Card - Enhanced */
+
 .table-card-modern {
     background: white;
     border-radius: 16px;
@@ -227,7 +225,6 @@
     background: white;
 }
 
-/* Table Header - Gradient Purple Style from sent/index.css */
 .modern-table thead tr {
     background: linear-gradient(to bottom right, #794dfd, #7C3AED);
 }
@@ -272,7 +269,7 @@
     border-right: none;
 }
 
-/* Table Cell Styles */
+
 .td-number {
     font-weight: 700;
     color: #794DFD;

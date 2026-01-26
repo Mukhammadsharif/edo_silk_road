@@ -178,3 +178,14 @@
         }
     }
 </script>
+
+
+<style>
+    .form-control-modern:active, .form-control-modern:focus {
+        border-color: none;
+        box-shadow: none;
+
+    }
+
+    
+</style>

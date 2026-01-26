@@ -7913,6 +7913,7 @@ body {
     position: fixed;
     top: 0;
     width: 100%;
+    height: 62px;
     left: 256px !important;
     padding-left: 20px !important;
     -webkit-box-shadow: 0 1px 15px rgba(0, 0, 0, 0.04),
@@ -8788,10 +8789,10 @@ body {
     }
 }
 .wrapper .page-wrap .main-content {
-    padding: 30px 0;
+    padding: 30px 0 !important;
     background-color: #f6f7fb;
     min-height: calc(100vh - 120px);
-    margin-top: 60px;
+    margin-top: 0px !important;
     padding-right: 15px;
     padding-left: 255px;
     -moz-transition: all 0.3s ease;

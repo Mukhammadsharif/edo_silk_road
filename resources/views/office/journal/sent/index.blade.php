@@ -1,6 +1,7 @@
 @extends('layouts.app')
 <link rel="stylesheet" href="{{ asset('css/templates/office/journal/sent/index.css') }}">
 <link rel="stylesheet" href="{{ asset('css/templates/select2.css') }}">
+
 @section('content')
     <div class="outgoing-page-modern">
         <div class="page-header-modern">
@@ -133,13 +134,13 @@
                         <tr>
                             <th><i data-lucide="hash"></i> {{ __('field.#') }}</th>
                             <th><i data-lucide="clock"></i> {{ __('field.created_at') }}</th>
+                            <th><i data-lucide="eye"></i> {{ __('action.view') }}</th>
                             <th><i data-lucide="building-2"></i> {{ __('field.to_org') }}</th>
                             <th><i data-lucide="file-text"></i> {{ __('field.doc_name') }}</th>
                             <th><i data-lucide="calendar"></i> {{ __('field.doc_date') }}</th>
                             <th><i data-lucide="activity"></i> {{ __('field.status') }}</th>
                             <th><i data-lucide="timer"></i> {{ __('field.signing_term') }}</th>
                             <th><i data-lucide="user"></i> {{ __('field.creator') }}</th>
-                            <th><i data-lucide="eye"></i> {{ __('action.view') }}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -154,6 +155,11 @@
                                         <span class="time">{{ \Carbon\Carbon::parse($model->created_at)->format('H:i') }}</span>
                                     </div>
                                 </td>
+                                <td class="td-action">
+                                    <a href="{{ route('office.view-sent-doc', [$model->id, $model->doc->doc_hash??'-']) }}" class="btn-view">
+                                        <i class="fas fa-file-alt"></i> Ko'rish
+                                    </a>
+                                </td>
                                 <td class="td-organization">
                                     <div class="org-cell">
                                         <i data-lucide="building-2"></i>
@@ -165,10 +171,10 @@
                                 </td>
                                 <td class="td-date">{{ date('d.m.Y', strtotime($model->doc->doc_date??now())) }}</td>
                                 <td class="td-status">
-                                        <span class="badge-status {{ $model->statusOut->badgeClass??'' }}">
-                                            <i data-lucide="circle"></i>
-                                            {{ $model->statusOut->lang($model->statusOut->id)??'unk' }}
-                                        </span>
+                                    <span class="badge-status {{ $model->statusOut->badgeClass??'' }}">
+                                        <i data-lucide="circle"></i>
+                                        {{ $model->statusOut->lang($model->statusOut->id)??'unk' }}
+                                    </span>
                                 </td>
                                 <td class="td-term">@include('templates.execution-time')</td>
                                 <td class="td-creator">
@@ -176,11 +182,6 @@
                                         <i data-lucide="user"></i>
                                         <span>{{ $model->fromUser->personal->shortName()??'' }}</span>
                                     </div>
-                                </td>
-                                <td class="td-action">
-                                    <a href="{{ route('office.view-sent-doc', [$model->id, $model->doc->doc_hash??'-']) }}" class="btn-view">
-                                        <i class="fas fa-file-alt"></i> Ko'rish
-                                    </a>
                                 </td>
                             </tr>
                         @empty
@@ -205,7 +206,6 @@
     </div>
 
     <script>
-        // Initialize lucide icons
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();

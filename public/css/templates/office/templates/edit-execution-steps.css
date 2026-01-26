@@ -64,7 +64,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    padding: 0.25rem;
+     padding: 0.25rem 0.25rem 0.25rem 0;
 }
 
 .users-list-modern::-webkit-scrollbar {
@@ -212,3 +212,5 @@
 .user-checkbox-card input[type="checkbox"]:checked ~ .user-card-content .checkbox-indicator i {
     opacity: 1;
 }
+
+

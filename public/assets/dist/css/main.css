@@ -1,5 +1,6 @@
 *::-webkit-scrollbar {
     width: 4px !important;
+    height:5px !important;
 }
 *::-webkit-scrollbar-thumb {
     background: #794dfd !important;
@@ -1002,4 +1003,85 @@ figure table {
         padding: 0 !important;
         margin-left: 200px;
     }
+}
+
+
+.form-group-modern label{
+    white-space: nowrap !important;
+}
+
+.btn-remove-file {
+    color: #fff !important;
+    background-color: coral !important;
+}
+
+ .file-edit{
+        color:#fff !important;
+    }
+
+    .file-edit{
+        color:#fff !important;
+    }
+    .header-left svg{
+        color:#fff !important
+    }
+
+
+    
+    .breadcrumb-modern {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+}
+    
+
+
+.page-header-modern {
+    background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+    border-radius: 16px;
+    padding: 8px 1rem !important;
+  
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 24px rgba(121, 77, 253, 0.2);
+   
+}
+
+.header-icon {
+    width: 64px;
+    height: 64px;
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.breadcrumb-modern a  {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.3s;
+}
+
+
+.breadcrumb-item.active {
+    color: #fff !important;
+}
+
+.header-text h1{
+    color: #fff !important;
+}
+
+.header-text p{
+    color: #fff !important;
+}
+
+.header-top{
+    height: 62px !important;
 }

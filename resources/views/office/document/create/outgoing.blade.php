@@ -6,7 +6,6 @@
 @section('content')
 
     <div class="modern-container">
-        <!-- Page Header -->
         <div class="page-header-modern">
             <div class="header-content">
                 <div class="header-left">
@@ -33,13 +32,11 @@
 
         @include('templates.alert')
 
-        <!-- Main Form Card -->
         <div class="form-card">
             <form id="createForm" method="POST" action="{{ route('office.doc.store') }}" enctype="multipart/form-data">
                 @csrf
 
                 <div class="form-grid">
-                    <!-- Left Column -->
                     <div class="form-section">
                         <div class="section-header">
                             <i data-lucide="settings"></i>
@@ -48,7 +45,6 @@
 
                         <input value="{{ $journal->id }}" name="journal_type" id="journal_type" hidden>
 
-                        <!-- Organization -->
                         <div class="form-group-modern">
                             <label>
                                 <i data-lucide="building-2"></i>
@@ -72,18 +68,15 @@
                             <div class="form-group-modern" id="last_j_number_2" hidden></div>
                         </div>
 
-                        <!-- Execution Steps Container -->
                         <div id="execution_steps"></div>
                     </div>
 
-                    <!-- Right Column -->
                     <div class="form-section">
                         <div class="section-header">
                             <i data-lucide="file-text"></i>
                             <h3>Hujjat tafsilotlari</h3>
                         </div>
 
-                        <!-- Document Info Row -->
                         <div class="form-row-modern">
                             <div class="form-group-modern">
                                 <label>
@@ -98,7 +91,20 @@
                                 </select>
                             </div>
 
+                           
+
                             <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="calendar"></i>
+                                    {{ __('document.doc_date') }}
+                                    <span class="required">*</span>
+                                </label>
+                                <input type="date" name="doc_date" class="form-control-modern" value="{{ date('Y-m-d') }}" required />
+                            </div>
+                        </div>
+
+                        <div class="form-row-modern">
+                             <div class="form-group-modern">
                                 <label>
                                     <i data-lucide="shield"></i>
                                     {{ __('document.confidentiality') }}
@@ -111,19 +117,6 @@
                                     @endforeach
                                 </select>
                             </div>
-
-                            <div class="form-group-modern">
-                                <label>
-                                    <i data-lucide="calendar"></i>
-                                    {{ __('document.doc_date') }}
-                                    <span class="required">*</span>
-                                </label>
-                                <input type="date" name="doc_date" class="form-control-modern" value="{{ date('Y-m-d') }}" required />
-                            </div>
-                        </div>
-
-                        <!-- Document Name and Number -->
-                        <div class="form-row-modern">
                             <div class="form-group-modern" style="flex: 2;">
                                 <label>
                                     <i data-lucide="type"></i>

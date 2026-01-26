@@ -6,7 +6,6 @@
 @section('content')
 
     <div class="modern-container">
-        <!-- Page Header -->
         <div class="page-header-modern">
             <div class="header-content">
                 <div class="header-left">
@@ -33,13 +32,11 @@
 
         @include('templates.alert')
 
-        <!-- Main Form Card -->
         <div class="form-card">
             <form id="createForm" method="POST" action="{{ route('office.doc.store') }}" enctype="multipart/form-data">
                 @csrf
 
                 <div class="form-grid">
-                    <!-- Left Column -->
                     <div class="form-section">
                         <div class="section-header">
                             <i data-lucide="settings"></i>
@@ -47,8 +44,6 @@
                         </div>
 
                         <input value="{{ $journal->id }}" name="journal_type" id="journal_type" hidden>
-
-                        <!-- Department Journal -->
                         <div class="form-group-modern">
                             <label>
                                 <i data-lucide="folder"></i>
@@ -65,8 +60,6 @@
                             </select>
                             {!! $errors->first('department_journal', '<p class="error-text">:message</p>') !!}
                         </div>
-
-                        <!-- Organization -->
                         <div class="form-group-modern">
                             <label>
                                 <i data-lucide="building-2"></i>
@@ -84,18 +77,15 @@
                             {!! $errors->first('doc_org', '<p class="error-text">:message</p>') !!}
                         </div>
 
-                        <!-- Execution Steps Container -->
                         <div id="execution_steps"></div>
                     </div>
 
-                    <!-- Right Column -->
                     <div class="form-section">
                         <div class="section-header">
                             <i data-lucide="file-text"></i>
                             <h3>Hujjat tafsilotlari</h3>
                         </div>
 
-                        <!-- Document Info Row -->
                         <div class="form-row-modern">
                             <div class="form-group-modern">
                                 <label>
@@ -112,6 +102,46 @@
 
                             <div class="form-group-modern">
                                 <label>
+                                    <i data-lucide="calendar"></i>
+                                    {{ __('document.doc_date') }}
+                                    <span class="required">*</span>
+                                </label>
+
+                                <div class="date-picker-container">
+                                    <div class="input-wrapper">
+                                        <svg class="calendar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                                        </svg>
+                                        <input 
+                                            type="text" 
+                                            name="doc_date" 
+                                            class="date-input form-control-modern {{ $errors->has('doc_date') ? 'is-invalid' : '' }}" 
+                                            placeholder="Sanani tanlang" 
+                                            value="{{ old('doc_date', date('Y-m-d')) }}" 
+                                            readonly 
+                                            required 
+                                        />
+                                        {!! $errors->first('doc_date', '<p class="error-text">:message</p>') !!}
+                                    </div>
+
+                                    <div class="calendar-popup">
+                                        <div class="calendar-header">
+                                            <button class="nav-btn prev">&lsaquo;</button>
+                                            <div class="month-year"></div>
+                                            <button class="nav-btn next">&rsaquo;</button>
+                                        </div>
+                                        <div class="days"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row-modern">
+                            <div class="form-group-modern">
+                                <label>
                                     <i data-lucide="shield"></i>
                                     {{ __('document.confidentiality') }}
                                 </label>
@@ -124,18 +154,6 @@
                                 </select>
                             </div>
 
-                            <div class="form-group-modern">
-                                <label>
-                                    <i data-lucide="calendar"></i>
-                                    {{ __('document.doc_date') }}
-                                    <span class="required">*</span>
-                                </label>
-                                <input type="date" name="doc_date" class="form-control-modern" value="{{ date('Y-m-d') }}" required />
-                            </div>
-                        </div>
-
-                        <!-- Document Name and Number -->
-                        <div class="form-row-modern">
                             <div class="form-group-modern" style="flex: 2;">
                                 <label>
                                     <i data-lucide="type"></i>
@@ -259,7 +277,6 @@
                 'min-height': '48px'
             });
 
-            // Watch for Select2 events and reapply styles
             $('.select2').on('select2:open', function() {
                 setTimeout(function() {
                     $('.select2-container--default .select2-selection--single').css({
@@ -341,7 +358,6 @@
         document.addEventListener('DOMContentLoaded', function () {
             lucide.createIcons();
 
-            // Handle Add Button Click
             document.querySelector('.add-file-input').addEventListener('click', function () {
                 const container = document.getElementById('file-inputs-container');
                 const newWrapper = document.createElement('div');
@@ -371,7 +387,6 @@
 
                 container.appendChild(newWrapper);
 
-                // Attach file change listener
                 const fileInput = newWrapper.querySelector(`#customFile-${currentCounter}`);
                 const fileNameDisplay = newWrapper.querySelector('.file-name');
 
@@ -382,7 +397,6 @@
                     }
                 });
 
-                // Remove button
                 newWrapper.querySelector('.btn-remove-file').addEventListener('click', function () {
                     newWrapper.remove();
                 });
@@ -391,7 +405,6 @@
                 fileInputCounter++;
             });
 
-            // Handle initial file input
             const initialFileInput = document.getElementById('customFile-0');
             const initialFileNameDisplay = document.querySelector('.file-name');
 
@@ -402,5 +415,286 @@
                 }
             });
         });
+    </script>
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --hover: #f1f5f9;
+        }
+
+        .date-picker-container {
+            position: relative;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .date-input {
+            width: 100%;
+            padding: 14px 16px 14px 48px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+            background: white;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .date-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+        }
+
+        .calendar-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            pointer-events: none;
+        }
+
+        .calendar-popup {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 12px;
+            background: var(--card);
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1),
+                        0 10px 10px -5px rgba(0,0,0,0.04);
+            overflow: hidden;
+            z-index: 100;
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+            transition: all 0.25s ease;
+        }
+
+        .calendar-popup.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .calendar-header {
+    padding: 8px 14px;
+    background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+        .month-year {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.4rem;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            transition: background 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            padding: 12px 16px;
+        }
+
+        .day {
+            aspect-ratio: 1;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            color: var(--text);
+        }
+
+        .day:hover {
+            background: var(--hover);
+        }
+
+        .day.today {
+           background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        .day.selected {
+            background: var(--primary-dark);
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+        }
+
+        .day.other-month {
+            color: #94a3b8;
+        }
+
+        .day.disabled {
+            color: #cbd5e1;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 400px) {
+            .date-picker-container {
+                max-width: 100%;
+            }
+        }
+    </style>
+
+    <script>
+        const dateInput = document.querySelector('.date-input');
+        const calendarPopup = document.querySelector('.calendar-popup');
+        const monthYearDisplay = document.querySelector('.month-year');
+        const daysContainer = document.querySelector('.days');
+        const prevBtn = document.querySelector('.prev');
+        const nextBtn = document.querySelector('.next');
+
+        let currentDate = new Date();
+        let selectedDate = null;
+
+        // Uzbek locale (Latin)
+        const uzMonths = [
+            'Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun',
+            'Iyul', 'Avgust', 'Sentabr', 'Oktabr', 'Noyabr', 'Dekabr'
+        ];
+
+        function formatDateUz(date) {
+            const d = String(date.getDate()).padStart(2, '0');
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const y = date.getFullYear();
+            return `${d}.${m}.${y}`;
+        }
+
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            monthYearDisplay.textContent = `${uzMonths[month]} ${year}`;
+
+            daysContainer.innerHTML = '';
+
+            const firstDay = new Date(year, month, 1).getDay();
+            // Adjust for Monday start (0 = Sunday → shift to Monday = 1)
+            const adjustedFirstDay = (firstDay === 0 ? 6 : firstDay - 1);
+
+            const lastDate = new Date(year, month + 1, 0).getDate();
+
+            // Previous month days
+            for (let i = adjustedFirstDay; i > 0; i--) {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'day other-month';
+                dayEl.textContent = new Date(year, month, 0).getDate() - i + 1;
+                daysContainer.appendChild(dayEl);
+            }
+
+            // Current month days
+            for (let day = 1; day <= lastDate; day++) {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'day';
+                dayEl.textContent = day;
+
+                const thisDate = new Date(year, month, day);
+
+                if (thisDate.toDateString() === new Date().toDateString()) {
+                    dayEl.classList.add('today');
+                }
+
+                if (selectedDate && thisDate.toDateString() === selectedDate.toDateString()) {
+                    dayEl.classList.add('selected');
+                }
+
+                dayEl.addEventListener('click', () => {
+                    selectedDate = thisDate;
+                    dateInput.value = formatDateUz(thisDate);
+                    calendarPopup.classList.remove('active');
+                    renderCalendar();
+                });
+
+                daysContainer.appendChild(dayEl);
+            }
+
+            // Next month placeholders (fill row)
+            const remaining = 42 - daysContainer.children.length;
+            for (let i = 1; i <= remaining; i++) {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'day other-month';
+                dayEl.textContent = i;
+                daysContainer.appendChild(dayEl);
+            }
+        }
+
+        function toggleCalendar() {
+            const isActive = calendarPopup.classList.toggle('active');
+            if (isActive) {
+                renderCalendar();
+            }
+        }
+
+        // Events
+        dateInput.addEventListener('click', toggleCalendar);
+
+        document.addEventListener('click', (e) => {
+            if (!dateInput.contains(e.target) && !calendarPopup.contains(e.target)) {
+                calendarPopup.classList.remove('active');
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        });
+
+        // Initialize with old value or today
+        const initialValue = dateInput.value.trim();
+        if (initialValue) {
+            const [d, m, y] = initialValue.split('.');
+            if (d && m && y) {
+                selectedDate = new Date(y, m - 1, d);
+                currentDate = new Date(selectedDate);
+            }
+        } else {
+            selectedDate = new Date();
+            currentDate = new Date();
+            dateInput.value = formatDateUz(selectedDate);
+        }
+
+        renderCalendar(); // initial render (hidden)
     </script>
 @endsection

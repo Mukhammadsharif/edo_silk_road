@@ -5,7 +5,6 @@
 
     <div class="document-editor-modern">
         <div class="editor-layout">
-            <!-- OnlyOffice Editor Section -->
             <div class="editor-section">
                 <div class="editor-card-modern">
                     <div class="editor-header">
@@ -26,7 +25,6 @@
                 </div>
             </div>
 
-            <!-- Actions Sidebar -->
             <div class="actions-sidebar">
                 <div class="sidebar-card-modern">
                     <div class="sidebar-header">
@@ -93,7 +91,6 @@
     </div>
 
     <script>
-        // Initialize lucide icons
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
@@ -136,3 +133,16 @@
         });
     </script>
 @endsection
+
+
+<style>
+    .file-edit{
+        color:#fff !important;
+    }
+    .header-left svg{
+        color:#fff !important
+    }
+
+
+    
+</style>
