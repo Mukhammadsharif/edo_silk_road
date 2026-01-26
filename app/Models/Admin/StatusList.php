@@ -22,12 +22,12 @@ class StatusList extends Model
 
     public function iconClass(): BelongsTo
     {
-        return $this->belongsTo(IconClassList::class, 'icon_id')->where('type', 1);
+        return $this->belongsTo(IconClassList::class, 'icon_id');
     }
 
     public function badgeClass(): BelongsTo
     {
-        return $this->belongsTo(IconClassList::class, 'class_id')->where('type', 2);
+        return $this->belongsTo(IconClassList::class, 'class_id')->where('type', 3);
     }
 
     public static function lang($id) {

@@ -39,4 +39,16 @@ table {
     .printPage {
         padding-top: 3em;
     }
+
+    iframe {
+        display: none;
+    }
+
+    .file-name-badge {
+        display: none;
+    }
+
+    .banner-image {
+        display: none;
+    }
 }

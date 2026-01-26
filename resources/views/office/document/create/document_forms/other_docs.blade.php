@@ -1,253 +1,221 @@
-<div class="form-group row">
-    <div class="col-sm-3">
-        <label for="doc_lang">{{ __('field.doc_lang') }}</label><br>
-        <select name="doc_lang" class="form-control select2">
-            <option value="uz">1. {{ __('lang.uzbek') }}</option>
-            <option value="kr">2. {{ __('lang.cyrillic') }}</option>
-            <option value="ru">3. {{ __('lang.russian') }}</option>
-            <option value="en">4. {{ __('lang.english') }}</option>
-        </select>
-    </div>
-    <div class="col-sm-3">
-        <label>{{ __('document.confidentiality') }}</label>
-        <select name="confidence" class="form-control">
-            @foreach($confidences as $key => $confidence)
-                <option value="{{ $confidence->id }}">{{ $key+1 }}.
-                    {{ $confidence->lang($confidence->lang_id) }}
-                </option>
-            @endforeach
-        </select>
-    </div>
-    <div class="col-sm-3">
-        <label>{{ __('field.date') }}</label><span class="text-red">*</span>
-        <input type="date" name="date" class="form-control" value="{{ date('Y-m-d') }}" />
-    </div>
-</div>
+<link rel="stylesheet" href="{{ asset('css/templates/office/document/create/document_forms/styles.css') }}">
 
-<div class="form-group row">
-    <div class="col-sm-6">
-        <label>{{ __('document.doc_name') }} <span class="text-red">*</span></label>
-        <input type="text" name="doc_name" class="form-control {{ $errors->has('doc_name') ? 'is-invalid' : '' }}" value="{{ old('doc_name') }}" required/>
-        {!! $errors->first('doc_name', '<p class="text-danger">:message</p>') !!}
-    </div>
-    <div class="col-sm-3">
-        <label>{{ __('document.doc_number') }}</label>
-        <input type="text" name="doc_number" class="form-control" value="{{ old('doc_number') }}">
-    </div>
-</div>
+<div class="modern-form-body">
+    <!-- Language, Confidentiality & Date -->
+    <div class="form-row-modern">
+        <div class="form-group-modern">
+            <label>
+                <i data-lucide="globe"></i>
+                {{ __('field.doc_lang') }}
+            </label>
+            <select name="doc_lang" class="form-control-modern select2">
+                <option value="uz">{{ __('lang.uzbek') }}</option>
+                <option value="kr">{{ __('lang.cyrillic') }}</option>
+                <option value="ru">{{ __('lang.russian') }}</option>
+                <option value="en">{{ __('lang.english') }}</option>
+            </select>
+        </div>
 
-<div class="form-group row mt-10">
-    <div class="col-sm-6">
-        <label for="customFile1">{{ __('action.attach_file') }}</label>
+        <div class="form-group-modern">
+            <label>
+                <i data-lucide="shield"></i>
+                {{ __('document.confidentiality') }}
+            </label>
+            <select name="confidence" class="form-control-modern select2">
+                @foreach($confidences as $key => $confidence)
+                    <option value="{{ $confidence->id }}">
+                        {{ $key+1 }}. {{ $confidence->lang($confidence->lang_id) }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="form-group-modern">
+            <label>
+                <i data-lucide="calendar"></i>
+                {{ __('field.date') }}
+                <span class="required">*</span>
+            </label>
+            <input type="date" name="date" class="form-control-modern" value="{{ date('Y-m-d') }}" required />
+        </div>
+    </div>
+
+    <!-- Document Name and Number -->
+    <div class="form-row-modern">
+        <div class="form-group-modern" style="flex: 2;">
+            <label>
+                <i data-lucide="type"></i>
+                {{ __('document.doc_name') }}
+                <span class="required">*</span>
+            </label>
+            <input type="text" name="doc_name"
+                   class="form-control-modern {{ $errors->has('doc_name') ? 'is-invalid' : '' }}"
+                   value="{{ old('doc_name') }}"
+                   placeholder="Hujjat nomini kiriting..."
+                   required />
+            {!! $errors->first('doc_name', '<p class="error-text">:message</p>') !!}
+        </div>
+
+        <div class="form-group-modern">
+            <label>
+                <i data-lucide="hash"></i>
+                {{ __('document.doc_number') }}
+            </label>
+            <input type="text" name="doc_number"
+                   class="form-control-modern"
+                   value="{{ old('doc_number') }}"
+                   placeholder="Raqam">
+        </div>
+    </div>
+
+    <!-- File Upload Section -->
+    <div class="form-group-modern file-upload-section">
+        <label>
+            <i data-lucide="paperclip"></i>
+            {{ __('action.attach_file') }}
+        </label>
+
         <div id="file-inputs-container">
-            <div class="file-input-group d-flex flex-row align-items-baseline justify-content-between mb-2">
-                <div class="custom-file" style="display: none;">
+            <div class="file-input-wrapper">
+                <div class="custom-file-hidden">
                     <input type="file" name="doc_files[]" class="custom-file-input" id="customFile-0">
-                    <label class="custom-file-label" for="customFile-0">{{ __('action.choose') }}</label>
                 </div>
-                <input type="text" class="form-control" readonly placeholder="{{ __('action.choose') }}"
-                       onclick="document.getElementById('customFile-0').click();" style="cursor: pointer;">
 
-                <button type="button" class="btn btn-icon btn-outline-secondary btn-sm ms-2 ml-2 add-file-input">
-                    <i class="fas fa-plus"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="form-group row" id="textContainer">
-    <div class="col-sm-10">
-        <label>{{ __('document.doc_text') }}<span class="text-red">*</span></label>
-        <div class="row">
-            <div class="col-sm-4">
-                <div id="dropzone" class="dropzone">
-                    <p>Faylni bu yerga qo`ying</p>
-                    <i class="ik ik-upload-cloud"></i>
-                    <input type="file" accept=".doc, .docx" name="main_file" id="fileInput" style="display: none;">
-                </div>
-                <div id="fileList"></div>
-            </div>
-            <div class="col-sm-4">
-                <button name="action" value="office" style="display: contents" onclick="setFormAction('web')">
-                    <div class="web-office">
-                        <p>Web Word Office</p>
-                        <i class="ik ik-file-text"></i>
+                <div class="file-display-area" onclick="document.getElementById('customFile-0').click();">
+                    <div class="file-icon">
+                        <i data-lucide="upload"></i>
                     </div>
+                    <div class="file-text">
+                        <p class="file-name">{{ __('action.choose') }}</p>
+                        <span class="file-hint">PDF, DOC, DOCX, XLS, XLSX (max 10MB)</span>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-add-file add-file-input">
+                    <i data-lucide="plus"></i>
                 </button>
             </div>
         </div>
     </div>
+
+    <!-- Document Text Upload Options -->
+    <div class="form-group-modern">
+        <label>
+            <i data-lucide="file-text"></i>
+            {{ __('document.doc_text') }}
+            <span class="required">*</span>
+        </label>
+
+        <div class="upload-options-grid">
+            <!-- Dropzone Upload -->
+            <div class="upload-option-card" id="dropzone">
+                <div class="upload-icon">
+                    <i data-lucide="upload-cloud"></i>
+                </div>
+                <h4>Faylni yuklash</h4>
+                <p>DOC yoki DOCX faylni bu yerga qo'ying</p>
+                <input type="file" accept=".doc, .docx" name="main_file" id="fileInput" style="display: none;">
+            </div>
+
+            <!-- Web Office -->
+            <div class="upload-option-card" onclick="setFormAction('web')">
+                <div class="upload-icon">
+                    <i data-lucide="monitor"></i>
+                </div>
+                <h4>Web Word Office</h4>
+                <p>Onlayn muharrir orqali yaratish</p>
+            </div>
+        </div>
+
+        <div id="fileList" class="file-list-display"></div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+        @if(!Auth::user()->currentSubscription)
+            <div class="subscription-warning">
+                <i data-lucide="alert-circle"></i>
+                <span>Hujjat yaratish uchun faol obuna kerak</span>
+            </div>
+        @endif
+
+        <button type="submit" name="action" value="file" id="submitBtn" class="btn-submit"
+                onclick="setFormAction('file')" style="display: none;"
+                @if(!Auth::user()->currentSubscription) disabled @endif>
+            <i data-lucide="save"></i>
+            {{ __('action.save') }}
+        </button>
+    </div>
 </div>
 
-<div class="form-group">
-    @if(!Auth::user()->currentSubscription)
-        <small class="d-block text-warning mb-2">
-            <i class="ik ik-info mr-1"></i>
-            Hujjat yaratish uchun faol obuna kerak
-        </small>
-    @endif
+@include('office.document.create.document_forms.js')
 
-    <button name="action" value="file" id="submitBtn" class="btn btn-primary" onclick="setFormAction('file')"
-            @if(!Auth::user()->currentSubscription) disabled @endif>
-        <i class="ik ik-save"></i> {{ __('action.save') }}
-    </button>
-</div>
-
-<script type="text/javascript">
+<script>
+    // Dropzone functionality (for other_docs.blade.php)
     const dropzone = document.getElementById('dropzone');
     const fileInput = document.getElementById('fileInput');
     const fileList = document.getElementById('fileList');
+    const submitBtn = document.getElementById('submitBtn');
 
-    // Prevent default drag behaviors
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropzone.addEventListener(eventName, preventDefaults, false);
-        document.body.addEventListener(eventName, preventDefaults, false); // Prevent default browser behavior
-    });
-
-    function preventDefaults (e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-
-    // Highlight dropzone on drag enter/over
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dropzone.addEventListener(eventName, highlight, false);
-    });
-
-    ['dragleave', 'drop'].forEach(eventName => {
-        dropzone.addEventListener(eventName, unhighlight, false);
-    });
-
-    function highlight() {
-        dropzone.classList.add('hover');
-    }
-
-    function unhighlight() {
-        dropzone.classList.remove('hover');
-    }
-
-    // Handle dropped files
-    dropzone.addEventListener('drop', handleDrop, false);
-
-    function handleDrop(e) {
-        const dt = e.dataTransfer;
-        const files = dt.files;
-        handleFiles(files);
-    }
-
-    // Handle file input change
-    fileInput.addEventListener('change', (e) => {
-        handleFiles(e.target.files);
-    });
-
-    // Simulate click on hidden input when dropzone is clicked
-    dropzone.addEventListener('click', () => {
-        fileInput.click();
-    });
-
-    function handleFiles(files) {
-        for (const file of files) {
-            displayFile(file);
-            uploadFile(file); // Placeholder for actual upload logic
-        }
-    }
-
-    function displayFile(file) {
-        $('#fileList').empty();
-        const item = document.createElement('div');
-        item.classList.add('file-item');
-        item.innerHTML = `
-                                                <span>${file.name} (${(file.size / 1024).toFixed(2)} KB)</span>
-                                                `;
-        fileList.appendChild(item);
-    }
-
-    function uploadFile(file) {
-        // Implement actual file upload logic here (e.g., using FormData and XMLHttpRequest/Fetch API)
-        console.log('Uploading file:', file.name);
-        // Update status in the fileList element
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const fileInput = document.getElementById('fileInput');
-        const submitBtn = document.getElementById('submitBtn');
-
-        // изначально скрываем кнопку
-        submitBtn.style.display = 'none';
-
-        fileInput.addEventListener('change', function () {
-            if (fileInput.files.length > 0) {
-                submitBtn.style.display = 'inline-block'; // показать
-            } else {
-                submitBtn.style.display = 'none'; // скрыть
-            }
+    if (dropzone && fileInput && fileList) {
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
         });
-    });
 
-    function setFormAction(type) {
-        const form = document.getElementById('createForm');
-
-        if (type === 'file') {
-            form.action = "{{ route('office.doc.store') }}";  // сюда нужный маршрут
-        } else if (type === 'web') {
-            form.action = "{{ route('document-only-office.create') }}";
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
         }
 
-        form.submit();
-    }
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, () => dropzone.classList.add('hover'), false);
+        });
 
-    // Attach file with add input file
-    let fileInputCounter = 1;
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, () => dropzone.classList.remove('hover'), false);
+        });
 
-    // --- Fayl tanlanganda fayl nomini ko'rsatish ---
-    document.addEventListener('change', function (e) {
-        if (e.target.classList.contains('custom-file-input')) {
-            const fileInput = e.target;
-            const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : "{{ __('action.choose') }}";
-            // Tegishli text inputni topamiz
-            const parentGroup = fileInput.closest('.file-input-group');
-            const textInput = parentGroup.querySelector('input.form-control');
-            if (textInput) {
-                textInput.value = fileName;
+        dropzone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        dropzone.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        function handleFiles(files) {
+            for (const file of files) {
+                displayFile(file);
+            }
+            if (submitBtn && files.length > 0) {
+                submitBtn.style.display = 'inline-flex';
             }
         }
-    });
 
-    // --- "+" tugmasi bosilganda yangi fayl input qo'shish ---
-    document.addEventListener('click', function (e) {
-        if (e.target.closest('.add-file-input')) {
-            addFileInput();
+        function displayFile(file) {
+            fileList.innerHTML = '';
+            const item = document.createElement('div');
+            item.style.cssText = 'padding: 0.75rem; background: white; border-radius: 8px; margin-top: 0.5rem;';
+            item.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i data-lucide="file-text" style="width: 20px; height: 20px; color: #794DFD;"></i>
+                        <span style="flex: 1; font-size: 14px; color: #1e293b;">${file.name}</span>
+                        <span style="font-size: 12px; color: #64748b;">${(file.size / 1024).toFixed(2)} KB</span>
+                    </div>
+                `;
+            fileList.appendChild(item);
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
         }
-    });
-
-    function addFileInput() {
-        const container = document.getElementById('file-inputs-container');
-        const newFileInputGroup = document.createElement('div');
-        newFileInputGroup.className = 'file-input-group d-flex align-items-center mb-2';
-
-        const currentCounter = fileInputCounter;
-
-        newFileInputGroup.innerHTML = `
-            <div class="custom-file" style="display: none;">
-                <input type="file" name="doc_files[]" class="custom-file-input" id="customFile-${currentCounter}">
-                <label class="custom-file-label" for="customFile-${currentCounter}">{{ __('action.choose') }}</label>
-            </div>
-            <input type="text" class="form-control" readonly placeholder="{{ __('action.choose') }}"
-                style="cursor: pointer;" onclick="document.getElementById('customFile-${currentCounter}').click();">
-            <button type="button" class="btn btn-icon btn-outline-warning btn-sm ms-2 ml-2 remove-file-input">
-                <i class="ik ik-minus"></i>
-            </button>
-        `;
-
-        container.appendChild(newFileInputGroup);
-        fileInputCounter++;
     }
-
-    // --- "-" tugmasi bosilganda inputni o‘chirish ---
-    document.addEventListener('click', function (e) {
-        if (e.target.closest('.remove-file-input')) {
-            e.target.closest('.file-input-group').remove();
-        }
-    });
 </script>

@@ -1,0 +1,29 @@
+body .modal-backdrop.show {
+    z-index: 1040 !important;
+    opacity: 0.5 !important;
+}
+body #commentModal.modal.show {
+    z-index: 1055 !important;
+    display: block !important;
+}
+body #commentModal.modal {
+    z-index: 1055 !important;
+}
+body #commentModal .modal-dialog {
+    z-index: 1056 !important;
+    position: relative;
+}
+.modal-content-modern { border-radius: 16px; border: none; overflow: hidden; }
+.modal-header-modern { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem; border: none; }
+.modal-header-notifications { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); }
+.header-title-modal { display: flex; align-items: center; gap: 0.75rem; }
+.header-title-modal i { width: 24px; height: 24px; color: white; }
+.header-title-modal h5 { margin: 0; font-size: 18px; font-weight: 600; color: white; }
+.close-modern { width: 36px; height: 36px; background: rgba(255, 255, 255, 0.2); border: none; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; }
+.close-modern:hover { background: rgba(255, 255, 255, 0.3); }
+.close-modern i { width: 20px; height: 20px; color: white; }
+.modal-body-modern { padding: 2rem; max-height: 500px; overflow-y: auto; }
+.modal-body-modern::-webkit-scrollbar { width: 8px; }
+.modal-body-modern::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+.modal-body-modern::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+.modal-footer-modern { padding: 1.5rem; background: #f8fafc; border-top: 2px solid #e2e8f0; display: flex; justify-content: flex-end; }

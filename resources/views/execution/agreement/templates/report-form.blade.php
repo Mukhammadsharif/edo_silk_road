@@ -130,7 +130,7 @@
                                     <i class="ik ik-plus"></i> Qator qo‘shish
                                 </button>
                                 <button type="submit" class="btn btn-success btn-sm ml-10">
-                                    <i class="ik ik-save"></i> Saqlash
+                                    <i data-lucide="save"></i> Saqlash
                                 </button>
                             </div>
                         </form>

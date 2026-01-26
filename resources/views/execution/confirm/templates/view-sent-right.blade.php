@@ -1,10 +1,11 @@
-<div class="col-lg-4 col-md-12 col-sm-12">
+<div class="view-right-modern">
     @if($directorDocument->status > 1)
-        <div class="card">
-            <div class="card-header">
+        <div class="execution-card-modern">
+            <div class="card-header-modern">
+                <i data-lucide="clipboard-check" class="text-white"></i>
                 <h3>{{ __('title.execution') }}</h3>
             </div>
-            <div class="card-body">
+            <div class="performers-list-modern">
                 @if($directorDocument->replyComments && $directorDocument->replyComments->count())
                     <div class="ml-10">
                         @foreach($directorDocument->replyComments as $edoCancelMessage)
@@ -38,7 +39,7 @@
                         </div>
                         <div class="col-4 border-right">
                             <p>{{ __('field.created_date') }}:</p>
-                            <i class="ik ik-clock"></i>
+                            <i data-lucide="clock"></i>
                             {{ date('d.m.y, H:i', strtotime($directorDocument->created_at)) }}
                         </div>
                         <div class="col-4">
@@ -54,20 +55,18 @@
                     </div>
                 </div>
                 @if($directorDocument->status == 2)
-                    <div class="row">
-                        <div class="col-md-12 mb-10">
-                            <button type="button" class="btn btn-outline-danger mr-2 openCancelEditModal"
-                                    data-id="2">
-                                {{ __('action.cancel') }}
-                            </button>
-                            <button type="button" class="btn btn-outline-warning mr-2 openCancelEditModal"
-                                    data-id="3">
-                                {{ __('action.back_edit') }}
-                            </button>
-                            <button type="button" class="btn btn-outline-success sign-doc-btn">
-                                {{ __('action.to_sign') }}
-                            </button>
-                        </div>
+                    <div class="actions-body-modern">
+                        <button type="button" class="btn-modern btn-danger m-sm-1 openCancelEditModal"
+                                data-id="2">
+                            <i data-lucide="ban"></i> {{ __('action.cancel') }}
+                        </button>
+                        <button type="button" class="btn-modern btn-warning m-sm-1 openCancelEditModal"
+                                data-id="3">
+                            <i data-lucide="edit"></i> {{ __('action.back_edit') }}
+                        </button>
+                        <button type="button" class="btn-modern btn-success m-sm-1 sign-doc-btn">
+                            <i data-lucide="signature"></i> {{ __('action.to_sign') }}
+                        </button>
                     </div>
                 @endif
                 <form name="testform" id="loginSignForm" class="ecp-form" style="display: none">
@@ -76,7 +75,7 @@
                             <div class="col-md-12">
                                 @if($signType->doc_sign_type === 1)
                                     <div class="form-group">
-                                        <label><i class="fa fa-key"></i> {{ __('action.select_ecp_key') }}
+                                        <label><i data-lucide="key-round"></i> {{ __('action.select_ecp_key') }}
                                         </label><br>
                                         <label id="message"></label>
                                         <select name="key" class="form-control form-control-primary select2"
@@ -86,17 +85,17 @@
                                     </div>
                                 @endif
                                 <div class="form-group">
-                                    <label hidden><i class="fa fa-key"></i> {{ __('action.to_sign_by_key') }}
+                                    <label hidden><i data-lucide="key-round"></i> {{ __('action.to_sign_by_key') }}
                                     </label><br>
                                     @if($signType->doc_sign_type === 2)
                                         <button type="submit"
-                                                class="btn btn-outline-success m-sm-1 confirmBtn modal-bg-class"
+                                                class="btn-modern btn-outline-success m-sm-1 confirmBtn modal-bg-class"
                                                 onclick="signLogin()">
                                             <span class="confirm_type">{{ __('action.to_sign') }}</span> (LOGIN)
                                         </button>
                                     @else
                                         <button type="button"
-                                                class="btn btn-outline-success confirmBtn modal-bg-class"
+                                                class="btn-modern btn-outline-success confirmBtn modal-bg-class"
                                                 onclick="sign()">
                                             <span class="confirm_type">{{ __('action.to_sign') }}</span> (ERI)
                                         </button>
@@ -126,11 +125,12 @@
     @endif
 
     @if($replyDocuments && count($replyDocuments) > 0)
-        <div class="card">
-            <div class="card-header">
+        <div class="execution-card-modern">
+            <div class="card-header-modern">
+                <i data-lucide="mail" class="text-white"></i>
                 <h3>{{ __('title.answer_letters') }}</h3>
             </div>
-            <div class="card-body chat-box scrollable_div">
+            <div class="performers-list-modern scrollable_div">
                 @foreach($replyDocuments as $key => $doc)
                     <div class="sl-item" id="doc_{{ $doc->id }}">
                         <div class="sl-left fw-600 f-16">{{ $doc->fromUser->personal->shortName()??'' }}</div>
@@ -143,7 +143,7 @@
                             </p>
 
                             @if(is_array($doc->replyFiles))
-                                <p><i class="ik ik-paperclip"></i> {{ __('title.doc_files') }}</p>
+                                <p><i data-lucide="paperclip"></i> {{ __('title.doc_files') }}</p>
                             @endif
                             @foreach($doc->replyFiles as $key => $file)
                                 @switch(strtolower($file->file_ext))
@@ -229,14 +229,14 @@
                                 </span>
                                 @if($doc && $doc->status == 5 && $journal->workEcpInfo($document->id, $doc->from_user)
                                         && $journal->workEcpInfo($document->id, $doc->from_user)->docInfo)
-                                    <i class="ik ik-feather ml-10" style="font-size: 18px; cursor: pointer" onclick="showEspInfo({{ $doc->id }})"></i>
+                                    <i data-lucide="feather" style="font-size: 18px; cursor: pointer" onclick="showEspInfo({{ $doc->id }})"></i>
 
                                     @include('templates.ecp.ecp-information')
                                 @endif
                             </div>
                             <div class="like-comm mt-20">
                                 <span class="mr-10">
-                                    <i class="ik ik-clock"></i> {{ date('d.m.y, H:i', strtotime($doc->created_at)) }}
+                                    <i data-lucide="clock"></i> {{ date('d.m.y, H:i', strtotime($doc->created_at)) }}
                                 </span>
                             </div>
                         </div>
@@ -251,19 +251,20 @@
         @include('templates.comment_form')
     @endif
 
-    <div class="card table-card">
-        <div class="card-header">
+    <div class="execution-card-modern actions-card">
+        <div class="card-header-modern">
+            <i data-lucide="settings" class="text-white"></i>
             <h3>{{ __('action.action') }}</h3>
         </div>
-        <div class="card-body">
+        <div class="actions-body-modern">
             <button type="button" onclick="printContent()"
-                    class="btn btn-outline-secondary btn-rounded mr-5">
-                <i class="ik ik-printer"></i> {{ __('action.print') }}
+                    class="btn-modern btn-secondary">
+                <i data-lucide="printer"></i> {{ __('action.print') }}
             </button>
 
 {{--            <a href="{{ route('pdf.sent-doc', [$document->id, $document->doc_hash]) }}"--}}
 {{--               class="btn btn-outline-secondary btn-rounded">--}}
-{{--                <i class="ik ik-download"></i> {{ __('action.download') }}--}}
+{{--                <i data-lucide="download"></i> {{ __('action.download') }}--}}
 {{--            </a> --}}
             <br><br>
 
@@ -304,7 +305,7 @@
                         </div>
 
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-outline-warning float-right modal_btn"></button>
+                            <button type="submit" class="btn-modern btn-outline-warning float-right modal_btn"></button>
                         </div>
                     </form>
 
@@ -335,7 +336,7 @@
                         <h5 id="resModalMessage"></h5>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-light" data-dismiss="modal">
+                        <button type="button" class="btn-modern btn-light" data-dismiss="modal">
                             {{ __('action.close') }}
                         </button>
                     </div>
@@ -356,6 +357,9 @@
         background: #f8f9fa !important;
     }
 </style>
+
+<link rel="stylesheet" href="{{ asset('css/templates/office/journal/view-right.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/select2.css') }}">
 
 <script src="{{ asset('/ajax/jquery.min.js') }}"></script>
 @include('templates.ecp.login-sign')

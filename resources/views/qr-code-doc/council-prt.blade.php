@@ -41,7 +41,7 @@
                             </div>
                             <div class="feed-item">
                                 <a href="#">
-                                    <div class="feeds-left"><i class="ik ik-clock"></i></div>
+                                    <div class="feeds-left"><i data-lucide="clock"></i></div>
                                     <div class="feeds-body">
                                         <h6 class="title text-blue">Hujjat raqami/sanasi:</h6>
                                         <p>№ {{ $document->doc_number }}<br> {{ date('d.m.Y', strtotime($document->doc_date)) }} yil.</p>

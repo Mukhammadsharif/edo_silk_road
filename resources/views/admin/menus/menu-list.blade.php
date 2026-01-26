@@ -77,7 +77,7 @@
                                         <td>{{ $model->lang($model->id) }}</td>
                                         <td>{{ $model->url_path }}</td>
                                         <td>{{ $model->code }}</td>
-                                        <td><i class="{{ $model->iconClass->name??'-' }}" style="font-size: xx-large"></i></td>
+                                        <td><i data-lucide="{{ $model->iconClass->name??'-' }}" style="font-size: xx-large"></i></td>
                                         <td>{{ $model->parent->title??'-' }}</td>
                                         <td>
                                             @if($model->count)
@@ -185,7 +185,7 @@
                                                         <input type="radio" name="icon_id" id="create_icon_id{{ $item->id }}" value="{{ $item->id }}">
                                                         <i class="helper"></i>
                                                         <div class="icon-list-item">
-                                                            <i class="{{ $item->name }}"></i><div class="name">{{ $item->name }}</div>
+                                                            <i data-lucide="{{ $item->name }}"></i><div class="name">{{ $item->name }}</div>
                                                         </div>
                                                     </label>
                                                 </div>
@@ -226,7 +226,7 @@
                             <i class="ik ik-x"></i> {{ __('action.cancel') }}
                         </button>
                         <button type="submit" class="btn btn-primary">
-                            <i class="ik ik-save"></i> {{ __('action.save') }}
+                            <i data-lucide="save"></i> {{ __('action.save') }}
                         </button>
                     </div>
 
@@ -349,7 +349,7 @@
                             <i class="ik ik-x"></i> {{ __('action.cancel') }}
                         </button>
                         <button type="submit" class="btn btn-primary">
-                            <i class="ik ik-save"></i> {{ __('action.save') }}
+                            <i data-lucide="save"></i> {{ __('action.save') }}
                         </button>
                     </div>
 
@@ -509,7 +509,7 @@
                                 <input type="radio" name="icon_id" value="`+value.id+`" `+icon_checked+`>
                                 <i class="helper"></i>
                                 <div class="icon-list-item">
-                                <i class="`+value.name+`"></i>
+                                <i data-lucide="`+value.name+`"></i>
                                 <div class="name">`+value.name+`</div>
                                 </div>
                                 </label>

@@ -78,13 +78,13 @@
                                     <input type="text" id="searchIconCreate" onkeyup="searchIconsCreate()" placeholder="Search..." class="form-control mb-10">
                                     <div class="row icon-list-wrap">
                                         <div class="form-radio">
-                                            @foreach($iconClassList->where('type', 1) as $key => $item)
+                                            @foreach($iconClassList->where('type', 2) as $key => $item)
                                                 <div class="radio radio-inline icon_div_list_create">
                                                     <label>
                                                         <input type="radio" name="icon_id" value="{{ $item->id }}" @if($model->icon_id == $item->id) checked @endif>
                                                         <i class="helper"></i>
                                                         <div class="icon-list-item">
-                                                            <i class="{{ $item->name }}"></i><div class="name">{{ $item->name }}</div>
+                                                            <i data-lucide="{{ $item->name }}"></i><div class="name">{{ $item->name }}</div>
                                                         </div>
                                                     </label>
                                                 </div>
@@ -96,7 +96,7 @@
                                     <label>{{ __('field.class_id') }}</label>
                                     <div class="row icon-list-wrap">
                                         <div class="form-radio">
-                                            @foreach($iconClassList->where('type', 2) as $key => $item)
+                                            @foreach($iconClassList->where('type', 3) as $key => $item)
                                                 <div class="radio radio-inline">
                                                     <label>
                                                         <input type="radio" name="class_id" value="{{ $item->id }}" @if($model->class_id == $item->id) checked @endif>
@@ -118,7 +118,7 @@
                                         <i class="ik ik-x"></i> {{ __('action.cancel') }}
                                     </a>
                                     <button type="submit" class="btn btn-primary">
-                                        <i class="ik ik-save"></i> {{ __('action.save') }}
+                                        <i data-lucide="save"></i> {{ __('action.save') }}
                                     </button>
                                 </div>
                             </div>

@@ -1,10 +1,11 @@
-<div class="col-md-4">
+<div class="view-right-modern">
     @if($signer)
-        <div class="card">
-            <div class="card-header">
-                <h3><i class="fa-solid fa-pen-nib"></i> {{ __('title.sign_employee') }}</h3>
+        <div class="execution-card-modern">
+            <div class="card-header-modern">
+                <i data-lucide="pen-tool" class="text-white"></i>
+                <h3>{{ __('title.sign_employee') }}</h3>
             </div>
-            <div class="card-block">
+            <div class="performers-list-modern">
                 <div class="sl-item">
                     <div class="sl-left fw-600 f-16">{{ $signer->toSign->personal->fullName()??'' }}</div>
                     <div class="sl-right">
@@ -23,14 +24,14 @@
                             </span>
                             @if($signer && $signer->status == 5 && $journal->workEcpInfo($document->id, $signer->to_user)
                                         && $journal->workEcpInfo($document->id, $signer->to_user)->docInfo)
-                                <i class="ik ik-feather ml-10" style="font-size: 18px; cursor: pointer" onclick="showEspInfo({{ $signer->id }})"></i>
+                                <i data-lucide="feather" style="font-size: 18px; cursor: pointer" onclick="showEspInfo({{ $signer->id }})"></i>
 
                                 @include('templates.ecp.signer-ecp-information')
                             @endif
                         </div>
                         <div class="mt-10">
                             @if($signer->status != (int)1)
-                                <span class="sl-date pull-right"><i class="ik ik-clock"></i>
+                                <span class="sl-date pull-right"><i data-lucide="clock"></i>
                                     {{ date('d.m.y, H:i', strtotime($signer->updated_at)) }}
                                 </span>
                             @endif
@@ -42,12 +43,13 @@
         </div>
     @endif
 
-    <div class="card">
+    <div class="execution-card-modern">
         @if($agreement_users && $agreement_users->count())
-            <div class="card-header">
-                <h3><i class="fa fa-handshake"></i> {{ __('title.agreement_employees') }}</h3>
+            <div class="card-header-modern">
+                <i data-lucide="handshake" class="text-white"></i>
+                <h3>{{ __('title.agreement_employees') }}</h3>
             </div>
-            <div class="card-block">
+            <div class="performers-list-modern">
                 @foreach($agreement_users as $key => $item)
                     <div class="sl-item">
                         <div class="sl-left fw-600 f-16">{{ $item->toUser->personal->fullName()??'' }}</div>
@@ -69,13 +71,13 @@
                                     </span>
                                     @if($doc && $doc->status == 5 && $journal->workEcpInfo($document->id, $doc->from_user)
                                         && $journal->workEcpInfo($document->id, $doc->from_user)->docInfo)
-                                        <i class="ik ik-feather ml-10" style="font-size: 18px; cursor: pointer" onclick="showEspInfo({{ $doc->id }})"></i>
+                                        <i data-lucide="feather" style="font-size: 18px; cursor: pointer" onclick="showEspInfo({{ $doc->id }})"></i>
 
                                         @include('templates.ecp.ecp-information')
                                     @endif
                                 </div>
                                 <div class="mt-10">
-                                    <span class="sl-date pull-right mt-5"><i class="ik ik-clock"></i>
+                                    <span class="sl-date pull-right mt-5"><i data-lucide="clock"></i>
                                         {{ date('d.m.y, H:i', strtotime($doc->created_at)) }}
                                     </span>
                                 </div><hr>
@@ -88,7 +90,7 @@
                                 </div>
                                 <div class="mt-10">
                                     @if($item->status != (int)2)
-                                        <span class="sl-date pull-right"><i class="ik ik-clock"></i>
+                                        <span class="sl-date pull-right"><i data-lucide="clock"></i>
                                         {{ date('d.m.y, H:i', strtotime($item->updated_at)) }}
                                     </span>
                                     @endif
@@ -101,22 +103,23 @@
         @endif
     </div>
 
-    <div class="card">
+    <div class="execution-card-modern actions-card">
         @if($journal->status == (int)6 && $current_agreement->status == 2)
-            <div class="card-header">
-                <h3><i class="ik ik-check-circle"></i> {{ __('title.confirm_document') }}</h3>
+            <div class="card-header-modern">
+                <i data-lucide="circle-check-big" class="text-white"></i>
+                <h3>{{ __('title.confirm_document') }}</h3>
             </div>
-            <div class="card-body">
-                <button type="button" class="btn btn-outline-danger m-sm-1 openCancelReturnModal" data-id="2">
-                    {{ __('action.cancel') }}
+            <div class="actions-body-modern">
+                <button type="button" class="btn-modern btn-danger m-sm-1 openCancelReturnModal" data-id="2">
+                    <i data-lucide="ban"></i> {{ __('action.cancel') }}
                 </button>
 
-                <button type="button" class="btn btn-outline-warning m-sm-1 openCancelReturnModal" data-id="3">
-                    {{ __('action.re-editing') }}
+                <button type="button" class="btn-modern btn-warning m-sm-1 openCancelReturnModal" data-id="3">
+                    <i data-lucide="edit"></i> {{ __('action.re-editing') }}
                 </button>
 
-                <button type="button" class="btn btn-outline-success m-sm-1 openConfirmForm" data-id="5">
-                    {{ __('action.to_sign') }}
+                <button type="button" class="btn-modern btn-success m-sm-1 openConfirmForm" data-id="5">
+                    <i data-lucide="signature"></i> {{ __('action.to_sign') }}
                 </button>
             </div>
 
@@ -134,7 +137,7 @@
                         </div>
                         @if($signType->doc_sign_type === 1)
                             <div class="col-sm-12">
-                                <label><i class="fa fa-key"></i> {{ __('action.select_ecp_key') }}
+                                <label><i data-lucide="key-round"></i> {{ __('action.select_ecp_key') }}
                                 </label><br>
                                 <label id="message"></label>
                                 <select name="key" class="form-control form-control-primary select2" style="width: 100%"
@@ -142,7 +145,7 @@
                             </div>
                         @endif
                         <div class="col-sm-6 mt-5">
-                            <label hidden><i class="fa fa-key"></i> {{ __('action.to_sign_by_key') }}
+                            <label hidden><i data-lucide="key-round"></i> {{ __('action.to_sign_by_key') }}
                             </label><br>
                             @if($signType->doc_sign_type === 2)
                                 <button type="submit" class="btn btn-outline-success modal-bg-class">
@@ -175,28 +178,30 @@
 
     @include('templates.comment_form')
 
-    <div class="card table-card">
-        <div class="card-header">
+    <div class="execution-card-modern actions-card">
+        <div class="card-header-modern">
+            <i data-lucide="settings" class="text-white"></i>
             <h3>{{ __('title.action') }}</h3>
         </div>
-        <div class="card-body">
+        <div class="actions-body-modern">
             <button type="button" onclick="printContent()"
-                    class="btn btn-outline-secondary btn-rounded mr-5">
-                <i class="ik ik-printer"></i> {{ __('action.print') }}
+                    class="btn-modern btn-secondary btn-rounded">
+                <i data-lucide="printer"></i>
+                {{ __('action.print') }}
             </button>
 
-            <button type="button" onclick="downloadAsPDF()" class="btn btn-outline-dark m-1 btn-rounded">
-                <i class="ik ik-download"></i> {{ __('action.download') }}
+            <button type="button" onclick="downloadAsPDF()" class="btn-modern btn-secondary">
+                <i data-lucide="download"></i>
+                {{ __('action.download') }}
             </button>
             <input id="downloadName" value="{{ $journal->journal->lang($journal->journal->lang_id)??'-' }} - {{ $journal->fromUser->personal->shortName()??'' }}" hidden/>
-
-            @if(in_array($journal->status, [9,10,11]) && $journal->journal->doc_code !== 'BASE_INCOMING')
-                <br><br>
-                @include('qr-code-doc.qr-code-view')
-                <input id="doc_id" value="{{ $document->id }}" hidden>
-                <input id="doc_type" value="work_doc" hidden>
-            @endif
         </div>
+
+        @if(in_array($journal->status, [9,10,11]) && $journal->journal->doc_code !== 'BASE_INCOMING')
+            @include('qr-code-doc.qr-code-view')
+            <input id="doc_id" value="{{ $document->id }}" hidden>
+            <input id="doc_type" value="work_doc" hidden>
+        @endif
     </div>
 
     @include('office.templates.doc-steps')
@@ -242,6 +247,10 @@
 @include('qr-code-doc.qr-code-view-js')
 @include('templates.ecp.login-sign')
 @include('templates.download')
+
+
+<link rel="stylesheet" href="{{ asset('css/templates/office/journal/view-right.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/select2.css') }}">
 
 <link rel="stylesheet" href="{{ asset('/richeditor//richtexteditor/rte_theme_default.css') }}" />
 <script type="text/javascript" src="{{ asset('/richeditor//richtexteditor/rte.js') }}"></script>

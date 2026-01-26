@@ -110,7 +110,7 @@
                                     </a>
                                     <div class="like-comm float-right">
                                         <a href="{{ route('prt-document-file.download', ['id' =>$file->id]) }}"
-                                           class="link text-secondary"><i class="ik ik-download"></i>{{ __('action.download') }}
+                                           class="link text-secondary"><i data-lucide="download"></i>{{ __('action.download') }}
                                         </a>
                                         <small class="text-muted">({{ number_format($file->file_size/1024, 2) }}KB)</small>
                                     </div>
@@ -124,7 +124,7 @@
                                     </a>
                                     <div class="like-comm float-right">
                                         <a href="{{ route('prt-document-file.download', ['id' =>$file->id]) }}"
-                                           class="link text-secondary"><i class="ik ik-download"></i>{{ __('action.download') }}
+                                           class="link text-secondary"><i data-lucide="download"></i>{{ __('action.download') }}
                                         </a>
                                         <small class="text-muted">({{ number_format($file->file_size/1024, 2) }}KB)</small>
                                     </div>
@@ -133,7 +133,7 @@
                                     <div class="like-comm float-right">
                                         <a href="{{ route('prt-document-file.download', ['id' =>$file->id]) }}"
                                            class="link text-secondary">{{ $file->file_name }}
-                                            <i class="ik ik-download"></i>{{ __('field.download') }}
+                                            <i data-lucide="download"></i>{{ __('field.download') }}
                                             <small class="text-muted">({{ number_format($file->file_size/1024, 2) }}KB)</small>
                                         </a>
                                     </div>

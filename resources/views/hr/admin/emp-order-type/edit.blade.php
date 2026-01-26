@@ -72,7 +72,7 @@
                                 </div>
                             </div>
                             <a href="{{ route('hr-order-type.index') }}" class="btn btn-outline-secondary">{{ __('cancel') }}</a>
-                            <button type="submit" class="btn btn-outline-primary"><i class="ik ik-save"></i>{{ __('save') }}</button>
+                            <button type="submit" class="btn btn-outline-primary"><i data-lucide="save"></i>{{ __('save') }}</button>
                         </form>
                     </div>
                 </div>

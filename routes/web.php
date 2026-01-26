@@ -46,9 +46,11 @@ use App\Http\Controllers\Protocol\ProtocolDocTypeController;
 use App\Http\Controllers\Protocol\ProtocolEmpHrOrdersController;
 use App\Http\Controllers\Comment\DocumentCommentController;
 
-Route::get('/', function () {
+Route::get('/edo', function () {
     return view('auth.login');
 });
+
+Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
 Route::get('/log-test', function () {
     Log::debug('Test log message');
@@ -64,13 +66,13 @@ Route::post('e-imzo/backend-auth',  [SignDocImzoController::class, 'backendAuthL
 
 Route::group(['middleware' => ['auth']], function() {
 
-    Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/edo', [HomeController::class, 'index'])->name('home');
 
     Route::get('charts/documents', [HomeController::class, 'chartDocuments'])->name('charts.documents');
     Route::post('get-menu-count', [HomeController::class, 'getMenuCount'])->name('get-menu-count');
 
     Route::prefix('profile')->group(function () {
-        Route::get('my', [ProfileController::class, 'profile']);
+        Route::get('my', [ProfileController::class, 'profile'])->name('profile.my');
         Route::post('pass-update', [ProfileController::class, 'passUpdate'])->name('my.pass-update');
         Route::post('personal-update', [ProfileController::class, 'personalUpdate'])->name('my.personal-update');
 

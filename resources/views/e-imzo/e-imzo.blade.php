@@ -1,9 +1,10 @@
 {{--EMIZO Error Modal--}}
-<div class="modal fade" id="imzo-modal" aria-hidden="true">
+<div class="modal fade" id="imzo-modal" aria-hidden="true" tabindex="-1" role="dialog"
+     aria-labelledby="imzoModalTitle" data-backdrop="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
+        <div class="modal-content modal-content-class">
             <div class="modal-header bg-yellow">
-                <h4 class="modal-title"><i class="fa fa-key"></i> e-imzo</h4>
+                <h4 class="modal-title" id="imzoModalTitle"><i data-lucide="key-round"></i> e-imzo</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -64,25 +65,39 @@
     }
 
     var uiShowMessage = function (message) {
-        //alert(message);
         if (message === 'API-key для домена недействителен.') {
             message = 'e-imzo kaliti ushbu sayt (domen) uchun ruhsat berilmagan';
         } else if (message === 'Ввод пароля отменен') {
             message = 'Parolni kiritish bekor qilindi';
         }
+
+        // Удаляем старые backdrop
+        $('.modal-backdrop').remove();
+        $('body').removeClass('modal-open');
+
         $('#imzo-msg').html(message);
-        $('#imzo-modal').modal('show');
+
+        // Показываем модалку правильно
+        $('#imzo-modal').modal({
+            backdrop: true,
+            keyboard: true,
+            show: true
+        });
     }
 
     var uiLoading = function () {
         var l = document.getElementById('message');
-        l.innerHTML = 'Yuklanmoqda ...';
-        l.style.color = 'red';
+        if (l) {
+            l.innerHTML = 'Yuklanmoqda ...';
+            l.style.color = 'red';
+        }
     }
 
     var uiNotLoaded = function (e) {
         var l = document.getElementById('message');
-        l.innerHTML = '';
+        if (l) {
+            l.innerHTML = '';
+        }
         if (e) {
             wsError(e);
         } else {
@@ -92,7 +107,9 @@
 
     var uiUpdateApp = function () {
         var l = document.getElementById('message');
-        l.innerHTML = errorUpdateApp;
+        if (l) {
+            l.innerHTML = errorUpdateApp;
+        }
     }
 
     var uiLoadKeys = function () {
@@ -118,36 +135,47 @@
     var uiComboSelect = function (itm) {
         if (itm) {
             var id = document.getElementById(itm);
-            id.setAttribute('selected', 'true');
+            if (id) {
+                id.setAttribute('selected', 'true');
+            }
         }
     }
 
     var cbChanged = function (c) {
-        document.getElementById('keyId').innerHTML = '';
+        var keyIdEl = document.getElementById('keyId');
+        if (keyIdEl) {
+            keyIdEl.innerHTML = '';
+        }
     }
 
     var uiClearCombo = function () {
-        var combo = document.testform.key;
-        combo.length = 0;
+        if (document.testform && document.testform.key) {
+            var combo = document.testform.key;
+            combo.length = 0;
+        }
     }
 
     var uiFillCombo = function (items) {
-        var combo = document.testform.key;
-        for (var itm in items) {
-            combo.append(items[itm]);
+        if (document.testform && document.testform.key) {
+            var combo = document.testform.key;
+            for (var itm in items) {
+                combo.append(items[itm]);
+            }
         }
     }
 
     var uiLoaded = function () {
         var l = document.getElementById('message');
-        l.innerHTML = '';
+        if (l) {
+            l.innerHTML = '';
+        }
     }
 
     var uiCreateItem = function (itmkey, vo) {
         var now = new Date();
         vo.expired = dates.compare(now, vo.validTo) > 0;
         var itm = document.createElement("option");
-        console.log(vo);
+        // console.log(vo);
         itm.value = itmkey;
         var CN = vo.CN;
         var PINFL = ' - (PINFL: '+vo.PINFL+ ')';
@@ -192,13 +220,23 @@
             },
             success: function (response) {
                 console.log(response);
+
+                // Удаляем старые backdrop
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open');
+
                 if (response.success === 200) {
                     $('.openConfirmForm').hide();
                     $('.loadingGif').hide();
-                    $('.modal-content-class').removeClass(['btn-yellow']).addClass('bg-success');
+                    $('.modal-content-class').removeClass('btn-yellow').addClass('bg-success');
                     $('#resModalTitle').text(response.title);
                     $('#resModalMessage').text(response.message);
-                    $('#responseModal').modal('toggle');
+
+                    $('#responseModal').modal({
+                        backdrop: 'static',
+                        keyboard: false,
+                        show: true
+                    });
 
                     setTimeout(function () {
                         location.reload();
@@ -206,18 +244,22 @@
                 } else if (response.success === 201) {
                     $('.openConfirmForm').show();
                     $('.loadingGif').hide();
-                    //$('.modal-content').removeClass(['btn-success']).addClass('bg-yellow');
-                    $('.modal-content-class').removeClass(['bg-success']).addClass('bg-yellow');
+                    $('.modal-content-class').removeClass('bg-success').addClass('bg-yellow');
                     $('#resModalTitle').text(response.title);
                     $('#resModalMessage').text(response.message);
-                    $('#responseModal').modal('toggle');
+
+                    $('#responseModal').modal({
+                        backdrop: 'static',
+                        keyboard: false,
+                        show: true
+                    });
                 }
             },
             error: function (s) {
                 console.log(s);
             },
             complete: function () {
-                $('.loadingGif').show();
+                $('.loadingGif').hide();
             },
         });
     };
@@ -231,7 +273,9 @@
             var ecp_doc_type = document.testform.ecp_doc_type.value;
             var ecp_confirm_id = document.testform.ecp_confirm_id.value;
             var ecp_r_text = document.testform.ecp_r_text.value;
-            var keyId = document.getElementById('keyId').innerHTML;
+            var keyIdEl = document.getElementById('keyId');
+            var keyId = keyIdEl ? keyIdEl.innerHTML : '';
+
             if (keyId) {
                 EIMZOClient.createPkcs7(keyId, ecp_doc_id, null, function (pkcs7) {
                     document.testform.pkcs7.value = pkcs7;
@@ -244,23 +288,22 @@
                             uiShowMessage(r);
                         }
                     } else {
-                        document.getElementById('keyId').innerHTML = '';
+                        if (keyIdEl) {
+                            keyIdEl.innerHTML = '';
+                        }
                         uiShowMessage(errorBrowserWS);
                     }
                     if (e) wsError(e);
                 });
             } else {
-                console.log(1)
                 EIMZOClient.loadKey(vo, function (id) {
-                    document.getElementById('keyId').innerHTML = id;
+                    if (keyIdEl) {
+                        keyIdEl.innerHTML = id;
+                    }
                     EIMZOClient.createPkcs7(id, ecp_doc_id, null, function (pkcs7) {
                         document.testform.pkcs7.value = pkcs7;
                         successCheckSignPost(pkcs7, ecp_doc_id, ecp_doc_type, ecp_confirm_id, ecp_r_text);
-
-                        console.log(11)
                     }, function (e, r) {
-
-                        console.log(2)
                         if (r) {
                             if (r.indexOf("BadPaddingException") != -1) {
                                 uiShowMessage(errorWrongPassword);
@@ -268,27 +311,21 @@
                                 uiShowMessage(r);
                             }
                         } else {
-                            document.getElementById('keyId').innerHTML = '';
+                            if (keyIdEl) {
+                                keyIdEl.innerHTML = '';
+                            }
                             uiShowMessage(errorBrowserWS);
-
-                            console.log(3)
                         }
                         if (e) wsError(e);
                     });
                 }, function (e, r) {
-
-                    console.log(22)
                     if (r) {
-
-                        console.log(4)
                         if (r.indexOf("BadPaddingException") != -1) {
                             uiShowMessage(errorWrongPassword);
                         } else {
                             uiShowMessage(r);
                         }
                     } else {
-
-                        console.log(5)
                         uiShowMessage(errorBrowserWS);
                     }
                     if (e) wsError(e);
@@ -303,7 +340,7 @@
         var ecp_confirm_id = document.testform.ecp_confirm_id.value;
         var ecp_r_text = document.testform.ecp_r_text.value;
         var pkcs7 = '';
-        console.log(ecp_r_text);
+
         $.ajax({
             url: '/ecp-sign-doc',
             type: 'POST',
@@ -319,13 +356,23 @@
             },
             success: function (response) {
                 console.log(response);
+
+                // Удаляем старые backdrop
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open');
+
                 if (response.success === 200) {
                     $('.openConfirmForm').hide();
                     $('.loadModal').modal('hide');
-                    $('.modal-content-class').removeClass(['btn-yellow']).addClass('bg-success');
+                    $('.modal-content-class').removeClass('btn-yellow').addClass('bg-success');
                     $('#resModalTitle').text(response.title);
                     $('#resModalMessage').text(response.message);
-                    $('#responseModal').modal('toggle');
+
+                    $('#responseModal').modal({
+                        backdrop: 'static',
+                        keyboard: false,
+                        show: true
+                    });
 
                     setTimeout(function () {
                         location.reload();
@@ -333,18 +380,28 @@
                 } else if (response.success === 201) {
                     $('.openConfirmForm').show();
                     $('.loadModal').modal('hide');
-                    //$('.modal-content').removeClass(['btn-success']).addClass('bg-yellow');
-                    $('.modal-content-class').removeClass(['bg-success']).addClass('bg-yellow');
+                    $('.modal-content-class').removeClass('bg-success').addClass('bg-yellow');
                     $('#resModalTitle').text(response.title);
                     $('#resModalMessage').text(response.message);
-                    $('#responseModal').modal('toggle');
+
+                    $('#responseModal').modal({
+                        backdrop: 'static',
+                        keyboard: false,
+                        show: true
+                    });
                 } else if (response.success === 202) {
                     $('.openConfirmForm').show();
                     $('.loadModal').modal('hide');
-                    $('.modal-content-class').removeClass(['btn-success']).addClass('bg-yellow');
+                    $('.modal-content-class').removeClass('btn-success').addClass('bg-yellow');
                     $('#resModalTitle').text(response.title);
                     $('#resModalMessage').text(response.message);
-                    $('#responseModal').modal('toggle');
+
+                    $('#responseModal').modal({
+                        backdrop: 'static',
+                        keyboard: false,
+                        show: true
+                    });
+
                     setTimeout(function () {
                         window.location.href = '/dep-head/ag-docs';
                     }, 5000);
@@ -357,7 +414,6 @@
                 $("#loading").hide();
             },
         });
-
     };
 
     window.onload = AppLoad;

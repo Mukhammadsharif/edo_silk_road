@@ -1,138 +1,210 @@
 @extends('layouts.app')
-
+<link rel="stylesheet" href="{{ asset('css/templates/office/journal/work/index.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/select2.css') }}">
 @section('content')
-    <div class="container-fluid">
-        <div class="page-header">
-            <div class="row align-items-end">
-                <div class="col-md-2">
-                    <div class="page-header-title">
-                        <i class="ik ik-file-text bg-blue"></i>
-                        <div class="d-inline">
-                            <h5>{{ __('title.working_documents') }}</h5>
-                        </div>
+    <div class="work-docs-page-modern">
+        <div class="page-header-modern">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i data-lucide="briefcase"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>{{ __('title.working_documents') }}</h1>
+                        <p>{{ __('message.manage_working_documents') ?? 'Управление рабочими документами' }}</p>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="header-center">
                     @include('templates.alert')
                 </div>
-                <div class="col-md-4">
-                    <nav class="breadcrumb-container" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('home') }}"><i class="ik ik-home"></i></a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="#">{{ __('title.working_documents') }}</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">{{ __('menu.list') }}</li>
-                        </ol>
+                <div class="header-right">
+                    <nav class="breadcrumb-modern">
+                        <a href="{{ route('home') }}" class="breadcrumb-item">
+                            <i data-lucide="home"></i>
+                            <span>{{ __('menu.home') ?? 'Главная' }}</span>
+                        </a>
+                        <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                        <span class="breadcrumb-item active">{{ __('title.working_documents') }}</span>
                     </nav>
                 </div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="card">
-                    <div class="card-header d-block">
-                        <form action="{{ route('office.work-docs') }}" method="post" role="search" class="form-inline w-100">
-                            @csrf
-                            <div class="mb-2 mr-sm-2">
-                                <select name="doc_type" class="form-control">
+        <div class="content-wrapper-modern">
+            <div class="filters-card-modern">
+                <div class="filters-header">
+                    <div class="filters-title">
+                        <i data-lucide="filter"></i>
+                        <span>{{ __('action.filters') ?? 'Фильтры' }}</span>
+                    </div>
+                    <div class="filters-count">
+                        <span class="count-badge">{{ $models->total() }}</span>
+                        <span class="count-label">{{ __('field.documents') ?? 'документов' }}</span>
+                    </div>
+                </div>
+
+                <form action="{{ route('office.work-docs') }}" method="post" class="filters-form-modern">
+                    @csrf
+                    <div class="filters-grid">
+                        <div class="filter-item">
+                            <label>
+                                <i data-lucide="folder"></i>
+                                {{ __('document.document') }}
+                            </label>
+                            <select name="doc_type" class="form-control-modern select2">
                                     <option value="all">{{ __('document.document') }}</option>
                                     @forelse($journal_types as $key => $journal_type)
                                         <option value="{{ $journal_type->id }}" {{ ($doc_type == $journal_type->id ? "selected":"") }}>
                                             {{ $key+1 }}.
                                             {{ $journal_type->lang($journal_type->lang_id) }}
                                         </option>
-                                    @empty
-                                        <option>{{ __('field.not_found') }}</option>
-                                    @endforelse
-                                </select>
-                            </div>
-                            <div class="mb-2 mr-sm-2">
-                                <input type="text" name="doc_name" placeholder="{{ __('input.doc_name') }}" value="{{ $doc_name??'' }}" class="form-control">
-                            </div>
-                            <div class="mb-2 mr-sm-2">
-                                <input type="text" name="date_from" class="form-control my-bootstrap-datepicker" placeholder="{{ __('input.from_day') }}" value="{{ $date_from??'' }}" autocomplete="off">
-                            </div>
-                            <div class="mb-2 mr-sm-2">
-                                <input type="text" name="date_till" class="form-control my-bootstrap-datepicker" placeholder="{{ __('input.till_day') }}" value="{{ $date_till??'' }}" autocomplete="off">
-                            </div>
-                            <div class="mb-2 mr-sm-2">
-                                <select name="status" class="form-control">
-                                    <option value="">{{ __('select.status_all') }}</option>
-                                    @forelse($statusNames as $key => $val)
-                                        <option value="{{ $val->code }}" {{ ($status == $val->code ? "selected":"") }}>
-                                            {{ $val->lang($val->id) }}
-                                        </option>
-                                    @empty
-                                        <option>{{ __('not_found') }}</option>
-                                    @endforelse
-                                </select>
-                            </div>
-
-                            <button type="submit" class="btn btn-info mr-1 mb-2 mr-10"><i class="fa fa-search"></i> {{ __('action.search') }} ({{ $models->total() }})</button>
-                            <a href="{{ route('office.work-docs') }}" class="btn btn-light mb-2">
-                                <i class="ik ik-refresh-ccw"></i> {{ __('action.clear') }}
-                            </a>
-                        </form>
-                    </div>
-                    <div class="card-body template-demo">
-                        <div class="table-responsive">
-                            <table class="table table-striped table-bordered">
-                                <thead>
-                                <tr class="text-center">
-                                    <th>{{ __('document.document') }}</th>
-                                    <th>{{ __('document.doc_name') }}</th>
-                                    <th>{{ __('document.doc_date') }}</th>
-                                    <th>{{ __('document.status') }}</th>
-                                    <th>{{ __('document.signing_term') }}</th>
-                                    <th>{{ __('document.creator') }}</th>
-                                    <th>{{ __('document.created_at') }}</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                @forelse($models as $key => $model)
-                                    <tr class="text-center">
-                                        <td>
-                                            <span class="badge badge-green">
-                                                {{ $model->journal->lang($model->journal->lang_id)??'' }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <a href="{{ route('office.view-work-doc', [$model->id, $model->doc->doc_hash??'*']) }}" class="text-primary">
-                                                {{ $model->doc->doc_name??'*' }}
-                                            </a>
-                                        </td>
-                                        <td>{{ date('d.m.Y', strtotime($model->doc->doc_date??now())) }}</td>
-                                        <td>
-                                            @if($model->statusWork)
-                                                <span class="badge badge-pill {{ $model->statusWork->badgeClass??'' }}">
-                                                    {{ $model->statusWork->lang($model->statusWork->id)??'' }}
-                                                </span>
-                                            @else
-                                                <span class="badge badge-pill {{ $default_status->bg_class??'' }}">
-                                                    {{ __($default_status->lang_code??'unk') }}
-                                                </span>
-                                            @endif
-                                        </td>
-                                        <td>@include('templates.execution-time')</td>
-                                        <td>{{ $model->fromUser->personal->shortName()??'' }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($model->created_at)->format('d.m.y, H:i') }}</td>
-                                    </tr>
                                 @empty
-                                    <tr class="text-center">
-                                        <td colspan="7">{{ __('field.not_found') }}</td>
-                                    </tr>
+                                    <option>{{ __('field.not_found') }}</option>
                                 @endforelse
-                                </tbody>
-                            </table>
-                            {!! $models->links() !!}
+                            </select>
+                        </div>
+
+                        <div class="filter-item">
+                            <label>
+                                <i data-lucide="file-text"></i>
+                                {{ __('input.doc_name') }}
+                            </label>
+                            <input type="text" name="doc_name" placeholder="{{ __('input.doc_name') }}" value="{{ $doc_name??'' }}" class="form-control-modern">
+                        </div>
+
+                        <div class="filter-item">
+                            <label>
+                                <i data-lucide="calendar"></i>
+                                {{ __('input.from_day') }}
+                            </label>
+                            <input type="text" name="date_from" class="form-control-modern my-bootstrap-datepicker" placeholder="{{ __('input.from_day') }}" value="{{ $date_from??'' }}" autocomplete="off">
+                        </div>
+
+                        <div class="filter-item">
+                            <label>
+                                <i data-lucide="calendar"></i>
+                                {{ __('input.till_day') }}
+                            </label>
+                            <input type="text" name="date_till" class="form-control-modern my-bootstrap-datepicker" placeholder="{{ __('input.till_day') }}" value="{{ $date_till??'' }}" autocomplete="off">
+                        </div>
+
+                        <div class="filter-item">
+                            <label>
+                                <i data-lucide="activity"></i>
+                                {{ __('document.status') }}
+                            </label>
+
+                            <select name="status" class="form-control-modern select2">
+
+                                <option value="">{{ __('select.status_all') }}</option>
+                                @forelse($statusNames as $key => $val)
+                                    <option value="{{ $val->code }}" {{ ($status == $val->code ? "selected":"") }}>
+                                        {{ $val->lang($val->id) }}
+                                    </option>
+                                @empty
+                                    <option>{{ __('not_found') }}</option>
+                                @endforelse
+                            </select>
+                        </div>
+
+                        <div class="filter-actions">
+                            <button type="submit" class="btn-modern btn-primary">
+                                <i data-lucide="search"></i>
+                                <span>{{ __('action.search') }}</span>
+                            </button>
+                            <a href="{{ route('office.work-docs') }}" class="btn-modern btn-secondary">
+                                <i data-lucide="rotate-ccw"></i>
+                                <span>{{ __('action.clear') }}</span>
+                            </a>
                         </div>
                     </div>
+                </form>
+            </div>
+
+            <div class="table-card-modern">
+                <div class="table-wrapper-modern">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th><i data-lucide="folder"></i> {{ __('document.document') }}</th>
+                                <th><i data-lucide="file-text"></i> {{ __('document.doc_name') }}</th>
+                                <th><i data-lucide="calendar"></i> {{ __('document.doc_date') }}</th>
+                                <th><i data-lucide="activity"></i> {{ __('document.status') }}</th>
+                                <th><i data-lucide="timer"></i> {{ __('document.signing_term') }}</th>
+                                <th><i data-lucide="user"></i> {{ __('document.creator') }}</th>
+                                <th><i data-lucide="clock"></i> {{ __('document.created_at') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($models as $key => $model)
+                                <tr class="table-row-modern">
+                                    <td>
+                                        <span class="badge-modern badge-success">
+                                            {{ $model->journal->lang($model->journal->lang_id)??'' }}
+                                        </span>
+                                    </td>
+                                    <td class="td-doc-name">
+                                        <a href="{{ route('office.view-work-doc', [$model->id, $model->doc->doc_hash??'*']) }}" class="doc-link">
+                                            <i data-lucide="file-text"></i>
+                                            <span>{{ $model->doc->doc_name??'*' }}</span>
+                                            <i data-lucide="arrow-right" class="arrow-icon"></i>
+                                        </a>
+                                    </td>
+                                    <td class="td-date">{{ date('d.m.Y', strtotime($model->doc->doc_date??now())) }}</td>
+                                    <td class="td-status">
+                                        @if($model->statusWork)
+                                            <span class="status-badge-modern {{ $model->statusWork->badgeClass??'' }}">
+                                                <i class="text-white" data-lucide="{{ $model->statusWork->iconClass->name?? 'circle' }}"></i>
+                                                {{ $model->statusWork->lang($model->statusWork->id)??'' }}
+                                            </span>
+                                        @else
+                                            <span class="status-badge-modern {{ $default_status->bg_class??'' }}">
+                                                <i class="text-white" data-lucide="{{ $model->statusWork->iconClass->name?? 'circle' }}"></i>
+                                                {{ __($default_status->lang_code??'unk') }}
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="td-term">@include('templates.execution-time')</td>
+                                    <td class="td-creator">
+                                        <div class="creator-cell">
+                                            <i data-lucide="user"></i>
+                                            <span>{{ $model->fromUser->personal->shortName()??'' }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="td-datetime">
+                                        <div class="datetime-cell">
+                                            <span class="date">{{ \Carbon\Carbon::parse($model->created_at)->format('d.m.y') }}</span>
+                                            <span class="time">{{ \Carbon\Carbon::parse($model->created_at)->format('H:i') }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="empty-state">
+                                        <div class="empty-state-content">
+                                            <i data-lucide="briefcase"></i>
+                                            <p>{{ __('field.not_found') }}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination-wrapper-modern">
+                    {!! $models->links() !!}
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        // Initialize lucide icons
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+    </script>
 @endsection

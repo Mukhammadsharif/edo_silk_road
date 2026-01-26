@@ -173,6 +173,7 @@
     <script src="{{ asset('/assets/js/form-advanced.js') }}"></script>
     <script src="{{ asset('/assets/js/alerts.js') }}"></script>
     <script src="{{ asset('/assets/dist/js/theme.min.js') }}"></script>
+    <script src="{{ asset('js/lucide.min.js') }}"></script>
 
 <script>
 
@@ -183,6 +184,10 @@
             format: "dd.mm.yyyy",
             todayHighlight: true
         });
+
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
     });
 
     // SELECT FILE

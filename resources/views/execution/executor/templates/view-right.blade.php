@@ -1,8 +1,9 @@
-<div class="col-md-4">
+<div class="view-right-modern">
     @if($directorDocument)
-        <div class="card table-card">
-            <div class="card-header">
-                <h3 class="font-weight-bold">{{ __('title.execution') }}</h3>
+        <div class="execution-card-modern">
+            <div class="card-header-modern">
+                <i data-lucide="clipboard-check" class="text-white"></i>
+                <h3>{{ __('title.execution') }}</h3>
             </div>
 
             <div class="card-block">
@@ -61,7 +62,7 @@
                     </div>
                     <div class="col-4 border-right">
                         <p>{{ __('field.created_date') }}:</p>
-                        <i class="ik ik-clock"></i>
+                        <i data-lucide="clock"></i>
                         {{ date('d.m.y, H:i', strtotime($directorDocument->updated_at)) }}
                     </div>
                     <div class="col-4">
@@ -79,11 +80,12 @@
     @endif
 
     @if(count($replyDocuments) > 0)
-        <div class="card">
-            <div class="card-header">
+        <div class="execution-card-modern">
+            <div class="card-header-modern">
+                <i data-lucide="mail" class="text-white"></i>
                 <h3>{{ __('title.answer_letters') }}</h3>
             </div>
-            <div class="card-body chat-box scrollable_div">
+            <div class="performers-list-modern scrollable_div">
                 @foreach($replyDocuments as $key => $doc)
                     <div class="sl-item" id="doc_{{ $doc->id }}">
                         <div class="sl-left fw-600 f-16">{{ $doc->fromUser->personal->shortName()??'' }}</div>
@@ -96,7 +98,7 @@
                             </p>
 
                             @if(is_array($doc->replyFiles))
-                                <p><i class="ik ik-paperclip"></i> {{ __('doc_files') }}</p>
+                                <p><i data-lucide="paperclip"></i> {{ __('doc_files') }}</p>
                             @endif
                             @foreach($doc->replyFiles as $key => $file)
                                 @switch(strtolower($file->file_ext))
@@ -117,7 +119,7 @@
                                                 <div class="like-comm float-right">
                                                     <a href="{{ route('r-file.download', ['id'=>$file->id]) }}"
                                                        class="link mr-10 text-warning"><i
-                                                            class="ik ik-download"></i>{{ __('download') }}
+                                                            data-lucide="download"></i>{{ __('download') }}
                                                     </a>
                                                     <i class="text-muted">({{ number_format($file->file_size/1024, 2) }}
                                                         KB)</i>
@@ -142,7 +144,7 @@
                                                 <div class="like-comm float-right">
                                                     <a href="{{ route('r-file.download', ['id'=>$file->id]) }}"
                                                        class="link mr-10 text-warning"><i
-                                                            class="ik ik-download"></i>{{ __('download') }}
+                                                            data-lucide="download"></i>{{ __('download') }}
                                                     </a>
                                                     <i class="text-muted">({{ number_format($file->file_size/1024, 2) }}
                                                         KB)</i>
@@ -163,7 +165,7 @@
                                                 <div class="like-comm float-right">
                                                     <a href="{{ route('r-file.download', ['id'=>$file->id]) }}"
                                                        class="link mr-10 text-warning"><i
-                                                            class="ik ik-download"></i>{{ __('download') }}
+                                                            data-lucide="download"></i>{{ __('download') }}
                                                     </a>
                                                     <i class="text-muted">({{ number_format($file->file_size/1024, 2) }}
                                                         KB)</i>
@@ -184,21 +186,21 @@
 
                                         @if($doc && $doc->status == 5 && $journal->workEcpInfo($document->id, $doc->from_user)
                                         && $journal->workEcpInfo($document->id, $doc->from_user)->docInfo)
-                                            <i class="ik ik-feather ml-10" style="font-size: 18px; cursor: pointer" onclick="showEspInfo({{ $doc->id }})"></i>
+                                            <i data-lucide="feather" style="font-size: 18px; cursor: pointer" onclick="showEspInfo({{ $doc->id }})"></i>
 
                                             @include('templates.ecp.ecp-information')
                                         @endif
                                     </div>
                                 @endif
                                 <div class="mt-10">
-                                    <i class="ik ik-clock"></i> {{ date('d.m.y, H:i', strtotime($doc->created_at)) }}
+                                    <i data-lucide="clock"></i> {{ date('d.m.y, H:i', strtotime($doc->created_at)) }}
                                 </div>
                                 @if($doc->from_user === $authUser->id && !in_array($journal->status, [10, 11]) && $current_execution->id === $doc->doc_exec_step_id)
                                     <div class="mt-10">
                                         <button type="button"
-                                                class="btn btn-icon btn-outline-danger deleteItem"
+                                                class="btn-modern btn-icon btn-danger deleteItem"
                                                 data-id="{{ $doc->id }}">
-                                            <i class="ik ik-trash-2"></i>
+                                            <i data-lucide="trash-2"></i>
                                         </button>
                                     </div>
                                 @endif
@@ -212,11 +214,12 @@
     @endif
 
     @if(in_array($current_execution->status, [2,4]) && in_array($journal->status, [9, 11]))
-        <div class="card">
-            <div class="card-header">
+        <div class="execution-card-modern">
+            <div class="card-header-modern">
+                <i data-lucide="file-text" class="text-white"></i>
                 <h3>{{ __('title.exec_document') }}</h3>
             </div>
-            <div class="card-body">
+            <div class="performers-list-modern">
                 <form method="POST" action="{{ route('document.reply-document', $current_execution->id) }}"
                       enctype="multipart/form-data">
                     @csrf
@@ -233,7 +236,7 @@
                             <div class="col-md-12">
                                 <label>{{ __('document.doc_files') }}</label>
                                 <div class="custom-file">
-                                    <input type="file" name="doc_files[]" class="custom-file-input"
+                                    <input type="file" name="doc_files[]" class="custom-file-input form-control-modern"
                                            id="customFile" multiple>
                                     <label class="custom-file-label"
                                            for="customFile">{{ __('action.upload_files') }}</label>
@@ -241,8 +244,8 @@
                             </div>
                         </div>
                         <div class="col-md-12">
-                            <button type="submit" class="btn btn-outline-primary">
-                                <i class="ik ik-save"></i> {{ __('action.save') }}
+                            <button type="submit" class="btn-modern btn-primary">
+                                <i data-lucide="save"></i> {{ __('action.save') }}
                             </button>
                         </div>
                     </div>
@@ -251,8 +254,8 @@
                 <div class="row mt-10">
                     <div class="form-group">
                         <div class="col-md-12">
-                            <button type="button" id="letterChip" class="btn btn-outline-primary mt-10">
-                                <i class="ik ik-plus-circle"></i> {{ __('title.add_additional_performers') }}
+                            <button type="button" id="letterChip" class="btn-modern btn-primary mt-10">
+                                <i data-lucide="plus-circle"></i> {{ __('title.add_additional_performers') }}
                             </button>
                         </div>
                     </div>
@@ -264,8 +267,8 @@
                     <div class="row mt-10">
                         <div class="form-group">
                             <div class="col-md-12">
-                                <a href="{{ route('execute.work.document', $current_execution->id) }}" class="btn btn-success">
-                                    <i class="ik ik-check-circle"></i> {{ __('action.execute') }}
+                                <a href="{{ route('execute.work.document', $current_execution->id) }}" class="btn-modern btn-success">
+                                    <i data-lucide="check-circle"></i> {{ __('action.execute') }}
                                 </a>
                             </div>
                         </div>
@@ -277,7 +280,7 @@
                     <div class="table-responsive" style="overflow-y: scroll; height: 400px">
                         <table class="table table-hover mb-0 without-header">
                             <div class="input-group mb-2 mt-2">
-                                <input type="text" class="form-control mr-5" id="userSearch"
+                                <input type="text" class="form-control-modern mr-5" id="userSearch"
                                        onkeyup="searchUserFunction()" placeholder="{{ __('action.search') }}...">
                             </div>
                             <tbody id="unSelectedUsers">
@@ -324,11 +327,12 @@
             </div>
         </div>
 
-        <div class="card table-card selected-additional-performers">
-            <div class="card-header">
+        <div class="execution-card-modern selected-additional-performers">
+            <div class="card-header-modern">
+                <i data-lucide="users" class="text-white"></i>
                 <h3>{{ __('title.additional_performers') }}</h3>
             </div>
-            <div class="card-body">
+            <div class="performers-list-modern">
                 <form method="POST"
                       action="{{ route('document.add-performers', $journal->id) }}">
                     @csrf
@@ -340,8 +344,8 @@
                             </table>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-outline-primary m5 btnSave">
-                        <i class="ik ik-save"></i> {{ __('action.save') }}
+                    <button type="submit" class="btn-modern btn-primary m5 btnSave">
+                        <i data-lucide="save"></i> {{ __('action.save') }}
                     </button>
                 </form>
             </div>
@@ -350,9 +354,10 @@
 
 
     @if($selectedAddPerformers && $selectedAddPerformers->count())
-        <div class="card table-card">
-            <div class="card-header">
-                <h3><i class="ik ik-users"></i> {{ __('title.additional_performers') }}</h3>
+        <div class="execution-card-modern">
+            <div class="card-header-modern">
+                <i data-lucide="users" class="text-white"></i>
+                <h3>{{ __('title.additional_performers') }}</h3>
             </div>
 
             <div class="card-block">
@@ -391,12 +396,12 @@
                     <div class="col-4 border-right">
                         <p>{{ __('status.exec_status') }}</p>
                         <span class="badge badge-success">
-                            <i class="ik ik-check-circle"></i> {{ __('status.confirmed') }}
+                            <i data-lucide="check-circle"></i> {{ __('status.confirmed') }}
                         </span>
                     </div>
                     <div class="col-4 border-right">
                         <p>{{ __('status.date_sent_for_execution') }}</p>
-                        <i class="ik ik-clock"></i> {{ \Carbon\Carbon::parse($selectedAddPerformers[0]['created_at']??now())->format('d.m.y H:i')  }}
+                        <i data-lucide="clock"></i> {{ \Carbon\Carbon::parse($selectedAddPerformers[0]['created_at']??now())->format('d.m.y H:i')  }}
                     </div>
                     <div class="col-4">
                         <p>
@@ -412,27 +417,27 @@
     @include('templates.comment_form')
 
     @if($journal->journal->doc_code != 'BASE_OUTGOING')
-        <div class="card table-card">
-            <div class="card-header">
+        <div class="execution-card-modern actions-card">
+            <div class="card-header-modern">
+                <i data-lucide="settings" class="text-white"></i>
                 <h3>{{ __('action.action') }}</h3>
             </div>
-            <div class="card-body">
-                <button type="button" onclick="printContent()" class="btn btn-outline-secondary btn-rounded mr-5">
-                    <i class="ik ik-printer"></i> {{ __('action.print') }}
+            <div class="actions-body-modern">
+                <button type="button" onclick="printContent()" class="btn-modern btn-secondary">
+                    <i data-lucide="printer"></i> {{ __('action.print') }}
                 </button>
 
-                <button type="button" onclick="downloadAsPDF()" class="btn btn-outline-dark m-1 btn-rounded">
-                    <i class="ik ik-download"></i> {{ __('action.download') }}
+                <button type="button" onclick="downloadAsPDF()" class="btn-modern btn-secondary">
+                    <i data-lucide="download"></i> {{ __('action.download') }}
                 </button>
                 <input id="downloadName" value="{{ $journal->journal->lang($journal->journal->lang_id)??'-' }} - {{ $journal->fromUser->personal->shortName()??'' }}" hidden/>
-
-                @if(in_array($journal->status, [9,10,11]) && $journal->journal->doc_code !== 'BASE_INCOMING')
-                    <br><br>
-                    @include('qr-code-doc.qr-code-view')
-                    <input id="doc_id" value="{{ $document->id }}" hidden>
-                    <input id="doc_type" value="work_doc" hidden>
-                @endif
             </div>
+
+            @if(in_array($journal->status, [9,10,11]) && $journal->journal->doc_code !== 'BASE_INCOMING')
+                @include('qr-code-doc.qr-code-view')
+                <input id="doc_id" value="{{ $document->id }}" hidden>
+                <input id="doc_type" value="work_doc" hidden>
+            @endif
         </div>
     @endif
 
@@ -467,7 +472,7 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-outline-warning float-right modal_btn"></button>
+                    <button type="submit" class="btn-modern btn-warning float-right modal_btn"></button>
                 </div>
             </form>
 
@@ -478,9 +483,8 @@
 @include('qr-code-doc.qr-code-view-js')
 @include('templates.download')
 
-{{--<link rel="stylesheet" href="{{ asset('/richeditor//richtexteditor/rte_theme_default.css') }}" />
-<script type="text/javascript" src="{{ asset('/richeditor//richtexteditor/rte.js') }}"></script>
-<script type="text/javascript" src='{{ asset('/richeditor//richtexteditor/plugins/all_plugins.js') }}'></script>--}}
+<link rel="stylesheet" href="{{ asset('css/templates/office/journal/view-right.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/select2.css') }}">
 
 <script>
     let editor1cfg = {}
@@ -529,7 +533,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-yellow">
-                <h4 class="modal-title"><i class="fa fa-key"></i> e-imzo</h4>
+                <h4 class="modal-title"><i data-lucide="key-round"></i> e-imzo</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -538,7 +542,7 @@
                 <h5 id="imzo-msg"></h5>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-light pull-right"
+                <button type="button" class="btn-modern btn-light pull-right"
                         data-dismiss="modal">{{ __('action.close') }}
                 </button>
             </div>

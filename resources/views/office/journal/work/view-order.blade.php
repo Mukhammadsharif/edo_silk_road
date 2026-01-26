@@ -1,12 +1,17 @@
 @extends('layouts.app')
-
+<link rel="stylesheet" href="{{ asset('css/templates/universal-document-view.css') }}">
 @section('content')
-    <div class="container-fluid">
+    <div class="work-view-page-modern">
         @include('office.journal.work.templates.header')
 
-        <div class="row">
-            @include('office.journal.view-left')
-            <div class="col-md-6">
+        <div class="document-view-layout">
+            <div class="view-sidebar view-sidebar-left">
+                <div class="sidebar-card-modern">
+                    @include('office.journal.view-left')
+                </div>
+            </div>
+
+            <div class="document-content-section">
                 <div class="work-doc-page">
                     <div class="work-doc-subpage">
                         <div id="printPage" class="printPage">
@@ -41,10 +46,19 @@
                 </div>
             </div>
 
-            @include('office.journal.view-right')
+            <div class="view-sidebar view-sidebar-right">
+                <div class="sidebar-card-modern">
+                    @include('office.journal.view-right')
+                </div>
+            </div>
         </div>
-
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof lucide !== 'undefined') { lucide.createIcons(); }
+        });
+    </script>
 
     @include('modals.delete-document')
 
@@ -77,7 +91,7 @@
                     confirm_type = "{{ __('re-editing') }}";
                     modal_bg_class = "btn-outline-warning";
                 }
-                $('.modal-bg-class').removeClass().addClass(`btn modal-bg-class ${modal_bg_class}`);
+                $('.modal-bg-class').removeClass().addClass(`btn-modern modal-bg-class ${modal_bg_class}`);
                 $('.confirm_type').html(confirm_type);
                 $('#ecp_confirm_id').val();
             });

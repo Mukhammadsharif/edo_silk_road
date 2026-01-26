@@ -1,7 +1,7 @@
 <footer class="footer ">
     <div class="w-100 clearfix">
         <span class="text-center text-sm-left d-md-inline-block">© {{ __('field.copyright') }}</span>
-        <span class="float-none float-sm-right mt-1 mt-sm-0 text-center"><a href="#" class="text-dark" target="_blank">{{ __('field.developed_by') }}</a></span>
+        <span class="float-none float-sm-right mt-1 mt-sm-0 text-center"><a href="#" class="text-dark" target="_blank">EDOFY</a></span>
     </div>
 </footer>
 

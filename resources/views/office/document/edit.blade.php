@@ -241,7 +241,7 @@
                             </div>
 
                             <button type="submit" id="submitBtn" class="btn btn-primary float-right">
-                                <i class="ik ik-save"></i> {{ __('action.save') }}
+                                <i data-lucide="save"></i> {{ __('action.save') }}
                             </button>
                         </form>
                     </div>

@@ -7,71 +7,18 @@
     $request = RequestForOrgs::where('user_id', Auth::id())->first();
 @endphp
 
-<header class="header-top" header-theme="light">
-    <div class="nav-container">
-        <div class="d-flex justify-content-between align-items-center">
+<header class="header-top d-flex justify-content-between align-items-center" header-theme="light">
+  
 
-            <!-- Логотип -->
-            <div class="logo">
-                <img src="{{ asset('images/logo.svg') }}" alt="Логотип" />
-                <div class="logo-text">
-                    <p>O’ZBEKISTON TEMIR YO’LLARI</p>
-                    <span>AKSIYADORLIK JAMIYATI</span>
-                </div>
+             <div class="logo">
+                <a href="{{ url('/') }}">
+                <img src="{{ asset('images/edofy.svg') }}" style="width: 100px" alt=""></a>
+                
             </div>
-
-            <div class="container-fluid">
-                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-
-                    <!-- Блоки уведомлений о статусе заявки -->
-                    @if($isOrganizationDemo && !$request)
-                        <div class="alert bg-success text-white d-flex justify-content-between align-items-center flex-grow-1"
-                             style="max-width: 420px; margin: 0;">
-                            <span>{{ __('field.send_request_for_joining') }}</span>
-                            <button class="btn btn-light" id="requestButton" data-toggle="modal" data-target="#RequestModal">
-                                {{ __('field.leave_request') }}
-                            </button>
-                        </div>
-                    @endif
-
-                    @if($isOrganizationDemo && $request && $request->status == 1)
-                        <div class="alert bg-secondary text-white d-flex justify-content-between align-items-center flex-grow-1"
-                             style="max-width: 420px; margin: 0;">
-                            <span>{{ __('field.pending_request_for_joining') }}</span>
-                            <button class="btn btn-danger" id="cancelButton" data-toggle="modal" data-target="#CancelModal">
-                                {{ __('action.cancel') }}
-                            </button>
-                        </div>
-                    @endif
-
-                    @if($isOrganizationDemo && $request && $request->status == 3)
-                        <div class="alert bg-danger text-white d-flex justify-content-between align-items-center flex-grow-1"
-                             style="max-width: 420px; margin: 0;">
-                            <span>{{ __('field.declined_request_for_joining') }}</span>
-                            <button class="btn btn-light" id="requestButton" data-toggle="modal" data-target="#RequestModal">
-                                {{ __('field.leave_request') }}
-                            </button>
-                        </div>
-                    @endif
-
-                    <!-- Ссылка для супер-админа -->
-                    @can('super_admin')
-                        <div class="nav-item">
-                            <a href="{{ route('admin.subscription-requests') }}" class="nav-link d-flex align-items-center">
-                                <i class="ik ik-clock"></i>
-                                <span class="ml-2">{{ __('field.subscription_requests') }}</span>
-                                @php $pendingCount = \App\Models\Admin\Subscriptions::where('status', 2)->count(); @endphp
-                                @if($pendingCount > 0)
-                                    <span class="badge badge-warning ml-2">{{ $pendingCount }}</span>
-                                @endif
-                            </a>
-                        </div>
-                    @endcan
-
-                    <!-- Правая часть: язык + уведомления + профиль -->
+      
                     <div class="top-menu d-flex align-items-center ms-auto">
 
-                        <!-- Выбор языка -->
+                    
                         @php $locale = session()->get('locale', 'uz'); @endphp
                         <div class="dropdown language-dropdown">
                             <a class="language-toggle d-flex align-items-center" href="#" id="menuDropdown"
@@ -97,27 +44,8 @@
                             </div>
                         </div>
 
-                        <!-- Уведомления -->
-                        <div class="dropdown notification-dropdown ms-3">
-                            <a class="nav-link d-flex align-items-center position-relative" href="#" id="notiDropdown"
-                               role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="ik ik-bell" style="font-size:18px; color:#495057;"></i>
-                                <span class="notification-count">3</span>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right notification-menu" aria-labelledby="notiDropdown">
-                                <h6 class="dropdown-header"><i class="ik ik-bell"></i> Notifications</h6>
-                                <div class="notifications-wrap" style="max-height: 250px; overflow-y: auto;">
-                                    <a href="#" class="dropdown-item">New document uploaded</a>
-                                    <a href="#" class="dropdown-item">Your request was approved</a>
-                                    <a href="#" class="dropdown-item">Message from Admin</a>
-                                </div>
-                                <div class="dropdown-footer text-center">
-                                    <a href="#">View All</a>
-                                </div>
-                            </div>
-                        </div>
 
-                        <!-- Профиль -->
+                     
                         <div class="dropdown ms-3">
                             <a class="dropdown-toggle d-flex align-items-center justify-content-center text-white"
                                href="#" id="userDropdown" role="button" data-toggle="dropdown"
@@ -126,7 +54,7 @@
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#"><i class="ik ik-user dropdown-icon"></i> {{ __('field.profile') }}</a>
+                                <a class="dropdown-item" href="{{ route('profile.my') }}"><i class="ik ik-user dropdown-icon"></i> {{ __('field.profile') }}</a>
                                 <a class="dropdown-item" href="{{ route('logout') }}"
                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                     <i class="ik ik-power dropdown-icon"></i> {{ __('field.logout') }}
@@ -138,10 +66,8 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
+         
+   
 </header>
 
 
@@ -165,7 +91,7 @@
             <div class="modal-footer justify-content-between">
                 <button type="button" class="btn btn-light" data-dismiss="modal"><i
                         class="ik ik-x"></i>{{ __('action.cancel') }}</button>
-                <button class="btn btn-outline-info modal_btn"><i class="ik ik-save"></i>{{ __('action.save') }}
+                <button class="btn btn-outline-info modal_btn"><i data-lucide="save"></i>{{ __('action.save') }}
                 </button>
             </div>
         </div>
@@ -266,7 +192,7 @@
                 success: function (response) {
                     if (response.status === 200) {
                         modal.modal('hide');
-                        // Показать успех можно через toast или просто перезагрузить
+                    
                         setTimeout(() => window.location.reload(), 500);
                     }
                 },
@@ -291,12 +217,14 @@
 </script>
 
 <style>
-    /* Header Top */
-.header-top {
-    padding: 4px 20px !important;
+
+
+
+.container-fluid{
+ padding: 10px 20px !important;
 }
 
-/* Logo */
+
 .logo {
     display: flex;
     align-items: center;
@@ -324,7 +252,6 @@
     color: #707070;
 }
 
-/* Language dropdown */
 .language-dropdown .dropdown-toggle {
     color: #495057;
     font-size: 0.95rem;
@@ -340,7 +267,7 @@
 }
 
 .language-dropdown .dropdown-menu {
-    min-width: 180px;
+    min-width: 134px;
     border-radius: 0.75rem;
     overflow: hidden;
     margin-top: 0.5rem;
@@ -353,7 +280,7 @@
 }
 
 .language-dropdown .dropdown-item:hover {
-    background-color: #f0f0ff; /* subtle light hover */
+    background-color: #f0f0ff; 
     color: #794DFD;
 }
 
@@ -363,17 +290,15 @@
 }
 
 .language-dropdown .dropdown-item.active:hover {
-    background-color: #5f3de0; /* darker variant of primary for hover */
+    background-color: #5f3de0; 
     color: white;
 }
 
-/* Profile dropdown */
 .dropdown-toggle[aria-haspopup="true"] {
     background: linear-gradient(to right, #794DFD, #5f3de0);
     color: white;
 }
 
-/* Profile dropdown menu icons */
 .dropdown-menu .dropdown-icon {
     color: #794DFD;
     transition: color 0.2s ease;
@@ -387,7 +312,7 @@
     color: white;
 }
 
-/* Flags */
+
 .flag-straight {
     border-radius: 2px;
     object-fit: cover;
@@ -400,26 +325,24 @@
     border-radius: 2px !important;
 }
 
-/* Optional hover scale for flags */
-.language-dropdown .dropdown-item:hover .flag-rounded {
-    transform: scale(1.05);
-}
+
 
     .flag-straight {
-    border-radius: 2px;         /* NOT rounded-circle */
+    border-radius: 2px;         
     object-fit: cover;
     display: block;
     box-shadow: 0 1px 2px rgba(0,0,0,0.15);
 }
 
-/* Remove any bootstrap rounding */
 .flag-straight,
 .flag-straight img {
     border-radius: 2px !important;
 }
 
     .header-top{
-        padding:4px 20px !important;
+        padding:5px 20px !important;
+        box-shadow: rgba(172, 172, 172, 0.2) 0px 2px px 0px !important;
+        z-index: 10000;
     }
     .header-top-left{
         display:flex;
@@ -464,7 +387,7 @@
     }
 
     .language-dropdown .dropdown-menu {
-        min-width: 180px;
+    min-width: 134px;
         border-radius: 0.75rem;
         overflow: hidden;
         margin-top: 0.5rem;
@@ -491,97 +414,20 @@
         color: white;
     }
 
-    /* Flags: straight proportions (4:3 ratio) with rounded corners */
+    
     .flag-rounded {
-        border-radius: 4px;           /* Soft rounded corners */
+        border-radius: 4px;          
         box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-        object-fit: cover;            /* Ensures flag fills without distortion */
+        object-fit: cover;            
     }
 
-    /* Optional: slight scale on hover */
-    .language-dropdown .dropdown-item:hover .flag-rounded {
-        transform: scale(1.05);
-    }
 
-    /* Notification icon container */
-.notification-dropdown .nav-link {
-    position: relative;
-    display: flex;
-    align-items: center;
-    font-size: 0.95rem;
-    color: #495057;
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    transition: background 0.2s ease, color 0.2s ease;
-}
-
-.notification-dropdown .nav-link:hover {
-    background-color: #f8f9fa;
-    color: #794DFD;
-    text-decoration: none;
-}
-
-/* Notification counter */
-.notification-count {
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    transform: translate(50%, -50%);
-    background-color: #dc2626; /* red badge */
-    color: #fff;
-    font-size: 10px;
-    font-weight: 600;
-    padding: 2px 5px;
-    border-radius: 50%;
-    line-height: 1;
-}
-
-/* Notification dropdown menu */
-.notification-menu {
-    min-width: 220px;
-    border-radius: 0.75rem;
-    overflow: hidden;
-    margin-top: 0.5rem;
-    padding: 0.25rem 0;
-}
-
-.notification-menu .dropdown-header {
-    font-weight: 600;
-    font-size: 0.85rem;
-    padding: 0.5rem 1rem;
-    border-bottom: 1px solid #e5e5e5;
-}
-
-.notification-menu .dropdown-item {
-    font-size: 0.85rem;
-    color: #495057;
-    padding: 0.5rem 1rem;
-    transition: background 0.2s ease;
-}
-
-.notification-menu .dropdown-item:hover {
-    background-color: #f1f1ff;
-    color: #794DFD;
-}
-
-.notification-menu .dropdown-footer {
-    font-size: 0.8rem;
-    padding: 0.5rem 1rem;
-    border-top: 1px solid #e5e5e5;
-}
-
-.notification-menu .dropdown-footer a {
-    text-decoration: none;
-    color: #794DFD;
-    font-weight: 500;
-}
-
-.notification-menu .dropdown-footer a:hover {
-    text-decoration: underline;
-}
 
 .d-flex{
     align-items:center;
 }
 
+.alert{
+    opacity: 0;
+}
 </style>

@@ -194,5 +194,13 @@ class User extends Authenticatable
         ');
     }
 
+    public function image()
+    {
+        if (file_exists(public_path().'/profile_img/'.'img_'.$this->id.'.png')) {
+            return url('/profile_img/'.'img_'.$this->id.'.png');
+        } else {
+            return url('/images/profile_image1.png');
+        }
+    }
 
 }

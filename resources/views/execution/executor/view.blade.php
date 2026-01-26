@@ -1,14 +1,20 @@
 @extends('layouts.app')
 
+<link rel="stylesheet" href="{{ asset('css/templates/universal-document-view.css') }}">
+
 @section('content')
-    <div class="container-fluid">
+    <div class="work-view-page-modern">
         @include('office.journal.work.templates.header')
 
-        <div class="row">
+        <div class="document-view-layout">
 
-            @include('office.journal.view-left')
+            <div class="view-sidebar view-sidebar-left">
+                <div class="sidebar-card-modern">
+                    @include('office.journal.view-left')
+                </div>
+            </div>
 
-            <div class="col-md-6" id="pdf1">
+            <div class="document-content-section" id="pdf1">
                 @if(str_contains($journal->journal->doc_code, 'APP'))
                     @include('execution.confirm.templates.app-page')
                 @elseif(str_contains($journal->journal->doc_code, 'COMMAND'))
@@ -26,7 +32,11 @@
 
             @include('templates.mini_editor_js')
 
-            @include('execution.executor.templates.view-right')
+            <div class="view-sidebar view-sidebar-right">
+                <div class="sidebar-card-modern">
+                    @include('execution.executor.templates.view-right')
+                </div>
+            </div>
         </div>
 
     </div>
@@ -64,7 +74,7 @@
                     confirm_type = "{{ __('action.re-editing') }}";
                     modal_bg_class = "btn-outline-warning";
                 }
-                $('.modal-bg-class').removeClass().addClass(`btn modal-bg-class ${modal_bg_class}`);
+                $('.modal-bg-class').removeClass().addClass(`btn-modern modal-bg-class ${modal_bg_class}`);
                 $('.confirm_type').html(confirm_type);
                 $('#ecp_confirm_id').val(btn_id);
             });

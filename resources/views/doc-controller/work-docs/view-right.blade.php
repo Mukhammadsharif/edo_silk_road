@@ -60,7 +60,7 @@
                         </div>
                         <div class="col-4 border-right">
                             <p>{{ __('status.exec_date') }}</p>
-                            <i class="ik ik-clock"></i>
+                            <i data-lucide="clock"></i>
                             {{ \Carbon\Carbon::parse($directorResolution->created_at)->format('d.m.y, H:i') }}
                         </div>
                         <div class="col-4">
@@ -255,7 +255,7 @@
                                     </span>
                                     @if($doc && $doc->status == 5 && $journal->workEcpInfo($document->id, $doc->from_user)
                                             && $journal->workEcpInfo($document->id, $doc->from_user)->docInfo)
-                                        <i class="ik ik-feather ml-10" style="font-size: 18px; cursor: pointer"
+                                        <i data-lucide="feather" style="font-size: 18px; cursor: pointer"
                                            onclick="showEspInfo({{ $doc->id }})"></i>
 
                                         @include('templates.ecp.ecp-information')
@@ -264,7 +264,7 @@
                             @endif
                             <div class="like-comm mt-20">
                                 <span class="mr-10">
-                                    <i class="ik ik-clock"></i> {{ date('d.m.y, H:i', strtotime($doc->updated_at)) }}
+                                    <i data-lucide="clock"></i> {{ date('d.m.y, H:i', strtotime($doc->updated_at)) }}
                                 </span>
                             </div>
                         </div>
@@ -285,11 +285,11 @@
         </div>
         <div class="card-body">
             <button type="button" onclick="printContent()" class="btn btn-outline-secondary btn-rounded mr-5">
-                <i class="ik ik-printer"></i> {{ __('action.print') }}
+                <i data-lucide="printer"></i> {{ __('action.print') }}
             </button>
 
             <button type="button" onclick="downloadAsPDF()" class="btn btn-outline-dark m-1 btn-rounded">
-                <i class="ik ik-download"></i> {{ __('action.download') }}
+                <i data-lucide="download"></i> {{ __('action.download') }}
             </button>
             <input id="downloadName" value="{{ $journal->journal->lang($journal->journal->lang_id)??'-' }} - {{ $journal->fromUser->personal->shortName()??'' }}" hidden/>
 

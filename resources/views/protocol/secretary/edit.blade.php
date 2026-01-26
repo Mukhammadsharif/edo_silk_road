@@ -117,7 +117,7 @@
                                                             </a>
                                                             <div class="like-comm float-right">
                                                                 <a href="{{ route('prt-document-file.download', ['id'=>$file->id]) }}"
-                                                                   class="link text-secondary"><i class="ik ik-download"></i>{{ __('action.download') }}
+                                                                   class="link text-secondary"><i data-lucide="download"></i>{{ __('action.download') }}
                                                                 </a>
                                                                 <small class="text-muted">({{ number_format($file->file_size/1024, 2) }}KB)</small>
                                                                 <button type="button" class="btn btn-icon btn-outline-danger ml-5 deleteItem" data-id="{{$file->id}}">
@@ -136,7 +136,7 @@
                                                             </a>
                                                             <div class="like-comm float-right">
                                                                 <a href="{{ route('prt-document-file.download', ['id'=>$file->id]) }}"
-                                                                   class="link text-secondary"><i class="ik ik-download"></i>{{ __('action.download') }}
+                                                                   class="link text-secondary"><i data-lucide="download"></i>{{ __('action.download') }}
                                                                 </a>
                                                                 <small class="text-muted">({{ number_format($file->file_size/1024, 2) }}KB)</small>
                                                                 <button type="button" class="btn btn-icon btn-outline-danger ml-5 deleteItem" data-id="{{$file->id}}">
@@ -151,7 +151,7 @@
                                                             <div class="like-comm float-right">
                                                                 <a href="{{ route('prt-document-file.download', ['id'=>$file->id]) }}"
                                                                    class="link mr-10 text-secondary"> {{ $file->file_name }}
-                                                                    <i class="ik ik-download"></i> {{ __('action.download') }}
+                                                                    <i data-lucide="download"></i> {{ __('action.download') }}
                                                                 </a>
                                                                 <small class="text-muted">({{ number_format($file->file_size/1024, 2) }}KB)</small>
                                                                 <button type="button" class="btn btn-icon btn-outline-danger ml-5 deleteItem" data-id="{{$file->id}}">
@@ -191,7 +191,7 @@
                                                 <i class="ik ik-x"></i> {{ __('action.cancel') }}
                                             </a>
                                             <button type="submit" id="submitBtn" class="btn btn-primary float-right">
-                                                <i class="ik ik-save"></i> {{ __('action.save') }}
+                                                <i data-lucide="save"></i> {{ __('action.save') }}
                                             </button>
                                         </div>
                                     </div>
