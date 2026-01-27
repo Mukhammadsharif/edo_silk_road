@@ -554,7 +554,7 @@ class SignDocImzoController extends Controller
         if (!$user) {
             $subjectName = $jsonDecodeBack['subjectCertificateInfo']['subjectName'];
 
-            $isOrg = (bool)$subjectName['O'];
+            $isOrg = $subjectName && isset($subjectName['O']);
 
             if ($isOrg) {
                 $organization = OrganizationUnits::create([

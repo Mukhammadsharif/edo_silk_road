@@ -1,185 +1,195 @@
 @extends('layouts.app')
+<link rel="stylesheet" href="{{ asset('css/templates/protocol/secretary-create.css') }}">
 @section('content')
 
-    <div class="container-fluid">
-        <div class="page-header">
-            <div class="row align-items-end">
-                <div class="col-md-2">
-                    <div class="page-header-title">
-                        <i class="ik ik-book bg-blue"></i>
-                        <div class="d-inline">
-                            <h5>{{ $protocolType->lang($protocolType->id) }}</h5>
-                        </div>
+    <div class="modern-container">
+        <div class="page-header-modern">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="page-icon">
+                        <i data-lucide="file-plus-2"></i>
+                    </div>
+                    <div class="page-info">
+                        <h1>{{ __('action.create_document') }}</h1>
+                        <p>{{ $protocolType->lang($protocolType->id) }}</p>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    @include('templates.alert')
-                </div>
-                <div class="col-md-4">
-                    <nav class="breadcrumb-container" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('home') }}"><i class="ik ik-home"></i></a>
-                            </li>
-                            <li class="breadcrumb-item"><a href="{{ route('prt-secretary', $protocolType->doc_hash) }}">
-                                    {{ $protocolType->lang($protocolType->id) }}</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">
-                                {{ __('action.create_document') }}
-                            </li>
-                        </ol>
-                    </nav>
-                </div>
+
+                <nav class="breadcrumb-modern">
+                    <a href="{{ route('home') }}">
+                        <i data-lucide="home"></i>
+                        <span>{{ __('menu.home') }}</span>
+                    </a>
+                    <i data-lucide="chevron-right" class="separator"></i>
+                    <a href="{{ route('prt-secretary', $protocolType->doc_hash) }}">{{ $protocolType->lang($protocolType->id) }}</a>
+                    <i data-lucide="chevron-right" class="separator"></i>
+                    <span class="current">{{ __('action.create_document') }}</span>
+                </nav>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h3><i class="ik ik-plus-circle"></i> {{ __('action.create_document') }}</h3>
-                    </div>
-                    <div class="card-body">
-                        <form id="createForm" method="POST" action="{{ route('prt-secretary-store', $protocolType->doc_hash) }}" enctype="multipart/form-data">
-                            @csrf
-                            <div class="row">
-                                <input name="document_key" value="{{ $document_key }}" hidden>
+        @include('templates.alert')
 
-                                <div class="col-md-8">
-                                    <div class="form-group row">
-                                        <div class="col-sm-3">
-                                            <label for="doc_lang">{{ __('field.doc_lang') }}</label><br>
-                                            <select name="doc_lang" class="form-control">
-                                                <option value="uz">1. {{ __('lang.uzbek') }}</option>
-                                                <option value="kr">2. {{ __('lang.cyrillic') }}</option>
-                                                <option value="ru">3. {{ __('lang.russian') }}</option>
-                                                <option value="en">4. {{ __('lang.english') }}</option>
-                                            </select>
+        <div class="form-card">
+            <form id="createForm" method="POST" action="{{ route('prt-secretary-store', $protocolType->doc_hash) }}"
+                  enctype="multipart/form-data">
+                @csrf
+                <div class="form-grid">
+                    <input name="document_key" value="{{ $document_key }}" hidden>
+
+                    <div class="form-section">
+                        <div class="form-group-modern">
+                            <label for="doc_lang">
+                                <i data-lucide="file-type"></i>
+                                {{ __('field.doc_lang') }}
+                            </label>
+                            <select name="doc_lang" class="form-control-modern select2">
+                                <option value="uz">{{ __('lang.uzbek') }}</option>
+                                <option value="kr">{{ __('lang.cyrillic') }}</option>
+                                <option value="ru">{{ __('lang.russian') }}</option>
+                                <option value="en">{{ __('lang.english') }}</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group-modern">
+                            <label>
+                                <i data-lucide="file-type"></i>
+                                {{ __('field.visibility') }}
+                            </label>
+                            <select name="doc_visibility" class="form-control-modern select2">
+                                <option value="2">1. {{ __('field.public') }}</option>
+                                <option value="1">2. {{ __('field.secret') }}</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group-modern">
+                            <label>{{ __('field.doc_date') }}</label>
+                            <input type="date" name="doc_date"
+                                   class="form-control-modern {{ $errors->has('doc_date') ? 'is-invalid' : '' }}"
+                                   value="{{ date('Y-m-d') }}"/>
+                            {!! $errors->first('doc_date', '<p class="text-danger">:message</p>') !!}
+                        </div>
+
+                        <div class="form-group-modern">
+                            <label>{{ __('field.doc_term') }}</label>
+                            <input type="date" name="doc_term" class="form-control-modern"/>
+                        </div>
+
+                        <div class="form-group-modern">
+                            <label>{{ __('field.doc_name') }} <span class="text-red">*</span></label>
+                            <input type="text" name="doc_name"
+                                   class="form-control-modern {{ $errors->has('doc_name') ? 'is-invalid' : '' }}"
+                                   value="{{ old('doc_name') }}" placeholder="{{__('field.doc_name')}}"/>
+                            {!! $errors->first('doc_name', '<p class="text-danger">:message</p>') !!}
+                        </div>
+
+                        <div class="form-group-modern">
+                            <label>{{ __('field.doc_number') }}</label>
+                            <input type="text" name="doc_number" class="form-control-modern"
+                                   value="{{ old('doc_number') }}" placeholder="{{ __('field.doc_number') }}">
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-12">
+                                <label>{{ __('action.attach_file') }}</label>
+                                <div id="file-inputs-container">
+                                    <div
+                                        class="file-input-group d-flex flex-row align-items-baseline justify-content-between mb-2">
+                                        <div class="custom-file" style="display: none;">
+                                            <input type="file" name="doc_files[]" class="custom-file-input"
+                                                   id="customFile-0">
+                                            <label class="custom-file-label"
+                                                   for="customFile-0">{{ __('action.choose') }}</label>
                                         </div>
-                                        <div class="col-sm-3">
-                                            <label>{{ __('field.visibility') }}</label>
-                                            <select name="doc_visibility" class="form-control">
-                                                <option value="2">1. {{ __('field.public') }}</option>
-                                                <option value="1">2. {{ __('field.secret') }}</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-sm-3">
-                                            <label>{{ __('field.doc_date') }}</label>
-                                            <input type="date" name="doc_date" class="form-control {{ $errors->has('doc_date') ? 'is-invalid' : '' }}"
-                                                   value="{{ date('Y-m-d') }}"/>
-                                            {!! $errors->first('doc_date', '<p class="text-danger">:message</p>') !!}
-                                        </div>
-                                        <div class="col-sm-3">
-                                            <label>{{ __('field.doc_term') }}</label>
-                                            <input type="date" name="doc_term" class="form-control"/>
-                                        </div>
+                                        <input type="text" class="form-control" readonly
+                                               placeholder="{{ __('action.choose') }}"
+                                               onclick="document.getElementById('customFile-0').click();"
+                                               style="cursor: pointer;">
+
+                                        <button type="button"
+                                                class="btn btn-icon btn-outline-secondary btn-sm ms-2 ml-2 add-file-input">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
                                     </div>
-
-                                    <div class="form-group row">
-                                        <div class="col-sm-9">
-                                            <label>{{ __('field.doc_name') }} <span class="text-red">*</span></label>
-                                            <input type="text" name="doc_name" class="form-control {{ $errors->has('doc_name') ? 'is-invalid' : '' }}"
-                                                   value="{{ old('doc_name') }}" placeholder="{{__('field.doc_name')}}"/>
-                                            {!! $errors->first('doc_name', '<p class="text-danger">:message</p>') !!}
-                                        </div>
-                                        <div class="col-sm-3">
-                                            <label>{{ __('field.doc_number') }}</label>
-                                            <input type="text" name="doc_number" class="form-control"
-                                                   value="{{ old('doc_number') }}" placeholder="{{ __('field.doc_number') }}">
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group row">
-                                        <div class="col-sm-12">
-                                            <label>{{ __('action.attach_file') }}</label>
-                                            <div id="file-inputs-container">
-                                                <div class="file-input-group d-flex flex-row align-items-baseline justify-content-between mb-2">
-                                                    <div class="custom-file" style="display: none;">
-                                                        <input type="file" name="doc_files[]" class="custom-file-input" id="customFile-0">
-                                                        <label class="custom-file-label" for="customFile-0">{{ __('action.choose') }}</label>
-                                                    </div>
-                                                    <input type="text" class="form-control" readonly placeholder="{{ __('action.choose') }}"
-                                                           onclick="document.getElementById('customFile-0').click();" style="cursor: pointer;">
-
-                                                    <button type="button" class="btn btn-icon btn-outline-secondary btn-sm ms-2 ml-2 add-file-input">
-                                                        <i class="fas fa-plus"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group row">
-                                        <div class="col-sm-12">
-                                            <a href="{{ route('home') }}" class="btn btn-light">
-                                                <i class="ik ik-x"></i> {{ __('action.cancel') }}
-                                            </a>
-                                            <button type="submit" id="submitBtn" class="btn btn-primary float-right">
-                                                <i data-lucide="save"></i> {{ __('action.save') }}
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                </div>
-
-                                <div class="col-md-4">
-                                    <div class="form-group" style="max-height: 600px; overflow-x: auto">
-                                        <h5>{{ __('field.select_members') }} <span class="text-red">*</span></h5>
-                                        <div class="input-group mb-2 mt-2">
-                                            <input type="text" class="form-control" id="userSearch" onkeyup="searchUserFunction()" placeholder="{{ __('action.search') }}...">
-                                        </div>
-                                        {!! $errors->first('user_id', '<p class="text-danger">:message</p>') !!}
-                                        @if(count($protocolType->docTypeUsers))
-                                            <ul id="sortable" style="max-height: 400px; overflow-x: auto">
-                                                @foreach($protocolType->docTypeUsers as $key => $item)
-                                                    <li class="form-group select-user" style="display: flex; flex-direction: row; align-items: center; margin-bottom: 0">
-                                                        <input class="form-control checkbox w-10" type="checkbox"
-                                                               id="{{ $item->id }}"
-                                                               value="{{ $item->user_id }}" name="user_id[]" checked>
-                                                        <div class="p0 text-primary">
-                                                            <h6>{{ $item->userWork->personal->l_name??'' }} {{ $item->userWork->personal->f_name??'' }}</h6>
-                                                            <p class="text-muted pl-1">
-                                                                @php($department = $item->userWork->department??0)
-                                                                @if($department)
-                                                                    {{ $department->lang($department->id) }}
-                                                                @endif<br>
-                                                                <i>
-                                                                    @php($position = $item->userWork->position??0)
-                                                                    @if($position)
-                                                                        {{ $position->lang($position->id) }}
-                                                                    @endif
-                                                                </i>
-                                                            </p>
-                                                        </div>
-                                                        <div class="d-flex">
-                                                            <select name="user_role_id[]" class="form-control mr-5" style="width: 160px">
-                                                                @foreach($user_roles as $item)
-                                                                    <option value="{{ $item->code }}" @if($item->code === 3) selected @endif>{{ $item->lang($item->id) }}</option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        @endif
-                                    </div>
-
-                                    @if($isFamiliarExists)
-                                        <div class="form-group" style="max-height: 600px; overflow-x: auto">
-                                            <h5>{{ __('field.select_hr_order_emp') }}</h5>
-                                            <div class="input-group mb-2 mt-2">
-                                                <input type="text" class="form-control" id="hrEmpSearch" onkeyup="searchHrEmpFunction()" placeholder="{{ __('action.search') }}...">
-                                            </div>
-                                            <ul id="sortable_hr_emp" style="max-height: 400px; overflow-x: auto">
-                                            </ul>
-                                        </div>
-                                    @endif
                                 </div>
                             </div>
-                        </form>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-12">
+                                <a href="{{ route('home') }}" class="btn btn-light">
+                                    <i class="ik ik-x"></i> {{ __('action.cancel') }}
+                                </a>
+                                <button type="submit" id="submitBtn" class="btn btn-primary float-right">
+                                    <i data-lucide="save"></i> {{ __('action.save') }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-group" style="max-height: 600px; overflow-x: auto">
+                            <h5>{{ __('field.select_members') }} <span class="text-red">*</span></h5>
+                            <div class="input-group mb-2 mt-2">
+                                <input type="text" class="form-control" id="userSearch" onkeyup="searchUserFunction()"
+                                       placeholder="{{ __('action.search') }}...">
+                            </div>
+                            {!! $errors->first('user_id', '<p class="text-danger">:message</p>') !!}
+                            @if(count($protocolType->docTypeUsers))
+                                <ul id="sortable" style="max-height: 400px; overflow-x: auto">
+                                    @foreach($protocolType->docTypeUsers as $key => $item)
+                                        <li class="form-group-modern select-user"
+                                            style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; margin-bottom: 0">
+                                            <div style="display: flex; flex-direction: row; align-items: center; margin-bottom: 0; width: 70%">
+                                                <input class="form-control checkbox w-10" type="checkbox"
+                                                       id="{{ $item->id }}"
+                                                       value="{{ $item->user_id }}" name="user_id[]" checked>
+                                                <div class="p0 text-primary">
+                                                    <h6>{{ $item->userWork->personal->l_name??'' }} {{ $item->userWork->personal->f_name??'' }}</h6>
+                                                    <p class="text-muted pl-1">
+                                                        @php($department = $item->userWork->department??0)
+                                                        @if($department)
+                                                            {{ $department->lang($department->id) }}
+                                                        @endif<br>
+                                                        <i>
+                                                            @php($position = $item->userWork->position??0)
+                                                            @if($position)
+                                                                {{ $position->lang($position->id) }}
+                                                            @endif
+                                                        </i>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex">
+                                                <select name="user_role_id[]" class="form-control-modern select2 mr-5"
+                                                        style="width: 160px; height: 20px !important;">
+                                                    @foreach($user_roles as $item)
+                                                        <option value="{{ $item->code }}"
+                                                                @if($item->code === 3) selected @endif>{{ $item->lang($item->id) }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @endif
+                        </div>
+
+                        @if($isFamiliarExists)
+                            <div class="form-group" style="max-height: 600px; overflow-x: auto">
+                                <h5>{{ __('field.select_hr_order_emp') }}</h5>
+                                <div class="input-group mb-2 mt-2">
+                                    <input type="text" class="form-control" id="hrEmpSearch"
+                                           onkeyup="searchHrEmpFunction()"
+                                           placeholder="{{ __('action.search') }}...">
+                                </div>
+                                <ul id="sortable_hr_emp" style="max-height: 400px; overflow-x: auto">
+                                </ul>
+                            </div>
+                        @endif
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
 
         <script src="{{ asset('/assets/js/js-sortable.js') }}"></script>
@@ -207,16 +217,15 @@
                         let users = response.users;
                         let roles = response.user_roles;
                         if (users.length) {
-                            $.each(users,function(key, value)
-                            {
+                            $.each(users, function (key, value) {
                                 key++;
-                                let fullName = value.user_work.personal.l_name+' '+value.user_work.personal.f_name;
+                                let fullName = value.user_work.personal.l_name + ' ' + value.user_work.personal.f_name;
                                 let position = value.user_work.position.name;
                                 let department = value.user_work.department.name;
-                                users_append =`<li class="form-group" style="display: flex; flex-direction: row; align-items: center">
-                                <input class="form-control w-10" type="checkbox" id="`+key+`" value="`+value.user_work.id+`" name="user_id[]" checked>
-                                <div class="pr-5 text-primary">`+fullName+`<br>
-                                    <small class="text-muted">`+department+' '+position+`</small>
+                                users_append = `<li class="form-group" style="display: flex; flex-direction: row; align-items: center">
+                                <input class="form-control w-10" type="checkbox" id="` + key + `" value="` + value.user_work.id + `" name="user_id[]" checked>
+                                <div class="pr-5 text-primary">` + fullName + `<br>
+                                    <small class="text-muted">` + department + ' ' + position + `</small>
                                 </div>
                                 <div class="d-flex">
                                     <select name="user_role_id[]" class="form-control mr-5 user_roles" style="width: 120px"></select>
@@ -226,12 +235,12 @@
                             });
                         }
                         if (roles.length) {
-                            $.each(roles,function(key, value) {
+                            $.each(roles, function (key, value) {
                                 key++;
                                 if (key === 2 && value.code === 2) {
-                                    user_roles = `<option value="`+value.code+`" selected>`+value.title+`</option>`;
+                                    user_roles = `<option value="` + value.code + `" selected>` + value.title + `</option>`;
                                 } else {
-                                    user_roles = `<option value="`+value.code+`">`+value.title+`</option>`;
+                                    user_roles = `<option value="` + value.code + `">` + value.title + `</option>`;
                                 }
                                 $(".user_roles").append(user_roles);
                             });
@@ -279,12 +288,12 @@
 
                 // Debounce to prevent multiple rapid requests
                 clearTimeout(window.searchHrEmpTimeout);
-                window.searchHrEmpTimeout = setTimeout(function() {
+                window.searchHrEmpTimeout = setTimeout(function () {
                     $.ajax({
                         url: '/protocol/search-hr-emp/{{ $protocolType->doc_hash }}',
                         type: 'GET',
-                        data: { query: filter, doc_id: docId }, // Include doc_id
-                        success: function(response) {
+                        data: {query: filter, doc_id: docId}, // Include doc_id
+                        success: function (response) {
                             console.log('AJAX Response:', response); // Log response for debugging
                             if (!Array.isArray(response)) {
                                 console.error('Invalid response format:', response);
@@ -293,7 +302,7 @@
 
                             let displayedIds = new Set(selected.map(String));
 
-                            response.forEach(function(item) {
+                            response.forEach(function (item) {
                                 if (!displayedIds.has(item.id.toString())) {
                                     var li = `
                             <li class="form-group select-hr-emp" style="display: flex; flex-direction: row; align-items: center">
@@ -311,12 +320,13 @@
                                 }
                             });
                         },
-                        error: function(xhr, status, error) {
+                        error: function (xhr, status, error) {
                             console.error('AJAX error:', status, error);
                         }
                     });
                 }, 300); // 300ms debounce
             }
+
             // Attach event listener with debouncing
             $('#hrEmpSearch').on('input', searchHrEmpFunction);
 
@@ -326,7 +336,7 @@
                 const editorElement = editorWrapper.querySelector('.ck-editor__editable');
 
                 const ckPlaceholder = document.querySelector('.ck-placeholder')
-                if(ckPlaceholder) {
+                if (ckPlaceholder) {
                     ckPlaceholder.setAttribute('data-placeholder', '{{ __('field.type_text') }}')
                 }
 
@@ -454,7 +464,7 @@
 
                 searchHrEmpFunction(); // Load initial 5
 
-                $('#sortable_hr_emp').on('change', '.checkbox', function() {
+                $('#sortable_hr_emp').on('change', '.checkbox', function () {
                     let id = $(this).val().toString();
                     if ($(this).is(':checked')) {
                         selected.push(id);
@@ -470,6 +480,5 @@
             });
 
         </script>
-
     </div>
 @endsection

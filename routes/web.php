@@ -221,7 +221,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::put('update/{id}/{doc_hash}', [ProtocolsController::class, 'update'])->name('prt-secretary-update');
         Route::get('send-to-members/{id}/{doc_hash}', [ProtocolsController::class, 'sendToMembers'])->name('prt-secretary-send-members');
         Route::get('get-protocol-users/{id}', [ProtocolsController::class, 'getDocTypeUsers']);
-        Route::get('search-hr-emp/{doc_hash}', [ProtocolsController::class, 'searchHrEmp']);
+        Route::get('search-hr-emp/{doc_hash}', [ProtocolsController::class, 'searchHrEmp'])->name('protocol.hr-emp');
 
         // HR EMP
         Route::any('emp/hr-orders', [ProtocolEmpHrOrdersController::class, 'index'])->name('prt-emp-hr-orders');

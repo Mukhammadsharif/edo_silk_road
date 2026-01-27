@@ -13,7 +13,7 @@
     <nav class="h-full flex flex-col">
         <div class="flex-1">
             <div class="main-one">
-                <a href="{{ url('/') }}" class="menu-header">
+                <a href="{{ url('/edo') }}" class="menu-header">
                     <div class="main-gap">
                         <i data-lucide="home"></i>
                         <span>Asosiy</span>
@@ -57,7 +57,7 @@
                     $menuList     = $item->menuList;
                     $hasChildren  = $item && $item->child && $item->child->count() > 0;
                     $isKolOrg     = $menuList && in_array($menuList->code, ['KOL_ORG_S', 'KOL_ORG']);
-                    $isPrtDocs    = $menuList && $menuList->code === 'PRT_DOCS_S';
+                    $isPrtDocs    = $menuList && str_contains($menuList->code, 'PRT');
                     $icon         = $menuList && $menuList->iconClass ? $menuList->iconClass->name : 'file-text';
                     $menuCount    = $item->menuCount($item->id);
                     $isActive     = $menuList && str_contains(url()->current(), $menuList->url_path);
@@ -164,6 +164,37 @@
                     @endif
                 @endif
             @endforeach
+
+            @if($protocolMenus)
+                <div class="menu-item {{ request()->is('protocol/*') ? 'active' : '' }}" data-menu-id="1000">
+                    <div class="menu-header">
+                        <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
+                            <i data-lucide="files" style="width: 22px; height: 22px;"></i>
+                            <span class="menu-text">{{ __('field.protocols') }}</span>
+                        </div>
+                        <i data-lucide="chevron-right" class="chevron"></i>
+                    </div>
+
+                    <div class="submenu">
+                        @foreach($protocolMenus as $prtMenu)
+                            @php
+                                $prtChildCount    = method_exists($prtMenu, 'menuCount') ? $prtMenu->menuCount($prtMenu->id) : 0;
+                                $prtChildIsActive = str_contains(url()->current(), $prtMenu->url_path);
+                            @endphp
+                            <div class="submenu-item">
+                                <a href="{{ $prtMenu->menuList->url_path }}"
+                                   class="{{ $prtChildIsActive ? 'active-link' : '' }}">
+                                    <i data-lucide="{{ $prtMenu->menuList->iconClass ? $prtMenu->menuList->iconClass->name : 'file' }}" style="width: 18px; height: 18px;"></i>
+                                    <span>{{ \App\Models\Admin\MenuList::lang($prtMenu->menuList->id) }}</span>
+                                    @if($prtChildCount > 0)
+                                        <span class="badge-count">{{ $prtChildCount }}</span>
+                                    @endif
+                                </a>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
         </div>
 
         <div class="logout">
@@ -447,7 +478,7 @@ document.addEventListener('DOMContentLoaded', function() {
     margin: 0 16px;
     border-radius: 8px;
     font-size: 15px;
-    font-weight: medium;  
+    font-weight: medium;
 }
 
 .main-gap {
