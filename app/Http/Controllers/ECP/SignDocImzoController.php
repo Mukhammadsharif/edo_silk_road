@@ -43,7 +43,7 @@ class SignDocImzoController extends Controller
         'send_to_ag_out_doc', 'send_sign_out_doc', 'sign_out_doc'
     ];
 
-    private string $eriSrvIpLoc  = 'http://10.10.20.14:8080';
+    private string $eriSrvIpLoc  = 'http://172.16.100.124:8080';
     private string $eriSrvIpProd = 'http://10.10.20.14:8080';
 
     public function signDocuments(Request $request): JsonResponse
@@ -558,7 +558,7 @@ class SignDocImzoController extends Controller
 
             if ($isOrg) {
                 $organization = OrganizationUnits::create([
-                    'code' => $subjectName['UID'],
+                    'code' => $this->uniqueHash(6),
                     'name_uz' => $subjectName['O'],
                     'name_ru' => $subjectName['O'],
                     'name_kr' => $subjectName['O'],
