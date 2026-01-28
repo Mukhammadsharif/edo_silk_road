@@ -377,7 +377,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('show/{id}/{hash}', [MessageController::class, 'view'])->name('messages.show');
         Route::post('forward/{messageId}', [MessageController::class, 'forward'])->name('messages.forward');
         Route::post('reply/message/{messageId}', [MessageController::class, 'reply'])->name('messages.reply');
-        Route::get('search-users', [MessageController::class, 'searchUsers'])->name('messages.search-users');
+//        Route::get('search-users', [MessageController::class, 'searchUsers'])->name('messages.search-users');
         Route::get('delete/{id}', [MessageController::class, 'delete'])->name('messages.delete');
         Route::get('users-work-history/active', [MessageController::class, 'getActiveUsers'])->name('users.work-history.active');
 

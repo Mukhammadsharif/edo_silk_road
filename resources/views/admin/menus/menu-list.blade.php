@@ -529,6 +529,8 @@
                         else{
                             $( "#edit_status2" ).prop( "checked", true )
                         }
+
+                        if (window.lucide) lucide.createIcons();
                     },
                     complete:function(res){
                     }

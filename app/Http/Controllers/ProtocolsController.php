@@ -712,7 +712,7 @@ class ProtocolsController extends Controller
         }
 
         $query = trim($request->input('query', ''));
-        $docId = $request->input('doc_id', 0); // Default to 0 if not provided
+        $docId = $request->input('doc_id', 0);
 
         $employees = UserWorkHistory::where('user_work_histories.status', 1)
             ->join('user_personal_infos as up', 'user_work_histories.user_id', '=', 'up.user_id')
@@ -737,20 +737,19 @@ class ProtocolsController extends Controller
                 $subQuery->select('user_id')
                     ->from('protocol_doc_type_users')
                     ->where('doc_type_id', $protocolType->id)
-                    ->where('status', '!=', 7); // Exclude users with status 7 (e.g., deleted)
+                    ->where('status', '!=', 7);
             })
             ->select(
                 DB::raw('DISTINCT ON (up.user_id) user_work_histories.id'),
+                'up.user_id', // Добавил для надежности
                 'up.l_name',
                 'up.f_name',
+                'up.m_name',
                 DB::raw("COALESCE(d.name_uz, '') as department_name"),
                 DB::raw("COALESCE(p.name_uz, '') as position_name")
             )
-            ->orderBy('up.user_id')
-            ->orderBy('user_work_histories.id', 'desc') // Pick the latest work history
-            ->orderBy('up.l_name')
-            ->orderBy('up.f_name')
-            ->orderBy('up.m_name')
+            ->orderBy('up.user_id') // DISTINCT ON требует это поле первым
+            ->orderBy('user_work_histories.id', 'desc')
             ->take(10)
             ->get();
 

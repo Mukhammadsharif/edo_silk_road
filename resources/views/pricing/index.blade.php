@@ -1,266 +1,356 @@
 @extends('layouts.app')
-<style>
-    .period-toggle input[type="radio"] {
-        display: none;
-    }
-</style>
+
+<link rel="stylesheet" href="{{ asset('css/templates/pricing.css') }}">
+
 @section('title', 'Tariflar - Obuna tanlash')
 
 @section('content')
-    <div class="container py-2">
-        <div class="text-center mb-5">
-            <h1 class="display-4 fw-bold">{{ __('field.our_tariff_plans') }}</h1>
-            <p class="lead text-muted">{{ __('field.choose_tariff_and_period') }}</p>
+    <!-- Alerts -->
+    @if(session('success'))
+        <div class="alert-modern alert-success-modern">
+            <i data-lucide="check-circle"></i>
+            <span>{{ session('success') }}</span>
+            <button type="button" class="alert-close" onclick="this.parentElement.remove()">
+                <i data-lucide="x"></i>
+            </button>
         </div>
+    @endif
 
-        @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
+    @if(session('warning'))
+        <div class="alert-modern alert-warning-modern">
+            <i data-lucide="alert-triangle"></i>
+            <span>{{ session('warning') }}</span>
+            <button type="button" class="alert-close" onclick="this.parentElement.remove()">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+    @endif
+    <!-- Modern Pricing Page -->
+    <div class="pricing-page-modern">
+        <!-- Page Header -->
+        <div class="pricing-header-modern">
+            <div class="header-content-center">
+                <div class="header-icon-large">
+                    <i data-lucide="package" class="text-white"></i>
+                </div>
+               <div class="ml-4">
+                   <h1 class="page-title-modern">{{ __('field.our_tariff_plans') }}</h1>
+                   <p class="page-subtitle-modern">{{ __('field.choose_tariff_and_period') }}</p>
+               </div>
             </div>
-        @endif
-        @if(session('warning'))
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                {{ session('warning') }}
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-            </div>
-        @endif
 
-        @if($currentSubscription)
-            <div class="row justify-content-center mb-5">
-                <div class="col-lg-8">
-                    <div class="card border-success shadow-sm">
-                        <div class="card-header bg-success text-white text-center">
-                            <h4 class="mb-0"><i class="ik ik-check-circle"></i> {{ __('field.your_current_subscription') }}</h4>
+            <!-- Current Subscription Card -->
+            @if($currentSubscription)
+                <div class="subscription-status-card active-subscription">
+                    <div class="subscription-header">
+                        <div class="subscription-icon">
+                            <i data-lucide="check-circle"></i>
                         </div>
-                        <div class="card-body text-center py-4">
-                            <h3 class="text-success fw-bold">{{ $currentSubscription->tariff->name }}</h3>
-                            <p class="lead">
-                                <strong>{{ __('field.validity_period') }}</strong><br>
+                        <h3>{{ __('field.your_current_subscription') }}</h3>
+                    </div>
+                    <div class="subscription-body">
+                        <div class="subscription-tariff-name">{{ $currentSubscription->tariff->name }}</div>
+                        <div class="subscription-period">
+                            <div class="period-item">
+                                <span class="period-label">{{ __('field.validity_period') }}</span>
+                                <span class="period-value">
                                 {{ \Carbon\Carbon::parse($currentSubscription->starts_at)->format('d.m.Y') }} —
                                 {{ \Carbon\Carbon::parse($currentSubscription->ends_at)->format('d.m.Y') }}
-                            </p>
-                            <p class="text-muted">
-                                {{ __('field.until_end') }} {{ \Carbon\Carbon::parse($currentSubscription->ends_at)->diffForHumans() }}
-                            </p>
-                            @if($currentSubscription->ends_at < now()->addDays(30))
-                                <span class="badge badge-pill badge-warning">{{ __('field.expires_soon') }}</span>
-                            @endif
+                            </span>
+                            </div>
+                            <div class="period-item">
+                                <span class="period-label">{{ __('field.until_end') }}</span>
+                                <span class="period-value">{{ \Carbon\Carbon::parse($currentSubscription->ends_at)->diffForHumans() }}</span>
+                            </div>
                         </div>
+                        @if($currentSubscription->ends_at < now()->addDays(30))
+                            <div class="subscription-badge warning">
+                                <i data-lucide="clock"></i>
+                                {{ __('field.expires_soon') }}
+                            </div>
+                        @endif
                     </div>
                 </div>
-            </div>
-        @else
-            <div class="row justify-content-center mb-5">
-                <div class="col-lg-8">
-                    <div class="alert alert-info text-center py-4">
-                        <i class="ik ik-info display-4 d-block mb-3"></i>
-                        <h5>{{ __('field.no_active_subscription') }}</h5>
-                        <p class="mb-0">{{ __('field.choose_tariff_below') }}</p>
-                    </div>
-                </div>
-            </div>
-        @endif
-
-        @if($pendingSubscription)
-            <div class="row justify-content-center mb-5">
-                <div class="col-lg-8">
-                    <div class="card border-warning shadow-sm">
-                        <div class="card-header bg-warning text-light text-center">
-                            <h4 class="mb-0"><i data-lucide="clock"></i> {{ __('field.subscription_request_pending') }}</h4>
+            @elseif($pendingSubscription)
+                <!-- Pending Subscription Card -->
+                    <div class="subscription-status-card pending-subscription">
+                        <div class="subscription-header">
+                            <div class="subscription-icon">
+                                <i data-lucide="clock" class="text-white"></i>
+                            </div>
+                            <h3>{{ __('field.subscription_request_pending') }}</h3>
                         </div>
-                        <div class="card-body text-center py-4">
-                            <h4 class="text-warning">{{ $pendingSubscription->tariff->name }}</h4>
-                            <p class="lead">
+                        <div class="subscription-body">
+                            <div class="subscription-tariff-name">{{ $pendingSubscription->tariff->name }}</div>
+                            <p class="pending-text">
                                 {{ __('field.you') }} <strong>{{ $pendingSubscription->tariff->name }}</strong> {{ __('field.subscription_request_sent') }}
                             </p>
-                            <p class="text-muted">
+                            <p class="pending-description">
                                 {{ __('field.request_under_review') }}<br>
                                 {{ __('field.subscription_after_approval') }}
                             </p>
-                            <span class="badge badge-pill badge-warning">{{ __('field.pending') }}</span>
+                            <div class="subscription-badge pending">
+                                <i data-lucide="loader"></i>
+                                {{ __('field.pending') }}
+                            </div>
                         </div>
                     </div>
+            @else
+                <div class="subscription-status-card no-subscription">
+                    <div class="no-subscription-content">
+                        <i data-lucide="info"></i>
+                        <h4>{{ __('field.no_active_subscription') }}</h4>
+                        <p>{{ __('field.choose_tariff_below') }}</p>
+                    </div>
                 </div>
-            </div>
-        @endif
+            @endif
+        </div>
 
-        <div class="row justify-content-center">
+        <!-- Pricing Cards Grid -->
+        <div class="pricing-cards-grid">
             @foreach($tariffs as $tariff)
-                <div class="col-md-4 mb-5 mt-4">
-                    <div class="card h-100 shadow-lg border-0 rounded-lg pricing-card position-relative
-                    {{ $currentSubscription?->tariff_id == $tariff->id ? 'border-primary border-thick' : '' }}">
+                <div class="pricing-card-modern {{ $currentSubscription?->tariff_id == $tariff->id ? 'current-tariff' : '' }} {{ $pendingSubscription?->tariff_id == $tariff->id ? 'pending-tariff' : '' }}">
 
-                        @if($currentSubscription?->tariff_id == $tariff->id)
-                            <div class="ribbon ribbon-top-right"><span>{{ __('field.current') }}</span></div>
-                        @endif
+                    <!-- Ribbon for Current/Pending -->
+                    @if($currentSubscription?->tariff_id == $tariff->id)
+                        <div class="pricing-ribbon current">
+                            <i data-lucide="star"></i>
+                            {{ __('field.current') }}
+                        </div>
+                    @endif
 
-                            @if($pendingSubscription?->tariff_id == $tariff->id)
-                                <div class="ribbon ribbon-top-right"><span style="background-color: #f8a94c">{{ __('field.pending') }}</span></div>
-                            @endif
+                    @if($pendingSubscription?->tariff_id == $tariff->id)
+                        <div class="pricing-ribbon pending">
+                            <i data-lucide="clock"></i>
+                            {{ __('field.pending') }}
+                        </div>
+                    @endif
 
-                        <div class="card-header text-center py-4 bg-primary text-white">
-                            <h3 class="my-0 fw-bold text-white text-center w-100">{{ $tariff->name }}</h3>
+                    <!-- Card Header -->
+                    <div class="pricing-card-header">
+                        <div class="tariff-icon">
+                            <i data-lucide="package" class="text-white"></i>
+                        </div>
+                        <h3 class="tariff-name">{{ $tariff->name }}</h3>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="pricing-card-body">
+
+                        <!-- Period Toggle -->
+                        <div class="period-toggle-modern">
+                            <label class="period-option active">
+                                <input type="radio" name="period_{{ $tariff->id }}" value="month" checked>
+                                <span class="period-text">
+                                    <i data-lucide="calendar"></i>
+                                    {{ __('field.per_month') }}
+                                </span>
+                            </label>
+                            <label class="period-option">
+                                <input type="radio" name="period_{{ $tariff->id }}" value="year">
+                                <span class="period-text">
+                                    <i data-lucide="calendar-range"></i>
+                                    {{ __('field.yearly') }}
+                                </span>
+                            </label>
                         </div>
 
-                        <div class="card-body text-center d-flex flex-column">
-                            <div class="btn-group mb-4 period-toggle">
-                                <label class="btn btn-outline-secondary active">
-                                    <input type="radio" name="period_{{ $tariff->id }}" value="month" checked>
-                                    {{ __('field.per_month') }}
-                                </label>
-                                <label class="btn btn-outline-secondary">
-                                    <input type="radio" name="period_{{ $tariff->id }}" value="year">
-                                    {{ __('field.yearly') }}
-                                </label>
+                        <!-- Pricing Display -->
+                        <div class="pricing-display">
+                            <div class="price-block monthly-price">
+                                <div class="price-amount">{{ number_format($tariff->price_monthly) }}</div>
+                                <div class="price-period">{{ __('field.price_per_month') }}</div>
+                            </div>
+                            <div class="price-block yearly-price d-none">
+                                <div class="price-amount">{{ number_format($tariff->price_yearly) }}</div>
+                                <div class="price-period">{{ __('field.price_per_year') }}</div>
                             </div>
 
-                            <div class="price mb-4">
-                                <h1 class="display-5 fw-bold monthly-price">
-                                    {{ number_format($tariff->price_monthly) }}
-                                    <small class="text-muted fs-4">{{ __('field.price_per_month') }}</small>
-                                </h1>
-                                <h1 class="display-5 fw-bold yearly-price d-none">
-                                    {{ number_format($tariff->price_yearly) }}
-                                    <small class="text-muted fs-4">{{ __('field.price_per_year') }}</small>
-                                </h1>
-
-                                @if($tariff->price_yearly > 0 && $tariff->price_yearly < ($tariff->price_monthly * 12))
-                                    <p class="yearly-saving text-success fw-bold d-none mt-3">
-                                        {{ __('field.save_amount') }} {{ number_format(($tariff->price_monthly * 12) - $tariff->price_yearly) }} {{ __('field.currency_sum') }}!
-                                        <span class="badge badge-pill badge-success ml-2">
-                                        –{{ round((1 - $tariff->price_yearly / ($tariff->price_monthly * 12)) * 100) }}%
+                            @if($tariff->price_yearly > 0 && $tariff->price_yearly < ($tariff->price_monthly * 12))
+                                <div class="savings-badge d-none yearly-saving">
+                                    <i data-lucide="trending-down"></i>
+                                    {{ __('field.save_amount') }} {{ number_format(($tariff->price_monthly * 12) - $tariff->price_yearly) }} {{ __('field.currency_sum') }}
+                                    <span class="discount-percent">
+                                        −{{ round((1 - $tariff->price_yearly / ($tariff->price_monthly * 12)) * 100) }}%
                                     </span>
-                                    </p>
-                                @endif
-                            </div>
+                                </div>
+                            @endif
+                        </div>
 
-                            <ul class="list-unstyled mb-4 flex-grow-1">
-                                <li class="mb-2"><strong>{{ $tariff->max_users }}</strong>  {{ __('field.user') }}</li>
-                                <li class="mb-2"><strong>{{ number_format($tariff->max_documents) }}</strong>  {{ __('field.documents_per_month') }}</li>
-                                <li class="mb-2">{{ __('field.full_functionality') }}</li>
-                                <li class="mb-2">{{ __('field.support_24_7') }}</li>
-                            </ul>
-
-                            <div class="mt-auto">
-                                @if($currentSubscription?->tariff_id == $tariff->id)
-                                    <button class="btn btn-outline-primary btn-lg btn-block" disabled>
-                                        {{ __('field.current_tariff') }}
-                                    </button>
-                                @else
-                                    <button type="button" class="btn btn-primary btn-lg btn-block subscribe-btn"
-                                            data-tariff-id="{{ $tariff->id }}"
-                                            data-tariff-name="{{ $tariff->name }}">
-                                        {{ __('field.select') }}
-                                    </button>
-                                @endif
+                        <!-- Features List -->
+                        <div class="features-list-modern">
+                            <div class="feature-item">
+                                <i data-lucide="users"></i>
+                                <span><strong>{{ $tariff->max_users }}</strong> {{ __('field.user') }}</span>
                             </div>
+                            <div class="feature-item">
+                                <i data-lucide="file-text"></i>
+                                <span><strong>{{ number_format($tariff->max_documents) }}</strong> {{ __('field.documents_per_month') }}</span>
+                            </div>
+                            <div class="feature-item">
+                                <i data-lucide="check-square"></i>
+                                <span>{{ __('field.full_functionality') }}</span>
+                            </div>
+                            <div class="feature-item">
+                                <i data-lucide="headphones"></i>
+                                <span>{{ __('field.support_24_7') }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Action Button -->
+                        <div class="pricing-card-footer">
+                            @if($currentSubscription?->tariff_id == $tariff->id)
+                                <button class="btn-modern btn-current" disabled>
+                                    <i data-lucide="check"></i>
+                                    {{ __('field.current_tariff') }}
+                                </button>
+                            @else
+                                <button type="button" class="btn-modern btn-select subscribe-btn"
+                                        data-tariff-id="{{ $tariff->id }}"
+                                        data-tariff-name="{{ $tariff->name }}">
+                                    <i data-lucide="arrow-right"></i>
+                                    {{ __('field.select') }}
+                                </button>
+                            @endif
                         </div>
                     </div>
                 </div>
             @endforeach
         </div>
 
-        <div class="text-center mt-5">
-            <p class="text-muted">
-                {{ __('field.have_questions') }} <a href="mailto:support@example.com">support@example.com</a>
+        <!-- Support Section -->
+        <div class="support-section-modern">
+            <i data-lucide="help-circle"></i>
+            <p>
+                {{ __('field.have_questions') }}
+                <a href="mailto:info@edoline.uz">info@edoline.uz</a>
             </p>
         </div>
     </div>
 
-    <div class="modal fade" id="subscribeModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">{{ __('field.approve_subscription') }}</h5>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <!-- Subscribe Modal -->
+    <div class="modal-overlay-modern" id="subscribeModal">
+        <div class="modal-container-modern">
+            <div class="modal-header-modern">
+                <div class="modal-icon">
+                    <i data-lucide="package" class="text-white"></i>
                 </div>
-                <div class="modal-body text-center">
-                    <i class="ik ik-package display-1 text-primary mb-3"></i>
+                <h3>{{ __('field.approve_subscription') }}</h3>
+                <button type="button" class="modal-close" onclick="closeModal()">
+                    <i data-lucide="x" class="text-white"></i>
+                </button>
+            </div>
+
+            <div class="modal-body-modern">
+                <div class="modal-tariff-info">
                     <h4><strong id="modalTariffName"></strong> {{ __('field.to_tariff') }}</h4>
-                    <h5 id="modalPeriodText" class="text-success fw-bold"></h5>
-                    <p>{{ __('field.want_to_subscribe') }}</p>
-
-                    <p class="mt-4">
-                        <strong>{{ __('field.start_date') }}:</strong> {{ now()->format('d.m.Y') }}<br>
-                        <strong>{{ __('field.end_date') }}:</strong> <span id="modalEndDate"></span>
-                    </p>
-
-                    <p class="text-success fw-bold mt-4">
-                        {{ __('field.wait_for_admin_approval') }}
-                    </p>
+                    <div class="modal-period" id="modalPeriodText"></div>
                 </div>
-                <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-light" data-dismiss="modal">{{ __('action.cancel') }}</button>
-                    <form id="subscribeForm" method="POST" style="display:inline;">
-                        @csrf
-                        <input type="hidden" name="period" id="hiddenPeriod" value="month">
-                        <button type="submit" class="btn btn-success btn-lg px-5">
-                            {{ __('field.yes_send_request') }}
-                        </button>
-                    </form>
+
+                <p class="modal-question">{{ __('field.want_to_subscribe') }}</p>
+
+                <div class="modal-dates">
+                    <div class="date-row">
+                        <span class="date-label">{{ __('field.start_date') }}:</span>
+                        <span class="date-value">{{ now()->format('d.m.Y') }}</span>
+                    </div>
+                    <div class="date-row">
+                        <span class="date-label">{{ __('field.end_date') }}:</span>
+                        <span class="date-value" id="modalEndDate"></span>
+                    </div>
                 </div>
+
+                <div class="modal-notice">
+                    <i data-lucide="info"></i>
+                    {{ __('field.wait_for_admin_approval') }}
+                </div>
+            </div>
+
+            <div class="modal-footer-modern">
+                <button type="button" class="btn-modern btn-cancel" onclick="closeModal()" style="width: 45% !important;">
+                    <i data-lucide="x"></i>
+                    {{ __('action.cancel') }}
+                </button>
+                <form id="subscribeForm" method="POST" style="display:block; width: 45% !important;">
+                    @csrf
+                    <input type="hidden" name="period" id="hiddenPeriod" value="month">
+                    <button type="submit" class="btn-modern btn-confirm">
+                        <i data-lucide="check"></i>
+                        {{ __('field.yes_send_request') }}
+                    </button>
+                </form>
             </div>
         </div>
     </div>
 
-    <style>
-        .pricing-card { transition: all 0.3s ease; }
-        .pricing-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-        .border-thick { border-width: 5px !important; }
-        .ribbon { width: 130px; height: 120px; position: absolute; top: 10px; right: -10px; z-index: 1; }
-        .ribbon span {
-            position: absolute; display: block; width: 225px; padding: 8px 0; background-color: #3498db;
-            box-shadow: 0 5px 10px rgba(0,0,0,.1); color: #fff; font: 700 14px/1 'Lato', sans-serif;
-            text-shadow: 0 1px 1px rgba(0,0,0,.2); text-transform: uppercase; text-align: center;
-            right: -25px; top: 30px; transform: rotate(45deg);
-        }
-    </style>
-
     <script>
-        $(document).ready(function () {
-            $('input[name^="period_"]').on('change', function () {
-                let $label = $(this).closest('label');
-                let $group = $label.closest('.period-toggle');
-                let $card = $label.closest('.pricing-card');
+        function closeModal() {
+            document.getElementById('subscribeModal').classList.remove('show');
+        }
 
-                $group.find('label').removeClass('active');
-                $label.addClass('active');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Period toggle functionality
+            document.querySelectorAll('input[name^="period_"]').forEach(input => {
+                input.addEventListener('change', function() {
+                    const label = this.closest('label');
+                    const toggleGroup = label.closest('.period-toggle-modern');
+                    const card = label.closest('.pricing-card-modern');
 
-                if (this.value === 'year') {
-                    $card.find('.monthly-price').addClass('d-none');
-                    $card.find('.yearly-price').removeClass('d-none');
-                    $card.find('.yearly-saving').removeClass('d-none');
-                } else {
-                    $card.find('.monthly-price').removeClass('d-none');
-                    $card.find('.yearly-price').addClass('d-none');
-                    $card.find('.yearly-saving').addClass('d-none');
+                    // Update active state
+                    toggleGroup.querySelectorAll('.period-option').forEach(opt => opt.classList.remove('active'));
+                    label.classList.add('active');
+
+                    // Toggle price display
+                    if (this.value === 'year') {
+                        card.querySelector('.monthly-price').classList.add('d-none');
+                        card.querySelector('.yearly-price').classList.remove('d-none');
+                        const savings = card.querySelector('.yearly-saving');
+                        if (savings) savings.classList.remove('d-none');
+                    } else {
+                        card.querySelector('.monthly-price').classList.remove('d-none');
+                        card.querySelector('.yearly-price').classList.add('d-none');
+                        const savings = card.querySelector('.yearly-saving');
+                        if (savings) savings.classList.add('d-none');
+                    }
+                });
+            });
+
+            // Subscribe button functionality
+            document.querySelectorAll('.subscribe-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tariffId = this.dataset.tariffId;
+                    const tariffName = this.dataset.tariffName;
+                    const period = document.querySelector(`input[name="period_${tariffId}"]:checked`).value;
+
+                    document.getElementById('modalTariffName').textContent = tariffName;
+                    document.getElementById('hiddenPeriod').value = period;
+
+                    if (period === 'year') {
+                        document.getElementById('modalPeriodText').textContent = 'Yillik obuna';
+                        document.getElementById('modalEndDate').textContent = '{{ now()->addYear()->format('d.m.Y') }}';
+                    } else {
+                        document.getElementById('modalPeriodText').textContent = 'Oylik obuna';
+                        document.getElementById('modalEndDate').textContent = '{{ now()->addMonth()->format('d.m.Y') }}';
+                    }
+
+                    document.getElementById('subscribeForm').action =
+                        '{{ route("pricing.subscribe", ":id") }}'.replace(':id', tariffId);
+
+                    document.getElementById('subscribeModal').classList.add('show');
+                });
+            });
+
+            // Close modal on overlay click
+            document.getElementById('subscribeModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
                 }
             });
 
-            $('.subscribe-btn').on('click', function () {
-                let tariffId = $(this).data('tariff-id');
-                let tariffName = $(this).data('tariff-name');
-
-                let period = $('input[name="period_' + tariffId + '"]:checked').val() || 'month';
-
-                $('#modalTariffName').text(tariffName);
-                $('#hiddenPeriod').val(period);
-
-                if (period === 'year') {
-                    $('#modalPeriodText').text('Yillik obuna');
-                    $('#modalEndDate').text('{{ now()->addYear()->format('d.m.Y') }}');
-                } else {
-                    $('#modalPeriodText').text('Oylik obuna');
-                    $('#modalEndDate').text('{{ now()->addMonth()->format('d.m.Y') }}');
-                }
-
-                $('#subscribeForm').attr('action',
-                    '{{ route("pricing.subscribe", ":id") }}'.replace(':id', tariffId)
-                );
-
-                $('#subscribeModal').modal('show');
-            });
+            // Initialize Lucide icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
         });
     </script>
 @endsection

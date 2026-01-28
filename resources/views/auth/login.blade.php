@@ -2,18 +2,16 @@
 
 @section('content')
 
-<div class="cp-preloader" id="cp-preloader"></div>
-
-<body>
+    <body>
     <main>
- <div class="logo">
-                <img src="{{ asset('images/edofy.svg') }}" style="width: 120px" alt="">
-            </div>
+        <div class="logo">
+            <img src="{{ asset('images/edofy.svg') }}" style="width: 120px" alt="">
+        </div>
         <video class="auth-sidebar__video" playsinline autoplay loop muted
-            src="{{ asset('images/background.mp4') }}"></video>
+               src="{{ asset('images/background.mp4') }}"></video>
 
         <div class="containers">
-           
+
 
             <div class="tabs">
                 <div class="tab active" data-tab="password" onclick="showTab('login')">
@@ -38,10 +36,11 @@
 
                         <div class="input-group">
                             <i data-lucide="lock" class="icon"></i>
-                            <input type="password" id="password" name="password" placeholder="{{ __('field.type_password') }}"
-                                required>
+                            <input type="password" id="password" name="password"
+                                   placeholder="{{ __('field.type_password') }}"
+                                   required>
                             <i data-lucide="eye" onclick="togglePassword()"
-                                style="position: absolute; right: 15px; top: 13px; cursor: pointer; color: #999;"></i>
+                               style="position: absolute; right: 15px; top: 13px; cursor: pointer; color: #999;"></i>
                         </div>
 
                         <div class="remember-forgot">
@@ -103,14 +102,14 @@
         </div>
 
     </main>
-</body>
+    </body>
 
-<script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
-<script src="{{ asset('js/jquery-3.6.0.min.js') }}"></script>
-<script src="{{ asset('js/sweetalert2@11') }}"></script>
-<script src="{{ asset('js/e_imzo.js') }}"></script>
-<script src="{{ asset('js/e_imzo_client.js') }}"></script>
-<script src="{{ asset('js/login_e_imzo.js') }}"></script>
+    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('js/jquery-3.6.0.min.js') }}"></script>
+    <script src="{{ asset('js/sweetalert2@11') }}"></script>
+    <script src="{{ asset('js/e_imzo.js') }}"></script>
+    <script src="{{ asset('js/e_imzo_client.js') }}"></script>
+    <script src="{{ asset('js/login_e_imzo.js') }}"></script>
 
 <script>
 (function() {

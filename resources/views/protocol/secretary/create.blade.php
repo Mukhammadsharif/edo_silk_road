@@ -1,5 +1,8 @@
 @extends('layouts.app')
+
 <link rel="stylesheet" href="{{ asset('css/templates/protocol/secretary-create.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/office/templates/edit-execution-steps.css') }}">
+
 @section('content')
 
     <div class="modern-container">
@@ -89,167 +92,156 @@
                                    value="{{ old('doc_number') }}" placeholder="{{ __('field.doc_number') }}">
                         </div>
 
-                        <div class="form-group row">
-                            <div class="col-sm-12">
-                                <label>{{ __('action.attach_file') }}</label>
-                                <div id="file-inputs-container">
-                                    <div
-                                        class="file-input-group d-flex flex-row align-items-baseline justify-content-between mb-2">
-                                        <div class="custom-file" style="display: none;">
-                                            <input type="file" name="doc_files[]" class="custom-file-input"
-                                                   id="customFile-0">
-                                            <label class="custom-file-label"
-                                                   for="customFile-0">{{ __('action.choose') }}</label>
-                                        </div>
-                                        <input type="text" class="form-control" readonly
-                                               placeholder="{{ __('action.choose') }}"
-                                               onclick="document.getElementById('customFile-0').click();"
-                                               style="cursor: pointer;">
+                        <!-- File Upload Section -->
+                        <div class="form-group-modern file-upload-section">
+                            <label>
+                                <i data-lucide="paperclip"></i>
+                                {{ __('action.attach_file') }}
+                            </label>
 
-                                        <button type="button"
-                                                class="btn btn-icon btn-outline-secondary btn-sm ms-2 ml-2 add-file-input">
-                                            <i class="fas fa-plus"></i>
-                                        </button>
+                            <div id="file-inputs-container">
+                                <div class="file-input-wrapper">
+                                    <div class="custom-file-hidden">
+                                        <input type="file" name="doc_files[]" class="custom-file-input"
+                                               id="customFile-0">
                                     </div>
+
+                                    <div class="file-display-area"
+                                         onclick="document.getElementById('customFile-0').click();">
+                                        <div class="file-icon">
+                                            <i data-lucide="upload"></i>
+                                        </div>
+                                        <div class="file-text">
+                                            <p class="file-name">{{ __('action.choose') }}</p>
+                                            <span class="file-hint">PDF, DOC, DOCX, XLS, XLSX (max 10MB)</span>
+                                        </div>
+                                    </div>
+
+                                    <button type="button" class="btn-add-file add-file-input">
+                                        <i data-lucide="plus"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <div class="col-sm-12">
-                                <a href="{{ route('home') }}" class="btn btn-light">
-                                    <i class="ik ik-x"></i> {{ __('action.cancel') }}
-                                </a>
-                                <button type="submit" id="submitBtn" class="btn btn-primary float-right">
-                                    <i data-lucide="save"></i> {{ __('action.save') }}
-                                </button>
-                            </div>
+                        <div class="form-actions">
+                            @if(!Auth::user()->currentSubscription)
+                                <div class="subscription-warning">
+                                    <i data-lucide="alert-circle"></i>
+                                    <span>Hujjat yaratish uchun faol obuna kerak</span>
+                                </div>
+                            @endif
+
+                            <button type="submit" name="action" value="file" id="submitBtn" class="btn-submit"
+                                    onclick="setFormAction('file')"
+                                    @if(!Auth::user()->currentSubscription) disabled @endif>
+                                <i data-lucide="save"></i>
+                                {{ __('action.save') }}
+                            </button>
                         </div>
                     </div>
 
-                    <div class="form-section">
-                        <div class="form-group" style="max-height: 600px; overflow-x: auto">
-                            <h5>{{ __('field.select_members') }} <span class="text-red">*</span></h5>
-                            <div class="input-group mb-2 mt-2">
-                                <input type="text" class="form-control" id="userSearch" onkeyup="searchUserFunction()"
-                                       placeholder="{{ __('action.search') }}...">
-                            </div>
-                            {!! $errors->first('user_id', '<p class="text-danger">:message</p>') !!}
-                            @if(count($protocolType->docTypeUsers))
-                                <ul id="sortable" style="max-height: 400px; overflow-x: auto">
-                                    @foreach($protocolType->docTypeUsers as $key => $item)
-                                        <li class="form-group-modern select-user"
-                                            style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; margin-bottom: 0">
-                                            <div style="display: flex; flex-direction: row; align-items: center; margin-bottom: 0; width: 70%">
-                                                <input class="form-control checkbox w-10" type="checkbox"
-                                                       id="{{ $item->id }}"
-                                                       value="{{ $item->user_id }}" name="user_id[]" checked>
-                                                <div class="p0 text-primary">
-                                                    <h6>{{ $item->userWork->personal->l_name??'' }} {{ $item->userWork->personal->f_name??'' }}</h6>
-                                                    <p class="text-muted pl-1">
+                    <div class="form-section-modern" style="max-height: 100vh; overflow-y: auto">
+
+                        <!-- Select Members Section -->
+                        <div class="section-title-modern">
+                            <i data-lucide="pen-tool"></i>
+                            <span>{{ __('field.select_members') }}</span>
+                        </div>
+
+                        <div class="search-box-modern">
+                            <i data-lucide="search"></i>
+                            <input type="text" class="form-control-modern border-none" id="userSearch"
+                                   onkeyup="searchUserFunction()"
+                                   placeholder="{{ __('action.search') }}...">
+                        </div>
+
+                        {!! $errors->first('user_id', '<p class="text-danger">:message</p>') !!}
+
+                        @if(count($protocolType->docTypeUsers))
+                            <ul id="sortable" class="users-list-modern sortable-list">
+                                @foreach($protocolType->docTypeUsers as $key => $item)
+                                    <li class="select-user sortable-item">
+                                        <div class="user-checkbox-card-extended">
+                                            <div class="drag-handle">
+                                                <i data-lucide="grip-vertical"></i>
+                                            </div>
+                                            <input type="checkbox"
+                                                   id="{{ $item->id }}"
+                                                   value="{{ $item->user_id }}"
+                                                   name="user_id[]"
+                                            >
+                                            <div class="user-card-content-extended">
+                                                <div class="checkbox-indicator">
+                                                    <i data-lucide="check" class="text-white"></i>
+                                                </div>
+                                                <div class="user-avatar">
+                                                    <i data-lucide="user"></i>
+                                                </div>
+                                                <div class="user-info">
+                                                    <span class="user-name">
+                                                        {{ $item->userWork->personal->l_name??'' }}
+                                                        {{ $item->userWork->personal->f_name??'' }}
+                                                    </span>
+                                                    <span class="user-position">
                                                         @php($department = $item->userWork->department??0)
                                                         @if($department)
                                                             {{ $department->lang($department->id) }}
-                                                        @endif<br>
-                                                        <i>
-                                                            @php($position = $item->userWork->position??0)
-                                                            @if($position)
-                                                                {{ $position->lang($position->id) }}
-                                                            @endif
-                                                        </i>
-                                                    </p>
+                                                        @endif
+                                                    </span>
+                                                    <span class="user-department">
+                                                        @php($position = $item->userWork->position??0)
+                                                        @if($position)
+                                                            {{ $position->lang($position->id) }}
+                                                        @endif
+                                                    </span>
+                                                </div>
+                                                <div class="user-role-select">
+                                                    <select name="user_role_id[]" class="role-select-modern">
+                                                        @foreach($user_roles as $role)
+                                                            <option value="{{ $role->code }}"
+                                                                    @if($role->code === 3) selected @endif>
+                                                                {{ $role->lang($role->id) }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
                                                 </div>
                                             </div>
-                                            <div class="d-flex">
-                                                <select name="user_role_id[]" class="form-control-modern select2 mr-5"
-                                                        style="width: 160px; height: 20px !important;">
-                                                    @foreach($user_roles as $item)
-                                                        <option value="{{ $item->code }}"
-                                                                @if($item->code === 3) selected @endif>{{ $item->lang($item->id) }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            @endif
-                        </div>
+                                        </div>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
 
                         @if($isFamiliarExists)
-                            <div class="form-group" style="max-height: 600px; overflow-x: auto">
-                                <h5>{{ __('field.select_hr_order_emp') }}</h5>
-                                <div class="input-group mb-2 mt-2">
-                                    <input type="text" class="form-control" id="hrEmpSearch"
-                                           onkeyup="searchHrEmpFunction()"
-                                           placeholder="{{ __('action.search') }}...">
-                                </div>
-                                <ul id="sortable_hr_emp" style="max-height: 400px; overflow-x: auto">
-                                </ul>
+                            <div class="section-divider"></div>
+
+                            <!-- HR Order Employees Section -->
+                            <div class="section-title-modern">
+                                <i data-lucide="users"></i>
+                                <span>{{ __('field.select_hr_order_emp') }}</span>
                             </div>
+
+                            <div class="search-box-modern">
+                                <i data-lucide="search"></i>
+                                <input type="text" class="form-control-modern border-none" id="hrEmpSearch"
+                                       onkeyup="searchHrEmpFunction()"
+                                       placeholder="{{ __('action.search') }}...">
+                            </div>
+
+                            <ul id="sortable_hr_emp" class="users-list-modern sortable-list"></ul>
                         @endif
                     </div>
                 </div>
             </form>
         </div>
 
-        <script src="{{ asset('/assets/js/js-sortable.js') }}"></script>
+        <script src="{{ asset('/assets/jquery-3.3.1.min.js') }}"></script>
+        <script src="{{ asset('/assets/src/js/vendor/jquery-ui.min.js') }}"></script>
 
         <script type="text/javascript">
 
             $('.protocol_members_div').hide();
-
-            $('#doc_type').on('change', function () {
-
-                let users_append = '';
-
-                let user_roles = '';
-
-                let selected_id = Number($(this).val());
-
-                $.ajax({
-                    url: '/protocol/get-doc-type-users/' + selected_id,
-                    type: 'GET',
-                    dataType: 'JSON',
-                    success: function (response) {
-                        //console.log(response);
-                        $('.protocol_members_div').show();
-                        $(".protocol_members").empty();
-                        let users = response.users;
-                        let roles = response.user_roles;
-                        if (users.length) {
-                            $.each(users, function (key, value) {
-                                key++;
-                                let fullName = value.user_work.personal.l_name + ' ' + value.user_work.personal.f_name;
-                                let position = value.user_work.position.name;
-                                let department = value.user_work.department.name;
-                                users_append = `<li class="form-group" style="display: flex; flex-direction: row; align-items: center">
-                                <input class="form-control w-10" type="checkbox" id="` + key + `" value="` + value.user_work.id + `" name="user_id[]" checked>
-                                <div class="pr-5 text-primary">` + fullName + `<br>
-                                    <small class="text-muted">` + department + ' ' + position + `</small>
-                                </div>
-                                <div class="d-flex">
-                                    <select name="user_role_id[]" class="form-control mr-5 user_roles" style="width: 120px"></select>
-                                </div>
-                                </li>`;
-                                $(".protocol_members").append(users_append);
-                            });
-                        }
-                        if (roles.length) {
-                            $.each(roles, function (key, value) {
-                                key++;
-                                if (key === 2 && value.code === 2) {
-                                    user_roles = `<option value="` + value.code + `" selected>` + value.title + `</option>`;
-                                } else {
-                                    user_roles = `<option value="` + value.code + `">` + value.title + `</option>`;
-                                }
-                                $(".user_roles").append(user_roles);
-                            });
-                        }
-                    },
-                    error: function () {
-                    }
-                });
-            });
 
             function setAllUserCheckboxes(divId, sourceCheckbox) {
                 let divElement = document.getElementById(divId);
@@ -268,100 +260,112 @@
 
                 for (i = 0; i < nodes.length; i++) {
                     if (nodes[i].innerText.toLowerCase().includes(filter)) {
-                        nodes[i].style.display = "flex";
+                        nodes[i].style.display = "block";
                     } else {
                         nodes[i].style.display = "none";
                     }
                 }
             }
 
-            var selected = @json([]); // Initialize selected array
+            var selected = @json([]);
 
             function searchHrEmpFunction() {
-                let input = document.getElementById("hrEmpSearch");
-                let filter = input.value.toLowerCase().trim(); // Trim to avoid spaces
-                let ul = $('#sortable_hr_emp');
-                let docId = $('#doc_id').val() || 0; // Default to 0 if not provided
-
-                // Remove all non-permanent items to prevent accumulation
-                ul.find('li.select-hr-emp:not(.permanent)').remove();
-
-                // Debounce to prevent multiple rapid requests
                 clearTimeout(window.searchHrEmpTimeout);
                 window.searchHrEmpTimeout = setTimeout(function () {
+                    let query = $('#hrEmpSearch').val();
+
                     $.ajax({
                         url: '/protocol/search-hr-emp/{{ $protocolType->doc_hash }}',
-                        type: 'GET',
-                        data: {query: filter, doc_id: docId}, // Include doc_id
-                        success: function (response) {
-                            console.log('AJAX Response:', response); // Log response for debugging
-                            if (!Array.isArray(response)) {
-                                console.error('Invalid response format:', response);
-                                return;
-                            }
+                        method: 'GET',
+                        data: {
+                            query: query,
+                            doc_id: 0
+                        },
+                        success: function (data) {
+                            let ul = $('#sortable_hr_emp');
+                            let displayedIds = new Set();
 
-                            let displayedIds = new Set(selected.map(String));
-
-                            response.forEach(function (item) {
-                                if (!displayedIds.has(item.id.toString())) {
-                                    var li = `
-                            <li class="form-group select-hr-emp" style="display: flex; flex-direction: row; align-items: center">
-                                <input class="form-control w-10 checkbox" type="checkbox"
-                                       id="${item.id}"
-                                       value="${item.id}" name="hr_user_id[]">
-                                <div class="p0 text-primary">
-                                    <h6>${item.l_name || ''} ${item.f_name || ''}</h6>
-                                    <p class="text-muted">
-                                        ${item.department_name || ''} - ${item.position_name || ''}
-                                    </p>
-                                </div>
-                            </li>`;
-                                    ul.append(li);
+                            // Собираем уже отображаемые ID из существующих элементов
+                            ul.find('li').each(function () {
+                                const existingCheckbox = $(this).find('.checkbox');
+                                if (existingCheckbox.length) {
+                                    const existingId = existingCheckbox.val();
+                                    displayedIds.add(existingId);
                                 }
+                            });
+
+                            // Убираем только непостоянные элементы
+                            ul.find('li:not(.permanent)').remove();
+
+                            // Добавляем ID постоянных элементов обратно в Set
+                            ul.find('li.permanent').each(function () {
+                                const checkbox = $(this).find('.checkbox');
+                                if (checkbox.length) {
+                                    displayedIds.add(checkbox.val());
+                                }
+                            });
+
+                            data.forEach(item => {
+                                const itemId = item.id.toString();
+
+                                // ВАЖНО: проверяем ПЕРЕД добавлением
+                                if (!displayedIds.has(itemId)) {
+                                    const li = ` <li class="select-hr-user sortable-item">
+                                        <div class="user-checkbox-card-extended">
+                                            <input type="checkbox" name="hr_user_id[]" id="${item.id}" value="${item.id}">
+                                            <div class="user-card-content-extended">
+                                                <div class="checkbox-indicator">
+                                                    <i data-lucide="check" class="text-white"></i>
+                                                </div>
+                                                <div class="user-avatar" style="background: #22c55e !important;">
+                                                    <i data-lucide="user"></i>
+                                                </div>
+                                                <div class="user-info">
+                                                    <span class="user-name">
+                                                       ${item.l_name || ''} ${item.f_name || ''}
+                                                    </span>
+                                                    <span class="user-position">
+                                                    ${item.department_name || ''}
+                                                    </span>
+                                                    <span class="user-department">
+                                                    ${item.position_name || ''}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>`;
+
+                                    ul.append(li);
+                                    displayedIds.add(itemId); // Добавляем ПОСЛЕ проверки
+                                }
+                            });
+
+                            lucide.createIcons();
+
+                            document.querySelectorAll('.user-checkbox-card-extended').forEach(card => {
+                                card.addEventListener('click', function(e) {
+                                    if (e.target.closest('.drag-handle') || e.target.closest('.user-role-select')) {
+                                        return;
+                                    }
+
+                                    const checkbox = this.querySelector('input[type="checkbox"]');
+                                    if (checkbox) {
+                                        checkbox.checked = !checkbox.checked;
+                                        checkbox.closest('.sortable-item').classList.toggle('checked', checkbox.checked);
+                                    }
+                                });
                             });
                         },
                         error: function (xhr, status, error) {
                             console.error('AJAX error:', status, error);
                         }
                     });
-                }, 300); // 300ms debounce
+                }, 300);
             }
 
             // Attach event listener with debouncing
             $('#hrEmpSearch').on('input', searchHrEmpFunction);
 
-            function checkEditorLoaded() {
-                const editorWrapper = document.querySelector('.js-editor-wrapper');
-                // Look for CKEditor-specific elements (e.g., .ck-editor__editable)
-                const editorElement = editorWrapper.querySelector('.ck-editor__editable');
-
-                const ckPlaceholder = document.querySelector('.ck-placeholder')
-                if (ckPlaceholder) {
-                    ckPlaceholder.setAttribute('data-placeholder', '{{ __('field.type_text') }}')
-                }
-
-                if (editorElement) {
-                    // Editor is loaded, hide loader and show editor
-                    document.getElementById('editor-loading').style.display = 'none';
-                    document.getElementById('b-demo-editor').style.display = 'block';
-                    return true;
-                }
-                return false;
-            }
-
-            const pollingInterval = setInterval(() => {
-                if (checkEditorLoaded()) {
-                    clearInterval(pollingInterval); // Stop polling once loaded
-                }
-            }, 100); // Check every 100ms
-
-            setTimeout(() => {
-                clearInterval(pollingInterval);
-                if (!checkEditorLoaded()) {
-                    // Show error if editor still not loaded
-                    document.getElementById('editor-loading').innerHTML = '<p>Error loading editor. Please refresh the page.</p>';
-                }
-            }, 100000);
 
             $('.checkbox').on('change', function () {
                 $('#userSearch').val('');
@@ -373,93 +377,82 @@
                 }
             });
 
-            // Counter to ensure unique IDs for file inputs
+            // File Upload Handler
             let fileInputCounter = 1;
 
-            document.addEventListener('DOMContentLoaded', function () {
-                // Handle Add Button Click
-                document.querySelector('.add-file-input').addEventListener('click', function () {
-                    const container = document.getElementById('file-inputs-container');
-                    const newFileInputGroup = document.createElement('div');
-                    newFileInputGroup.className = 'file-input-group d-flex align-items-center mb-2';
+            document.querySelector('.add-file-input').addEventListener('click', function () {
+                const container = document.getElementById('file-inputs-container');
+                const newWrapper = document.createElement('div');
+                newWrapper.className = 'file-input-wrapper mt-3';
 
-                    // Use local counter to ensure correct ID
-                    const currentCounter = fileInputCounter;
+                const currentCounter = fileInputCounter;
 
-                    // Create new file input
-                    const newFileInputDiv = document.createElement('div');
-                    newFileInputDiv.className = 'custom-file';
-                    newFileInputDiv.style.display = 'none';
-                    newFileInputDiv.innerHTML = `
-            <input type="file" name="doc_files[]" class="custom-file-input" id="customFile-${currentCounter}">
-            <label class="custom-file-label" for="customFile-${currentCounter}">{{ __('action.choose') }}</label>
-        `;
-                    newFileInputGroup.appendChild(newFileInputDiv);
+                newWrapper.innerHTML = `
+                <div class="custom-file-hidden">
+                    <input type="file" name="doc_files[]" class="custom-file-input" id="customFile-${currentCounter}">
+                </div>
 
-                    // Create readonly text input to display file name
-                    const textInput = document.createElement('input');
-                    textInput.type = 'text';
-                    textInput.className = 'form-control';
-                    textInput.readOnly = true;
-                    textInput.placeholder = "{{ __('action.choose') }}";
-                    textInput.style.cursor = 'pointer';
-                    newFileInputGroup.appendChild(textInput);
+                <div class="file-display-area" onclick="document.getElementById('customFile-${currentCounter}').click();">
+                    <div class="file-icon">
+                        <i data-lucide="upload"></i>
+                    </div>
+                    <div class="file-text">
+                        <p class="file-name">{{ __('action.choose') }}</p>
+                        <span class="file-hint">PDF, DOC, DOCX, XLS, XLSX (max 10MB)</span>
+                    </div>
+                </div>
 
-                    // Create Remove Button
-                    const removeButton = document.createElement('button');
-                    removeButton.type = 'button';
-                    removeButton.className = 'btn btn-icon btn-outline-warning btn-sm ms-2 remove-file-input ml-2';
-                    removeButton.innerHTML = '<i class="ik ik-minus"></i>';
-                    removeButton.addEventListener('click', function () {
-                        newFileInputGroup.remove();
-                    });
-                    newFileInputGroup.appendChild(removeButton);
+                <button type="button" class="btn-remove-file">
+                    <i data-lucide="trash-2"></i>
+                </button>
+            `;
 
-                    // Append to container before attaching event listeners
-                    container.appendChild(newFileInputGroup);
+                container.appendChild(newWrapper);
 
-                    // Now attach event listeners
-                    const fileInput = newFileInputDiv.querySelector(`#customFile-${currentCounter}`);
-                    textInput.onclick = () => {
-                        const input = document.getElementById(`customFile-${currentCounter}`);
-                        if (input) input.click();
-                    };
+                const fileInput = newWrapper.querySelector(`#customFile-${currentCounter}`);
+                const fileNameDisplay = newWrapper.querySelector('.file-name');
 
-                    // Update text input when file is selected
-                    fileInput.addEventListener('change', function () {
-                        textInput.value = this.files.length > 0 ? this.files[0].name : "{{ __('action.choose') }}";
-                    });
-
-                    // Increment counter after everything is set
-                    fileInputCounter++;
+                fileInput.addEventListener('change', function () {
+                    if (this.files.length > 0) {
+                        fileNameDisplay.textContent = this.files[0].name;
+                        newWrapper.querySelector('.file-display-area').classList.add('has-file');
+                    }
                 });
 
-                // Update initial file input text when file is selected
-                const initialFileInput = document.getElementById('customFile-0');
-                const initialTextInput = document.querySelector('.file-input-group .form-control');
-                initialFileInput.addEventListener('change', function () {
-                    initialTextInput.value = this.files.length > 0 ? this.files[0].name : "{{ __('action.choose') }}";
+                newWrapper.querySelector('.btn-remove-file').addEventListener('click', function () {
+                    newWrapper.remove();
                 });
 
-                let sortableElement = document.getElementById('sortable');
-                let sortableHrElement = document.getElementById('sortable_hr_emp');
+                lucide.createIcons();
+                fileInputCounter++;
+            });
 
-                if (sortableElement) {
-                    new Sortable(sortableElement, {
-                        animation: 150,
-                        ghostClass: 'sortable-ghost',
-                    });
-                } else {
-                    console.error("Element #sortable not found");
+            const initialFileInput = document.getElementById('customFile-0');
+            const initialFileNameDisplay = document.querySelector('.file-name');
+
+            initialFileInput.addEventListener('change', function () {
+                if (this.files.length > 0) {
+                    initialFileNameDisplay.textContent = this.files[0].name;
+                    document.querySelector('.file-display-area').classList.add('has-file');
                 }
+            });
 
-                if (sortableHrElement) {
-                    new Sortable(sortableHrElement, {
-                        animation: 150,
-                        ghostClass: 'sortable-ghost',
+            document.addEventListener('DOMContentLoaded', function () {
+                if ($("#sortable").length) {
+                    $("#sortable").sortable({
+                        handle: ".drag-handle",
+                        placeholder: "sortable-placeholder",
+                        cursor: "move",
+                        opacity: 0.8,
+                        tolerance: "pointer",
+                        start: function (e, ui) {
+                            ui.placeholder.height(ui.item.height());
+                        },
+                        update: function (event, ui) {
+                            // You can add your custom logic here when order changes
+                            console.log('Order updated');
+                        }
                     });
-                } else {
-                    console.error("Element #sortable not found");
                 }
 
                 searchHrEmpFunction(); // Load initial 5
@@ -476,9 +469,8 @@
                         }
                         $(this).closest('li').removeClass('permanent');
                     }
-                });
-            });
-
+                })
+            })
         </script>
     </div>
 @endsection

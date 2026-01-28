@@ -1,9 +1,10 @@
-<div class="col-md-2">
-    <div class="card">
-        <div class="card-header">
-            <h5><i class="ik ik-file-text"></i> {{ __('field.document_info') }}</h5>
+<div class="view-sidebar view-sidebar-left">
+    <div class="info-card-modern">
+        <div class="info-card-header">
+            <i data-lucide="info" class="text-white"></i>
+            <h3>{{ __('document.document_info') }}</h3>
         </div>
-        <div class="card-body">
+        <div class="info-card-body">
             <div class="form-group">
                 <span class="text-muted">{{ __('field.doc_type') }}</span>
                 <h6>
