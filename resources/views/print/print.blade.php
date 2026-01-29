@@ -40,7 +40,7 @@
 <script src="{{ asset('/js/html2pdf.bundle.min.js') }}"></script>
 
 <script>
-    document.getElementById("generatePdf").addEventListener("click", () => {
+    document.getElementById("generatePdf")?.addEventListener("click", () => {
         const content = document.getElementById("printPage");
 
         // Create an instance of the html2pdf library

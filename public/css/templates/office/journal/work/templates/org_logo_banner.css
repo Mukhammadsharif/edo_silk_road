@@ -1,0 +1,7 @@
+.letterhead-modern { max-width: 100%; margin: 0 auto 2rem; padding: 1.5rem; background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%); border: 2px solid #e2e8f0; border-radius: 12px; }
+.logo-container { text-align: center; margin-bottom: 1rem; }
+.logo-container img { width: 100%; max-width: 120px; height: auto; display: inline-block; }
+.org-name-modern { text-align: center; margin: 1rem 0; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; font-size: 18px; color: #1e293b; line-height: 1.4; }
+.divider-line { height: 3px; background: linear-gradient(90deg, #794DFD 0%, #9d6fff 50%, #794DFD 100%); border-radius: 2px; margin: 0.75rem 0; }
+.org-address { text-align: center; font-size: 13px; line-height: 1.5; color: #64748b; margin: 0.75rem 0; }
+@media print { .letterhead-modern { background: white; border: 2px solid #000; } .divider-line { background: #000; } }

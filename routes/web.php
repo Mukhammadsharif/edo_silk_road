@@ -46,9 +46,11 @@ use App\Http\Controllers\Protocol\ProtocolDocTypeController;
 use App\Http\Controllers\Protocol\ProtocolEmpHrOrdersController;
 use App\Http\Controllers\Comment\DocumentCommentController;
 
-Route::get('/', function () {
+Route::get('/edo', function () {
     return view('auth.login');
 });
+
+Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
 Route::get('/log-test', function () {
     Log::debug('Test log message');
@@ -64,13 +66,13 @@ Route::post('e-imzo/backend-auth',  [SignDocImzoController::class, 'backendAuthL
 
 Route::group(['middleware' => ['auth']], function() {
 
-    Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/edo', [HomeController::class, 'index'])->name('home');
 
     Route::get('charts/documents', [HomeController::class, 'chartDocuments'])->name('charts.documents');
     Route::post('get-menu-count', [HomeController::class, 'getMenuCount'])->name('get-menu-count');
 
     Route::prefix('profile')->group(function () {
-        Route::get('my', [ProfileController::class, 'profile']);
+        Route::get('my', [ProfileController::class, 'profile'])->name('profile.my');
         Route::post('pass-update', [ProfileController::class, 'passUpdate'])->name('my.pass-update');
         Route::post('personal-update', [ProfileController::class, 'personalUpdate'])->name('my.personal-update');
 
@@ -219,7 +221,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::put('update/{id}/{doc_hash}', [ProtocolsController::class, 'update'])->name('prt-secretary-update');
         Route::get('send-to-members/{id}/{doc_hash}', [ProtocolsController::class, 'sendToMembers'])->name('prt-secretary-send-members');
         Route::get('get-protocol-users/{id}', [ProtocolsController::class, 'getDocTypeUsers']);
-        Route::get('search-hr-emp/{doc_hash}', [ProtocolsController::class, 'searchHrEmp']);
+        Route::get('search-hr-emp/{doc_hash}', [ProtocolsController::class, 'searchHrEmp'])->name('protocol.hr-emp');
 
         // HR EMP
         Route::any('emp/hr-orders', [ProtocolEmpHrOrdersController::class, 'index'])->name('prt-emp-hr-orders');
@@ -375,7 +377,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('show/{id}/{hash}', [MessageController::class, 'view'])->name('messages.show');
         Route::post('forward/{messageId}', [MessageController::class, 'forward'])->name('messages.forward');
         Route::post('reply/message/{messageId}', [MessageController::class, 'reply'])->name('messages.reply');
-        Route::get('search-users', [MessageController::class, 'searchUsers'])->name('messages.search-users');
+//        Route::get('search-users', [MessageController::class, 'searchUsers'])->name('messages.search-users');
         Route::get('delete/{id}', [MessageController::class, 'delete'])->name('messages.delete');
         Route::get('users-work-history/active', [MessageController::class, 'getActiveUsers'])->name('users.work-history.active');
 

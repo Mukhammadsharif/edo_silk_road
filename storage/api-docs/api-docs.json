@@ -7,7 +7,11 @@
     },
     "servers": [
         {
-            "url": "http://localhost:8000",
+            "url": "http://83.69.136.85:18084",
+            "description": "Production server"
+        },
+        {
+            "url": "http://localhost:8082",
             "description": "Local server"
         }
     ],
@@ -85,7 +89,7 @@
                 ],
                 "summary": "Создание или обновление компании",
                 "description": "Создает новую компанию или обновляет существующую по Bitrix ID",
-                "operationId": "a10d6a100c3de58fc4aea89d0c37892a",
+                "operationId": "8951ffe19575d40379273c717a6ef13c",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -162,7 +166,7 @@
                 ],
                 "summary": "Получение HR приказов",
                 "description": "Возвращает список HR приказов с пагинацией и статусом PDF",
-                "operationId": "6cf2c207ef5211eb66be61ffdd644155",
+                "operationId": "dac7420501e0af836c606a244aeda429",
                 "parameters": [
                     {
                         "name": "per_page",
@@ -282,7 +286,7 @@
                 ],
                 "summary": "Создание или обновление подразделений",
                 "description": "Создает или обновляет подразделения с иерархией (parentDivisionID) по Bitrix ID",
-                "operationId": "42914a267e41ab27b722de86916aaee4",
+                "operationId": "5185c46153873da371caf1434b7df0a6",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -371,7 +375,7 @@
                 ],
                 "summary": "Создание или обновление сотрудников",
                 "description": "Создает или обновляет сотрудников (трудовую историю) по Bitrix ID",
-                "operationId": "2f037f9df004f33736e421f616d236a2",
+                "operationId": "116f3763e51ff70e294033d4b086e3dd",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -460,128 +464,61 @@
                 ]
             }
         },
-        "/api/v1/messages/{type}": {
-            "get": {
+        "/api/main/api-1c/v1/positions/create_update_list": {
+            "put": {
                 "tags": [
-                    "Messages"
+                    "Bitrix"
                 ],
-                "summary": "Получить список сообщений",
-                "description": "Возвращает список сообщений (входящие, исходящие, архив, удаленные)",
-                "operationId": "dcb13adecb5662aba5447d02a6eca414",
-                "parameters": [
-                    {
-                        "name": "type",
-                        "in": "path",
-                        "description": "Тип сообщений (inbox, outbox, archive, deleted)",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "enum": [
-                                "inbox",
-                                "outbox",
-                                "archive",
-                                "deleted"
-                            ]
-                        }
-                    },
-                    {
-                        "name": "s_text",
-                        "in": "query",
-                        "description": "Поиск по теме сообщения",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "date_from",
-                        "in": "query",
-                        "description": "Дата от (формат: Y-m-d)",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "format": "date"
-                        }
-                    },
-                    {
-                        "name": "date_till",
-                        "in": "query",
-                        "description": "Дата до (формат: Y-m-d)",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "format": "date"
-                        }
-                    },
-                    {
-                        "name": "page",
-                        "in": "query",
-                        "description": "Номер страницы",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "default": 1
-                        }
-                    },
-                    {
-                        "name": "per_page",
-                        "in": "query",
-                        "description": "Количество записей на странице",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "default": 25
+                "summary": "Создание или обновление должностей",
+                "description": "Создает или обновляет должности пользователей по Bitrix ID",
+                "operationId": "0a981307d80aed376287cbf7740633d2",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "positions"
+                                ],
+                                "properties": {
+                                    "positions": {
+                                        "type": "array",
+                                        "items": {
+                                            "required": [
+                                                "ID",
+                                                "name"
+                                            ],
+                                            "properties": {
+                                                "ID": {
+                                                    "type": "string",
+                                                    "example": "BITRIX_PS_001"
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Менеджер по персоналу"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
                         }
                     }
-                ],
+                },
                 "responses": {
-                    "200": {
-                        "description": "Успешный ответ",
+                    "201": {
+                        "description": "Должности успешно обработаны",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
                                         "message": {
                                             "type": "string"
                                         },
-                                        "data": {
-                                            "properties": {
-                                                "current_page": {
-                                                    "type": "integer"
-                                                },
-                                                "total": {
-                                                    "type": "integer"
-                                                },
-                                                "data": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "properties": {
-                                                            "id": {
-                                                                "type": "integer"
-                                                            },
-                                                            "subject": {
-                                                                "type": "string"
-                                                            },
-                                                            "text": {
-                                                                "type": "string"
-                                                            },
-                                                            "created_at": {
-                                                                "type": "string"
-                                                            },
-                                                            "read_date": {
-                                                                "type": "string",
-                                                                "nullable": true
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    }
-                                                }
-                                            },
-                                            "type": "object"
+                                        "processed_count": {
+                                            "type": "integer"
                                         }
                                     },
                                     "type": "object"
@@ -589,11 +526,8 @@
                             }
                         }
                     },
-                    "400": {
-                        "description": "Неверный тип сообщений"
-                    },
-                    "401": {
-                        "description": "Неавторизован"
+                    "422": {
+                        "description": "Ошибка валидации"
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера"
@@ -606,118 +540,69 @@
                 ]
             }
         },
-        "/api/v1/messages/view/{id}": {
-            "get": {
+        "/api/v1/ecp/sign-documents": {
+            "post": {
                 "tags": [
-                    "Messages"
+                    "ECP - E-IMZO"
                 ],
-                "summary": "Просмотр сообщения",
-                "description": "Возвращает детальную информацию о сообщении",
-                "operationId": "f48b2ba9aa67ce75110134cd8df02acd",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "ID сообщения",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Успешный ответ",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "message": {
-                                                    "type": "object"
-                                                },
-                                                "files": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "recipients": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object"
-                                                    }
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
+                "summary": "Подписать документ с помощью E-IMZO",
+                "description": "Подписывает документ используя электронную цифровую подпись E-IMZO",
+                "operationId": "899d2d0f0dee3d512a076a02bf56fba9",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "pk_data",
+                                    "ecp_doc_id",
+                                    "ecp_doc_type"
+                                ],
+                                "properties": {
+                                    "pk_data": {
+                                        "description": "Данные приватного ключа",
+                                        "type": "string"
                                     },
-                                    "type": "object"
-                                }
+                                    "ecp_doc_id": {
+                                        "description": "ID документа",
+                                        "type": "integer"
+                                    },
+                                    "ecp_doc_type": {
+                                        "description": "Тип документа",
+                                        "type": "string"
+                                    },
+                                    "ecp_confirm_id": {
+                                        "description": "ID подтверждения (опционально)",
+                                        "type": "integer"
+                                    },
+                                    "ecp_r_text": {
+                                        "description": "Текст резолюции (опционально)",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
-                    },
-                    "403": {
-                        "description": "Доступ запрещен"
-                    },
-                    "404": {
-                        "description": "Сообщение не найдено"
-                    },
-                    "401": {
-                        "description": "Неавторизован"
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера"
                     }
                 },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/messages/{id}": {
-            "delete": {
-                "tags": [
-                    "Messages"
-                ],
-                "summary": "Удалить сообщение",
-                "description": "Удаляет (помечает как удаленное) сообщение для текущего пользователя",
-                "operationId": "3e16d919c4cfd0e6bd13f5001def5386",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "ID сообщения",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
-                        "description": "Сообщение успешно удалено",
+                        "description": "Документ успешно подписан",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "success": {
-                                            "type": "boolean",
-                                            "example": true
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "example": "Успешно"
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Message deleted successfully"
+                                            "example": "Задача выполнена успешно"
                                         }
                                     },
                                     "type": "object"
@@ -725,14 +610,11 @@
                             }
                         }
                     },
-                    "404": {
-                        "description": "Сообщение не найдено"
-                    },
                     "401": {
                         "description": "Неавторизован"
                     },
                     "500": {
-                        "description": "Внутренняя ошибка сервера"
+                        "description": "Ошибка подписания"
                     }
                 },
                 "security": [
@@ -742,444 +624,300 @@
                 ]
             }
         },
-        "/api/v1/doc-controller/documents/work-docs": {
+        "/api/v1/ecp/frontend-challenge": {
             "get": {
                 "tags": [
-                    "DocContoller(Documents)"
+                    "ECP - E-IMZO"
                 ],
-                "summary": "Получить список рабочих документов",
-                "description": "Возвращает список рабочих документов с возможностью фильтрации",
-                "operationId": "869f47972ba7b7ebd16468330bef69c7",
+                "summary": "Получить challenge для E-IMZO",
+                "description": "Получает challenge строку для инициализации процесса подписания",
+                "operationId": "8bd0db8ad9a2ba448c8d893f28a7b941",
+                "responses": {
+                    "200": {
+                        "description": "Challenge успешно получен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "challenge": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизован"
+                    },
+                    "500": {
+                        "description": "Ошибка получения challenge"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/ecp/backend-auth-login": {
+            "post": {
+                "tags": [
+                    "ECP - E-IMZO"
+                ],
+                "summary": "Авторизация через E-IMZO",
+                "description": "Авторизует пользователя используя PKCS7 подпись",
+                "operationId": "ef47d07ef1fe4844c748d747daa51b2b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "pkcs7"
+                                ],
+                                "properties": {
+                                    "pkcs7": {
+                                        "description": "PKCS7 подпись",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успешная авторизация",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "ok"
+                                        },
+                                        "token": {
+                                            "description": "API токен",
+                                            "type": "string"
+                                        },
+                                        "user": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка авторизации"
+                    }
+                }
+            }
+        },
+        "/api/v1/login-sign/sign-documents": {
+            "post": {
+                "tags": [
+                    "ECP - Login Sign"
+                ],
+                "summary": "Подписать документ через логин",
+                "description": "Подписывает документ используя обычную авторизацию (без E-IMZO)",
+                "operationId": "a840eefa3d02a200b30c3c51b9f9b34c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "ecp_doc_id",
+                                    "ecp_doc_type"
+                                ],
+                                "properties": {
+                                    "ecp_doc_id": {
+                                        "description": "ID документа",
+                                        "type": "integer"
+                                    },
+                                    "ecp_doc_type": {
+                                        "description": "Тип документа",
+                                        "type": "string"
+                                    },
+                                    "ecp_confirm_id": {
+                                        "description": "ID подтверждения (опционально)",
+                                        "type": "integer"
+                                    },
+                                    "ecp_r_text": {
+                                        "description": "Текст резолюции (опционально)",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Документ успешно подписан",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "example": "Успешно"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Задача выполнена успешно"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизован"
+                    },
+                    "404": {
+                        "description": "Документ не найден"
+                    },
+                    "500": {
+                        "description": "Ошибка подписания"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/login-sign/document-types": {
+            "get": {
+                "tags": [
+                    "ECP - Login Sign"
+                ],
+                "summary": "Получить список типов документов",
+                "description": "Возвращает доступные типы документов для подписания",
+                "operationId": "7d72d6c9bc6ffcf6a1d4a6f53f5ed2cf",
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизован"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/login-sign/pending-documents": {
+            "get": {
+                "tags": [
+                    "ECP - Login Sign"
+                ],
+                "summary": "Получить документы ожидающие подписи",
+                "description": "Возвращает список документов, которые требуют подписи текущего пользователя",
+                "operationId": "29210910a6034d2b8a4ce735c34eb242",
                 "parameters": [
                     {
-                        "name": "doc_name",
+                        "name": "type",
                         "in": "query",
-                        "description": "Поиск по названию или номеру документа",
-                        "required": false,
+                        "description": "Тип документа для фильтрации",
                         "schema": {
-                            "type": "string",
-                            "example": "Договор"
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизован"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/login-sign/document/{doc_id}/details": {
+            "get": {
+                "tags": [
+                    "ECP - Login Sign"
+                ],
+                "summary": "Получить детали документа",
+                "description": "Возвращает подробную информацию о документе для подписи",
+                "operationId": "7183a502f66cb8da56f749624474f09c",
+                "parameters": [
+                    {
+                        "name": "doc_id",
+                        "in": "path",
+                        "description": "ID документа",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
                         }
                     },
                     {
                         "name": "doc_type",
                         "in": "query",
-                        "description": "Тип документа (ID или 'all')",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "example": "1"
-                        }
-                    },
-                    {
-                        "name": "date_from",
-                        "in": "query",
-                        "description": "Дата от (формат: dd.mm.YYYY)",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "format": "date",
-                            "example": "01.01.2024"
-                        }
-                    },
-                    {
-                        "name": "date_till",
-                        "in": "query",
-                        "description": "Дата до (формат: dd.mm.YYYY)",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "format": "date",
-                            "example": "31.12.2024"
-                        }
-                    },
-                    {
-                        "name": "status",
-                        "in": "query",
-                        "description": "Статус документа (12 - просроченные, 14 - просроченные резолюции)",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "example": "2"
-                        }
-                    },
-                    {
-                        "name": "created_user",
-                        "in": "query",
-                        "description": "ID пользователя создавшего документ",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "example": 1
-                        }
-                    },
-                    {
-                        "name": "page",
-                        "in": "query",
-                        "description": "Номер страницы",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "default": 1,
-                            "example": 1
-                        }
-                    },
-                    {
-                        "name": "per_page",
-                        "in": "query",
-                        "description": "Количество записей на странице",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "default": 25,
-                            "example": 25
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Успешный ответ",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Work documents retrieved successfully"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "current_page": {
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
-                                                "per_page": {
-                                                    "type": "integer",
-                                                    "example": 25
-                                                },
-                                                "total": {
-                                                    "type": "integer",
-                                                    "example": 100
-                                                },
-                                                "last_page": {
-                                                    "type": "integer",
-                                                    "example": 4
-                                                },
-                                                "data": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "properties": {
-                                                            "id": {
-                                                                "type": "integer",
-                                                                "example": 1
-                                                            },
-                                                            "doc_id": {
-                                                                "type": "integer",
-                                                                "example": 5
-                                                            },
-                                                            "j_type": {
-                                                                "type": "integer",
-                                                                "example": 1
-                                                            },
-                                                            "status": {
-                                                                "type": "integer",
-                                                                "example": 2
-                                                            },
-                                                            "created_at": {
-                                                                "type": "string",
-                                                                "format": "date-time"
-                                                            },
-                                                            "doc": {
-                                                                "properties": {
-                                                                    "doc_name": {
-                                                                        "type": "string",
-                                                                        "example": "Служебная записка"
-                                                                    },
-                                                                    "doc_number": {
-                                                                        "type": "string",
-                                                                        "example": "№123"
-                                                                    },
-                                                                    "doc_date": {
-                                                                        "type": "string",
-                                                                        "format": "date"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    }
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "meta": {
-                                            "properties": {
-                                                "journal_types": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "status_list": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object"
-                                                    }
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Неавторизован",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Unauthenticated"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Ошибка валидации",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Validation failed"
-                                        },
-                                        "errors": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Error retrieving work documents"
-                                        },
-                                        "error": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/doc-controller/documents/{id}/view/{hash}": {
-            "get": {
-                "tags": [
-                    "DocContoller(Documents)"
-                ],
-                "summary": "Просмотр рабочего документа",
-                "description": "Возвращает детальную информацию о рабочем документе",
-                "operationId": "fae3795ad31dadc1d37c1b41e9d7738c",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "ID журнала документа",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "example": 1
-                        }
-                    },
-                    {
-                        "name": "hash",
-                        "in": "path",
-                        "description": "Хеш документа",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "example": "abc123def456"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Успешный ответ",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Document retrieved successfully"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "journal": {
-                                                    "type": "object"
-                                                },
-                                                "document": {
-                                                    "type": "object"
-                                                },
-                                                "document_files": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "director_document": {
-                                                    "type": "object"
-                                                },
-                                                "director_resolution": {
-                                                    "type": "object"
-                                                },
-                                                "performers": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "additional_performers": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "signer": {
-                                                    "type": "object"
-                                                },
-                                                "agreement_users": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "reply_documents": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "comments": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "qr_key": {
-                                                    "type": "object"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Документ не найден",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Document not found"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Неавторизован"
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера"
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/doc-controller/protocol/{id}/{doc_hash}": {
-            "get": {
-                "tags": [
-                    "DocContoller(Protocols)"
-                ],
-                "summary": "Получить данные протокола",
-                "description": "Возвращает полную информацию по протоколу, включая текст, участников, файлы и комментарии",
-                "operationId": "539254451e56591323f2497b277fbfd9",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "ID участника протокола",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "doc_hash",
-                        "in": "path",
-                        "description": "Хэш документа",
+                        "description": "Тип документа",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -1197,261 +935,7 @@
                                             "type": "boolean",
                                             "example": true
                                         },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Protocol retrieved successfully"
-                                        },
                                         "data": {
-                                            "properties": {
-                                                "document": {
-                                                    "type": "object"
-                                                },
-                                                "document_member": {
-                                                    "type": "object",
-                                                    "nullable": true
-                                                },
-                                                "document_text": {
-                                                    "type": "object",
-                                                    "nullable": true
-                                                },
-                                                "files": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "members": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "hr_members": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "member_roles": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "reply_comments": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "comments": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "qr_key": {
-                                                    "type": "object",
-                                                    "nullable": true
-                                                },
-                                                "auth_roles": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "string"
-                                                    }
-                                                },
-                                                "html_doc": {
-                                                    "type": "string",
-                                                    "nullable": true
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Документ не найден"
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера"
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/doc-controller/public-protocols": {
-            "get": {
-                "tags": [
-                    "DocContoller(Protocols)"
-                ],
-                "summary": "Получить список протоколов",
-                "description": "Возвращает список протоколов с возможностью фильтрации",
-                "operationId": "18ed85b13dbfd0bc28066c628d31cf4b",
-                "parameters": [
-                    {
-                        "name": "s_text",
-                        "in": "query",
-                        "description": "Поиск по названию или номеру протокола",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "example": "Протокол совещания"
-                        }
-                    },
-                    {
-                        "name": "s_status",
-                        "in": "query",
-                        "description": "Статус протокола",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "example": "2"
-                        }
-                    },
-                    {
-                        "name": "s_type",
-                        "in": "query",
-                        "description": "ID типа протокола",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "example": 1
-                        }
-                    },
-                    {
-                        "name": "date_from",
-                        "in": "query",
-                        "description": "Дата от (формат: dd.mm.YYYY)",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "format": "date",
-                            "example": "01.01.2024"
-                        }
-                    },
-                    {
-                        "name": "date_till",
-                        "in": "query",
-                        "description": "Дата до (формат: dd.mm.YYYY)",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "format": "date",
-                            "example": "31.12.2024"
-                        }
-                    },
-                    {
-                        "name": "created_user",
-                        "in": "query",
-                        "description": "ID пользователя создавшего протокол",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "example": 1
-                        }
-                    },
-                    {
-                        "name": "page",
-                        "in": "query",
-                        "description": "Номер страницы",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "default": 1,
-                            "example": 1
-                        }
-                    },
-                    {
-                        "name": "per_page",
-                        "in": "query",
-                        "description": "Количество записей на странице",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "default": 25,
-                            "example": 25
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Успешный ответ",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Protocols retrieved successfully"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "current_page": {
-                                                    "type": "integer"
-                                                },
-                                                "per_page": {
-                                                    "type": "integer"
-                                                },
-                                                "total": {
-                                                    "type": "integer"
-                                                },
-                                                "data": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "properties": {
-                                                            "id": {
-                                                                "type": "integer"
-                                                            },
-                                                            "doc_name": {
-                                                                "type": "string"
-                                                            },
-                                                            "doc_number": {
-                                                                "type": "string"
-                                                            },
-                                                            "doc_date": {
-                                                                "type": "string",
-                                                                "format": "date"
-                                                            },
-                                                            "status": {
-                                                                "type": "integer"
-                                                            },
-                                                            "doc_type_id": {
-                                                                "type": "integer"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    }
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "meta": {
-                                            "properties": {
-                                                "protocol_types": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "status_list": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object"
-                                                    }
-                                                }
-                                            },
                                             "type": "object"
                                         }
                                     },
@@ -1463,289 +947,8 @@
                     "401": {
                         "description": "Неавторизован"
                     },
-                    "422": {
-                        "description": "Ошибка валидации"
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера"
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/doc-controller/protocols": {
-            "get": {
-                "tags": [
-                    "DocContoller(Protocols)"
-                ],
-                "summary": "Получить список протоколов",
-                "description": "Возвращает список протоколов с возможностью фильтрации",
-                "operationId": "e5b3da9c2a3e331cdf05c238c727cf0b",
-                "parameters": [
-                    {
-                        "name": "s_text",
-                        "in": "query",
-                        "description": "Поиск по названию или номеру протокола",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "example": "Протокол совещания"
-                        }
-                    },
-                    {
-                        "name": "s_status",
-                        "in": "query",
-                        "description": "Статус протокола",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "example": "2"
-                        }
-                    },
-                    {
-                        "name": "s_type",
-                        "in": "query",
-                        "description": "ID типа протокола",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "example": 1
-                        }
-                    },
-                    {
-                        "name": "date_from",
-                        "in": "query",
-                        "description": "Дата от (формат: dd.mm.YYYY)",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "format": "date",
-                            "example": "01.01.2024"
-                        }
-                    },
-                    {
-                        "name": "date_till",
-                        "in": "query",
-                        "description": "Дата до (формат: dd.mm.YYYY)",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "format": "date",
-                            "example": "31.12.2024"
-                        }
-                    },
-                    {
-                        "name": "created_user",
-                        "in": "query",
-                        "description": "ID пользователя создавшего протокол",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "example": 1
-                        }
-                    },
-                    {
-                        "name": "page",
-                        "in": "query",
-                        "description": "Номер страницы",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "default": 1,
-                            "example": 1
-                        }
-                    },
-                    {
-                        "name": "per_page",
-                        "in": "query",
-                        "description": "Количество записей на странице",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "default": 25,
-                            "example": 25
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Успешный ответ",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Protocols retrieved successfully"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "current_page": {
-                                                    "type": "integer"
-                                                },
-                                                "per_page": {
-                                                    "type": "integer"
-                                                },
-                                                "total": {
-                                                    "type": "integer"
-                                                },
-                                                "data": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "properties": {
-                                                            "id": {
-                                                                "type": "integer"
-                                                            },
-                                                            "doc_name": {
-                                                                "type": "string"
-                                                            },
-                                                            "doc_number": {
-                                                                "type": "string"
-                                                            },
-                                                            "doc_date": {
-                                                                "type": "string",
-                                                                "format": "date"
-                                                            },
-                                                            "status": {
-                                                                "type": "integer"
-                                                            },
-                                                            "doc_type_id": {
-                                                                "type": "integer"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    }
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "meta": {
-                                            "properties": {
-                                                "protocol_types": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "status_list": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object"
-                                                    }
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Неавторизован"
-                    },
-                    "422": {
-                        "description": "Ошибка валидации"
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера"
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            },
-            "delete": {
-                "tags": [
-                    "DocContoller(Protocols)"
-                ],
-                "summary": "Удалить протокол",
-                "description": "Полностью удаляет протокол и все связанные данные",
-                "operationId": "3f0eb708766aec6f3a60433b3b850f92",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "doc_id"
-                                ],
-                                "properties": {
-                                    "doc_id": {
-                                        "type": "integer",
-                                        "example": 8
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Протокол успешно удалён"
-                    },
-                    "404": {
-                        "description": "Протокол не найден"
-                    },
-                    "500": {
-                        "description": "Ошибка сервера"
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/doc-controller/work-documents": {
-            "delete": {
-                "tags": [
-                    "DocContoller(Documents)"
-                ],
-                "summary": "Удалить рабочий документ",
-                "description": "Полностью удаляет рабочий документ и все связанные данные",
-                "operationId": "94fce7677090c79b04b2c6c798f029fd",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "doc_id"
-                                ],
-                                "properties": {
-                                    "doc_id": {
-                                        "type": "integer",
-                                        "example": 15
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Документ успешно удалён"
-                    },
                     "404": {
                         "description": "Документ не найден"
-                    },
-                    "500": {
-                        "description": "Ошибка сервера"
                     }
                 },
                 "security": [
@@ -2640,14 +1843,14 @@
                 ]
             }
         },
-        "/api/v1/executions/document/{j_id}": {
+        "/api/v1/executions/document/{j_id}/execution": {
             "get": {
                 "tags": [
                     "Executions"
                 ],
                 "summary": "Просмотр документа для исполнения",
-                "description": "Возвращает детальную информацию о документе",
-                "operationId": "26da7dda0bd686d6df79a77c7ebda4e9",
+                "description": "Возвращает детальную информацию о документе на исполнении",
+                "operationId": "6199a9f146f4d2adfcf744ba1d03f487",
                 "parameters": [
                     {
                         "name": "j_id",
@@ -2681,6 +1884,9 @@
                                                 "document": {
                                                     "type": "object"
                                                 },
+                                                "html_doc": {
+                                                    "type": "string"
+                                                },
                                                 "files": {
                                                     "type": "array",
                                                     "items": {
@@ -2688,6 +1894,18 @@
                                                     }
                                                 },
                                                 "execution_steps": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "current_execution": {
+                                                    "type": "object"
+                                                },
+                                                "director_resolution": {
+                                                    "type": "object"
+                                                },
+                                                "reply_documents": {
                                                     "type": "array",
                                                     "items": {
                                                         "type": "object"
@@ -2708,6 +1926,9 @@
                     "401": {
                         "description": "Неавторизован"
                     },
+                    "403": {
+                        "description": "Нет доступа"
+                    },
                     "500": {
                         "description": "Внутренняя ошибка сервера"
                     }
@@ -2720,6 +1941,66 @@
             }
         },
         "/api/v1/executions/document/{j_id}/sign": {
+            "get": {
+                "tags": [
+                    "Executions"
+                ],
+                "summary": "Просмотр документа для подписания",
+                "description": "Возвращает детальную информацию о документе для подписания",
+                "operationId": "38c63417085ad8a54faff4e420ef1f17",
+                "parameters": [
+                    {
+                        "name": "j_id",
+                        "in": "path",
+                        "description": "ID журнала документа",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Документ не найден"
+                    },
+                    "401": {
+                        "description": "Неавторизован"
+                    },
+                    "403": {
+                        "description": "Нет доступа"
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
             "post": {
                 "tags": [
                     "Executions"
@@ -2787,6 +2068,519 @@
                     },
                     "422": {
                         "description": "Ошибка валидации"
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/executions/document/{j_id}/approval": {
+            "get": {
+                "tags": [
+                    "Executions"
+                ],
+                "summary": "Просмотр документа для согласования",
+                "description": "Возвращает детальную информацию о документе для согласования",
+                "operationId": "597c6a803034070ad808aff7735fea54",
+                "parameters": [
+                    {
+                        "name": "j_id",
+                        "in": "path",
+                        "description": "ID журнала документа",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ"
+                    },
+                    "404": {
+                        "description": "Документ не найден"
+                    },
+                    "403": {
+                        "description": "Нет доступа"
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/executions/document/{j_id}/confirm": {
+            "get": {
+                "tags": [
+                    "Executions"
+                ],
+                "summary": "Просмотр документа для подтверждения",
+                "description": "Возвращает детальную информацию о документе для подтверждения резолюции",
+                "operationId": "b185dbbe36bc188ea5f711387d6c9666",
+                "parameters": [
+                    {
+                        "name": "j_id",
+                        "in": "path",
+                        "description": "ID журнала документа",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ"
+                    },
+                    "404": {
+                        "description": "Документ не найден"
+                    },
+                    "403": {
+                        "description": "Нет доступа"
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/executions/document/{j_id}/control": {
+            "get": {
+                "tags": [
+                    "Executions"
+                ],
+                "summary": "Просмотр документа на контроле",
+                "description": "Возвращает детальную информацию о документе на контроле",
+                "operationId": "9941eadea29ef1ab46edf99f4d0da8fd",
+                "parameters": [
+                    {
+                        "name": "j_id",
+                        "in": "path",
+                        "description": "ID журнала документа",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ"
+                    },
+                    "404": {
+                        "description": "Документ не найден"
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/executions/document/{j_id}": {
+            "get": {
+                "tags": [
+                    "Executions"
+                ],
+                "summary": "Просмотр документа для исполнения",
+                "description": "Возвращает детальную информацию о документе",
+                "operationId": "26da7dda0bd686d6df79a77c7ebda4e9",
+                "parameters": [
+                    {
+                        "name": "j_id",
+                        "in": "path",
+                        "description": "ID журнала документа",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "journal": {
+                                                    "type": "object"
+                                                },
+                                                "document": {
+                                                    "type": "object"
+                                                },
+                                                "html_doc": {
+                                                    "type": "sting"
+                                                },
+                                                "files": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "execution_steps": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Документ не найден"
+                    },
+                    "401": {
+                        "description": "Неавторизован"
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/executions/document/{j_id}/approve": {
+            "post": {
+                "tags": [
+                    "Executions"
+                ],
+                "summary": "Согласовать документ",
+                "description": "Согласовывает документ от имени текущего пользователя",
+                "operationId": "d9531ac7c37f901784dd27111c837f31",
+                "parameters": [
+                    {
+                        "name": "j_id",
+                        "in": "path",
+                        "description": "ID журнала документа",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "ecp_r_text"
+                                ],
+                                "properties": {
+                                    "ecp_r_text": {
+                                        "description": "Комментарий к согласованию",
+                                        "type": "string",
+                                        "example": "Документ рассмотрен и согласован"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Документ успешно согласован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Document approved successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Доступ запрещен"
+                    },
+                    "404": {
+                        "description": "Документ не найден"
+                    },
+                    "422": {
+                        "description": "Ошибка валидации"
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/executions/document/{j_id}/reject": {
+            "post": {
+                "tags": [
+                    "Executions"
+                ],
+                "summary": "Отклонить или вернуть документ",
+                "description": "Отклоняет или возвращает документ на доработку",
+                "operationId": "cb5596126e76542298e41088f024fcc1",
+                "parameters": [
+                    {
+                        "name": "j_id",
+                        "in": "path",
+                        "description": "ID журнала документа",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "confirm_id",
+                                    "r_text"
+                                ],
+                                "properties": {
+                                    "confirm_id": {
+                                        "description": "Статус: 2 - отменить, 3 - вернуть",
+                                        "type": "integer",
+                                        "example": 3
+                                    },
+                                    "r_text": {
+                                        "description": "Причина отклонения",
+                                        "type": "string",
+                                        "example": "Необходимо исправить данные"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Документ успешно отклонен/возвращен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Document rejected successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Доступ запрещен"
+                    },
+                    "404": {
+                        "description": "Документ не найден"
+                    },
+                    "422": {
+                        "description": "Ошибка валидации"
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/executions/document/{step_id}/reply": {
+            "post": {
+                "tags": [
+                    "Executions"
+                ],
+                "summary": "Добавить ответ к документу",
+                "description": "Добавляет комментарий-ответ к документу с возможностью прикрепления файлов",
+                "operationId": "f19adc7dd98f09b6f033362c7a5b60dc",
+                "parameters": [
+                    {
+                        "name": "step_id",
+                        "in": "path",
+                        "description": "ID шага исполнения",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "r_text"
+                                ],
+                                "properties": {
+                                    "r_text": {
+                                        "description": "Текст ответа",
+                                        "type": "string"
+                                    },
+                                    "type": {
+                                        "description": "Тип комментария",
+                                        "type": "integer"
+                                    },
+                                    "doc_files[]": {
+                                        "description": "Прикрепленные файлы",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ответ успешно добавлен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Reply added successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Доступ запрещен"
+                    },
+                    "404": {
+                        "description": "Шаг не найден"
+                    },
+                    "422": {
+                        "description": "Ошибка валидации"
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/executions/document/{j_id}/execute": {
+            "post": {
+                "tags": [
+                    "Executions"
+                ],
+                "summary": "Завершить исполнение документа",
+                "description": "Отмечает документ как исполненный",
+                "operationId": "740d708c389bfec83024f1595f10ae14",
+                "parameters": [
+                    {
+                        "name": "j_id",
+                        "in": "path",
+                        "description": "ID журнала документа",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Документ успешно исполнен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Document executed successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Доступ запрещен"
+                    },
+                    "404": {
+                        "description": "Документ не найден"
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера"
@@ -2958,8 +2752,7 @@
                         "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "date",
-                            "example": "01.12.2024"
+                            "format": "date"
                         }
                     },
                     {
@@ -2969,8 +2762,7 @@
                         "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "date",
-                            "example": "31.12.2025"
+                            "format": "date"
                         }
                     },
                     {
@@ -3232,6 +3024,9 @@
                                                 "document": {
                                                     "type": "object"
                                                 },
+                                                "html_doc": {
+                                                    "type": "string"
+                                                },
                                                 "files": {
                                                     "type": "array",
                                                     "items": {
@@ -3386,8 +3181,7 @@
                         "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "date",
-                            "example": "01.12.2024"
+                            "format": "date"
                         }
                     },
                     {
@@ -3397,8 +3191,7 @@
                         "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "date",
-                            "example": "31.12.2025"
+                            "format": "date"
                         }
                     },
                     {
@@ -3584,6 +3377,9 @@
                                                 "document": {
                                                     "type": "object"
                                                 },
+                                                "html_doc": {
+                                                    "type": "string"
+                                                },
                                                 "files": {
                                                     "type": "array",
                                                     "items": {
@@ -3710,8 +3506,7 @@
                         "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "date",
-                            "example": "01.12.2024"
+                            "format": "date"
                         }
                     },
                     {
@@ -3721,8 +3516,7 @@
                         "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "date",
-                            "example": "31.12.2025"
+                            "format": "date"
                         }
                     },
                     {
@@ -3911,6 +3705,9 @@
                                                 "document": {
                                                     "type": "object"
                                                 },
+                                                "html_doc": {
+                                                    "type": "string"
+                                                },
                                                 "files": {
                                                     "type": "array",
                                                     "items": {
@@ -3961,82 +3758,6 @@
                     },
                     "401": {
                         "description": "Неавторизован"
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера"
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/main/api-1c/v1/positions/create_update_list": {
-            "put": {
-                "tags": [
-                    "Bitrix"
-                ],
-                "summary": "Создание или обновление должностей",
-                "description": "Создает или обновляет должности пользователей по Bitrix ID",
-                "operationId": "1f99c65fac74132529ad672f45b0871c",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "positions"
-                                ],
-                                "properties": {
-                                    "positions": {
-                                        "type": "array",
-                                        "items": {
-                                            "required": [
-                                                "ID",
-                                                "name"
-                                            ],
-                                            "properties": {
-                                                "ID": {
-                                                    "type": "string",
-                                                    "example": "BITRIX_PS_001"
-                                                },
-                                                "name": {
-                                                    "type": "string",
-                                                    "example": "Менеджер по персоналу"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Должности успешно обработаны",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string"
-                                        },
-                                        "processed_count": {
-                                            "type": "integer"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Ошибка валидации"
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера"
@@ -4658,6 +4379,366 @@
                 ]
             }
         },
+        "/api/v1/profile": {
+            "get": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Получить профиль текущего пользователя",
+                "description": "Возвращает полную информацию о профиле аутентифицированного пользователя",
+                "operationId": "64037e47052b81bc8db663dac82df237",
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profile retrieved successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "user": {
+                                                    "type": "object"
+                                                },
+                                                "active_roles": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "hr_emp_orders": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "work_histories": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "auth_histories": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "user_experience": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "image": {
+                                                    "description": "URL фотографии профиля пользователя",
+                                                    "type": "string",
+                                                    "example": "http://localhost:8082/profile_img/img_1.png",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизован"
+                    },
+                    "404": {
+                        "description": "Пользователь не найден"
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/profile/personal": {
+            "put": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Обновить персональную информацию",
+                "description": "Обновляет персональные данные пользователя (ФИО)",
+                "operationId": "7f38aac1b1c68e181e2fbb1b87d481a3",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "l_name",
+                                    "f_name"
+                                ],
+                                "properties": {
+                                    "l_name": {
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "example": "Иванов"
+                                    },
+                                    "f_name": {
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "example": "Иван"
+                                    },
+                                    "m_name": {
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "example": "Иванович"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Информация успешно обновлена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User info updated successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизован"
+                    },
+                    "422": {
+                        "description": "Ошибка валидации"
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/profile/password": {
+            "put": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Обновить пароль",
+                "description": "Изменяет пароль текущего пользователя",
+                "operationId": "7f251d455dd2c087138dda45f7a23d5d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "minLength": 6,
+                                        "example": "newpassword123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "minLength": 6,
+                                        "example": "newpassword123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Пароль успешно обновлен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password updated successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизован"
+                    },
+                    "422": {
+                        "description": "Ошибка валидации"
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/profile/image": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Загрузить фото профиля",
+                "description": "Загружает или обновляет фотографию профиля пользователя",
+                "operationId": "70a2e42507ed5d6c0ccb30123f17bf89",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "profile_img"
+                                ],
+                                "properties": {
+                                    "profile_img": {
+                                        "description": "Изображение профиля (jpeg, png, jpg, gif, svg, максимум 2MB)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Изображение успешно загружено",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profile image updated successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "image_name": {
+                                                    "type": "string",
+                                                    "example": "img_123.png"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизован"
+                    },
+                    "422": {
+                        "description": "Ошибка валидации"
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Удалить фото профиля",
+                "description": "Удаляет фотографию профиля текущего пользователя",
+                "operationId": "97ba113bf6d84ae2de9be83cdc0816b4",
+                "responses": {
+                    "200": {
+                        "description": "Изображение успешно удалено",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profile image deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизован"
+                    },
+                    "404": {
+                        "description": "Изображение не найдено"
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/v1/users": {
             "get": {
                 "tags": [
@@ -5222,14 +5303,6 @@
     },
     "tags": [
         {
-            "name": "DocContoller(Documents)",
-            "description": "API для работы с документами"
-        },
-        {
-            "name": "DocContoller(Protocols)",
-            "description": "API для работы с протоколами"
-        },
-        {
             "name": "Protocols",
             "description": "API для работы HR сотрудников с приказами"
         },
@@ -5250,8 +5323,12 @@
             "description": "HR Orders"
         },
         {
-            "name": "Messages",
-            "description": "Messages"
+            "name": "ECP - E-IMZO",
+            "description": "ECP - E-IMZO"
+        },
+        {
+            "name": "ECP - Login Sign",
+            "description": "ECP - Login Sign"
         },
         {
             "name": "Executions",
@@ -5260,6 +5337,10 @@
         {
             "name": "User Documents",
             "description": "User Documents"
+        },
+        {
+            "name": "Profile",
+            "description": "Profile"
         },
         {
             "name": "Users",

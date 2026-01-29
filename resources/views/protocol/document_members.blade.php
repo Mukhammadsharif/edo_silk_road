@@ -5,17 +5,17 @@
                 <strong>{{ $item1->docLang($item1->id, $document->doc_lang) }}</strong>
             </div>
             @if(count($documentMembers) > 0)
-                <div class="" style="margin-bottom: 10px">
-                    <table style="border-collapse: separate;border-spacing: 0 10px;">
+                <div class="verifier-section-modern" style="margin-bottom: 10px">
+                    <table style="border-collapse: separate;border-spacing: 0 10px;" class="signature-table">
                         @foreach($documentMembers as $key => $item)
                             @if($item1->code == $item->role_id)
                                 <tr>
-                                    <td>
+                                    <td class="position-cell">
                                         {{ $item->getDepartment($item->user_id, $document->doc_lang) }}
 
                                         {{ $item->getPosition($item->user_id, $document->doc_lang) }}
                                     </td>
-                                    <td>
+                                    <td class="qr-cell">
                                         @if($item->status != 3)
                                             <span class="badge badge-pill {{ $item->statusName->badgeClass->name??'' }}">
                                                 {{ $item->statusDoc($item->status) }}
@@ -24,7 +24,7 @@
                                             {!! $item->QrCode($item->doc_id, $item->user_id) !!}
                                         @endif
                                     </td>
-                                    <td>
+                                    <td class="name-cell">
                                         @php($memberShortName = $item->userWork->personal??0)
                                         @if($memberShortName)
                                             {{ $memberShortName->shortNameLang($document->doc_lang) }}
@@ -39,3 +39,5 @@
         @endforeach
     </div>
 @endif
+
+<link rel="stylesheet" href="{{ asset('css/templates/office/journal/work/templates/verifier.css') }}">

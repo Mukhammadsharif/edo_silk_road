@@ -1,0 +1,39 @@
+.work-view-page-modern { padding: 2rem; background: #f8fafc; min-height: 100vh; }
+.document-card-modern {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+.sent-doc-modern {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 0.2rem;
+    background: #f8fafc;
+}
+.document-container-modern {
+    width: 100%;
+    min-height: 100vh;
+    /*max-width: 210mm;*/
+    background: white;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border-radius: 8px;
+    overflow: hidden;
+}
+.print-page-modern {
+    padding: 40mm 20mm;
+    min-height: 297mm;
+    background: white;
+}
+.document-view-layout { display: grid; grid-template-columns: 300px 1fr 520px; gap: 1.5rem; align-items: start; }
+.view-sidebar { position: sticky; top: 2rem; }
+/*.sidebar-card-modern { border-radius: 16px; overflow: hidden; }*/
+.document-content-section { min-height: 600px; }
+.work-doc-page { background: white; border-radius: 16px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); overflow: hidden; }
+.work-doc-subpage { padding: 40mm 20mm; background: white; }
+.printPage { max-width: 210mm; margin: 0 auto; }
+.doc-confidentiality { text-align: center; font-size: 14px; font-weight: 700; color: #ef4444; text-transform: uppercase; margin-bottom: 2rem; padding: 0.5rem; background: #fee2e2; border: 2px solid #fca5a5; border-radius: 8px; }
+.doc-text { font-size: 14px; line-height: 1.8; color: #1e293b; margin-bottom: 2rem; }
+@media print { .work-view-page-modern { padding: 0; background: white; } .document-view-layout { grid-template-columns: 1fr; } .view-sidebar { display: none; } }
+@media (max-width: 1200px) { .document-view-layout { grid-template-columns: 1fr; } .view-sidebar { position: relative; top: 0; } }

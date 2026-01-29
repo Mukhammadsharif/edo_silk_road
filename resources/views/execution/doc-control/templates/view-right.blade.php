@@ -1,8 +1,9 @@
-<div class="col-md-4">
+<div class="view-right-modern">
     @if($directorDocument)
         @if($directorDocument->status === 1 && $journal->status == 7)
-            <div class="card">
-                <div class="card-header">
+            <div class="execution-card-modern">
+                <div class="card-header-modern">
+                    <i data-lucide="copy-check" class="text-white"></i>
                     <h3>{{ __('title.execution') }}</h3>
                 </div>
                 <div class="card-body">
@@ -16,7 +17,7 @@
                             </div>
                             <div class="col-4 border-right">
                                 <p>{{ __('field.created_date') }}:</p>
-                                <i class="ik ik-clock"></i>
+                                <i data-lucide="clock"></i>
                                 {{ date('d.m.y, H:i', strtotime($directorDocument->updated_at)) }}
                             </div>
                             <div class="col-4">
@@ -33,7 +34,7 @@
 
                     <div class="row" hidden>
                         <div class="col-md-12 mb-10">
-                            <button type="button" id="letterChip" class="btn btn-outline-primary" disabled>
+                            <button type="button" id="letterChip" class="btn-modern btn-primary" disabled>
                                 {{ __('action.create_resolution') }}
                             </button>
                         </div>
@@ -42,7 +43,7 @@
                     <div id="edoUsers">
                         <label>{{ __('action.select_performers') }} <span class="text-red">*</span></label>
                         <div class="input-group mb-2 mt-2">
-                            <input type="text" class="form-control mr-5" id="searchResPerformers" placeholder="{{ __('action.search') }}...">
+                            <input type="text" class="form-control-modern mr-5" id="searchResPerformers" placeholder="{{ __('action.search') }}...">
                             <input type="text" id="doc_id" value="{{ $journal->doc_id }}" hidden>
                         </div>
                         <div class="table-responsive">
@@ -83,7 +84,7 @@
                                                                     <br><br>
 
                                                                     <small class="float-left removeItem">
-                                                                        <select class="form-control" name="user_role[]">
+                                                                        <select class="form-control-modern select2" style="width: 100%" name="user_role[]">
                                                                             @foreach($resolutionExecRoles as $r_key => $role)
                                                                                 <option
                                                                                     value="{{ $role->id }}" {{ ($r_key == 1 ? "selected":"") }}>
@@ -109,7 +110,7 @@
                                     <div class="form-group row">
                                         <div class="col-sm-6">
                                             <label>{{ __('field.resolution_type') }}</label>
-                                            <select class="form-control" name="r_type">
+                                            <select class="form-control-modern select2" style="width: 100%" name="r_type">
                                                 @foreach($resolutionTypes as $key => $task)
                                                     <option value="{{ $task->id }}">
                                                         {{ $task->lang($task->lang_id) }}
@@ -119,7 +120,7 @@
                                         </div>
                                         <div class="col-sm-6">
                                             <label>{{ __('field.perf_term') }}</label>
-                                            <input type="date" name="perf_term" class="form-control" value="" required/>
+                                            <input type="date" name="perf_term" class="form-control-modern" value="" required/>
                                         </div>
                                     </div>
 
@@ -131,34 +132,36 @@
                                     <div class="form-group" hidden>
                                         <button type="submit"
                                                 class="btn btn-outline-primary confirmBtn">
-                                            <i class="ik ik-save"></i> {{ __('action.save') }}
+                                            <i data-lucide="save"></i> {{ __('action.save') }}
                                         </button>
                                     </div>
                                     <div class="form-group" hidden>
-                                        <label><i class="fa fa-key"></i> {{ __('action.select_ecp_key') }}
+                                        <label><i data-lucide="key-round"></i> {{ __('action.select_ecp_key') }}
                                         </label><br>
                                         <label id="message"></label>
                                         <select name="key" class="form-control form-control-primary select2"
                                                 style="width: 100%"
                                                 onchange="cbChanged(this)"></select>
                                     </div>
-                                    <div class="col-sm-12 mt-5">
-                                        <label hidden><i class="fa fa-key"></i> {{ __('action.to_sign_by_key') }}
+                                    <div class="actions-card">
+                                        <label hidden><i data-lucide="key-round"></i> {{ __('action.to_sign_by_key') }}
                                         </label><br>
-                                        <div class="row">
-                                            <div class="col-md-5 mb-10">
-                                                <button type="submit" class="btn btn-outline-primary confirmBtn modal-bg-class"
-                                                        onclick="signLogin()" id="btnConfLogin">
-                                                    <span class="confirm_type">{{ __('action.create_resolution') }}</span>
-                                                </button>
-                                            </div>
+                                        <div class="actions-body-modern" style="padding: 0">
+                                            <button type="submit" class="btn-modern btn-primary confirmBtn modal-bg-class"
+                                                    onclick="signLogin()" id="btnConfLogin">
+                                                <span class="confirm_type size10">
+                                                    <i data-lucide="file-plus"></i>
+                                                    {{ __('action.create_resolution') }}
+                                                </span>
+                                            </button>
 
-                                            <div class="col-md-6 mb-10">
-                                                <button type="button" class="btn btn-outline-warning mr-2 openCancelReturnModal"
-                                                        data-id="3">
+                                            <button type="button" class="btn-modern btn-warning penCancelReturnModal"
+                                                    data-id="3">
+                                                <span class="size10">
+                                                    <i data-lucide="arrow-big-left"></i>
                                                     {{ __('action.back_edit') }}
-                                                </button>
-                                            </div>
+                                                </span>
+                                            </button>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 mt-5">
@@ -183,8 +186,9 @@
         @endif
 
         @if($directorDocument->status > 1)
-            <div class="card">
-                <div class="card-header">
+            <div class="execution-card-modern">
+                <div class="card-header-modern">
+                    <i data-lucide="copy-check" class="text-white"></i>
                     <h3>{{ __('title.execution') }}</h3>
                 </div>
                 <div class="card-body">
@@ -241,7 +245,7 @@
                                 </div>
                                 <div class="col-4 border-right">
                                     <p>{{ __('status.date_sent_for_execution') }}:</p>
-                                    <i class="ik ik-clock"></i>
+                                    <i data-lucide="clock"></i>
                                     {{ date('d.m.y, H:i', strtotime($directorResolution->created_at)) }}
                                 </div>
                                 <div class="col-4">
@@ -261,8 +265,9 @@
         @endif
 
     @if(count($replyDocuments) > 0)
-        <div class="card">
-            <div class="card-header">
+        <div class="execution-card-modern">
+            <div class="card-header-modern">
+                <i data-lucide="mail" class="text-white"></i>
                 <h3>{{ __('title.answer_letters') }}</h3>
             </div>
             <div class="card-body chat-box scrollable_div">
@@ -366,7 +371,7 @@
 
                                             @if($doc && $doc->status == 5 && $journal->workEcpInfo($document->id, $doc->from_user)
                                                 && $journal->workEcpInfo($document->id, $doc->from_user)->docInfo)
-                                                        <i class="ik ik-feather ml-10" style="font-size: 18px; cursor: pointer" onclick="showEspInfo({{ $doc->id }})"></i>
+                                                        <i data-lucide="feather" style="font-size: 18px; cursor: pointer" onclick="showEspInfo({{ $doc->id }})"></i>
 
                                                 @include('templates.ecp.ecp-information')
                                             @endif
@@ -374,7 +379,7 @@
                                     @endif
                                 </div>
                                 <div class="mt-10">
-                                    <i class="ik ik-clock"></i> {{ date('d.m.y, H:i', strtotime($doc->created_at)) }}
+                                    <i data-lucide="clock"></i> {{ date('d.m.y, H:i', strtotime($doc->created_at)) }}
                                 </div>
                                     @if($doc->from_user === $authUser->id && !in_array($journal->status, [10, 11]) && !in_array($doc->status, [3,4]))
                                         <div class="mt-10">
@@ -395,50 +400,38 @@
     @endif
 
     @if(!in_array($journal->journal->doc_code, ['BASE_OUTGOING']))
-        <div class="card table-card">
-            <div class="card-header">
+        <div class="execution-card-modern actions-card">
+            <div class="card-header-modern">
+                <i data-lucide="settings" class="text-white"></i>
                 <h3>{{ __('action.action') }}</h3>
             </div>
-            <div class="card-body">
-                @if(count($replyDocuments) > 0 && $directorDocument->status == 6 && $journal->status != 10)
-                    <button
-                        class="btn btn-outline-success m-sm-1 openConfirmForm">
-                        <i class="ik ik-archive"></i> {{ __('action.close_execution_document') }}
-                    </button>
-                @endif
-                <button type="button" onclick="printContent()" class="btn btn-outline-secondary btn-rounded mr-5">
-                    <i class="ik ik-printer"></i> {{ __('action.print') }}
+
+            <div class="actions-body-modern-print">
+                <button type="button" onclick="printContent()" class="btn-modern btn-secondary">
+                    <i data-lucide="printer"></i> {{ __('action.print') }}
                 </button>
 
-                <button type="button" onclick="downloadAsPDF()" class="btn btn-outline-dark m-1 btn-rounded">
-                    <i class="ik ik-download"></i> {{ __('action.download') }}
+                <button type="button" onclick="downloadAsPDF()" class="btn-modern btn-secondary">
+                    <i data-lucide="download"></i> {{ __('action.download') }}
                 </button>
                 <input id="downloadName" value="{{ $journal->journal->lang($journal->journal->lang_id)??'-' }} - {{ $journal->fromUser->personal->shortName()??'' }}" hidden/>
 
-{{--                @if($journal->journal->doc_code == 'BASE_INCOMING')--}}
-{{--                     <a href="{{ route('pdf.inbox-doc', [$document->id, $document->doc_hash]) }}"--}}
-{{--                       class="btn btn-outline-secondary btn-rounded">--}}
-{{--                        <i class="ik ik-download"></i> {{ __('action.download') }}--}}
-{{--                     </a>--}}
-{{--                @elseif($journal->journal->doc_code == 'BASE_OUTGOING')--}}
-{{--                    <a href="{{ route('pdf.sent-doc', [$document->id, $document->doc_hash]) }}"--}}
-{{--                       class="btn btn-outline-secondary btn-rounded">--}}
-{{--                        <i class="ik ik-download"></i> {{ __('action.download') }}--}}
-{{--                    </a>--}}
-{{--                @else--}}
-{{--                     <a href="{{ route('pdf.work-doc', [$document->id, $document->doc_hash]) }}"--}}
-{{--                        class="btn btn-outline-secondary btn-rounded">--}}
-{{--                         <i class="ik ik-download"></i> {{ __('action.download') }}--}}
-{{--                     </a>--}}
-{{--                @endif--}}
+            </div>
 
-                @if(in_array($journal->status, [9, 10, 11]) && $journal->journal->doc_code !== 'BASE_INCOMING')
-                    <br><br>
-                    @include('qr-code-doc.qr-code-view')
-                    <input id="doc_id" value="{{ $document->id }}" hidden>
-                    <input id="doc_type" value="work_doc" hidden>
+            <div class="actions-body-modern">
+                @if(count($replyDocuments) > 0 && $directorDocument->status == 6 && $journal->status != 10)
+                    <button
+                        class="btn-modern btn-success m-sm-1 openConfirmForm">
+                        <i class="ik ik-archive"></i> {{ __('action.close_execution_document') }}
+                    </button>
                 @endif
             </div>
+
+            @if(in_array($journal->status, [9, 10, 11]) && $journal->journal->doc_code !== 'BASE_INCOMING')
+                @include('qr-code-doc.qr-code-view')
+                <input id="doc_id" value="{{ $document->id }}" hidden>
+                <input id="doc_type" value="work_doc" hidden>
+            @endif
         </div>
     @else
         @if(count($replyDocuments) > 0 && $directorDocument->status == 5)
@@ -472,7 +465,7 @@
                     <div class="form-group row">
                         @if($signType->doc_sign_type === 1)
                             <div class="col-sm-12">
-                                <label><i class="fa fa-key"></i> {{ __('action.select_ecp_key') }}
+                                <label><i data-lucide="key-round"></i> {{ __('action.select_ecp_key') }}
                                 </label><br>
                                 <label id="message"></label>
                                 <select name="key" class="form-control form-control-primary select21" style="width: 100%"
@@ -480,7 +473,7 @@
                             </div>
                         @endif
                         <div class="col-sm-8 mt-5">
-                            <label hidden><i class="fa fa-key"></i> {{ __('action.to_sign_by_key') }}
+                            <label hidden><i data-lucide="key-round"></i> {{ __('action.to_sign_by_key') }}
                             </label><br>
                             @if($signType->doc_sign_type === 2)
                                 <button type="submit"
@@ -517,6 +510,9 @@
 
         @include('office.templates.doc-steps')
 </div>
+
+<link rel="stylesheet" href="{{ asset('css/templates/office/journal/view-right.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/select2.css') }}">
 
 @include('e-imzo.e-imzo')
 

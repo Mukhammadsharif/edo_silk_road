@@ -204,4 +204,21 @@ class RoleMenu extends Model
         return $count;
     }
 
+    public static function lang($id) {
+
+        $lang_name = '-';
+        $model = RoleMenu::find($id);
+        if ($model) {
+            $lang_name = $model->title;
+
+            $language = LanguageLine::find($model->lang_id);
+
+            if ($language) {
+                $lang_name = __($language->group.'.'.$language->key);
+            }
+        }
+
+        return $lang_name;
+    }
+
 }

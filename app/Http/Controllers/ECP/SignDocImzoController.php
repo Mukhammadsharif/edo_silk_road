@@ -42,9 +42,12 @@ class SignDocImzoController extends Controller
         'sign_resolution', 'close_exec_doc',
         'send_to_ag_out_doc', 'send_sign_out_doc', 'sign_out_doc'
     ];
+    public string $eriSrvIp;
 
-    private string $eriSrvIpLoc  = 'http://172.16.100.124:8080';
-    private string $eriSrvIpProd = 'http://192.168.200.251:8080';
+    public function __construct()
+    {
+        $this->eriSrvIp = config('services.e-imzo-server.url');
+    }
 
     public function signDocuments(Request $request): JsonResponse
     {
@@ -532,32 +535,81 @@ class SignDocImzoController extends Controller
 
     public function frontChallenge()
     {
-        return Http::get($this->eriSrvIpLoc.'/frontend/challenge?_uc='.now().'_'.rand());
+        return Http::get($this->eriSrvIp.'/frontend/challenge?_uc='.now().'_'.rand());
     }
 
     public function backendAuthLogin(Request $request)
     {
-        $pkcs7 = $request->pkcs7;
+        try {
+            $pkcs7 = $request->pkcs7;
 
-        $path = '/backend/auth';
+            if (!$pkcs7) {
+                return $this->authErrorResponse('PKCS7 данные отсутствуют', 400);
+            }
 
-        $pkInfo = $this->curlPost($path, $pkcs7);
+            $path = '/backend/auth';
+            $pkInfo = $this->curlPost($path, $pkcs7);
 
-        $jsonDecodeBack = json_decode($pkInfo, true);
-        $pin = $jsonDecodeBack['subjectCertificateInfo']['subjectName']['1.2.860.3.16.1.2'];
+            $jsonDecodeBack = json_decode($pkInfo, true);
 
-        $user = UserPersonalInfo::where('doc_pin', $pin)->first();
+            if (!$jsonDecodeBack) {
+                return $this->authErrorResponse('Ошибка декодирования ответа сервера', 500);
+            }
 
-        $status = 0;
-        $message = 'User topilmadi';
+            // Проверка наличия обязательных ключей
+            if (!isset($jsonDecodeBack['subjectCertificateInfo']['subjectName']['1.2.860.3.16.1.2'])) {
+                return $this->authErrorResponse('PIN не найден в сертификате', 400);
+            }
 
-        if (!$user) {
-            $subjectName = $jsonDecodeBack['subjectCertificateInfo']['subjectName'];
-            $isOrg = !empty($subjectName['O']);
+            $pin = $jsonDecodeBack['subjectCertificateInfo']['subjectName']['1.2.860.3.16.1.2'];
+            $subjectName = $jsonDecodeBack['subjectCertificateInfo']['subjectName'] ?? null;
+
+            if (!$subjectName) {
+                return $this->authErrorResponse('Информация о субъекте отсутствует', 400);
+            }
+
+            $user = UserPersonalInfo::where('doc_pin', $pin)->first();
+
+            if (!$user) {
+                $user = $this->createNewUser($jsonDecodeBack, $subjectName, $pin);
+
+                if (!$user) {
+                    return $this->authErrorResponse('Ошибка создания пользователя', 500);
+                }
+            }
+
+            Auth::loginUsingId($user->user_id ?? $user->id);
+
+            return response()->json([
+                'status' => 1,
+                'message' => 'ok'
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Backend Auth Login Error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return $this->authErrorResponse('Произошла ошибка при авторизации: ' . $e->getMessage(), 500);
+        }
+    }
+
+    private function createNewUser($jsonDecodeBack, $subjectName, $pin)
+    {
+        try {
+            $isOrg = isset($subjectName['O']);
+            $organization = null;
+            $department = null;
 
             if ($isOrg) {
+                // Проверка наличия tax_number
+                if (!isset($subjectName['1.2.860.3.16.1.1'])) {
+                    throw new \Exception('Tax number отсутствует для организации');
+                }
+
+                $org_code = $this->uniqueHash(6);
                 $organization = OrganizationUnits::create([
-                    'code' => $subjectName['UID'],
+                    'code' => $org_code,
                     'name_uz' => $subjectName['O'],
                     'name_ru' => $subjectName['O'],
                     'name_kr' => $subjectName['O'],
@@ -570,102 +622,145 @@ class SignDocImzoController extends Controller
                     'meta_data' => null,
                 ]);
 
-                $jsonFile1 = base_path('database/seeders/data/departments.json');
-                $jsonData1 = json_decode(File::get($jsonFile1), true);
-                $item1 = $jsonData1['departments'][0];
-                $department = Department::create([
-                    'code' => $item1['code'].'_'.$subjectName['UID'],
-                    'org_unit_id' => $organization->id,
-                    'name_uz' => $item1['name_uz'],
-                    'name_kr' => $item1['name_kr'],
-                    'name_ru' => $item1['name_ru'],
-                    'name_en' => $item1['name_en'],
-                    'parent_id' => $item1['parent_id'],
-                    'order_number' => $item1['order_number'],
-                    'level_number' => $item1['level_number'],
-                    'status' => $item1['status'],
-                ]);
+                $department = $this->createDepartment($org_code, $organization->id);
+            }
+
+            // Проверка наличия обязательных полей для создания пользователя
+            if (!isset($subjectName['Name']) || !isset($subjectName['SURNAME'])) {
+                throw new \Exception('Имя или фамилия отсутствуют в сертификате');
+            }
+
+            if (!isset($jsonDecodeBack['subjectCertificateInfo']['serialNumber'])) {
+                throw new \Exception('Serial number отсутствует в сертификате');
             }
 
             $user = User::create([
-                'username' => strtolower($subjectName['Name'])[0].'_'.strtolower($subjectName['SURNAME']),
-                'email' => strtolower($subjectName['Name']).'_'.strtolower($subjectName['SURNAME']).'@gmail.com',
+                'username' => strtolower($subjectName['Name'][0]) . '_' . strtolower($subjectName['SURNAME']),
+                'email' => strtolower($subjectName['Name']) . '_' . strtolower($subjectName['SURNAME']) . '@gmail.com',
                 'password' => Hash::make($jsonDecodeBack['subjectCertificateInfo']['serialNumber']),
                 'user_hash' => $this->uniqueId(),
                 'org_unit_id' => $isOrg ? $organization->id : 1,
                 'status' => 1
             ]);
 
-            $cn = $subjectName['CN'];
-            [$lastName, $firstName, $middleName] = explode(' ', $cn, 3);
-
-            $officeEmpPersonal = new UserPersonalInfo();
-            $officeEmpPersonal->user_id = $user->id;
-            $officeEmpPersonal->is_emp = 2;
-            $officeEmpPersonal->doc_pin = $pin;
-            $officeEmpPersonal->doc_number = 'AD1234567';
-            $officeEmpPersonal->doc_type = 2;
-            $officeEmpPersonal->birthday = '1991-01-01';
-            $officeEmpPersonal->gender = 1;
-            $officeEmpPersonal->phone = 971253456;
-            $officeEmpPersonal->l_name = $lastName;
-            $officeEmpPersonal->f_name = $firstName;
-            $officeEmpPersonal->m_name = $middleName;
-            $officeEmpPersonal->lang_code = 'uz';
-            $officeEmpPersonal->doc_sign_type = 1;
-            $officeEmpPersonal->sort = 1;
-            $officeEmpPersonal->save();
-
-            $nextYear = Carbon::now()->addYear()->format('Y-m-d');
-
-            $officeEmpWork = new UserWorkHistory();
-            $officeEmpWork->user_id = $user->id;
-            $officeEmpWork->org_id = $isOrg ? $organization->id : 1;
-            $officeEmpWork->dep_id = $isOrg ? $department->id : 2;
-            $officeEmpWork->post_id = $isOrg ? 1 : 3;
-            $officeEmpWork->from_date = Carbon::now();
-            $officeEmpWork->to_date = $nextYear;
-            $officeEmpWork->status = 1;
-            $officeEmpWork->save();
-
-            if ($isOrg) {
-                $role = Role::where('name', 'IT_Admin')->first();
-            } else {
-                $role = Role::where('name', 'Dep_Emp')->first();
-            }
-
-            if ($role) {
-                $user->assignRole([$role->id]);
-            }
+            $this->createUserPersonalInfo($user->id, $subjectName, $pin);
+            $this->createUserWorkHistory($user->id, $isOrg, $organization, $department);
+            $this->assignUserRole($user, $isOrg);
 
             if ($organization) {
                 $organization->update(['owner_user_id' => $user->id]);
             }
 
-            Auth::loginUsingId($user->id);
+            return $user;
 
-            $status = 1;
-            $message = 'ok';
+        } catch (\Exception $e) {
+            \Log::error('Create New User Error: ' . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    private function createDepartment($org_code, $org_unit_id)
+    {
+        $jsonFile1 = base_path('database/seeders/data/departments.json');
+
+        if (!file_exists($jsonFile1)) {
+            throw new \Exception('Файл departments.json не найден');
         }
 
-        if ($user) {
-            Auth::loginUsingId($user->user_id);
+        $jsonData1 = json_decode(File::get($jsonFile1), true);
 
-            $status = 1;
-            $message = 'ok';
+        if (!isset($jsonData1['departments'][0])) {
+            throw new \Exception('Данные департаментов отсутствуют');
         }
 
-        return response()->json([
-            'status' => $status,
-            'message' => $message
+        $item1 = $jsonData1['departments'][0];
+
+        return Department::create([
+            'code' => $item1['code'] . '_' . $org_code,
+            'org_unit_id' => $org_unit_id,
+            'name_uz' => $item1['name_uz'] ?? '',
+            'name_kr' => $item1['name_kr'] ?? '',
+            'name_ru' => $item1['name_ru'] ?? '',
+            'name_en' => $item1['name_en'] ?? '',
+            'parent_id' => $item1['parent_id'] ?? 0,
+            'order_number' => $item1['order_number'] ?? 0,
+            'level_number' => $item1['level_number'] ?? 0,
+            'status' => $item1['status'] ?? 1,
         ]);
+    }
+
+    private function createUserPersonalInfo($userId, $subjectName, $pin)
+    {
+        if (!isset($subjectName['CN'])) {
+            throw new \Exception('CN отсутствует в сертификате');
+        }
+
+        $cn = $subjectName['CN'];
+        $nameParts = explode(' ', $cn, 3);
+
+        if (count($nameParts) < 2) {
+            throw new \Exception('Неверный формат CN в сертификате');
+        }
+
+        $lastName = $nameParts[0];
+        $firstName = $nameParts[1];
+        $middleName = $nameParts[2] ?? '';
+
+        $officeEmpPersonal = new UserPersonalInfo();
+        $officeEmpPersonal->user_id = $userId;
+        $officeEmpPersonal->is_emp = 2;
+        $officeEmpPersonal->doc_pin = $pin;
+        $officeEmpPersonal->doc_number = 'AD1234567';
+        $officeEmpPersonal->doc_type = 2;
+        $officeEmpPersonal->birthday = '1991-01-01';
+        $officeEmpPersonal->gender = 1;
+        $officeEmpPersonal->phone = 971253456;
+        $officeEmpPersonal->l_name = $lastName;
+        $officeEmpPersonal->f_name = $firstName;
+        $officeEmpPersonal->m_name = $middleName;
+        $officeEmpPersonal->lang_code = 'uz';
+        $officeEmpPersonal->doc_sign_type = 1;
+        $officeEmpPersonal->sort = 1;
+        $officeEmpPersonal->save();
+    }
+
+    private function createUserWorkHistory($userId, $isOrg, $organization, $department)
+    {
+        $nextYear = Carbon::now()->addYear()->format('Y-m-d');
+
+        $officeEmpWork = new UserWorkHistory();
+        $officeEmpWork->user_id = $userId;
+        $officeEmpWork->org_id = $isOrg ? $organization->id : 1;
+        $officeEmpWork->dep_id = $isOrg ? $department->id : 2;
+        $officeEmpWork->post_id = $isOrg ? 1 : 3;
+        $officeEmpWork->from_date = Carbon::now();
+        $officeEmpWork->to_date = $nextYear;
+        $officeEmpWork->status = 1;
+        $officeEmpWork->save();
+    }
+
+    private function assignUserRole($user, $isOrg)
+    {
+        $roleName = $isOrg ? 'IT_Admin' : 'Dep_Emp';
+        $role = Role::where('name', $roleName)->first();
+
+        if ($role) {
+            $user->assignRole([$role->id]);
+        }
+    }
+
+    private function authErrorResponse($message, $code = 400)
+    {
+        return response()->json([
+            'status' => 0,
+            'message' => $message,
+            'error' => true
+        ], $code);
     }
 
     private function curlPost(string $path, string $postData): ?string
     {
-        $url = (in_array($_SERVER['HTTP_HOST'] ?? '', ['edo-demo.loc', '172.17.110.44', 'localhost:8000']))
-            ? $this->eriSrvIpLoc . $path
-            : $this->eriSrvIpProd . $path;
+        $url = $this->eriSrvIp . $path;
 
         $ch = curl_init($url);
         curl_setopt_array($ch, [

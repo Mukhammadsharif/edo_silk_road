@@ -1,9 +1,9 @@
-<div class="table-tr-3td exec-user">
-    <table>
+<div class="executor-section-modern">
+    <table class="executor-table">
         <tr>
-            <td>
-                <div class="text-left">
-                    <div class="doc-performer">
+            <td class="executor-info-cell">
+                <div class="executor-info">
+                    <div class="executor-role">
                         @switch($document->doc_lang)
                             @case('uz')
                                 @if($journal->journal->doc_type === 'NOTIFICATION')
@@ -42,10 +42,10 @@
                                 @endif
                                 @break
                         @endswitch
-                        {{ $journal->fromUser->personal->shortNameLang($document->doc_lang)??'' }}
+                        <span class="executor-name">{{ $journal->fromUser->personal->shortNameLang($document->doc_lang)??'' }}</span>
                     </div>
 
-                    <div class="doc-tel">
+                    <div class="executor-phone">
                         @switch($document->doc_lang)
                             @case('uz')
                                 Telefon raqam:
@@ -60,14 +60,18 @@
                                 Phone number:
                                 @break
                         @endswitch
-                        {{ $journal->fromUser->personal->phone??'-' }}
+                        <span class="phone-number">{{ $journal->fromUser->personal->phone??'-' }}</span>
                     </div>
                 </div>
             </td>
-            <td class="hr-prt-docs-qr">
-                {!! $document->execQrCode($document->id) !!}
+            <td class="qr-cell">
+                <div class="qr-wrapper">
+                    {!! $document->execQrCode($document->id) !!}
+                </div>
             </td>
-            <td></td>
+            <td class="empty-cell"></td>
         </tr>
     </table>
 </div>
+
+<link rel="stylesheet" href="{{ asset('css/templates/office/journal/work/templates/executor.css') }}">

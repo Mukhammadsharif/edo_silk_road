@@ -115,4 +115,9 @@ class ProtocolDocument extends Model
         // return image
         return '<img src="'.asset('/images/signature.png').'" style="width: 48px">';
     }
+
+    public function document()
+    {
+        return $this->hasOne(ProtocolDocument::class, 'id', 'id');
+    }
 }

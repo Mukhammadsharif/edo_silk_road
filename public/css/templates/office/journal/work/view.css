@@ -1,0 +1,131 @@
+/* Modern Work View Page Styles */
+.work-view-page-modern {
+    padding: 2rem;
+    background: #f8fafc;
+    min-height: 100vh;
+}
+
+.document-view-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr 320px;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.view-sidebar {
+    position: sticky;
+    top: 2rem;
+}
+
+.sidebar-card-modern {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.document-content-section {
+    min-height: 600px;
+}
+
+.work-doc-page {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+}
+
+.work-doc-subpage {
+    padding: 40mm 20mm;
+    background: white;
+}
+
+.printPage {
+    max-width: 210mm;
+    margin: 0 auto;
+}
+
+.doc-confidentiality {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #ef4444;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    padding: 0.5rem;
+    background: #fee2e2;
+    border: 2px solid #fca5a5;
+    border-radius: 8px;
+}
+
+.sent-doc-date-number {
+    text-align: right;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 2rem;
+}
+
+.doc-text {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #1e293b;
+    margin-bottom: 2rem;
+}
+
+.table-tr-3td table {
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+.table-tr-3td td {
+    padding: 0.5rem;
+    vertical-align: top;
+}
+
+@media print {
+    .work-view-page-modern {
+        padding: 0;
+        background: white;
+    }
+
+    .document-view-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .view-sidebar {
+        display: none;
+    }
+
+    .work-doc-page {
+        box-shadow: none;
+        border-radius: 0;
+    }
+}
+
+@media (max-width: 1400px) {
+    .document-view-layout {
+        grid-template-columns: 280px 1fr 280px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .document-view-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .view-sidebar {
+        position: relative;
+        top: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .work-view-page-modern {
+        padding: 1rem;
+    }
+
+    .work-doc-subpage {
+        padding: 20mm 15mm;
+    }
+}

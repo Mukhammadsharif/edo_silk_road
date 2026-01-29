@@ -1,63 +1,70 @@
 @extends('layouts.app')
 
+<link rel="stylesheet" href="{{ asset('css/templates/universal-document-view.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/office/journal/work/templates/header.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/office/journal/view-left.css') }}">
+
 @section('content')
-    <div class="container-fluid">
-        <div class="page-header">
-            <div class="row align-items-end">
-                <div class="col-md-3">
-                    <div class="page-header-title">
-                        <i class="ik ik-file-text bg-blue"></i>
-                        <div class="d-inline">
-                            <h5>{{ $document->docType->lang($document->docType->id) }}</h5>
-                        </div>
+    <div class="work-view-page-modern">
+        <div class="page-header-modern">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i data-lucide="briefcase"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>{{ $document->docType->lang($document->docType->id) }}</h1>
+                        <p>{{ __('message.view_work_document') ?? 'Просмотр рабочего документа' }}</p>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="header-center">
                     @include('templates.alert')
                 </div>
-                <div class="col-md-3">
-                    <nav class="breadcrumb-container" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('home') }}"><i class="ik ik-home"></i></a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="{{ url('protocol/secretary', [$document->docType->doc_hash]) }}">
-                                    {{ $document->docType->lang($document->docType->id) }}
-                                </a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">{{ __('menu.view') }}</li>
-                        </ol>
+                <div class="header-right">
+                    <nav class="breadcrumb-modern" aria-label="breadcrumb">
+                        <a href="{{ route('home') }}" class="breadcrumb-item">
+                            <i data-lucide="home"></i>
+                            <span>{{ __('menu.home') ?? 'Главная' }}</span>
+                        </a>
+                        <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                        <a href="{{ url('protocol', [$document->docType->doc_hash]) }}"
+                           class="breadcrumb-item">
+                            <span>{{ $document->docType->lang($document->docType->id) }}</span>
+                        </a>
+                        <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                        <span class="breadcrumb-item active">{{ __('menu.view') }}</span>
                     </nav>
                 </div>
             </div>
         </div>
 
-        <div class="row">
+        <div class="document-view-layout">
             @include('protocol.document_info')
 
-            <div class="col-md-6">
+            <div class="document-content-section" id="pdf1">
 
                 @include('protocol.document_body')
 
             </div>
 
-            <div class="col-md-4">
-                @include('templates.mini_editor_js')
+            <div class="view-sidebar view-sidebar-right">
+                <div class="sidebar-card-modern">
+                    @include('templates.mini_editor_js')
 
-                @include('protocol.document_reply_comments')
+                    @include('protocol.document_reply_comments')
 
-                @include('protocol.document_secretary_sign')
+                    @include('protocol.document_secretary_sign')
 
-                @if($document->status != 1)
+                    @if($document->status != 1)
 
-                    @include('templates.comment_form')
+                        @include('templates.comment_form')
 
-                @endif
+                    @endif
 
-                @include('protocol.document_secretary_actions')
+                    @include('protocol.document_secretary_actions')
 
-                @include('protocol.document_download_print_actions')
+                    @include('protocol.document_download_print_actions')
+                </div>
             </div>
         </div>
     </div>

@@ -46,7 +46,7 @@
                                                 </span>
                             @else
                                 <span class="badge badge-pill badge-light-blue {{ ($diff === 0 ? "text-danger":"") }}">
-                                                    <i class="ik ik-clock"></i>
+                                                    <i data-lucide="clock"></i>
                                                     @switch(session()->get('locale'))
                                         @case('ru')
                                             {{ __('document.remainder') }} {{ $diff }} {{ __('document.day') }}

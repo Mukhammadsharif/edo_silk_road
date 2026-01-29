@@ -1,30 +1,32 @@
-<div class="page-header">
-    <div class="row align-items-end">
-        <div class="col-md-2">
-            <div class="page-header-title">
-                <i class="ik ik-file-text bg-blue"></i>
-                <div class="d-inline">
-                    <h5>{{ __('title.working_documents') }}</h5>
-                </div>
+<div class="page-header-modern">
+    <div class="header-content">
+        <div class="header-left">
+            <div class="header-icon">
+                <i data-lucide="briefcase"></i>
+            </div>
+            <div class="header-text">
+                <h1>{{ __('title.working_documents') }}</h1>
+                <p>{{ __('message.view_work_document') ?? 'Просмотр рабочего документа' }}</p>
             </div>
         </div>
-        <div class="col-md-7">
-            <div class="w-80">
-                @include('templates.alert')
-            </div>
+        <div class="header-center">
+            @include('templates.alert')
         </div>
-        <div class="col-md-3">
-            <nav class="breadcrumb-container" aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('home') }}"><i class="ik ik-home"></i></a>
-                    </li>
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('office.work-docs') }}">{{ __('title.working_documents') }}</a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page">{{ __('action.view') }}</li>
-                </ol>
+        <div class="header-right">
+            <nav class="breadcrumb-modern">
+                <a href="{{ route('home') }}" class="breadcrumb-item">
+                    <i data-lucide="home"></i>
+                    <span>{{ __('menu.home') ?? 'Главная' }}</span>
+                </a>
+                <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                <a href="{{ route('office.work-docs') }}" class="breadcrumb-item">
+                    <span>{{ __('title.working_documents') }}</span>
+                </a>
+                <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                <span class="breadcrumb-item active">{{ __('action.view') }}</span>
             </nav>
         </div>
     </div>
 </div>
+
+<link rel="stylesheet" href="{{ asset('css/templates/office/journal/work/templates/header.css') }}">

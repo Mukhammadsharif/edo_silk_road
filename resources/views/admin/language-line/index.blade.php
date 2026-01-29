@@ -152,7 +152,7 @@
 
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-light" data-dismiss="modal"><i class="ik ik-x"></i>{{ __('action.cancel') }}</button>
-                        <button type="submit" class="btn btn-outline-info save_btn"><i class="ik ik-save"></i>{{ __('action.save') }}</button>
+                        <button type="submit" class="btn btn-outline-info save_btn"><i data-lucide="save"></i>{{ __('action.save') }}</button>
                     </div>
 
             </div>

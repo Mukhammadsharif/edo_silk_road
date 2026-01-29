@@ -21,7 +21,7 @@ class MenuList extends Model
 
     public function iconClass(): BelongsTo
     {
-        return $this->belongsTo(IconClassList::class, 'icon_id')->where('type', 1);
+        return $this->belongsTo(IconClassList::class, 'icon_id');
     }
 
     public static function lang($id) {

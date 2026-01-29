@@ -161,7 +161,7 @@
                             </div>
 
                             <button type="submit" id="submitBtn" class="btn btn-primary float-right">
-                                <i class="ik ik-save"></i> {{ __('action.send') }}
+                                <i data-lucide="save"></i> {{ __('action.send') }}
                             </button>
                         </form>
                     </div>

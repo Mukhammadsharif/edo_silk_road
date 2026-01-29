@@ -1,26 +1,28 @@
-<div class="card table-card">
-    <div class="card-header">
-        <h5><i class="ik ik-printer"></i> {{ __('action.print') }}</h5>
+<div class="execution-card-modern actions-card">
+    <div class="card-header-modern">
+        <i data-lucide="printer" class="text-white"></i>
+        <h3>{{ __('action.print') }}</h3>
     </div>
-    <div class="card-body">
-        <button type="button" onclick="printContent()" class="btn btn-outline-secondary btn-rounded mr-5">
-            <i class="ik ik-printer"></i> {{ __('field.print') }}
+
+    <div class="actions-body-modern-print">
+        <button type="button" onclick="printContent()" class="btn-modern btn-primary btn-rounded">
+            <i data-lucide="printer"></i> {{ __('field.print') }}
         </button>
 
         @if(in_array('IT admin', $authrole) && $document->status != 6)
-            <button type="button" class="btn btn-outline-danger btn-rounded mr-5" data-toggle="modal" data-target="#cancelModel" data-id="{{ $document->id }}">
+            <button type="button" class="btn-modern btn-danger btn-rounded" data-toggle="modal" data-target="#cancelModel" data-id="{{ $document->id }}">
                 <i class="ik ik-trash-2"></i> {{ __('action.delete') }}
             </button>
         @endif
 
-        <button type="button" onclick="downloadAsPDF()" class="btn btn-outline-dark m-1 btn-rounded">
-            <i class="ik ik-download"></i> {{ __('action.download') }}
+        <button type="button" onclick="downloadAsPDF()" class="btn-modern btn-dark btn-rounded">
+            <i data-lucide="download"></i> {{ __('action.download') }}
         </button>
         <input id="downloadName" value="{{ $document->docType->lang($document->docType->id)??'' }} - {{ $document->doc_number??'' }}" hidden/>
 
         {{--<a href="{{ route('pdf.hr-prt-doc', [$document->id, $document->doc_hash]) }}"
            class="btn btn-outline-secondary btn-rounded">
-            <i class="ik ik-download"></i> {{ __('field.download') }}
+            <i data-lucide="download"></i> {{ __('field.download') }}
         </a>--}}
 
         @if($document->status == 3)
@@ -32,12 +34,12 @@
     </div>
 
 
-    <div class="modal fade" id="cancelModel" aria-hidden="true">
-        <div class="modal-dialog">
+    <div class="modal fade" id="cancelModel">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <form id="cancelForm" action="" method="POST">
                 @csrf
                 @method('PATCH')
-                <div class="modal-content">
+                <div class="modal-content modal-modern">
                     <!-- Modal Header -->
                     <div class="modal-header">
                         <h4>{{ __('action.delete') }}</h4>
@@ -52,10 +54,10 @@
                     </div>
                     <!-- Modal Footer -->
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-light" data-dismiss="modal">
+                        <button type="button" class="btn-modern btn-light" data-dismiss="modal">
                             <i class="ik ik-x"></i>{{ __('action.close') }}
                         </button>
-                        <button type="submit" class="btn btn-danger">
+                        <button type="submit" class="btn-modern btn-danger">
                             <i class="ik ik-trash-2"></i>{{ __('action.yes_delete') }}
                         </button>
                     </div>
@@ -84,6 +86,12 @@
 <script src="{{ asset('/js/html2pdf.bundle.min.js') }}"></script>
 
 <script>
+
+    $(document).ready(function () {
+        $('.modal').each(function () {
+            $(this).appendTo('body');
+        });
+    });
 
     function printPageNew() {
         printJS({

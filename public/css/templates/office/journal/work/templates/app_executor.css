@@ -1,0 +1,10 @@
+.app-executor-modern { margin: 2rem 0; padding: 1rem; background: #f8fafc; border-radius: 8px; }
+.app-table { width: 100%; border-collapse: collapse; }
+.app-table td { padding: 0.75rem; vertical-align: middle; }
+.date-cell { width: 35%; }
+.date-label { display: block; font-size: 11px; color: #64748b; margin-bottom: 0.25rem; }
+.date-value { font-size: 14px; color: #1e293b; font-weight: 600; }
+.qr-cell { width: 30%; text-align: center; }
+.qr-wrapper { display: inline-block; padding: 0.5rem; background: white; border: 1px solid #e2e8f0; border-radius: 6px; }
+.name-cell { width: 35%; text-align: right; }
+.name-value { font-size: 15px; color: #1e293b; font-weight: 700; }

@@ -1,13 +1,19 @@
 @extends('layouts.app')
-
+<link rel="stylesheet" href="{{ asset('css/templates/universal-document-view.css') }}">
 @section('content')
-    <div class="container-fluid">
+    <div class="work-view-page-modern">
         @include('office.journal.work.templates.header')
 
-        <div class="row">
+        <div class="document-view-layout">
+            <!-- Left Sidebar -->
+            <div class="view-sidebar view-sidebar-left">
+                <div class="sidebar-card-modern">
+                    @include('office.journal.view-left')
+                </div>
+            </div>
 
-            @include('office.journal.view-left')
-            <div class="col-md-6" id="pdf1">
+            <!-- Document Content -->
+            <div class="document-content-section" id="pdf1">
                 <div class="work-doc-page" id="pdf2">
                     <div class="work-doc-subpage" id="pdf3">
                         <div id="printPage" class="printPage">
@@ -58,12 +64,6 @@
                                 @endif
                             </div>
 
-                            {{--<div class="doc-text" id="pdf4">
-                                {!! str_replace('&nbsp;', ' ', $document->doc_text) !!}
-                            </div>--}}
-
-{{--                            @include('office.journal.work.templates.document-files')--}}
-
                             @if(in_array($journal->journal->doc_code, ['ORDER_F', 'STATEMENT', 'HR_ORD_MT_META']))
                                 @include('office.journal.work.templates.verifier')
                             @endif
@@ -81,13 +81,24 @@
                 {{--<a href="{{ route('download-only-office.pdf', ['onlyDocId' => $model->id]) }}" class="btn btn-primary">
                     Download PDF
                 </a>--}}
-
             </div>
 
-            @include('office.journal.view-right')
+            <!-- Right Sidebar -->
+            <div class="view-sidebar view-sidebar-right">
+                <div class="sidebar-card-modern">
+                    @include('office.journal.view-right')
+                </div>
+            </div>
         </div>
-
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+    </script>
 
     @include('modals.delete-document')
 
@@ -120,7 +131,7 @@
                     confirm_type = "{{ __('re-editing') }}";
                     modal_bg_class = "btn-outline-warning";
                 }
-                $('.modal-bg-class').removeClass().addClass(`btn modal-bg-class ${modal_bg_class}`);
+                $('.modal-bg-class').removeClass().addClass(`btn-modern modal-bg-class ${modal_bg_class}`);
                 $('.confirm_type').html(confirm_type);
                 $('#ecp_confirm_id').val();
             });
@@ -128,3 +139,17 @@
     </script>
 
 @endsection
+
+<style>
+    @media screen and (max-width: 1030px) {
+        .work-doc-page {
+            margin-left: 0 !important;
+        }
+    }
+
+     @media screen and (max-width: 1024px) {
+        .work-doc-page {
+            margin-left: 0 !important;
+        }
+    }
+</style>

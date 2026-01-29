@@ -7,13 +7,16 @@ use App\Http\Controllers\Api\Bitrix\DivisionController;
 use App\Http\Controllers\Api\Bitrix\EmployeeController;
 use App\Http\Controllers\Api\Bitrix\PersonController;
 use App\Http\Controllers\Api\Bitrix\PositionController;
+use App\Http\Controllers\Api\ECP\SignDocImzoApiController;
+use App\Http\Controllers\Api\ECP\SignLoginApiController;
 use App\Http\Controllers\Api\Messages\MessageApiController;
-use App\Http\Controllers\Api\Office\DocApiController;
+//use App\Http\Controllers\Api\Office\DocApiController;
 use App\Http\Controllers\Api\Office\ExecutionApiController;
 use App\Http\Controllers\Api\Office\JournalApiController;
 use App\Http\Controllers\Api\Protocol\ProtocolApiCommentController;
 use App\Http\Controllers\Api\Protocol\ProtocolApiEmpHrOrdersController;
 use App\Http\Controllers\Api\Protocol\ProtocolsApiController;
+use App\Http\Controllers\Api\User\ProfileApiController;
 use App\Http\Controllers\Api\User\UserApiController;
 use App\Http\Controllers\Auth\AuthController;
 use Carbon\Carbon;
@@ -121,6 +124,13 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::get('/roles', [DictionaryApiController::class, 'roleList']);
     Route::get('/languages', [DictionaryApiController::class, 'languageList']);
 
+    // Profile routes
+    Route::get('/profile', [ProfileApiController::class, 'profile']);
+    Route::put('/profile/personal', [ProfileApiController::class, 'personalUpdate']);
+    Route::put('/profile/password', [ProfileApiController::class, 'passwordUpdate']);
+    Route::post('/profile/image', [ProfileApiController::class, 'updateImage']);
+    Route::delete('/profile/image', [ProfileApiController::class, 'deleteProfileImage']);
+
     // Execution routes
     Route::prefix('executions')->group(function () {
         Route::get('/for-execution', [ExecutionApiController::class, 'forExecutionIndex']);
@@ -128,18 +138,24 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::get('/for-approval', [ExecutionApiController::class, 'forApprovalIndex']);
         Route::get('/for-confirm', [ExecutionApiController::class, 'forConfirmIndex']);
         Route::get('/for-control', [ExecutionApiController::class, 'forControlIndex']);
+
+        Route::get('/document/{j_id}/execution', [ExecutionApiController::class, 'viewExecDocument']);
+        Route::get('/document/{j_id}/sign', [ExecutionApiController::class, 'viewSignDocument']);
+        Route::get('/document/{j_id}/approval', [ExecutionApiController::class, 'viewApprovalDocument']);
+        Route::get('/document/{j_id}/confirm', [ExecutionApiController::class, 'viewConfirmDocument']);
+        Route::get('/document/{j_id}/control', [ExecutionApiController::class, 'viewControlDocument']);
+
         Route::get('/document/{j_id}', [ExecutionApiController::class, 'viewDocument']);
+
+
         Route::post('/document/{j_id}/sign', [ExecutionApiController::class, 'signDocument']);
+        Route::post('/document/{j_id}/approve', [ExecutionApiController::class, 'approveDocument']);
+        Route::post('/document/{j_id}/reject', [ExecutionApiController::class, 'rejectDocument']);
+        Route::post('/document/{step_id}/reply', [ExecutionApiController::class, 'replyDocument']);
+        Route::post('/document/{j_id}/execute', [ExecutionApiController::class, 'executeDocument']);
 
         Route::get('/status-list', [ExecutionApiController::class, 'statusList']);
         Route::get('/journal-list', [ExecutionApiController::class, 'journalList']);
-    });
-
-    // Message routes
-    Route::prefix('messages')->group(function () {
-        Route::get('/{type}', [MessageApiController::class, 'list']);
-        Route::get('/view/{id}', [MessageApiController::class, 'view']);
-        Route::delete('/{id}', [MessageApiController::class, 'delete']);
     });
 
     Route::prefix('protocol')->group(function () {
@@ -162,15 +178,46 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::get('/outgoing-documents', [JournalApiController::class, 'indexOutgoing']);
     Route::get('/outgoing-documents/{id}/{hash}', [JournalApiController::class, 'viewOutgoing']);
 
+    //    // Message routes
+//    Route::prefix('messages')->group(function () {
+//        Route::get('/{type}', [MessageApiController::class, 'list']);
+//        Route::get('/view/{id}', [MessageApiController::class, 'view']);
+//        Route::delete('/{id}', [MessageApiController::class, 'delete']);
+//    });
 
-    Route::prefix('doc-controller')->group(function () {
-        Route::get('/documents/work-docs', [DocApiController::class, 'workDocsIndex']);
-        Route::get('/documents/{id}/view/{doc_hash}', [DocApiController::class, 'workView']);
-        Route::get('/public-protocols', [DocApiController::class, 'publicProtocolsIndex']);
-        Route::get('/protocols', [DocApiController::class, 'protocolsIndex']);
-        Route::get('/protocol/{id}/{doc_hash}', [DocApiController::class, 'protocolView']);
-        Route::delete('/work-documents', [DocApiController::class, 'delWorkDoc']);
-        Route::delete('/protocols', [DocApiController::class, 'delProtocol']);
+//    Route::prefix('doc-controller')->group(function () {
+//        Route::get('/documents/work-docs', [DocApiController::class, 'workDocsIndex']);
+//        Route::get('/documents/{id}/view/{doc_hash}', [DocApiController::class, 'workView']);
+//        Route::get('/public-protocols', [DocApiController::class, 'publicProtocolsIndex']);
+//        Route::get('/protocols', [DocApiController::class, 'protocolsIndex']);
+//        Route::get('/protocol/{id}/{doc_hash}', [DocApiController::class, 'protocolView']);
+//        Route::delete('/work-documents', [DocApiController::class, 'delWorkDoc']);
+//        Route::delete('/protocols', [DocApiController::class, 'delProtocol']);
+//    });
+});
+
+// ECP Routes - E-IMZO (Electronic Digital Signature)
+Route::prefix('v1/ecp')->group(function () {
+
+    // Public routes (no authentication required)
+    Route::get('/frontend-challenge', [SignDocImzoApiController::class, 'frontChallenge']);
+    Route::post('/backend-auth-login', [SignDocImzoApiController::class, 'backendAuthLogin']);
+
+    // Protected routes (authentication required)
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/sign-documents', [SignDocImzoApiController::class, 'signDocuments']);
     });
+});
+
+// ECP Routes - Login Sign (Simple authentication-based signing)
+Route::prefix('v1/login-sign')->middleware('auth:sanctum')->group(function () {
+
+    // Sign documents
+    Route::post('/sign-documents', [SignLoginApiController::class, 'signDocuments']);
+
+    // Get document information
+    Route::get('/document-types', [SignLoginApiController::class, 'getDocumentTypes']);
+    Route::get('/pending-documents', [SignLoginApiController::class, 'getPendingDocuments']);
+    Route::get('/document/{doc_id}/details', [SignLoginApiController::class, 'getDocumentDetails']);
 });
 

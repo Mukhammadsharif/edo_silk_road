@@ -268,7 +268,7 @@
             $('.confirmForm').show();
             let confirm_type = $(this).html();
             let modal_bg_class = "btn-outline-success";
-            $('.modal-bg-class').removeClass().addClass(`btn modal-bg-class ${modal_bg_class}`);
+            $('.modal-bg-class').removeClass().addClass(`btn-modern modal-bg-class ${modal_bg_class}`);
             $('.confirm_type').html(confirm_type);
             $('#ecp_confirm_id').val();
         });

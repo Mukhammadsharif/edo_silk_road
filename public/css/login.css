@@ -240,12 +240,12 @@ body {
 }
 
 .eri-item {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
+    border: 1px solid #794DFD;
     padding: 15px;
     margin-bottom: 15px;
     cursor: pointer;
     transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(121, 77, 253, 0.4);
 }
 
 .eri-item:hover {

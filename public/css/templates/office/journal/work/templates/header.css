@@ -1,0 +1,14 @@
+.page-header-modern { margin-bottom: 2rem; }
+.header-content { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; }
+.header-left { display: flex; align-items: center; gap: 1.5rem; }
+.header-icon { width: 64px; height: 64px; background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%); border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 16px rgba(121, 77, 253, 0.3); }
+.header-icon i { width: 32px; height: 32px; color: white; }
+.header-text h1 { margin: 0; font-size: 28px; font-weight: 700; color: #1e293b; }
+.header-text p { margin: 0.25rem 0 0 0; font-size: 14px; color: #64748b; }
+.header-center { flex: 1; }
+.breadcrumb-modern { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.25rem;  border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); }
+.breadcrumb-item { display: flex; align-items: center; gap: 0.5rem; font-size: 14px; color: #64748b; text-decoration: none; transition: color 0.3s; }
+.breadcrumb-item i { width: 16px; height: 16px; }
+.breadcrumb-item:hover { color: #794DFD; }
+.breadcrumb-item.active { color: #794DFD; font-weight: 600; }
+.breadcrumb-separator { width: 14px; height: 14px; color: #cbd5e1; }

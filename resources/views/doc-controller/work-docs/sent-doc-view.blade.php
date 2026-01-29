@@ -64,7 +64,7 @@
                                             {{ __('field.date_sent_for_signature') }}
                                         @endif
                                     </p>
-                                    <i class="ik ik-clock"></i>
+                                    <i data-lucide="clock"></i>
                                     {{ \Carbon\Carbon::parse($directorDocument->updated_at)->format('d.m.y, H:i') }}
                                 </div>
                                 <div class="col-4">
@@ -106,13 +106,13 @@
                                                     </span>
                                                     @if($doc && $doc->status == 5 && $journal->workEcpInfo($document->id, $doc->from_user)
                                                         && $journal->workEcpInfo($document->id, $doc->from_user)->docInfo)
-                                                        <i class="ik ik-feather ml-10" style="font-size: 18px; cursor: pointer" onclick="showEspInfo({{ $doc->id }})"></i>
+                                                        <i data-lucide="feather" style="font-size: 18px; cursor: pointer" onclick="showEspInfo({{ $doc->id }})"></i>
 
                                                         @include('templates.ecp.ecp-information')
                                                     @endif
                                                 </div>
                                                 <div class="mt-10">
-                                                <span class="sl-date pull-right"><i class="ik ik-clock"></i>
+                                                <span class="sl-date pull-right"><i data-lucide="clock"></i>
                                                     {{ date('d.m.y, H:i', strtotime($doc->created_at)) }}
                                                 </span>
                                                 </div><hr>
@@ -125,14 +125,14 @@
                                                 @php($signer = $item)
                                                 @if($signer && $signer->status == 5 && $journal->workEcpInfo($document->id, $signer->to_user)
                                                     && $journal->workEcpInfo($document->id, $signer->to_user)->docInfo)
-                                                    <i class="ik ik-feather ml-10" style="font-size: 18px; cursor: pointer" onclick="showEspInfo({{ $signer->id }})"></i>
+                                                    <i data-lucide="feather" style="font-size: 18px; cursor: pointer" onclick="showEspInfo({{ $signer->id }})"></i>
 
                                                     @include('templates.ecp.signer-ecp-information')
                                                 @endif
                                             </div>
                                             @if($item->status != (int)1)
                                                 <div class="mt-10">
-                                                    <span class="sl-date pull-right"><i class="ik ik-clock"></i>
+                                                    <span class="sl-date pull-right"><i data-lucide="clock"></i>
                                                         {{ date('d.m.y, H:i', strtotime($item->updated_at)) }}
                                                     </span>
                                                 </div>
@@ -154,11 +154,11 @@
                     </div>
                     <div class="card-body">
                         <button type="button" onclick="printContent()" class="btn btn-outline-secondary btn-rounded mr-5">
-                            <i class="ik ik-printer"></i> {{ __('action.print') }}
+                            <i data-lucide="printer"></i> {{ __('action.print') }}
                         </button>
 
                         <button type="button" onclick="downloadAsPDF()" class="btn btn-outline-dark m-1 btn-rounded">
-                            <i class="ik ik-download"></i> {{ __('action.download') }}
+                            <i data-lucide="download"></i> {{ __('action.download') }}
                         </button>
                         <input id="downloadName" value="{{ $journal->journal->lang($journal->journal->lang_id)??'-' }} - {{ $journal->fromUser->personal->shortName()??'' }}" hidden/>
 
@@ -244,7 +244,7 @@
                     confirm_type = "{{ __('re-editing') }}";
                     modal_bg_class = "btn-outline-warning";
                 }
-                $('.modal-bg-class').removeClass().addClass(`btn modal-bg-class ${modal_bg_class}`);
+                $('.modal-bg-class').removeClass().addClass(`btn-modern modal-bg-class ${modal_bg_class}`);
                 $('.confirm_type').html(confirm_type);
                 $('#ecp_confirm_id').val();
             });

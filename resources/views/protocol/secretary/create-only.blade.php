@@ -1,22 +1,54 @@
 @extends('layouts.app_create_doc')
+<link rel="stylesheet" href="{{ asset('css/templates/office/document/create-only.css') }}">
 @section('content')
     <script src="{{ $onlyOfficeJsUrl }}"></script>
 
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-9" style="height: 100%;">
-                <div class="card" style="position: fixed; width: 60%; height: 92%;">
-                    <div class="card-body" style="padding: 0; border: 1px solid rgba(0,123,255,0.58)">
+    <div class="document-editor-modern">
+        <div class="editor-layout">
+            <div class="editor-section">
+                <div class="editor-card-modern">
+                    <div class="editor-header">
+                        <div class="header-left">
+                            <i data-lucide="file-edit"></i>
+                            <span class="editor-title">{{ __('field.document_editing') ?? 'Редактирование документа' }}</span>
+                        </div>
+                        <div class="header-right">
+                            <div class="status-badge status-editing">
+                                <i data-lucide="circle"></i>
+                                <span>{{ __('status.editing') ?? 'Редактирование' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="editor-body">
                         <div id="placeholder"></div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-3 mt-15">
-                <a href="{{ route('prt-secretary-create', ['doc_type' => $doc_type, 'document_key' => $document_params['key']]) }}"
-                   class="btn btn-outline-primary">
-                    {{ __('field.continue') }} <i class="ik ik-chevrons-right"></i>
-                </a>
+            <div class="actions-sidebar">
+                <div class="sidebar-card-modern">
+                    <div class="sidebar-header">
+                        <i data-lucide="settings"></i>
+                        <h3>{{ __('action.actions') ?? 'Действия' }}</h3>
+                    </div>
+
+                    <div class="sidebar-body">
+                        <div>
+                            <div class="actions-group">
+                                <a href="{{ route('prt-secretary-create', ['doc_type' => $doc_type, 'document_key' => $document_params['key']]) }}"
+                                   class="btn-modern btn-primary">
+                                    <i data-lucide="arrow-right"></i>
+                                    <span>{{ __('field.continue') ?? 'Продолжить' }}</span>
+                                </a>
+                            </div>
+
+                            <div class="help-card">
+                                <i data-lucide="info"></i>
+                                <p>{{ __('message.save_before_continue') ?? 'Сохраните документ перед продолжением работы' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -56,3 +88,9 @@
         });
     </script>
 @endsection
+
+<style>
+    .file-edit{
+        color:#fff !important;
+    }
+</style>

@@ -1,171 +1,75 @@
-@php use App\Models\Admin\RequestForOrgs;use Illuminate\Support\Facades\Auth; @endphp
-@php $user = App\Models\User::where('id', Auth::id())->first();@endphp
-@php $isOrganizationDemo = $user->org_unit_id === 1;@endphp
-@php $request = RequestForOrgs::where('user_id', Auth::id())->first();@endphp
+@php
+    use App\Models\Admin\RequestForOrgs;
+    use Illuminate\Support\Facades\Auth;
 
-<header class="header-top" header-theme="light">
-    <div class="container-fluid">
-        <div class="d-flex justify-content-between">
-            @if($isOrganizationDemo && !$request)
-                <div
-                    class="alert bg-success alert-success text-white d-flex flex-row justify-content-between align-items-center"
-                    role="alert"
-                    style="width: 35%; margin: 0 0 0 20px;">
-                    <span>{{ __('field.send_request_for_joining') }}</span>
-                    <button class="btn btn-light" id="requestButton" data-toggle="modal" data-target="#RequestModal">
-                        {{ __('field.leave_request') }}
-                    </button>
-                </div>
-            @endif
+    $user = App\Models\User::where('id', Auth::id())->first();
+    $isOrganizationDemo = $user?->org_unit_id === 1;
+    $request = RequestForOrgs::where('user_id', Auth::id())->first();
+@endphp
 
-            @if($isOrganizationDemo && $request && $request->status == 1)
-                <div
-                    class="alert bg-secondary alert-success text-white d-flex flex-row justify-content-between align-items-center"
-                    role="alert"
-                    style="width: 35%; margin: 0 0 0 20px;">
-                    <span>{{ __('field.pending_request_for_joining') }}</span>
-                    <button class="btn btn-danger" id="cancelButton" data-toggle="modal" data-target="#CancelModal">
-                        {{ __('action.cancel') }}
-                    </button>
-                </div>
-            @endif
+<header class="header-top d-flex justify-content-between align-items-center" header-theme="light">
 
-            @if($isOrganizationDemo && $request && $request->status == 3)
-                <div
-                    class="alert bg-danger alert-success text-white d-flex flex-row justify-content-between align-items-center"
-                    role="alert"
-                    style="width: 35%; margin: 0 0 0 20px;">
-                    <span>{{ __('field.declined_request_for_joining') }}</span>
-                    <button class="btn btn-light" id="requestButton" data-toggle="modal" data-target="#RequestModal">
-                        {{ __('field.leave_request') }}
-                    </button>
-                </div>
-            @endif
 
-            @can('super_admin')
-                <div class="nav-item">
-                    <a href="{{ route('admin.subscription-requests') }}" class="nav-link">
-                        <i class="ik ik-clock"></i>
-                        <span>{{ __('field.subscription_requests') }}</span>
-                        @php
-                            $pendingCount = \App\Models\Admin\Subscriptions::where('status', 2)->count();
-                        @endphp
-                        @if($pendingCount > 0)
-                            <span class="badge badge-warning ml-2">{{ $pendingCount }}</span>
-                        @endif
-                    </a>
-                </div>
-            @endcan
-
-            <div class="top-menu d-flex align-items-center">
-                <button type="button" class="btn-icon mobile-nav-toggle d-lg-none"><span></span></button>
-                <div class="header-search" hidden>
-                    <div class="input-group">
-                        <span class="input-group-addon search-close"><i class="ik ik-x"></i></span>
-                        <input type="text" class="form-control">
-                        <span class="input-group-addon search-btn"><i class="ik ik-search"></i></span>
-                    </div>
-                </div>
-                <button type="button" id="navbar-fullscreen" class="nav-link" hidden><i class="ik ik-maximize"></i>
-                </button>
-            </div>
-            <div class="top-menu d-flex align-items-center">
-
-                <button type="button" class="nav-link ml-10 right-sidebar-toggle">
-                    <i class="ik ik-message-square"></i><span class="badge bg-danger chatListCount"></span>
-                </button>
-
-                <div class="dropdown">
-                    @php $locale = session()->get('locale'); @endphp
-                    <a class="nav-link dropdown-toggle" href="#" id="menuDropdown" role="button" data-toggle="dropdown"
-                       aria-haspopup="true" aria-expanded="false">
-                        @switch($locale)
-                            @case('ru')
-                                RU
-                                @break
-                            @case('en')
-                                EN
-                                @break
-                            @default
-                                UZ
-                        @endswitch
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right menu-grid" aria-labelledby="menuDropdown">
-                        <a class="dropdown-item" href="{{ url('/lang/uz') }}" data-toggle="tooltip" data-placement="top"
-                           title="O`zbekcha">UZ</a>
-                        <a class="dropdown-item" href="{{ url('/lang/ru') }}" data-toggle="tooltip" data-placement="top"
-                           title="Русский">RU</a>
-                        <a class="dropdown-item" href="{{ url('/lang/en') }}" data-toggle="tooltip" data-placement="top"
-                           title="English">EN</a>
-                    </div>
-                </div>
-
-                <div class="dropdown hidden">
-                    <a class="nav-link dropdown-toggle" href="#" id="menuDropdown" role="button" data-toggle="dropdown"
-                       aria-haspopup="true" aria-expanded="false"><i class="ik ik-plus"></i></a>
-                    <div class="dropdown-menu dropdown-menu-right menu-grid" aria-labelledby="menuDropdown">
-                        <a class="dropdown-item" href="#" data-toggle="tooltip" data-placement="top"
-                           title="Dashboard"><i class="ik ik-bar-chart-2"></i></a>
-                        <a class="dropdown-item" href="#" data-toggle="tooltip" data-placement="top" title="Message"><i
-                                class="ik ik-mail"></i></a>
-                        <a class="dropdown-item" href="#" data-toggle="tooltip" data-placement="top" title="Accounts"><i
-                                class="ik ik-users"></i></a>
-                        <a class="dropdown-item" href="#" data-toggle="tooltip" data-placement="top" title="Sales"><i
-                                class="ik ik-shopping-cart"></i></a>
-                        <a class="dropdown-item" href="#" data-toggle="tooltip" data-placement="top" title="Purchase"><i
-                                class="ik ik-briefcase"></i></a>
-                        <a class="dropdown-item" href="#" data-toggle="tooltip" data-placement="top" title="Pages"><i
-                                class="ik ik-clipboard"></i></a>
-                        <a class="dropdown-item" href="#" data-toggle="tooltip" data-placement="top" title="Chats"><i
-                                class="ik ik-message-square"></i></a>
-                        <a class="dropdown-item" href="#" data-toggle="tooltip" data-placement="top" title="Contacts"><i
-                                class="ik ik-map-pin"></i></a>
-                        <a class="dropdown-item" href="#" data-toggle="tooltip" data-placement="top" title="Blocks"><i
-                                class="ik ik-inbox"></i></a>
-                        <a class="dropdown-item" href="#" data-toggle="tooltip" data-placement="top" title="Events"><i
-                                class="ik ik-calendar"></i></a>
-                        <a class="dropdown-item" href="#" data-toggle="tooltip" data-placement="top"
-                           title="Notifications"><i class="ik ik-bell"></i></a>
-                        <a class="dropdown-item" href="#" data-toggle="tooltip" data-placement="top" title="More"><i
-                                class="ik ik-more-horizontal"></i></a>
-                    </div>
-                </div>
-                <button type="button" class="nav-link ml-10 hidden" id="apps_modal_btn" data-toggle="modal"
-                        data-target="#appsModal"><i class="ik ik-grid"></i></button>
-                <div class="dropdown">
-                    <a class="dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
-                       aria-haspopup="true" aria-expanded="false">
-                        @if(file_exists(public_path().'/profile_img/'.'img_'.Auth::user()->id.'.png'))
-                            <img src="{{ url('/profile_img/'.'img_'.Auth::user()->id.'.png') }}" width="32" height="32"
-                                 class="rounded-circle" style="object-fit: cover;">
-                        @else
-                            <img src="{{ url('/images/profile_image1_32.png') }}" width="32" height="32"
-                                 class="rounded-circle" style="object-fit: cover;">
-                        @endif
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                        <a class="dropdown-item" href="{{ url('/profile/my') }}"><i
-                                class="ik ik-user dropdown-icon"></i> {{ __('field.profile') }}</a>
-                        <a class="dropdown-item" href="#" hidden><i
-                                class="ik ik-settings dropdown-icon"></i> @lang('menu.administrator')</a>
-                        <a class="dropdown-item" href="#" hidden><i
-                                class="ik ik-mail dropdown-icon"></i> @lang('menu.edo_inbox_docs')</a>
-                        <a class="dropdown-item" href="{{ route('logout') }}"
-                           onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                            <i class="ik ik-power dropdown-icon"></i> {{ __('field.logout') }}
-                        </a>
-
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                            @csrf
-                        </form>
-                    </div>
-                </div>
+             <div class="logo">
+                <a href="{{ url('/edo') }}">
+                <img src="{{ asset('images/edofy.svg') }}" style="width: 100px" alt=""></a>
 
             </div>
-        </div>
-    </div>
+
+                    <div class="top-menu d-flex align-items-center ms-auto">
+
+
+                        @php $locale = session()->get('locale', 'uz'); @endphp
+                        <div class="dropdown language-dropdown">
+                            <a class="language-toggle d-flex align-items-center" href="#" id="menuDropdown"
+                               role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <img src="https://flagcdn.com/24x18/{{ $locale === 'ru' ? 'ru' : ($locale === 'en' ? 'gb' : 'uz') }}.png"
+                                     class="flag-straight mr-2" width="24" height="18" alt="{{ strtoupper($locale) }}">
+                                <span class="lang-code">{{ strtoupper($locale) }}</span>
+                                <i class="ik ik-chevron-down ml-2" style="font-size:12px;"></i>
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right language-menu">
+                                @foreach (['uz' => 'uz', 'ru' => 'ru', 'en' => 'gb'] as $code => $flag)
+                                    <a href="{{ url('/lang/'.$code) }}"
+                                       class="dropdown-item d-flex align-items-center {{ $locale === $code ? 'active' : '' }}">
+                                        <img src="https://flagcdn.com/24x18/{{ $flag }}.png"
+                                             class="flag-straight mr-3" width="24" height="18" alt="{{ strtoupper($code) }}">
+                                        <span class="flex-grow-1">{{ strtoupper($code) }}</span>
+                                        @if($locale === $code)
+                                            <i class="ik ik-check ml-auto"></i>
+                                        @endif
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+
+
+
+                        <div class="dropdown ms-3">
+                            <a class="dropdown-toggle d-flex align-items-center justify-content-center text-white"
+                               href="#" id="userDropdown" role="button" data-toggle="dropdown"
+                               style="background: linear-gradient(to right, #ea4c89, #d6336c); width:32px; height:32px; border-radius:50%; font-weight:bold;">
+                                SK
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="{{ route('profile.my') }}"><i class="ik ik-user dropdown-icon"></i> {{ __('field.profile') }}</a>
+                                <a class="dropdown-item" href="{{ route('logout') }}"
+                                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    <i class="ik ik-power dropdown-icon"></i> {{ __('field.logout') }}
+                                </a>
+
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                    @csrf
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+
 </header>
+
 
 <div class="modal fade" id="RequestModal">
     <div class="modal-dialog" role="document">
@@ -187,7 +91,7 @@
             <div class="modal-footer justify-content-between">
                 <button type="button" class="btn btn-light" data-dismiss="modal"><i
                         class="ik ik-x"></i>{{ __('action.cancel') }}</button>
-                <button class="btn btn-outline-info modal_btn"><i class="ik ik-save"></i>{{ __('action.save') }}
+                <button class="btn btn-outline-info modal_btn"><i data-lucide="save"></i>{{ __('action.save') }}
                 </button>
             </div>
         </div>
@@ -288,7 +192,7 @@
                 success: function (response) {
                     if (response.status === 200) {
                         modal.modal('hide');
-                        // Показать успех можно через toast или просто перезагрузить
+
                         setTimeout(() => window.location.reload(), 500);
                     }
                 },
@@ -311,3 +215,219 @@
         });
     })
 </script>
+
+<style>
+
+
+
+.container-fluid{
+ padding: 10px 20px !important;
+}
+
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo p {
+    font-size: 12px;
+    font-weight: 600;
+    color: #515151;
+}
+
+.logo span {
+    font-size: 10px;
+    color: #959595;
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.logo-text p {
+    margin: 0;
+    color: #707070;
+}
+
+.language-dropdown .dropdown-toggle {
+    color: #495057;
+    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    margin: 0 25px 0 10px;
+}
+
+.language-dropdown .dropdown-toggle:hover {
+    background-color: #f8f9fa;
+    color: #794DFD;
+    text-decoration: none;
+}
+
+.language-dropdown .dropdown-menu {
+    min-width: 134px;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.language-dropdown .dropdown-item {
+    font-size: 0.95rem;
+    color: #495057;
+    transition: all 0.2s ease;
+}
+
+.language-dropdown .dropdown-item:hover {
+    background-color: #f0f0ff;
+    color: #794DFD;
+}
+
+.language-dropdown .dropdown-item.active {
+    background-color: #794DFD;
+    color: white;
+}
+
+.language-dropdown .dropdown-item.active:hover {
+    background-color: #5f3de0;
+    color: white;
+}
+
+.dropdown-toggle[aria-haspopup="true"] {
+    background: linear-gradient(to right, #794DFD, #5f3de0);
+    color: white;
+}
+
+.dropdown-menu .dropdown-icon {
+    color: #794DFD;
+    transition: color 0.2s ease;
+}
+
+.dropdown-menu .dropdown-item:hover .dropdown-icon {
+    color: #5f3de0;
+}
+
+.dropdown-menu .dropdown-item.active .dropdown-icon {
+    color: white;
+}
+
+
+.flag-straight {
+    border-radius: 2px;
+    object-fit: cover;
+    display: block;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+
+.flag-straight,
+.flag-straight img {
+    border-radius: 2px !important;
+}
+
+
+
+    .flag-straight {
+    border-radius: 2px;
+    object-fit: cover;
+    display: block;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+
+.flag-straight,
+.flag-straight img {
+    border-radius: 2px !important;
+}
+
+    .header-top{
+        padding:5px 20px !important;
+        box-shadow: rgba(172, 172, 172, 0.2) 0px 2px px 0px !important;
+        z-index: 10000;
+    }
+    .header-top-left{
+        display:flex;
+        align-items:center;
+    }
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .logo p {
+        font-size: 12px;
+        font-weight: 600;
+        color: #515151;
+      }
+
+      .logo span {
+        font-size: 10px;
+        color: #959595;
+      }
+      .logo-text{
+        display: flex;
+        flex-direction: column;
+      }
+      .logo-text p {
+        margin: 0;
+        color: #707070;
+      }
+
+     .language-dropdown .dropdown-toggle {
+        color: #495057;
+        font-size: 0.95rem;
+        padding: 0.5rem 1rem;
+        transition: background-color 0.2s ease;
+        margin:0 25px 0 10px;
+    }
+
+    .language-dropdown .dropdown-toggle:hover {
+        background-color: #f8f9fa;
+        text-decoration: none;
+    }
+
+    .language-dropdown .dropdown-menu {
+    min-width: 134px;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        margin-top: 0.5rem;
+    }
+
+    .language-dropdown .dropdown-item {
+        font-size: 0.95rem;
+        color: #495057;
+        transition: all 0.2s ease;
+    }
+
+    .language-dropdown .dropdown-item:hover {
+        background-color: #fdf2f8;
+        color: #794dfd;
+    }
+
+    .language-dropdown .dropdown-item.active {
+        background-color: #794dfd;
+        color: white;
+    }
+
+    .language-dropdown .dropdown-item.active:hover {
+        background-color: #d9467a;
+        color: white;
+    }
+
+
+    .flag-rounded {
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        object-fit: cover;
+    }
+
+
+
+.d-flex{
+    align-items:center;
+}
+
+.alert{
+    opacity: 0;
+}
+</style>

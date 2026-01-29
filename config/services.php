@@ -38,4 +38,8 @@ return [
     'telegram-bot-api' => [
         'token' => env('TELEGRAM_BOT_TOKEN', 'YOUR BOT TOKEN HERE'),
     ],
+
+    'e-imzo-server' => [
+        'url' => env('E_IMZO_SERVER_URL', 'http://10.10.20.14:8080'),
+    ],
 ];
