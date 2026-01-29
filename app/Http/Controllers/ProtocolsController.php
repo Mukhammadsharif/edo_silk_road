@@ -430,11 +430,11 @@ class ProtocolsController extends Controller
         $this->validate($request, [
             'doc_name' => 'required|max:512',
             'doc_date' => 'date|required',
-            'users' => 'required',
+            'user_id' => 'required',
         ], [
             'doc_name.required' => __('validate.doc_name_mandatory'),
             'doc_date.required' => __('validate.doc_date_mandatory'),
-            'users.required' => __('validate.user_id_mandatory'),
+            'user_id.required' => __('validate.user_id_mandatory'),
         ]);
 
         $document->update([
@@ -464,17 +464,12 @@ class ProtocolsController extends Controller
 
         ProtocolDocMember::where('doc_id', $id)->delete();
 
-        if ($request->users && is_array($request->users)) {
-            foreach ($request->users as $key => $userData) {
-
-                if (!isset($userData['user_id']) || empty($userData['user_id'])) {
-                    continue;
-                }
-
+        if ($request->user_id && is_array($request->user_id)) {
+            foreach ($request->user_id as $key => $item) {
                 $document_members = new ProtocolDocMember();
-                $document_members->doc_id = $id;
-                $document_members->user_id = $userData['user_id'];
-                $document_members->role_id = $userData['role_id'];
+                $document_members->doc_id = $document->id;
+                $document_members->user_id = $item;
+                $document_members->role_id = $request->input('user_role_id')[$key] ?? 3;
                 $document_members->order_number = $key + 1;
                 $document_members->status = 1;
                 $document_members->save();

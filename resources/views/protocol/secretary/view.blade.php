@@ -27,7 +27,8 @@
                             <span>{{ __('menu.home') ?? 'Главная' }}</span>
                         </a>
                         <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
-                        <a href="{{ url('protocol/secretary', [$document->docType->doc_hash]) }}" class="breadcrumb-item">
+                        <a href="{{ url('protocol', [$document->docType->doc_hash]) }}"
+                           class="breadcrumb-item">
                             <span>{{ $document->docType->lang($document->docType->id) }}</span>
                         </a>
                         <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
@@ -40,28 +41,30 @@
         <div class="document-view-layout">
             @include('protocol.document_info')
 
-            <div class="col-md-6">
+            <div class="document-content-section" id="pdf1">
 
                 @include('protocol.document_body')
 
             </div>
 
-            <div class="col-md-4">
-                @include('templates.mini_editor_js')
+            <div class="view-sidebar view-sidebar-right">
+                <div class="sidebar-card-modern">
+                    @include('templates.mini_editor_js')
 
-                @include('protocol.document_reply_comments')
+                    @include('protocol.document_reply_comments')
 
-                @include('protocol.document_secretary_sign')
+                    @include('protocol.document_secretary_sign')
 
-                @if($document->status != 1)
+                    @if($document->status != 1)
 
-                    @include('templates.comment_form')
+                        @include('templates.comment_form')
 
-                @endif
+                    @endif
 
-                @include('protocol.document_secretary_actions')
+                    @include('protocol.document_secretary_actions')
 
-                @include('protocol.document_download_print_actions')
+                    @include('protocol.document_download_print_actions')
+                </div>
             </div>
         </div>
     </div>

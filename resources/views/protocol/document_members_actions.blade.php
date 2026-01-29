@@ -1,23 +1,21 @@
 @if($documentMember && $documentMember->status == (int)2)
-    <div class="card">
-        <div class="card-header">
-            <h3><i class="ik ik-check-circle"></i> {{ __('action.to_sign') }}</h3>
+    <div class="execution-card-modern actions-card">
+        <div class="card-header-modern">
+            <i data-lucide="settings" class="text-white"></i>
+            <h3>{{ __('action.to_sign') }}</h3>
         </div>
 
-        <div class="card-body">
-            <button type="button" class="btn btn-outline-danger m-sm-1 openConfirmForm" data-id="5">
-                {{ __('action.disagree') }}
+        <div class="actions-body-modern">
+            <button type="button" class="btn-modern btn-danger m-sm-1 openConfirmForm" data-id="5">
+                <i data-lucide="ban"></i> {{ __('action.disagree') }}
             </button>
 
-{{--            <button type="button" class="btn btn-outline-warning m-sm-1 openConfirmForm" data-id="4">--}}
-{{--                {{ __('action.re-editing') }}--}}
-{{--            </button>--}}
-            <button type="button" class="btn btn-outline-warning m-sm-1 openConfirmForm" data-id="7">
-                {{ __('action.neutral') }}
+            <button type="button" class="btn-modern btn-warning m-sm-1 openConfirmForm" data-id="7">
+                <i data-lucide="list-filter"></i> {{ __('action.neutral') }}
             </button>
 
-            <button type="button" class="btn btn-outline-success m-sm-1 openConfirmForm" data-id="3">
-                {{ __('action.to_sign_pr') }}
+            <button type="button" class="btn-modern btn-success m-sm-1 openConfirmForm" data-id="3">
+                <i data-lucide="pen-tool"></i> {{ __('action.to_sign_pr') }}
             </button>
         </div>
 
@@ -44,12 +42,12 @@
                         <label hidden><i data-lucide="key-round"></i> {{ __('action.to_sign_by_key') }}
                         </label><br>
                         @if($signType->doc_sign_type === 2)
-                        <button type="submit" class="btn btn-outline-success modal-bg-class"
+                        <button type="submit" class="btn btn-success modal-bg-class"
                                 id="viaLogin">
                             <span class="confirm_type">{{ __('action.to_sign') }}</span>
                         </button>
                         @else
-                        <button type="button" class="btn btn-outline-success modal-bg-class"
+                        <button type="button" class="btn btn-success modal-bg-class"
                                 onclick="sign()" id="viaEsp">
                             <span class="confirm_type">{{ __('action.to_sign') }}</span> ({{ __('field.ecp') }})
                         </button>

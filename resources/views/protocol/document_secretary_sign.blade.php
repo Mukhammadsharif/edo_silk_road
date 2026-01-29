@@ -1,22 +1,20 @@
 @if($document->status == (int)2 && $documentSecretaryWithMember && $documentSecretaryWithMember->status == (int)2)
-    <div class="card">
-        <div class="card-header">
-            <h3><i class="ik ik-check-circle"></i> {{ __('action.to_sign') }}</h3>
+    <div class="execution-card-modern actions-card">
+        <div class="card-header-modern">
+            <i data-lucide="settings" class="text-white"></i>
+            <h3>{{ __('action.to_sign') }}</h3>
         </div>
 
-        <div class="card-body">
-            <button type="button" class="btn btn-outline-danger m-sm-1 openConfirmForm" data-id="5">
+        <div class="actions-body-modern">
+            <button type="button" class="btn-modern btn-danger m-sm-1 openConfirmForm" data-id="5">
                 {{ __('action.disagree') }}
             </button>
 
-            {{--            <button type="button" class="btn btn-outline-warning m-sm-1 openConfirmForm" data-id="4">--}}
-            {{--                {{ __('action.re-editing') }}--}}
-            {{--            </button>--}}
-            <button type="button" class="btn btn-outline-warning m-sm-1 openConfirmForm" data-id="7">
+            <button type="button" class="btn-modern btn-warning m-sm-1 openConfirmForm" data-id="7">
                 {{ __('action.neutral') }}
             </button>
 
-            <button type="button" class="btn btn-outline-success m-sm-1 openConfirmForm" data-id="3">
+            <button type="button" class="btn-modern btn-success m-sm-1 openConfirmForm" data-id="3">
                 {{ __('action.to_sign') }}
             </button>
         </div>
@@ -24,7 +22,7 @@
         <div class="card-body confirmForm bg-light" style="display: none">
             <div id="loading" class="loading-gif" style="display: none"></div>
             <form id="loginSignForm" name=testform>
-                <div class="form-group row">
+                <div class="form-group-modern row">
                     <div class="col-md-12">
                         <div class="form-group">
                             <label>{{ __('field.leave_comment') }}..</label>
@@ -44,12 +42,12 @@
                         <label hidden><i data-lucide="key-round"></i> {{ __('action.to_sign_by_key') }}
                         </label><br>
                         @if($signType->doc_sign_type === 2)
-                        <button type="submit" class="btn btn-outline-success modal-bg-class"
+                        <button type="submit" class="btn-modern btn-success modal-bg-class"
                                 id="viaLogin">
                             <span class="confirm_type">{{ __('action.to_sign') }}</span>
                         </button>
                         @else
-                        <button type="button" class="btn btn-outline-success modal-bg-class"
+                        <button type="button" class="btn-modern btn-success modal-bg-class"
                                 onclick="sign()" id="viaEsp">
                             <span class="confirm_type">{{ __('action.to_sign') }}</span> ({{ __('field.ecp') }})
                         </button>
@@ -118,23 +116,4 @@
             $('#ecp_confirm_id').val(btn_id);
         });
     });
-
-    {{--const signLogin = () => {--}}
-    {{--    $.ajax({--}}
-    {{--        url: "{{ route('prt-secretary-send-members', [$document->id,1]) }}",--}}
-    {{--        method: 'PUT',--}}
-    {{--        data: $('#testform').serialize(),--}}
-    {{--        beforeSend: function(){--}}
-    {{--            $('.loadingGif').show();--}}
-    {{--        },--}}
-    {{--    }).done(function(response){--}}
-
-    {{--        setTimeout(function () {--}}
-    {{--            location.reload();--}}
-    {{--        }, 1000);--}}
-
-    {{--    }).error(function(err){--}}
-    {{--        console.log(err)--}}
-    {{--    })--}}
-    {{--}--}}
 </script>

@@ -1,5 +1,5 @@
-<div class="work-doc-page">
-    <div class="work-doc-subpage">
+<div class="work-doc-page" id="pdf2">
+    <div class="work-doc-subpage" id="pdf3">
         <div id="printPage" class="printPage">
 
             <div class="sent-doc-date-number">
@@ -9,28 +9,11 @@
                 {{ date('d.m.Y', strtotime($document->doc_date)) }}
             </div>
 
-            <div class="doc-text">
+            <div class="doc-text" id="pdf4">
                 @if($html_doc)
                     {!! $html_doc !!}
                 @endif
             </div>
-
-            {{--@forelse($documentFiles as $key => $file)
-                @switch(strtolower($file->file_ext))
-                    @case('jpg')
-                    @case('jpeg')
-                    @case('png')
-                    @case('pdf')
-                        <span class="iframe-text">{{ $file->file_name }}</span>
-                        <iframe class="iframe-content" src="{{ route('prt-document-file.pre-view',['id'=>$file->id]) }}"
-                                style="width: 100%; height: 800px;"></iframe>
-                        <hr class="iframe-text">
-                        @break
-                        @break
-                @endswitch
-            @empty
-
-            @endforelse--}}
 
             <div class="doc-performer">
                 @switch($document->doc_lang)
@@ -84,8 +67,6 @@
             </div>
 
             @include('protocol.document_members')
-
-{{--            @include('protocol.document_hr_emp')--}}
 
             @include('print.iframe-print')
 
