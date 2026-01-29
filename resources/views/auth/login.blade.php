@@ -2,13 +2,13 @@
 
 @section('content')
 
-    <body>
+<body>
     <main>
         <div class="logo">
             <img src="{{ asset('images/edofy.svg') }}" style="width: 120px" alt="">
         </div>
         <video class="auth-sidebar__video" playsinline autoplay loop muted
-            src="{{ asset('images/back2.mp4') }}"></video>
+               src="{{ asset('images/back2.mp4') }}"></video>
 
         <div class="containers">
             <div class="tabs">
@@ -109,56 +109,56 @@
     <script src="{{ asset('js/e_imzo_client.js') }}"></script>
     <script src="{{ asset('js/login_e_imzo.js') }}"></script>
 
-<script>
-    (function() {
-    const preloader = document.getElementById("cp-preloader");
-    const STRIPS = 16;
+    <script>
+        (function () {
+            const preloader = document.getElementById("cp-preloader");
+            const STRIPS = 16;
 
-    for (let i = 0; i < STRIPS; i++) {
-        const strip = document.createElement("div");
-        strip.className = "cp-strip";
+            for (let i = 0; i < STRIPS; i++) {
+                const strip = document.createElement("div");
+                strip.className = "cp-strip";
 
-        const inner = document.createElement("span");
-        inner.style.setProperty("--i", i);
+                const inner = document.createElement("span");
+                inner.style.setProperty("--i", i);
 
-        strip.appendChild(inner);
-        preloader.appendChild(strip);
-    }
+                strip.appendChild(inner);
+                preloader.appendChild(strip);
+            }
 
-    setTimeout(() => {
-        preloader.style.display = "none";
-    }, 3300);
-})();
-</script>
+            setTimeout(() => {
+                preloader.style.display = "none";
+            }, 3300);
+        })();
+    </script>
 
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 
-<script>
-    localStorage.clear();
-lucide.createIcons();
+    <script>
+        localStorage.clear();
+        lucide.createIcons();
 
-function showTab(tabName) {
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+        function showTab(tabName) {
+            document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+            document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
 
-    if (tabName === 'login') {
-        document.querySelector('[data-tab="password"]').classList.add("active");
-        document.getElementById("login-tab").classList.add("active");
-    } else if (tabName === 'eri') {
-        document.querySelector('[data-tab="eri"]').classList.add("active");
-        document.getElementById("eri-tab").classList.add("active");
-    }
+            if (tabName === 'login') {
+                document.querySelector('[data-tab="password"]').classList.add("active");
+                document.getElementById("login-tab").classList.add("active");
+            } else if (tabName === 'eri') {
+                document.querySelector('[data-tab="eri"]').classList.add("active");
+                document.getElementById("eri-tab").classList.add("active");
+            }
 
-    lucide.createIcons();
-}
+            lucide.createIcons();
+        }
 
-function togglePassword() {
-    const passwordInput = document.getElementById('password');
-    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-    passwordInput.setAttribute('type', type);
-}
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+        }
 
-</script>
+    </script>
 
 @endsection
 
@@ -641,10 +641,10 @@ function togglePassword() {
         width: 100%;
         height: 100%;
         background: linear-gradient(135deg,
-                #6d28d9 0%,
-                #7c3aed 30%,
-                #a78bfa 60%,
-                #c084fc 100%);
+        #6d28d9 0%,
+        #7c3aed 30%,
+        #a78bfa 60%,
+        #c084fc 100%);
         transform: translateX(-100%);
         will-change: transform;
         animation: cp-slide 1.5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;

@@ -42,9 +42,12 @@ class SignDocImzoController extends Controller
         'sign_resolution', 'close_exec_doc',
         'send_to_ag_out_doc', 'send_sign_out_doc', 'sign_out_doc'
     ];
+    public string $eriSrvIp;
 
-    private string $eriSrvIpLoc  = 'http://172.16.100.124:8080';
-    private string $eriSrvIpProd = 'http://10.10.20.14:8080';
+    public function __construct()
+    {
+        $this->eriSrvIp = config('services.e-imzo-server.url');
+    }
 
     public function signDocuments(Request $request): JsonResponse
     {
@@ -532,10 +535,7 @@ class SignDocImzoController extends Controller
 
     public function frontChallenge()
     {
-        $path = (in_array($_SERVER['HTTP_HOST'] ?? '', ['edo-demo.loc', '172.17.110.44', 'localhost:8000', 'localhost:8082']))
-            ? $this->eriSrvIpLoc
-            : $this->eriSrvIpProd ;
-        return Http::get($path.'/frontend/challenge?_uc='.now().'_'.rand());
+        return Http::get($this->eriSrvIp.'/frontend/challenge?_uc='.now().'_'.rand());
     }
 
     public function backendAuthLogin(Request $request)
@@ -760,9 +760,7 @@ class SignDocImzoController extends Controller
 
     private function curlPost(string $path, string $postData): ?string
     {
-        $url = (in_array($_SERVER['HTTP_HOST'] ?? '', ['edo-demo.loc', '172.17.110.44', 'localhost:8000', 'localhost:8082']))
-            ? $this->eriSrvIpLoc . $path
-            : $this->eriSrvIpProd . $path;
+        $url = $this->eriSrvIp . $path;
 
         $ch = curl_init($url);
         curl_setopt_array($ch, [
