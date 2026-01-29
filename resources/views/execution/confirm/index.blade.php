@@ -54,7 +54,8 @@
                             <select name="doc_type" class="form-control-modern select2">
                                 <option value="all">{{ __('document.document') }}</option>
                                 @forelse($journal_types as $key => $journal_type)
-                                    <option value="{{ $journal_type->id }}" {{ ($doc_type == $journal_type->id ? "selected":"") }}>
+                                    <option
+                                        value="{{ $journal_type->id }}" {{ ($doc_type == $journal_type->id ? "selected":"") }}>
                                         {{ $key+1 }}.
                                         {{ $journal_type->lang($journal_type->lang_id) }}
                                     </option>
@@ -69,23 +70,64 @@
                                 <i data-lucide="file-text"></i>
                                 {{ __('document.doc_name') }}
                             </label>
-                            <input type="text" name="doc_name" placeholder="{{ __('document.doc_name') }}" value="{{ $doc_name??'' }}" class="form-control-modern">
+                            <input type="text" name="doc_name" placeholder="{{ __('document.doc_name') }}"
+                                   value="{{ $doc_name??'' }}" class="form-control-modern">
                         </div>
 
                         <div class="filter-item">
                             <label>
                                 <i data-lucide="calendar"></i>
-                                {{ __('document.from_day') }}
+                                {{ __('input.from_day') }}
                             </label>
-                            <input type="text" name="date_from" class="form-control-modern my-bootstrap-datepicker" placeholder="{{ __('document.from_day') }}" value="{{ $date_from??'' }}" autocomplete="off">
+                            <div class="date-picker-container">
+                                <div class="input-wrapper">
+                                    <input
+                                        type="text"
+                                        name="date_from"
+                                        class="date-input form-control-modern"
+                                        placeholder="{{ __('input.from_day') }}"
+                                        value="{{ $date_from??'' }}"
+                                        autocomplete="off"
+                                    />
+                                </div>
+
+                                <div class="calendar-popup">
+                                    <div class="calendar-header">
+                                        <button type="button" class="nav-btn prev">&lsaquo;</button>
+                                        <div class="month-year"></div>
+                                        <button type="button" class="nav-btn next">&rsaquo;</button>
+                                    </div>
+                                    <div class="days"></div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="filter-item">
                             <label>
                                 <i data-lucide="calendar"></i>
-                                {{ __('document.till_day') }}
+                                {{ __('input.till_day') }}
                             </label>
-                            <input type="text" name="date_till" class="form-control-modern my-bootstrap-datepicker" placeholder="{{ __('document.till_day') }}" value="{{ $date_till??'' }}" autocomplete="off">
+                            <div class="date-picker-container">
+                                <div class="input-wrapper">
+                                    <input
+                                        type="text"
+                                        name="date_till"
+                                        class="date-input form-control-modern"
+                                        placeholder="{{ __('input.till_day') }}"
+                                        value="{{ $date_till??'' }}"
+                                        autocomplete="off"
+                                    />
+                                </div>
+
+                                <div class="calendar-popup">
+                                    <div class="calendar-header">
+                                        <button type="button" class="nav-btn prev">&lsaquo;</button>
+                                        <div class="month-year"></div>
+                                        <button type="button" class="nav-btn next">&rsaquo;</button>
+                                    </div>
+                                    <div class="days"></div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="filter-item">
@@ -163,7 +205,8 @@
                                         </span>
                                 </td>
                                 <td class="td-doc-name">
-                                    <a href="{{ route('document.confirm.view', [$model->id, $model->doc->doc_hash??'-']) }}" class="doc-link">
+                                    <a href="{{ route('document.confirm.view', [$model->id, $model->doc->doc_hash??'-']) }}"
+                                       class="doc-link">
                                         <i data-lucide="file-text"></i>
                                         <span>{{ $model->doc->doc_name??'*' }}</span>
                                         <i data-lucide="arrow-right" class="arrow-icon"></i>
@@ -187,8 +230,10 @@
                                 </td>
                                 <td class="td-datetime">
                                     <div class="datetime-cell">
-                                        <span class="date">{{ \Carbon\Carbon::parse($model->created_at)->format('d.m.y') }}</span>
-                                        <span class="time">{{ \Carbon\Carbon::parse($model->created_at)->format('H:i') }}</span>
+                                        <span
+                                            class="date">{{ \Carbon\Carbon::parse($model->created_at)->format('d.m.y') }}</span>
+                                        <span
+                                            class="time">{{ \Carbon\Carbon::parse($model->created_at)->format('H:i') }}</span>
                                     </div>
                                 </td>
                             </tr>
@@ -213,9 +258,12 @@
         </div>
     </div>
 
+    @include('templates.filter-calendar.modern-calendar-css')
+    @include('templates.filter-calendar.modern-calendar-script')
+
     <script>
         // Initialize lucide icons
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
             }
