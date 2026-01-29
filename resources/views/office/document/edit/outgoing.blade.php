@@ -12,8 +12,8 @@
                         <i data-lucide="send"></i>
                     </div>
                     <div class="page-info">
-                        <h1>{{ __('action.edit_document') }}</h1>
-                        <p>{{ __('message.edit_outgoing_document') ?? 'Редактирование исходящего документа' }}</p>
+                        <h1 class="text-white">{{ __('action.edit_document') }}</h1>
+                        <p class="text-white">{{ __('message.edit_outgoing_document') ?? 'Редактирование исходящего документа' }}</p>
                     </div>
                 </div>
                 <nav class="breadcrumb-modern">
@@ -26,7 +26,7 @@
                         <span>{{ __('field.document') }}</span>
                     </a>
                     <i data-lucide="chevron-right" class="separator"></i>
-                    <span class="current">{{ __('action.edit_document') }}</span>
+                    <span class="current text-white">{{ __('action.edit_document') }}</span>
                 </nav>
             </div>
         </div>
@@ -126,7 +126,36 @@
                                                 {{ __('field.from_date') }}
                                                 <span class="required">*</span>
                                             </label>
-                                            <input type="date" name="from_date" class="form-control-modern" value="{{ $fromDate }}" required/>
+
+                                            <div class="date-picker-container">
+                                                <div class="input-wrapper">
+                                                    <svg class="calendar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                                    </svg>
+                                                    <input
+                                                        type="text"
+                                                        name="from_date"
+                                                        class="date-input form-control-modern {{ $errors->has('from_date') ? 'is-invalid' : '' }}"
+                                                        placeholder="Sanani tanlang"
+                                                        value="{{ $fromDate }}"
+                                                        readonly
+                                                        required
+                                                    />
+                                                    {!! $errors->first('from_date', '<p class="error-text">:message</p>') !!}
+                                                </div>
+
+                                                <div class="calendar-popup">
+                                                    <div class="calendar-header">
+                                                        <button type="button" class="nav-btn prev">&lsaquo;</button>
+                                                        <div class="month-year"></div>
+                                                        <button type="button" class="nav-btn next">&rsaquo;</button>
+                                                    </div>
+                                                    <div class="days"></div>
+                                                </div>
+                                            </div>
                                         </div>
                                     @endif
                                     @if($toDate)
@@ -136,7 +165,36 @@
                                                 {{ __('field.to_date') }}
                                                 <span class="required">*</span>
                                             </label>
-                                            <input type="date" name="to_date" class="form-control-modern" value="{{ $toDate }}" required/>
+
+                                            <div class="date-picker-container">
+                                                <div class="input-wrapper">
+                                                    <svg class="calendar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                                    </svg>
+                                                    <input
+                                                        type="text"
+                                                        name="to_date"
+                                                        class="date-input form-control-modern {{ $errors->has('to_date') ? 'is-invalid' : '' }}"
+                                                        placeholder="Sanani tanlang"
+                                                        value="{{ $toDate }}"
+                                                        readonly
+                                                        required
+                                                    />
+                                                    {!! $errors->first('to_date', '<p class="error-text">:message</p>') !!}
+                                                </div>
+
+                                                <div class="calendar-popup">
+                                                    <div class="calendar-header">
+                                                        <button type="button" class="nav-btn prev">&lsaquo;</button>
+                                                        <div class="month-year"></div>
+                                                        <button type="button" class="nav-btn next">&rsaquo;</button>
+                                                    </div>
+                                                    <div class="days"></div>
+                                                </div>
+                                            </div>
                                         </div>
                                     @endif
                                 </div>
@@ -148,7 +206,36 @@
                                             {{ __('field.date') }}
                                             <span class="required">*</span>
                                         </label>
-                                        <input type="date" name="date" class="form-control-modern" value="{{ date('Y-m-d', strtotime($document->doc_date)) }}" required/>
+
+                                        <div class="date-picker-container">
+                                            <div class="input-wrapper">
+                                                <svg class="calendar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                                </svg>
+                                                <input
+                                                    type="text"
+                                                    name="doc_date"
+                                                    class="date-input form-control-modern {{ $errors->has('doc_date') ? 'is-invalid' : '' }}"
+                                                    placeholder="Sanani tanlang"
+                                                    value="{{ date('Y-m-d', strtotime($document->doc_date)) }}"
+                                                    readonly
+                                                    required
+                                                />
+                                                {!! $errors->first('doc_date', '<p class="error-text">:message</p>') !!}
+                                            </div>
+
+                                            <div class="calendar-popup">
+                                                <div class="calendar-header">
+                                                    <button type="button" class="nav-btn prev">&lsaquo;</button>
+                                                    <div class="month-year"></div>
+                                                    <button type="button" class="nav-btn next">&rsaquo;</button>
+                                                </div>
+                                                <div class="days"></div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             @endif
@@ -531,4 +618,6 @@
         });
     </script>
 
+    @include('templates.calendar.modern-calendar-css')
+    @include('templates.calendar.modern-calendar-script')
 @endsection

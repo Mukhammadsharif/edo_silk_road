@@ -430,11 +430,11 @@ class ProtocolsController extends Controller
         $this->validate($request, [
             'doc_name' => 'required|max:512',
             'doc_date' => 'date|required',
-            'users' => 'required',
+            'user_id' => 'required',
         ], [
             'doc_name.required' => __('validate.doc_name_mandatory'),
             'doc_date.required' => __('validate.doc_date_mandatory'),
-            'users.required' => __('validate.user_id_mandatory'),
+            'user_id.required' => __('validate.user_id_mandatory'),
         ]);
 
         $document->update([
@@ -464,17 +464,12 @@ class ProtocolsController extends Controller
 
         ProtocolDocMember::where('doc_id', $id)->delete();
 
-        if ($request->users && is_array($request->users)) {
-            foreach ($request->users as $key => $userData) {
-
-                if (!isset($userData['user_id']) || empty($userData['user_id'])) {
-                    continue;
-                }
-
+        if ($request->user_id && is_array($request->user_id)) {
+            foreach ($request->user_id as $key => $item) {
                 $document_members = new ProtocolDocMember();
-                $document_members->doc_id = $id;
-                $document_members->user_id = $userData['user_id'];
-                $document_members->role_id = $userData['role_id'];
+                $document_members->doc_id = $document->id;
+                $document_members->user_id = $item;
+                $document_members->role_id = $request->input('user_role_id')[$key] ?? 3;
                 $document_members->order_number = $key + 1;
                 $document_members->status = 1;
                 $document_members->save();
@@ -712,7 +707,7 @@ class ProtocolsController extends Controller
         }
 
         $query = trim($request->input('query', ''));
-        $docId = $request->input('doc_id', 0); // Default to 0 if not provided
+        $docId = $request->input('doc_id', 0);
 
         $employees = UserWorkHistory::where('user_work_histories.status', 1)
             ->join('user_personal_infos as up', 'user_work_histories.user_id', '=', 'up.user_id')
@@ -737,20 +732,19 @@ class ProtocolsController extends Controller
                 $subQuery->select('user_id')
                     ->from('protocol_doc_type_users')
                     ->where('doc_type_id', $protocolType->id)
-                    ->where('status', '!=', 7); // Exclude users with status 7 (e.g., deleted)
+                    ->where('status', '!=', 7);
             })
             ->select(
                 DB::raw('DISTINCT ON (up.user_id) user_work_histories.id'),
+                'up.user_id', // Добавил для надежности
                 'up.l_name',
                 'up.f_name',
+                'up.m_name',
                 DB::raw("COALESCE(d.name_uz, '') as department_name"),
                 DB::raw("COALESCE(p.name_uz, '') as position_name")
             )
-            ->orderBy('up.user_id')
-            ->orderBy('user_work_histories.id', 'desc') // Pick the latest work history
-            ->orderBy('up.l_name')
-            ->orderBy('up.f_name')
-            ->orderBy('up.m_name')
+            ->orderBy('up.user_id') // DISTINCT ON требует это поле первым
+            ->orderBy('user_work_histories.id', 'desc')
             ->take(10)
             ->get();
 

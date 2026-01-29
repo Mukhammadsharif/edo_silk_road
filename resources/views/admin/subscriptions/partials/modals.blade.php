@@ -1,48 +1,466 @@
+<!-- Approve Modal -->
 <div class="modal fade" id="approveModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title"><i class="ik ik-check-circle"></i> {{ __('field.subscription_approval') }}</h5>
-                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+        <div class="modal-content modal-modern">
+
+            <!-- Modal Header -->
+            <div class="modal-header-modern modal-success">
+                <div class="modal-icon-large">
+                    <i data-lucide="check-circle" class="text-white"></i>
+                </div>
+                <h3 class="modal-title-modern">{{ __('field.subscription_approval') }}</h3>
+                <button type="button" class="modal-close-modern" data-dismiss="modal">
+                    <i data-lucide="x" class="text-white"></i>
+                </button>
             </div>
-            <div class="modal-body text-center">
-                <i class="ik ik-thumbs-up display-4 text-success mb-3"></i>
-                <h5><strong id="approveOrgName"></strong></h5>
-                <p>{{ __('field.for_organization') }} <strong id="approveTariffName"></strong> {{ __('field.subscription_request_for_tariff') }}</p>
-                <p class="text-success fw-bold">{{ __('field.are_you_sure_to_approve') }}</p>
+
+            <!-- Modal Body -->
+            <div class="modal-body-modern">
+                <div class="modal-success-icon">
+                    <i data-lucide="thumbs-up" class="text-green"></i>
+                </div>
+
+                <div class="modal-info-section">
+                    <h4 class="organization-name" id="approveOrgName"></h4>
+                    <p class="modal-description">
+                        {{ __('field.for_organization') }}
+                        <strong class="tariff-highlight" id="approveTariffName"></strong>
+                        {{ __('field.subscription_request_for_tariff') }}
+                    </p>
+                </div>
+
+                <div class="modal-confirmation">
+                    <i data-lucide="help-circle" class="text-green"></i>
+                    <p>{{ __('field.are_you_sure_to_approve') }}</p>
+                </div>
             </div>
-            <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-light" data-dismiss="modal">{{ __('action.cancel') }}</button>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer-modern">
+                <button type="button" class="btn-modal btn-cancel" data-dismiss="modal">
+                    <i data-lucide="x"></i>
+                    {{ __('action.cancel') }}
+                </button>
                 <form id="approveForm" method="POST" style="display:inline;">
                     @csrf
-                    <button type="submit" class="btn btn-success btn-lg px-5">{{ __('field.yes_approve') }}</button>
+                    <button type="submit" class="btn-modal btn-success">
+                        <i data-lucide="check"></i>
+                        {{ __('field.yes_approve') }}
+                    </button>
                 </form>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Reject Modal -->
 <div class="modal fade" id="rejectModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title"><i class="ik ik-x-circle"></i> {{ __('field.reject_subscription') }}</h5>
-                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+        <div class="modal-content modal-modern">
+
+            <!-- Modal Header -->
+            <div class="modal-header-modern modal-danger">
+                <div class="modal-icon-large">
+                    <i data-lucide="x-circle" class="text-white"></i>
+                </div>
+                <h3 class="modal-title-modern">{{ __('field.reject_subscription') }}</h3>
+                <button type="button" class="modal-close-modern" data-dismiss="modal">
+                    <i data-lucide="x" class="text-white"></i>
+                </button>
             </div>
-            <div class="modal-body text-center">
-                <i class="ik ik-alert-octagon display-4 text-danger mb-3"></i>
-                <h5><strong id="rejectOrgName"></strong></h5>
-                <p>{{ __('field.for_organization') }} <strong id="rejectTariffName"></strong> {{ __('field.subscription_request_for_tariff') }}</p>
-                <p class="text-danger fw-bold">{{ __('field.are_you_sure_to_reject') }}</p>
-                <p class="text-muted small">{{ __('field.action_cannot_be_undone') }}</p>
+
+            <!-- Modal Body -->
+            <div class="modal-body-modern">
+                <div class="modal-danger-icon">
+                    <i data-lucide="alert-octagon"></i>
+                </div>
+
+                <div class="modal-info-section">
+                    <h4 class="organization-name" id="rejectOrgName"></h4>
+                    <p class="modal-description">
+                        {{ __('field.for_organization') }}
+                        <strong class="tariff-highlight" id="rejectTariffName"></strong>
+                        {{ __('field.subscription_request_for_tariff') }}
+                    </p>
+                </div>
+
+                <div class="modal-confirmation modal-warning-box">
+                    <i data-lucide="alert-triangle"></i>
+                    <div>
+                        <p class="confirmation-text">{{ __('field.are_you_sure_to_reject') }}</p>
+                        <p class="warning-text">{{ __('field.action_cannot_be_undone') }}</p>
+                    </div>
+                </div>
             </div>
-            <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-light" data-dismiss="modal">{{ __('action.cancel') }}</button>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer-modern">
+                <button type="button" class="btn-modal btn-cancel" data-dismiss="modal">
+                    <i data-lucide="x"></i>
+                    {{ __('action.cancel') }}
+                </button>
                 <form id="rejectForm" method="POST" style="display:inline;">
                     @csrf
-                    <button type="submit" class="btn btn-danger btn-lg px-5">{{ __('field.yes_approve') }}</button>
+                    <button type="submit" class="btn-modal btn-danger">
+                        <i data-lucide="trash-2"></i>
+                        {{ __('field.yes_approve') }}
+                    </button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    /* ========================================
+       MODERN MODALS STYLES
+       ======================================== */
+
+    /* Modal Content */
+    .modal-modern {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Modal Header */
+    .modal-header-modern {
+        padding: 2rem;
+        text-align: center;
+        position: relative;
+        border-bottom: none;
+    }
+
+    .modal-success {
+        background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+    }
+
+    .modal-danger {
+        background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+    }
+
+    .modal-icon-large {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        animation: modalIconPulse 2s infinite;
+    }
+
+    @keyframes modalIconPulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    .modal-icon-large i {
+        width: 40px;
+        height: 40px;
+        color: white;
+    }
+
+    .modal-title-modern {
+        font-size: 24px;
+        font-weight: 700;
+        color: white;
+        margin: 0;
+    }
+
+    .modal-close-modern {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 36px;
+        height: 36px;
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-close-modern:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: rotate(90deg);
+    }
+
+    .modal-close-modern i {
+        width: 20px;
+        height: 20px;
+        color: white;
+    }
+
+    /* Modal Body */
+    .modal-body-modern {
+        padding: 2.5rem 2rem;
+        text-align: center;
+    }
+
+    .modal-success-icon,
+    .modal-danger-icon {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 1.5rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: iconBounce 0.6s ease;
+    }
+
+    @keyframes iconBounce {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+    }
+
+    .modal-success-icon {
+        background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        border: 4px solid #4caf50;
+    }
+
+    .modal-danger-icon {
+        background: linear-gradient(135deg, #fbe9e7 0%, #ffccbc 100%);
+        border: 4px solid #f44336;
+    }
+
+    .modal-success-icon i {
+        width: 50px;
+        height: 50px;
+        color: #388e3c;
+    }
+
+    .modal-danger-icon i {
+        width: 50px;
+        height: 50px;
+        color: #d32f2f;
+    }
+
+    /* Modal Info Section */
+    .modal-info-section {
+        margin-bottom: 2rem;
+    }
+
+    .organization-name {
+        font-size: 22px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 1rem;
+    }
+
+    .modal-description {
+        font-size: 15px;
+        color: #64748b;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .tariff-highlight {
+        color: #794DFD;
+        font-weight: 700;
+        font-size: 16px;
+    }
+
+    /* Modal Confirmation */
+    .modal-confirmation {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        padding: 1.25rem;
+        background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        border: 2px solid #4caf50;
+        border-radius: 12px;
+        margin-top: 1.5rem;
+    }
+
+    .modal-confirmation i {
+        width: 24px;
+        height: 24px;
+        color: #388e3c;
+        flex-shrink: 0;
+    }
+
+    .modal-confirmation p {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 700;
+        color: #388e3c;
+    }
+
+    /* Warning Box for Reject Modal */
+    .modal-warning-box {
+        background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%);
+        border-color: #ff9800;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .modal-warning-box i {
+        color: #f57c00;
+    }
+
+    .confirmation-text {
+        font-size: 16px;
+        font-weight: 700;
+        color: #d84315;
+        margin-bottom: 0.5rem;
+    }
+
+    .warning-text {
+        font-size: 13px;
+        font-weight: 500;
+        color: #f57c00;
+        margin: 0;
+    }
+
+    /* Modal Footer */
+    .modal-footer-modern {
+        padding: 1.5rem 2rem;
+        background: #f8fafc;
+        border-top: 2px solid #e2e8f0;
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    /* Modal Buttons */
+    .btn-modal {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.875rem 2rem;
+        border: none;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s;
+        white-space: nowrap;
+    }
+
+    .btn-modal i {
+        width: 18px;
+        height: 18px;
+    }
+
+    .btn-cancel {
+        background: #e2e8f0;
+        color: #64748b;
+    }
+
+    .btn-cancel:hover {
+        background: #cbd5e1;
+        transform: translateY(-2px);
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+    }
+
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+    }
+
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(244, 67, 54, 0.4);
+    }
+
+    /* Modal Animation */
+    .modal.fade .modal-dialog {
+        transform: scale(0.8);
+        opacity: 0;
+        transition: all 0.3s;
+    }
+
+    .modal.show .modal-dialog {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    /* Responsive */
+    @media (max-width: 576px) {
+        .modal-header-modern {
+            padding: 1.5rem;
+        }
+
+        .modal-body-modern {
+            padding: 2rem 1.5rem;
+        }
+
+        .modal-footer-modern {
+            flex-direction: column;
+            padding: 1rem 1.5rem;
+        }
+
+        .btn-modal {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .modal-icon-large {
+            width: 64px;
+            height: 64px;
+        }
+
+        .modal-icon-large i {
+            width: 32px;
+            height: 32px;
+        }
+
+        .modal-success-icon,
+        .modal-danger-icon {
+            width: 80px;
+            height: 80px;
+        }
+
+        .modal-success-icon i,
+        .modal-danger-icon i {
+            width: 40px;
+            height: 40px;
+        }
+
+        .organization-name {
+            font-size: 18px;
+        }
+
+        .modal-title-modern {
+            font-size: 20px;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Reinitialize Lucide icons when modals are shown
+        $('#approveModal, #rejectModal').on('shown.bs.modal', function() {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+    });
+</script>

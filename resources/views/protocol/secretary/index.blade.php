@@ -1,30 +1,8 @@
 @extends('layouts.app')
 <link rel="stylesheet" href="{{ asset('css/templates/common-document-styles.css') }}">
-<style>
-    /* Дополнительные стили для кнопки создания */
-    .create-button-wrapper {
-        grid-column: span 2;
-        display: flex;
-        justify-content: flex-start;
-    }
+<link rel="stylesheet" href="{{ asset('css/templates/select2.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/protocol/secretary-index.css') }}">
 
-    .btn-create {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        color: white;
-        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-    }
-
-    .btn-create:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
-    }
-
-    @media (max-width: 768px) {
-        .create-button-wrapper {
-            grid-column: span 1;
-        }
-    }
-</style>
 @section('content')
     <div class="document-page-modern">
         <div class="page-header-modern">
@@ -69,14 +47,13 @@
 
                 <form action="{{ route('prt-secretary', $protocolType->doc_hash) }}" method="POST" class="filters-form-modern">
                     @csrf
+                    <div class="create-button-wrapper">
+                        <a href="{{ route('prt-secretary-create-only', $protocolType->doc_hash) }}" class="btn-modern btn-create">
+                            <i data-lucide="plus-circle"></i>
+                            <span>{{ __('action.create') }}</span>
+                        </a>
+                    </div>
                     <div class="filters-grid">
-                        <div class="create-button-wrapper">
-                            <a href="{{ route('prt-secretary-create-only', $protocolType->doc_hash) }}" class="btn-modern btn-create">
-                                <i data-lucide="plus-circle"></i>
-                                <span>{{ __('action.create') }}</span>
-                            </a>
-                        </div>
-
                         <div class="filter-item">
                             <label>
                                 <i data-lucide="file-text"></i>
@@ -90,7 +67,27 @@
                                 <i data-lucide="calendar"></i>
                                 {{ __('input.from_day') }}
                             </label>
-                            <input type="text" name="date_from" class="form-control-modern my-bootstrap-datepicker" placeholder="{{ __('input.from_day') }}" value="{{ $date_from??'' }}" autocomplete="off">
+                            <div class="date-picker-container">
+                                <div class="input-wrapper">
+                                    <input
+                                        type="text"
+                                        name="date_from"
+                                        class="date-input form-control-modern"
+                                        placeholder="{{ __('input.from_day') }}"
+                                        value="{{ $date_from??'' }}"
+                                        autocomplete="off"
+                                    />
+                                </div>
+
+                                <div class="calendar-popup">
+                                    <div class="calendar-header">
+                                        <button type="button" class="nav-btn prev">&lsaquo;</button>
+                                        <div class="month-year"></div>
+                                        <button type="button" class="nav-btn next">&rsaquo;</button>
+                                    </div>
+                                    <div class="days"></div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="filter-item">
@@ -98,7 +95,27 @@
                                 <i data-lucide="calendar"></i>
                                 {{ __('input.till_day') }}
                             </label>
-                            <input type="text" name="date_till" class="form-control-modern my-bootstrap-datepicker" placeholder="{{ __('input.till_day') }}" value="{{ $date_till??'' }}" autocomplete="off">
+                            <div class="date-picker-container">
+                                <div class="input-wrapper">
+                                    <input
+                                        type="text"
+                                        name="date_till"
+                                        class="date-input form-control-modern"
+                                        placeholder="{{ __('input.till_day') }}"
+                                        value="{{ $date_till??'' }}"
+                                        autocomplete="off"
+                                    />
+                                </div>
+
+                                <div class="calendar-popup">
+                                    <div class="calendar-header">
+                                        <button type="button" class="nav-btn prev">&lsaquo;</button>
+                                        <div class="month-year"></div>
+                                        <button type="button" class="nav-btn next">&rsaquo;</button>
+                                    </div>
+                                    <div class="days"></div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="filter-item">
@@ -235,6 +252,9 @@
             </div>
         </div>
     </div>
+
+    @include('templates.filter-calendar.modern-calendar-css')
+    @include('templates.filter-calendar.modern-calendar-script')
 
     <script>
         // Initialize lucide icons

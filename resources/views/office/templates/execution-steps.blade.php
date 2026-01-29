@@ -186,6 +186,4 @@
         box-shadow: none;
 
     }
-
-    
 </style>

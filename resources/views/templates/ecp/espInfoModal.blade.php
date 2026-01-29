@@ -3,11 +3,11 @@
         <div class="modal-content modal-content-modern">
             <div class="modal-header-modern">
                 <div class="header-title-ecp">
-                    <i data-lucide="shield-check"></i>
+                    <i data-lucide="shield-check" class="text-white"></i>
                     <h5>{{ __('field.esp_info_title') }}</h5>
                 </div>
                 <button type="button" class="close-modern" data-dismiss="modal" aria-label="Close">
-                    <i data-lucide="x"></i>
+                    <i data-lucide="x" class="text-white"></i>
                 </button>
             </div>
 
@@ -72,4 +72,6 @@
         });
     });
 </script>
+
+<link rel="stylesheet" href="{{ asset('css/templates/templates/ecp/ecpInfoModal.css') }}">
 

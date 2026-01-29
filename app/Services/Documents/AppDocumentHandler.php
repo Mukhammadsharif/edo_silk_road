@@ -3,14 +3,18 @@
 namespace App\Services\Documents;
 
 use App\Models\DocumentTypeTemps\DocumentTypeTempMetaData;
+use Carbon\Carbon;
 
 class AppDocumentHandler implements DocumentHandlerInterface
 {
     public function handle($document, $journal, $request)
     {
+        $fromDate = Carbon::createFromFormat('d.m.Y', $request->from_date)->format('Y-m-d');
+        $toDate = Carbon::createFromFormat('d.m.Y', $request->to_date)->format('Y-m-d');
+
         $data = [
-            'FROM_DATE' => $request->from_date,
-            'TO_DATE' => $request->to_date,
+            'FROM_DATE' => $fromDate,
+            'TO_DATE' => $toDate,
         ];
 
         DocumentTypeTempMetaData::create([

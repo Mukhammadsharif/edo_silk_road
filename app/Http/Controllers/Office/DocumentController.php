@@ -199,11 +199,10 @@ class DocumentController extends Controller
         $journal_type = JournalTypes::find($request->journal_type);
 
         $journal_type2 = JournalTypes::find($request->journal_type2);
-
         // 1️⃣ Asosiy hujjat yaratish
         $document = Documents::create([
             'doc_number' => $request->doc_number,
-            'doc_date' => $request->doc_date ?? now(),
+            'doc_date' => $request->doc_date ? Carbon::createFromFormat('d.m.Y', $request->doc_date)->format('Y-m-d') : now(),
             'doc_name' => $request->doc_name ?? $journal_type->title,
             'doc_hash' => $this->uniqueHash(8),
             'doc_code' => $this->uniqueDocCode(),
@@ -379,14 +378,7 @@ class DocumentController extends Controller
 
     public function update(Request $request, $j_id, $hash)
     {
-
-//        $this->validate($request, [
-//            'doc_name'      => 'required',
-//            //'resolution_user' => 'required',
-//        ],[
-//            'doc_name.required' =>  __('validate.doc_name_mandatory'),
-//            'resolution_user.required' =>  __('validate.resolution_user_mandatory'),
-//        ]);
+        //
 
         $resolution_user = $request->resolution_user;
         $signatory_user = $request->to_emp;
@@ -414,7 +406,7 @@ class DocumentController extends Controller
         $document = Documents::where('id', $journal->doc_id)->where('doc_hash', $hash)->first();
         $document->update([
             'doc_number' => $doc_number??$document->doc_number,
-            'doc_date' => $doc_date??$document->doc_date,
+            'doc_date' => $doc_date ? Carbon::createFromFormat('d.m.Y', $doc_date)->format('Y-m-d') : $document->doc_date,
             'doc_name' => $doc_name??$document->doc_name,
             'doc_text' => $doc_text,
             'doc_term' => $signing_term,
@@ -422,8 +414,8 @@ class DocumentController extends Controller
         ]);
 
         if (str_contains($journal->journal->doc_code, 'APP')){
-            $fromDate  = $request->from_date;
-            $toDate  = $request->to_date;
+            $fromDate = Carbon::createFromFormat('d.m.Y', $request->from_date)->format('Y-m-d');
+            $toDate = Carbon::createFromFormat('d.m.Y', $request->to_date)->format('Y-m-d');
 
             $data = ['FROM_DATE' => $fromDate, 'TO_DATE' => $toDate];
 
@@ -432,8 +424,8 @@ class DocumentController extends Controller
                 'meta_data' => json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
             ]);
         } elseif (str_contains($journal->journal->doc_code, 'HR_ORD')) {
-            $fromDate  = $request->from_date;
-            $toDate  = $request->to_date;
+            $fromDate = Carbon::createFromFormat('d.m.Y', $request->from_date)->format('Y-m-d');
+            $toDate = Carbon::createFromFormat('d.m.Y', $request->to_date)->format('Y-m-d');
             $documentId = $request->app_id;
 
             $appMetaData = DocumentTypeTempMetaData::where('doc_id', $documentId)->first();

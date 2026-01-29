@@ -1,9 +1,10 @@
 @if(count($documentReplyComments) > 0)
-    <div class="card">
-        <div class="card-header">
-            <h5><i class="ik ik-check"></i> {{ __('field.document_signing_history') }}</h5>
+    <div class="execution-card-modern">
+        <div class="card-header-modern">
+            <i data-lucide="users" class="text-white"></i>
+            <h5 class="text-white">{{ __('field.document_signing_history') }}</h5>
         </div>
-        <div class="card-body chat-box scrollable" style="max-height: 500px; overflow-x: auto">
+        <div class="performers-list-modern chat-box scrollable" style="max-height: 500px; overflow-x: auto">
             @foreach($documentReplyComments as $key => $comment)
                 <div class="sl-item">
                     <div class="sl-left fw-600 f-16"><i class="ik ik-user"></i>
@@ -50,3 +51,6 @@
         </div>
     </div>
 @endif
+
+<link rel="stylesheet" href="{{ asset('css/templates/office/journal/view-right.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/select2.css') }}">
