@@ -17,7 +17,7 @@
                 <a href="{{ url('/edo') }}" class="menu-header">
                     <div class="main-gap">
                         <i data-lucide="home"></i>
-                        <span>Asosiy</span>
+                        <span>{{ __('menu.main') }}</span>
                     </div>
                 </a>
             </div>
@@ -26,7 +26,7 @@
                 <div class="menu-header">
                     <div style="display: flex; align-items: center; gap:15px; flex: 1;">
                         <i data-lucide="file-plus-2" style="width: 22px; height: 22px;"></i>
-                        <span class="menu-text">Hujjat yaratish</span>
+                        <span class="menu-text">{{ __('menu.create_document') }}</span>
                     </div>
                     <i data-lucide="chevron-right" class="chevron"></i>
                 </div>
@@ -35,19 +35,19 @@
                     <div class="submenu-item">
                         <a href="{{ url('/office/document/create/incoming') }}">
                             <i data-lucide="download" style="width: 18px; height: 18px;"></i>
-                            <span>Kiruvchi xat</span>
+                            <span>{{ __('document.incoming_message') }}</span>
                         </a>
                     </div>
                     <div class="submenu-item">
                         <a href="{{ url('/office/document/create/outgoing') }}">
                             <i data-lucide="upload" style="width: 18px; height: 18px;"></i>
-                            <span>Chiquvchi xat</span>
+                            <span>{{ __('document.outgoing_message') }}</span>
                         </a>
                     </div>
                     <div class="submenu-item">
                         <a href="{{ url('/office/document/create/internal') }}">
                             <i data-lucide="file-edit" style="width: 18px; height: 18px;"></i>
-                            <span>Ichki hujjatlar</span>
+                            <span>{{ __('document.internal_docs') }}</span>
                         </a>
                     </div>
                 </div>
