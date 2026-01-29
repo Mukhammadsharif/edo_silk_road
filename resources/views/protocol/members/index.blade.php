@@ -1,6 +1,7 @@
 @extends('layouts.app')
 <link rel="stylesheet" href="{{ asset('css/templates/common-document-styles.css') }}">
 <link rel="stylesheet" href="{{ asset('css/templates/select2.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/protocol/secretary-index.css') }}">
 @section('content')
     <div class="document-page-modern">
         <div class="page-header-modern">
@@ -59,7 +60,27 @@
                                 <i data-lucide="calendar"></i>
                                 {{ __('input.from_day') }}
                             </label>
-                            <input type="text" name="date_from" class="form-control-modern my-bootstrap-datepicker" placeholder="{{ __('input.from_day') }}" value="{{ $date_from??'' }}" autocomplete="off">
+                            <div class="date-picker-container">
+                                <div class="input-wrapper">
+                                    <input
+                                        type="text"
+                                        name="date_from"
+                                        class="date-input form-control-modern"
+                                        placeholder="{{ __('input.from_day') }}"
+                                        value="{{ $date_from??'' }}"
+                                        autocomplete="off"
+                                    />
+                                </div>
+
+                                <div class="calendar-popup">
+                                    <div class="calendar-header">
+                                        <button type="button" class="nav-btn prev">&lsaquo;</button>
+                                        <div class="month-year"></div>
+                                        <button type="button" class="nav-btn next">&rsaquo;</button>
+                                    </div>
+                                    <div class="days"></div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="filter-item">
@@ -67,7 +88,27 @@
                                 <i data-lucide="calendar"></i>
                                 {{ __('input.till_day') }}
                             </label>
-                            <input type="text" name="date_till" class="form-control-modern my-bootstrap-datepicker" placeholder="{{ __('input.till_day') }}" value="{{ $date_till??'' }}" autocomplete="off">
+                            <div class="date-picker-container">
+                                <div class="input-wrapper">
+                                    <input
+                                        type="text"
+                                        name="date_till"
+                                        class="date-input form-control-modern"
+                                        placeholder="{{ __('input.till_day') }}"
+                                        value="{{ $date_till??'' }}"
+                                        autocomplete="off"
+                                    />
+                                </div>
+
+                                <div class="calendar-popup">
+                                    <div class="calendar-header">
+                                        <button type="button" class="nav-btn prev">&lsaquo;</button>
+                                        <div class="month-year"></div>
+                                        <button type="button" class="nav-btn next">&rsaquo;</button>
+                                    </div>
+                                    <div class="days"></div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="filter-item">
@@ -195,6 +236,9 @@
             </div>
         </div>
     </div>
+
+    @include('templates.filter-calendar.modern-calendar-css')
+    @include('templates.filter-calendar.modern-calendar-script')
 
     <script>
         // Initialize lucide icons

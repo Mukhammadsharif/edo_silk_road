@@ -83,17 +83,57 @@
                         <div class="filter-item">
                             <label>
                                 <i data-lucide="calendar"></i>
-                                {{ __('field.from_day') }}
+                                {{ __('input.from_day') }}
                             </label>
-                            <input type="text" name="date_from" class="form-control-modern my-bootstrap-datepicker" placeholder="{{ __('field.from_day') }}" value="{{ $date_from??'' }}" autocomplete="off">
+                            <div class="date-picker-container">
+                                <div class="input-wrapper">
+                                    <input
+                                        type="text"
+                                        name="date_from"
+                                        class="date-input form-control-modern"
+                                        placeholder="{{ __('input.from_day') }}"
+                                        value="{{ $date_from??'' }}"
+                                        autocomplete="off"
+                                    />
+                                </div>
+
+                                <div class="calendar-popup">
+                                    <div class="calendar-header">
+                                        <button type="button" class="nav-btn prev">&lsaquo;</button>
+                                        <div class="month-year"></div>
+                                        <button type="button" class="nav-btn next">&rsaquo;</button>
+                                    </div>
+                                    <div class="days"></div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="filter-item">
                             <label>
                                 <i data-lucide="calendar"></i>
-                                {{ __('field.till_day') }}
+                                {{ __('input.till_day') }}
                             </label>
-                            <input type="text" name="date_till" class="form-control-modern my-bootstrap-datepicker" placeholder="{{ __('field.till_day') }}" value="{{ $date_till??'' }}" autocomplete="off">
+                            <div class="date-picker-container">
+                                <div class="input-wrapper">
+                                    <input
+                                        type="text"
+                                        name="date_till"
+                                        class="date-input form-control-modern"
+                                        placeholder="{{ __('input.till_day') }}"
+                                        value="{{ $date_till??'' }}"
+                                        autocomplete="off"
+                                    />
+                                </div>
+
+                                <div class="calendar-popup">
+                                    <div class="calendar-header">
+                                        <button type="button" class="nav-btn prev">&lsaquo;</button>
+                                        <div class="month-year"></div>
+                                        <button type="button" class="nav-btn next">&rsaquo;</button>
+                                    </div>
+                                    <div class="days"></div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="filter-item">
@@ -134,9 +174,8 @@
                         <tr>
                             <th><i data-lucide="hash"></i> {{ __('field.#') }}</th>
                             <th><i data-lucide="clock"></i> {{ __('field.created_at') }}</th>
-                            <th><i data-lucide="eye"></i> {{ __('action.view') }}</th>
-                            <th><i data-lucide="building-2"></i> {{ __('field.to_org') }}</th>
                             <th><i data-lucide="file-text"></i> {{ __('field.doc_name') }}</th>
+                            <th><i data-lucide="building-2"></i> {{ __('field.to_org') }}</th>
                             <th><i data-lucide="calendar"></i> {{ __('field.doc_date') }}</th>
                             <th><i data-lucide="activity"></i> {{ __('field.status') }}</th>
                             <th><i data-lucide="timer"></i> {{ __('field.signing_term') }}</th>
@@ -157,7 +196,7 @@
                                 </td>
                                 <td class="td-action">
                                     <a href="{{ route('office.view-sent-doc', [$model->id, $model->doc->doc_hash??'-']) }}" class="btn-view">
-                                        <i class="fas fa-file-alt"></i> Ko'rish
+                                        <i data-lucide="file-text"></i> {{ $model->doc->doc_name??'*' }}
                                     </a>
                                 </td>
                                 <td class="td-organization">
@@ -165,9 +204,6 @@
                                         <i data-lucide="building-2"></i>
                                         <span>{{ $model->docOrg ? $model->docOrg->organization->lang($model->docOrg->organization->id)??'' : '' }}</span>
                                     </div>
-                                </td>
-                                <td class="td-doc-name">
-                                    <span>{{ $model->doc->doc_name??__('unk') }}</span>
                                 </td>
                                 <td class="td-date">{{ date('d.m.Y', strtotime($model->doc->doc_date??now())) }}</td>
                                 <td class="td-status">
@@ -204,6 +240,9 @@
             </div>
         </div>
     </div>
+
+    @include('templates.filter-calendar.modern-calendar-css')
+    @include('templates.filter-calendar.modern-calendar-script')
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
