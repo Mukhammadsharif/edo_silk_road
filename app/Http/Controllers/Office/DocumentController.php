@@ -656,9 +656,10 @@ class DocumentController extends Controller
         if ($resolution_step) {
             $resolution_roles_ids = JournalExecutionStepRoles::where('j_exec_step_id', $resolution_step->id)->pluck('role_id')->toArray();
             $user_roles = UserRole::whereIn('role_id', $resolution_roles_ids)->pluck('model_id')->toArray();
-            $resolution_users = UserWorkHistory::whereIn('user_work_histories.user_id', $user_roles)->whereHas('user', function ($query) {
-                $query->where('status', 1);
-            })->where('user_work_histories.status', 1)
+            $resolution_users = UserWorkHistory::where('user_work_histories.org_id', $this->organizationId())
+                ->whereIn('user_work_histories.user_id', $user_roles)->whereHas('user', function ($query) {
+                    $query->where('status', 1);
+                })->where('user_work_histories.status', 1)
                 ->whereNotIn('user_work_histories.user_id', $super_admins_array)
                 ->join('user_personal_infos', 'user_personal_infos.user_id', '=', 'user_work_histories.user_id')
                 ->orderBy('user_personal_infos.sort')
@@ -669,9 +670,10 @@ class DocumentController extends Controller
         if ($signatory_step) {
             $signatory_roles_ids = JournalExecutionStepRoles::where('j_exec_step_id', $signatory_step->id)->pluck('role_id')->toArray();
             $user_roles = UserRole::whereIn('role_id', $signatory_roles_ids)->pluck('model_id')->toArray();
-            $signatory_users = UserWorkHistory::whereIn('user_work_histories.user_id', $user_roles)->whereHas('user', function ($query) {
-                $query->where('status', 1);
-            })->where('user_work_histories.status', 1)
+            $signatory_users = UserWorkHistory::where('user_work_histories.org_id', $this->organizationId())
+                ->whereIn('user_work_histories.user_id', $user_roles)->whereHas('user', function ($query) {
+                    $query->where('status', 1);
+                })->where('user_work_histories.status', 1)
                 ->whereNotIn('user_work_histories.user_id', $super_admins_array)
                 ->join('user_personal_infos', 'user_personal_infos.user_id', '=', 'user_work_histories.user_id')
                 ->orderBy('user_personal_infos.sort')
@@ -682,9 +684,10 @@ class DocumentController extends Controller
         if ($agreement_step) {
             $agreement_roles_ids = JournalExecutionStepRoles::where('j_exec_step_id', $agreement_step->id)->pluck('role_id')->toArray();
             $user_roles = UserRole::whereIn('role_id', $agreement_roles_ids)->pluck('model_id')->toArray();
-            $agreement_users = UserWorkHistory::whereIn('user_work_histories.user_id', $user_roles)->whereHas('user', function ($query) {
-                $query->where('status', 1);
-            })->where('user_work_histories.status', 1)
+            $agreement_users = UserWorkHistory::where('user_work_histories.org_id', $this->organizationId())->
+                whereIn('user_work_histories.user_id', $user_roles)->whereHas('user', function ($query) {
+                    $query->where('status', 1);
+                })->where('user_work_histories.status', 1)
                 ->whereNotIn('user_work_histories.user_id', $super_admins_array)
                 ->join('user_personal_infos', 'user_personal_infos.user_id', '=', 'user_work_histories.user_id')
                 ->orderBy('user_personal_infos.sort')
@@ -754,9 +757,10 @@ class DocumentController extends Controller
         if ($resolution_step) {
             $resolution_roles_ids = JournalExecutionStepRoles::where('j_exec_step_id', $resolution_step->id)->pluck('role_id')->toArray();
             $user_roles = UserRole::whereIn('role_id', $resolution_roles_ids)->pluck('model_id')->toArray();
-            $resolution_users = UserWorkHistory::whereIn('user_work_histories.user_id', $user_roles)->whereHas('user', function ($query) {
-                $query->where('status', 1);
-            })->where('user_work_histories.status', 1)
+            $resolution_users = UserWorkHistory::where('user_work_histories.org_id', $this->organizationId())
+                ->whereIn('user_work_histories.user_id', $user_roles)->whereHas('user', function ($query) {
+                    $query->where('status', 1);
+                })->where('user_work_histories.status', 1)
                 ->whereNotIn('user_work_histories.user_id', $super_admins_array)
                 ->join('user_personal_infos', 'user_personal_infos.user_id', '=', 'user_work_histories.user_id')
                 ->orderBy('user_personal_infos.sort')
@@ -767,9 +771,10 @@ class DocumentController extends Controller
         if ($signatory_step) {
             $signatory_roles_ids = JournalExecutionStepRoles::where('j_exec_step_id', $signatory_step->id)->pluck('role_id')->toArray();
             $user_roles = UserRole::whereIn('role_id', $signatory_roles_ids)->pluck('model_id')->toArray();
-            $signatory_users = UserWorkHistory::whereIn('user_work_histories.user_id', $user_roles)->whereHas('user', function ($query) {
-                $query->where('status', 1);
-            })->where('user_work_histories.status', 1)
+            $signatory_users = UserWorkHistory::where('user_work_histories.org_id', $this->organizationId())
+                ->whereIn('user_work_histories.user_id', $user_roles)->whereHas('user', function ($query) {
+                    $query->where('status', 1);
+                })->where('user_work_histories.status', 1)
                 ->whereNotIn('user_work_histories.user_id', $super_admins_array)
                 ->join('user_personal_infos', 'user_personal_infos.user_id', '=', 'user_work_histories.user_id')
                 ->orderBy('user_personal_infos.sort')
@@ -780,9 +785,10 @@ class DocumentController extends Controller
         if ($agreement_step) {
             $agreement_roles_ids = JournalExecutionStepRoles::where('j_exec_step_id', $agreement_step->id)->pluck('role_id')->toArray();
             $user_roles = UserRole::whereIn('role_id', $agreement_roles_ids)->pluck('model_id')->toArray();
-            $agreement_users = UserWorkHistory::whereIn('user_work_histories.user_id', $user_roles)->whereHas('user', function ($query) {
-                $query->where('status', 1);
-            })->where('user_work_histories.status', 1)
+            $agreement_users = UserWorkHistory::where('user_work_histories.org_id', $this->organizationId())
+                ->whereIn('user_work_histories.user_id', $user_roles)->whereHas('user', function ($query) {
+                    $query->where('status', 1);
+                })->where('user_work_histories.status', 1)
                 ->whereNotIn('user_work_histories.user_id', $super_admins_array)
                 ->join('user_personal_infos', 'user_personal_infos.user_id', '=', 'user_work_histories.user_id')
                 ->orderBy('user_personal_infos.sort')

@@ -1,7 +1,7 @@
 @if($documentMember && $documentMember->status == (int)2)
     <div class="card">
         <div class="card-header">
-            <h3><i class="ik ik-check-circle"></i> {{ __('action.to_sign') }}</h3>
+            <h3><i data-lucide="circle-check-big"></i> {{ __('action.to_sign') }}</h3>
         </div>
 
         <div class="card-body">

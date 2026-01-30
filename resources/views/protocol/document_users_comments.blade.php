@@ -94,7 +94,7 @@
                 //console.log(response);
                 let result_message = '';
                 if (response.success === 200) {
-                    result_message = `<div class="alert alert-success" role="alert"><i class="ik ik-check-circle"></i> `+response.message+`</div>`;
+                    result_message = `<div class="alert alert-success" role="alert"><i data-lucide="circle-check-big"></i> `+response.message+`</div>`;
                     setTimeout(function () {
                         location.reload();
                     }, 2000);

@@ -1,0 +1,66 @@
+/* Department Tree Specific Styles */
+.list-tree {
+    font-family: inherit;
+}
+
+.list-tree ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.list-tree > ul > li {
+    margin-bottom: 0.75rem;
+}
+
+.list-tree li {
+    padding: 0.5rem;
+    margin: 0.25rem 0;
+    border-left: 3px solid #794DFD;
+    padding-left: 1rem;
+    background: #f8fafc;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.list-tree li:hover {
+    background: #f1f5f9;
+    transform: translateX(4px);
+}
+
+.list-tree li.active-department {
+    background: linear-gradient(135deg, #f5f0ff 0%, #ede9fe 100%);
+    border-left-color: #9d6fff;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(121, 77, 253, 0.2);
+}
+
+.list-tree ul ul {
+    margin-top: 0.5rem;
+    padding-left: 1.5rem;
+}
+
+.list-tree ul ul li {
+    border-left-color: #9d6fff;
+    font-size: 14px;
+}
+
+.list-tree ul ul ul li {
+    border-left-color: #cbd5e1;
+    font-size: 13px;
+}
+
+/* Custom scrollbar for sidebar */
+.profile-sidebar > div > div:last-child::-webkit-scrollbar {
+    width: 6px;
+}
+
+.profile-sidebar > div > div:last-child::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+.profile-sidebar > div > div:last-child::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+    border-radius: 3px;
+}

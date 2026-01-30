@@ -1,129 +1,217 @@
 @extends('layouts.app')
 @section('content')
-    <link href="{{ asset('/departments/tree.css') }}" rel="stylesheet">
-    <div class="container-fluid">
-        <div class="page-header">
-            <div class="row align-items-end">
-                <div class="col-md-3">
-                    <div class="page-header-title">
-                        <i class="ik ik-folder-minus bg-blue"></i>
-                        <div class="d-inline">
-                            <h5>{{ __('menu.organizations') }}</h5>
-                        </div>
+    <link href="{{ asset('css/departments/tree.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/templates/common-document-styles.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/templates/organizations/index.css') }}" rel="stylesheet">
+
+    <!-- Modern Document Page Container -->
+    <div class="document-page-modern">
+
+        <!-- Modern Page Header -->
+        <div class="page-header-modern">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i data-lucide="building-2"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>{{ __('menu.organizations') }}</h1>
+                        <p>{{ __('menu.home') }} / {{ __('menu.organizations') }}</p>
                     </div>
                 </div>
-                <div class="col-md-6">
+
+                <div class="header-center">
                     @include('templates.alert')
                 </div>
-                <div class="col-md-3">
-                    <nav class="breadcrumb-container" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('home') }}"><i class="ik ik-home"></i></a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="#">{{ __('menu.organizations') }}</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">{{ __('menu.list') }}</li>
-                        </ol>
-                    </nav>
-                </div>
+
+                <!-- Breadcrumb Navigation -->
+                <nav class="breadcrumb-modern" style="margin-top: 1.5rem;">
+                    <a href="{{ route('home') }}" class="breadcrumb-item">
+                        <i data-lucide="home"></i>
+                        <span>{{ __('menu.home') }}</span>
+                    </a>
+                    <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                    <span class="breadcrumb-item active">{{ __('menu.organizations') }}</span>
+                </nav>
             </div>
         </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="card">
-                    <div class="card-header d-block">
-                        <a href="{{ route('organizations.create') }}" class="btn btn-primary">
-                            <i class="ik ik-plus-circle"></i>{{ __('action.create') }}
-                        </a>
+
+        <!-- Content Wrapper -->
+        <div class="content-wrapper-modern">
+
+            <!-- Filters Card -->
+            <div class="filters-card-modern">
+                <div class="filters-header">
+                    <div class="filters-title">
+                        <i data-lucide="search"></i>
+                        <span>{{ __('action.search') }} & {{ __('field.filters') }}</span>
                     </div>
-                    <div class="card-body template-demo">
-                        <div class="row">
-                            <div class="col-md-4">
-                                @php $lang_key = session()->get('locale')??'uz'; @endphp
-                                <ul><h4>{{ __('menu.organizations') }}</h4></ul>
-                                <section class="list-tree">
-                                    <ul>
-                                        @foreach($parentOrganizations as $key => $item)
-                                            <li>
-                                                {{ $item['name_'.$lang_key]??$item['name_uz'] }}
-                                                @if($item->childs && count($item->childs))
-                                                    @include('admin.organizations.manageChild',['childs' => $item->childs])
-                                                @endif
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </section>
-                            </div>
-
-                            <div class="col-md-8">
-                                <div class="dt-responsive">
-                                    <form action="{{ route('organizations.index') }}" method="post" role="search" class="form-horizontal">
-                                        @csrf
-                                        <div class="row">
-                                            <div class="col-4">
-                                                <input type="text" name="s_text" value="{{ $s_text??'' }}" class="form-control" placeholder="{{ __('action.search') }}">
-                                            </div>
-                                            <button type="submit" class="btn btn-info mr-1">
-                                                <i class="ik ik-search"></i> {{ __('action.search') }} ({{ $organizations->total() }})
-                                            </button>
-                                            <a href="{{ route('organizations.index') }}" class="btn btn-light">
-                                                <i class="ik ik-refresh-ccw"></i>  {{ __('field.clear') }}
-                                            </a>
-                                        </div>
-                                    </form>
-                                    <table class="table table-striped table-bordered text-sm-left">
-                                        <thead>
-                                        <tr>
-                                            <th>{{ __('field.number') }}</th>
-                                            <th>{{ __('field.name') }}</th>
-                                            <th>{{ __('field.parent_id') }}</th>
-                                            <th>{{ __('field.status') }}</th>
-                                            <th>{{ __('field.action') }}</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        @forelse($organizations as $key => $item)
-                                            <tr>
-                                                <td>{{ $key+1 }}</td>
-                                                <td class="w-40">
-                                                    <a style="text-decoration-line: underline; color: deepskyblue" href="{{ route('departments.index', ['id' => $item->id]) }}">
-                                                        {{ $item->lang($item->id) }}
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <span class="badge badge-pill badge-secondary mb-1">
-                                                        {{ $item->parentlang($item->parent_id)??'-' }}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <span class="badge badge-pill @if($item->status == 1) badge-green @else badge-danger @endif text-white">
-                                                        {{ $item->isActive($item->status) }}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <a href="{{ route('organizations.edit', $item->id) }}" class="btn btn-info">
-                                                        <i class="ik ik-edit-1"></i> {{ __('action.edit') }}
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <tr class="text-center">
-                                                <td colspan="8">{{ __('field.not_found') }}</td>
-                                            </tr>
-                                        @endforelse
-                                        </tbody>
-                                    </table>
-                                    {!! $organizations->links() !!}
-                                </div>
-                            </div>
-
-                        </div>
+                    <div class="filters-count">
+                        <span class="count-badge">{{ $organizations->total() }}</span>
+                        <span class="count-label">{{ __('field.total') }}</span>
                     </div>
                 </div>
+
+                <form action="{{ route('organizations.index') }}" method="post" class="filters-form-modern">
+                    @csrf
+                    <div class="filters-grid">
+                        <div class="filter-item" style="grid-column: span 2;">
+                            <label>
+                                <i data-lucide="search"></i>
+                                {{ __('action.search') }}
+                            </label>
+                            <input type="text"
+                                   name="s_text"
+                                   value="{{ $s_text ?? '' }}"
+                                   class="form-control-modern"
+                                   placeholder="{{ __('field.search_placeholder') }}">
+                        </div>
+
+                        <div class="filter-actions">
+                            <button type="submit" class="btn-modern btn-primary">
+                                <i data-lucide="search"></i>
+                                {{ __('action.search') }}
+                            </button>
+                            <a href="{{ route('organizations.index') }}" class="btn-modern btn-secondary">
+                                <i data-lucide="refresh-ccw"></i>
+                                {{ __('field.clear') }}
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Main Content Grid -->
+            <div style="display: grid; grid-template-columns: 350px 1fr; gap: 1.5rem; align-items: start;">
+
+                <!-- Organizations Tree Sidebar -->
+                <div class="table-card-modern" style="position: sticky; top: 2rem;">
+                    <div class="filters-header">
+                        <div class="filters-title">
+                            <i data-lucide="folder-tree"></i>
+                            <span>{{ __('menu.organizations') }} {{ __('field.tree') }}</span>
+                        </div>
+                    </div>
+                    <div style="padding: 1.5rem;">
+                        @php $lang_key = session()->get('locale') ?? 'uz'; @endphp
+                        <section class="list-tree">
+                            <ul>
+                                @foreach($parentOrganizations as $key => $item)
+                                    <li>
+                                        <strong>{{ $item['name_'.$lang_key] ?? $item['name_uz'] }}</strong>
+                                        @if($item->childs && count($item->childs))
+                                            @include('admin.organizations.manageChild', ['childs' => $item->childs])
+                                        @endif
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </section>
+                    </div>
+                </div>
+
+                <!-- Organizations Table -->
+                <div class="table-card-modern">
+                    <div class="filters-header">
+                        <div class="filters-title">
+                            <i data-lucide="list"></i>
+                            <span>{{ __('menu.organizations') }} {{ __('menu.list') }}</span>
+                        </div>
+                        <a href="{{ route('organizations.create') }}" class="btn-modern btn-primary" style="width: auto;">
+                            <i data-lucide="circle-plus"></i>
+                            {{ __('action.create') }}
+                        </a>
+                    </div>
+
+                    <div class="table-wrapper-modern">
+                        <table class="modern-table">
+                            <thead>
+                            <tr>
+                                <th style="width: 60px;">
+                                    <i data-lucide="hash"></i>
+                                    {{ __('field.number') }}
+                                </th>
+                                <th style="text-align: left;">
+                                    <i data-lucide="building"></i>
+                                    {{ __('field.name') }}
+                                </th>
+                                <th>
+                                    <i data-lucide="folder"></i>
+                                    {{ __('field.parent_id') }}
+                                </th>
+                                <th style="width: 120px;">
+                                    <i data-lucide="activity"></i>
+                                    {{ __('field.status') }}
+                                </th>
+                                <th style="width: 140px;">
+                                    <i data-lucide="settings"></i>
+                                    {{ __('field.action') }}
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @forelse($organizations as $key => $item)
+                                <tr class="table-row-modern">
+                                    <td class="td-number">{{ $organizations->firstItem() + $key }}</td>
+                                    <td class="td-doc-name">
+                                        <a href="{{ route('departments.index', ['id' => $item->id]) }}" class="doc-link">
+                                            <i data-lucide="building-2"></i>
+                                            <strong>{{ $item->lang($item->id) }}</strong>
+                                            <i data-lucide="arrow-right" class="arrow-icon"></i>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        @if($item->parentlang($item->parent_id))
+                                            <span class="badge-modern badge-info">
+                                                    {{ $item->parentlang($item->parent_id) }}
+                                                </span>
+                                        @else
+                                            <span class="badge-modern badge-primary">
+                                                    {{ __('field.root') }}
+                                                </span>
+                                        @endif
+                                    </td>
+                                    <td class="td-status">
+                                        @if($item->status == 1)
+                                            <span class="status-badge-modern badge-success">
+                                                    <i data-lucide="check-circle"></i>
+                                                    {{ __('field.active') }}
+                                                </span>
+                                        @else
+                                            <span class="status-badge-modern badge-danger">
+                                                    <i data-lucide="x-circle"></i>
+                                                    {{ __('field.inactive') }}
+                                                </span>
+                                        @endif
+                                    </td>
+                                    <td class="td-action">
+                                        <a href="{{ route('organizations.edit', $item->id) }}" class="action-btn view-btn">
+                                            <i data-lucide="square-pen"></i>
+                                            {{ __('action.edit') }}
+                                        </a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="empty-state">
+                                        <div class="empty-state-content">
+                                            <i data-lucide="folder-x"></i>
+                                            <p>{{ __('field.not_found') }}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @if($organizations->hasPages())
+                        <div class="pagination-wrapper-modern">
+                            {!! $organizations->links() !!}
+                        </div>
+                    @endif
+                </div>
+
             </div>
         </div>
     </div>
-{{--    <script src="{{ asset('/departments/treeview.js') }}"></script>--}}
 @endsection

@@ -33,7 +33,7 @@
                     <div class="card-header">
                         @can('language-create')
                             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#AddModal">
-                                <i class="ik ik-plus-circle"></i> {{ __('action.create') }}
+                                <i data-lucide="circle-plus"></i> {{ __('action.create') }}
                             </button>
                         @endcan
                     </div>
@@ -58,10 +58,10 @@
                                 </div>
 
                                 <button type="submit" class="btn btn-info">
-                                    <i class="ik ik-search"></i> {{ __('action.search') }} ({{ $models->total() }})
+                                    <i data-lucide="search"></i> {{ __('action.search') }} ({{ $models->total() }})
                                 </button>
                                 <a href="{{ route('language.index') }}" class="btn btn-light">
-                                    <i class="ik ik-refresh-ccw"></i> {{ __('action.clear') }}
+                                    <i data-lucide="refresh-ccw"></i> {{ __('action.clear') }}
                                 </a>
                             </div>
                         </form><hr>
@@ -90,7 +90,7 @@
                                             <td>{{ $item->text['en']??'' }}</td>
                                             <td>
                                                 <button type="button" value="{{ $item->id }}" class="btn btn-info edit_btn btn-sm">
-                                                    <i class="ri-edit-line me-1"></i> <i class="ik ik-edit-1"></i>
+                                                    <i class="ri-edit-line me-1"></i> <i data-lucide="square-pen"></i>
                                                 </button>
                                             </td>
                                             <td>
@@ -295,7 +295,7 @@
                             <td>' + text.ru + '</td>\
                             <td>' + text.en + '</td>\
                             <td><button type="button" value="' + item.id + '" class="btn btn-info edit_btn btn-sm">\
-                            <i class="ri-edit-line me-1"></i> <i class="ik ik-edit-1"></i>'+edit_lang+'</button>\
+                            <i class="ri-edit-line me-1"></i> <i data-lucide="square-pen"></i>'+edit_lang+'</button>\
                             </td>\
                             <td><button type="button" value="' + item.id + '" class="btn btn-danger delete_btn btn-sm">\
                             <i class="ri-delete-bin-line me-1"></i> <i class="ik ik-trash-2"></i>'+delete_lang+'</button>\

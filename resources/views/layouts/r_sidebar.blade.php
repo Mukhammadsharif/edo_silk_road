@@ -5,7 +5,7 @@
             <form class="mr-t-10">
                 <div class="form-group">
                     <input type="text" class="form-control" placeholder="Search for friends ...">
-                    <i class="ik ik-search"></i>
+                    <i data-lucide="search"></i>
                 </div>
             </form>
         </div>

@@ -139,7 +139,7 @@
                     <div class="card-header">
                         <div class="col-md-3">
                             <div class="d-inline">
-                                <h5><i class="ik ik-settings"></i> {{ __('title.images') }}</h5>
+                                <h5><i data-lucide="settings"></i> {{ __('title.images') }}</h5>
                             </div>
                         </div>
                     </div>
@@ -211,7 +211,7 @@
                     <div class="card-header">
                         <div class="col-md-3">
                             <div class="d-inline">
-                                <h5><i class="ik ik-settings"></i> {{ __('menu.config') }} (.ENV)</h5>
+                                <h5><i data-lucide="settings"></i> {{ __('menu.config') }} (.ENV)</h5>
                             </div>
                         </div>
                     </div>

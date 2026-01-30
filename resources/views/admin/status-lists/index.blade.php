@@ -35,7 +35,7 @@
                 <div class="card">
                     <div class="card-header d-block">
                         <a href="{{ route('status-lists.create') }}" class="btn btn-primary">
-                            <i class="ik ik-plus-circle"></i> {{ __('action.create') }}
+                            <i data-lucide="circle-plus"></i> {{ __('action.create') }}
                         </a>
                     </div>
 
@@ -59,10 +59,10 @@
                                 </div>
 
                                 <button type="submit" class="btn btn-info mr-sm-2 mb-2">
-                                    <i class="ik ik-search"></i> {{ __('action.search') }} ({{ $models->total() }})
+                                    <i data-lucide="search"></i> {{ __('action.search') }} ({{ $models->total() }})
                                 </button>
                                 <a href="{{ route('status-lists.index') }}" class="btn btn-light mb-2">
-                                    <i class="ik ik-refresh-ccw"></i> {{ __('action.clear') }}
+                                    <i data-lucide="refresh-ccw"></i> {{ __('action.clear') }}
                                 </a>
                             </div>
                         </form><hr>
@@ -97,7 +97,7 @@
                                         <td>{{ $model->order_number??'' }}</td>
                                         <td>
                                             <a href="{{ route('status-lists.edit', $model->id) }}" class="btn btn-sm btn-info">
-                                                <i class="ik ik-edit-1"></i> {{ __('action.edit') }}
+                                                <i data-lucide="square-pen"></i> {{ __('action.edit') }}
                                             </a>
                                         </td>
                                     </tr>

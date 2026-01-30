@@ -176,7 +176,7 @@
                             @method('POST')
                             <div class="card">
                                 <div class="card-header">
-                                    <h3><i class="ik ik-plus-circle"></i> {{ $journal_exec_step->executionRole->lang($journal_exec_step->executionRole->lang_id) }}</h3>
+                                    <h3><i data-lucide="circle-plus"></i> {{ $journal_exec_step->executionRole->lang($journal_exec_step->executionRole->lang_id) }}</h3>
                                 </div>
                                 <div class="card-body">
                                     <div class="row">

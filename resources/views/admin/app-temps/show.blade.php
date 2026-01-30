@@ -47,7 +47,7 @@
                         {!! $model->t_text !!}
                         <hr>
                         <a href="{{ route('app-temps.index') }}" class="btn btn-outline-secondary mr-2"><i class="ik ik-rotate-ccw"></i> {{ __('list') }}</a>
-                        <a href="{{ route('app-temps.create') }}" class="btn btn-outline-primary mr-2"><i class="ik ik-plus-circle"></i> {{ __('create') }}</a>
+                        <a href="{{ route('app-temps.create') }}" class="btn btn-outline-primary mr-2"><i data-lucide="circle-plus"></i> {{ __('create') }}</a>
                         <a href="{{ route('app-temps.edit', $model->id) }}" class="btn btn-outline-info"><i class="ik ik-edit"></i> {{ __('edit') }}</a>
                     </div>
                 </div>
