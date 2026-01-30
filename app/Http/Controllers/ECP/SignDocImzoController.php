@@ -556,6 +556,9 @@ class SignDocImzoController extends Controller
                 return $this->authErrorResponse('Ошибка декодирования ответа сервера', 500);
             }
 
+            if($jsonDecodeBack['status'] != 1) {
+                return $this->authErrorResponse($jsonDecodeBack['message'], 400);
+            }
             // Проверка наличия обязательных ключей
             if (!isset($jsonDecodeBack['subjectCertificateInfo']['subjectName']['1.2.860.3.16.1.2'])) {
                 return $this->authErrorResponse('PIN не найден в сертификате', 400);

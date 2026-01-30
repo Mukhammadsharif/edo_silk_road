@@ -89,7 +89,7 @@
 
                             <button type="submit" class="btn btn-info mr-1 mb-2 mr-10"><i class="fa fa-search"></i> {{ __('action.search') }} ({{ $models->total() }})</button>
                             <a href="{{ route('doc-controller.work-docs') }}" class="btn btn-light mb-2">
-                                <i class="ik ik-refresh-ccw"></i> {{ __('action.clear') }}
+                                <i data-lucide="refresh-ccw"></i> {{ __('action.clear') }}
                             </a>
                         </form>
                     </div>

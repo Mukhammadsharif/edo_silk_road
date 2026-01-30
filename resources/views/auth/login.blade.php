@@ -47,7 +47,7 @@
                                 {{ __('field.remember_me') }}
                             </label>
                             <div class="forgot">
-                                <a href="#">{{ __('field.forget_password_question') }}</a>
+{{--                                <a href="#">{{ __('field.forget_password_question') }}</a>--}}
                             </div>
                         </div>
 
@@ -122,11 +122,11 @@
                 inner.style.setProperty("--i", i);
 
                 strip.appendChild(inner);
-                preloader.appendChild(strip);
+                preloader?.appendChild(strip);
             }
 
             setTimeout(() => {
-                preloader.style.display = "none";
+                // preloader.style.display = "none";
             }, 3300);
         })();
     </script>

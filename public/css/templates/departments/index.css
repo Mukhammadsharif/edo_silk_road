@@ -1,0 +1,99 @@
+/* Department Tree Specific Styles */
+.list-tree {
+    font-family: inherit;
+}
+
+.list-tree ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.list-tree > ul > li {
+    margin-bottom: 0.75rem;
+}
+
+.list-tree li {
+    padding: 0.5rem;
+    margin: 0.25rem 0;
+    border-left: 3px solid #794DFD;
+    padding-left: 1rem;
+    background: #f8fafc;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.list-tree li:hover {
+    background: #f1f5f9;
+    transform: translateX(4px);
+}
+
+.list-tree ul ul {
+    margin-top: 0.5rem;
+    padding-left: 1.5rem;
+}
+
+.list-tree ul ul li {
+    border-left-color: #9d6fff;
+    font-size: 14px;
+}
+
+.list-tree ul ul ul li {
+    border-left-color: #cbd5e1;
+    font-size: 13px;
+}
+
+/* Responsive Design for Grid */
+@media (max-width: 992px) {
+    .document-page-modern > .content-wrapper-modern > div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    .table-card-modern[style*="position: sticky"] {
+        position: static !important;
+    }
+}
+
+/* Table Row Hover Effect */
+.table-row-modern {
+    transition: all 0.3s ease;
+}
+
+.table-row-modern:hover {
+    background-color: #f8fafc;
+    transform: scale(1.001);
+}
+
+/* Action Button Styles */
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.action-btn i {
+    width: 16px;
+    height: 16px;
+}
+
+.view-btn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.view-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    color: white;
+}

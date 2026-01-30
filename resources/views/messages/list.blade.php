@@ -66,7 +66,7 @@
                             @endif
 
                             <button type="submit" class="btn btn-info mb-2 mr-10">
-                                <i class="ik ik-search"></i>
+                                <i data-lucide="search"></i>
                                 {{ __('action.search') }} ({{ $models->total() }})
                             </button>
                             <a href="{{ route('messages.list', ['type' => $type]) }}" class="btn btn-light mb-2">

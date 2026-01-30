@@ -33,7 +33,7 @@
                 <div class="card">
                     <div class="card-header d-block">
                         <a href="{{ route('hr-order-type.create') }}" class="btn btn-outline-primary">
-                            <i class="ik ik-plus-circle"></i>{{ __('create') }}
+                            <i data-lucide="circle-plus"></i>{{ __('create') }}
                         </a>
                     </div>
                     <div class="card-body template-demo">

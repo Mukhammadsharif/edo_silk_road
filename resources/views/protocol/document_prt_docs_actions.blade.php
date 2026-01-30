@@ -37,7 +37,7 @@
                     <i class="ik ik-x"></i> {{ __('action.cancel') }}
                 </button>
                 <button type="button" class="btn btn-danger deleteItemConfirm">
-                    <i class="ik ik-check-circle"></i> {{ __('action.delete_yes') }}
+                    <i data-lucide="circle-check-big"></i> {{ __('action.delete_yes') }}
                 </button>
             </div>
         </div>

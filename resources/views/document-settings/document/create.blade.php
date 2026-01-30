@@ -36,7 +36,7 @@
             <div class="col-sm-8 offset-2">
                 <div class="card">
                     <div class="card-header">
-                        <h3><i class="ik ik-plus-circle"></i> {{ __('action.create') }}</h3>
+                        <h3><i data-lucide="circle-plus"></i> {{ __('action.create') }}</h3>
                     </div>
                     <div class="card-body">
                         <form method="POST" action="{{ route('document-type.store') }}" class="forms-sample">

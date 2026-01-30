@@ -340,8 +340,9 @@ const createSignature = (keyId, challenge, callback) => {
                 handleResponse(response, textStatus, xhr, callback);
             },
             error: (xhr, status, error) => {
+                console.log(xhr)
                 uiHideProgress();
-                uiShowMessage('Xatolik yuz berdi: ' + error);
+                uiShowMessage('Xatolik yuz berdi: ' + error + ' ' + xhr?.responseJSON?.message);
             }
         });
     }, uiHandleError, false);

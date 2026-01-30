@@ -39,7 +39,7 @@
                             <div class="row">
                                 <div class="col-md-6 col-sm-6 col-lg-1 margin-top-5">
                                     <a href="{{ route('protocol.create.doc') }}" class="btn btn-outline-primary">
-                                        <i class="ik ik-plus-circle"></i> {{ __('action.create') }}
+                                        <i data-lucide="circle-plus"></i> {{ __('action.create') }}
                                     </a>
                                 </div>
                                 <div class="col-md-6 col-sm-6 col-lg-1 margin-top-5">
@@ -67,11 +67,11 @@
                                     </select>
                                 </div>
                                 <div class="col-md-6 col-sm-6 col-lg-2 margin-top-5">
-                                    <button type="submit" class="btn btn-outline-info mr-5"><i class="ik ik-search"></i>
+                                    <button type="submit" class="btn btn-outline-info mr-5"><i data-lucide="search"></i>
 {{--                                        {{ __('search') }} ({{ $models->total() }})--}}
                                     </button>
                                     <a href="{{ route('protocol.index') }}" class="btn btn-light">
-                                        <i class="ik ik-refresh-ccw"></i> {{ __('action.clear') }}
+                                        <i data-lucide="refresh-ccw"></i> {{ __('action.clear') }}
                                     </a>
                                 </div>
                             </div>
