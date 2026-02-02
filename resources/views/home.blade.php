@@ -1,7 +1,7 @@
 <head>
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
 
-    <title>EDOFY</title>
+    <title>EDOLINE  </title>
 </head>
 
 @extends('layouts.app')

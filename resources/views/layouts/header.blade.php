@@ -11,8 +11,11 @@
   
 
              <div class="logo">
-                <a href="{{ url('/') }}">
-                <img src="{{ asset('images/edofy.svg') }}" style="width: 100px" alt=""></a>
+                <a href="{{ url('/edo') }}" class="logo-flex">
+                <img src="{{ asset('images/edoline.svg') }}" style="width:30px" alt="">
+                <p>EDOLINE</p>
+            </a>
+
                 
             </div>
       
@@ -430,4 +433,18 @@
 .alert{
     opacity: 0;
 }
+
+.logo-flex{
+    display: flex;
+    align-items: center;
+    gap:10px;
+}
+.logo-flex p{
+    margin:0;
+    font-size:18px;
+    color:#794DFD;
+    font-weight: 700;
+
+}
+
 </style>
