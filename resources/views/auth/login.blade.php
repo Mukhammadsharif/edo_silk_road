@@ -5,10 +5,13 @@
 <body>
     <main>
         <div class="logo">
-            <img src="{{ asset('images/edofy.svg') }}" style="width: 120px" alt="">
+            <a href="{{ url('/') }}" class="logo-flex">
+                <img src="{{ asset('images/edoline.svg') }}" style="width:30px" alt="">
+                <p>EDOLINE</p>
+            </a>
         </div>
         <video class="auth-sidebar__video" playsinline autoplay loop muted
-               src="{{ asset('images/back2.mp4') }}"></video>
+            src="{{ asset('images/back2.mov') }}"></video>
 
         <div class="containers">
             <div class="tabs">
@@ -35,8 +38,7 @@
                         <div class="input-group">
                             <i data-lucide="lock" class="icon"></i>
                             <input type="password" id="password" name="password"
-                                   placeholder="{{ __('field.type_password') }}"
-                                   required>
+                                placeholder="{{ __('field.type_password') }}" required>
                             <i data-lucide="eye" onclick="togglePassword()"
                                style="position: absolute; right: 15px; top: 13px; cursor: pointer; color: #999;"></i>
                         </div>
@@ -61,17 +63,12 @@
                 <div class="tab-content" id="eri-tab">
                     <input type="hidden" name="eri" id="selectedEri" value="">
 
-                    <div class="input-group">
+                    <div class="input-group eri-selector" onclick="openUsbToken()">
                         <i data-lucide="key" class="icon"></i>
-                        <select class="form-select" id="eriSelect" disabled required>
-                            <option value="">Tanlanmagan</option>
-                        </select>
-                    </div>
-
-
-                    <div class="button btn-usb input-group" onclick="openUsbToken()">
-                        <img src="https://esi.uz/oauth2/assets/images/icons/pfx.ico" alt="pfx" style="height: 20px">
-                        {{ __('action.choose_key') }}
+                        <div class="eri-select-display" id="eriSelectDisplay">
+                            <span class="eri-placeholder">{{ __('action.choose_key') }}</span>
+                            <img src="https://esi.uz/oauth2/assets/images/icons/pfx.ico" alt="pfx" style="height: 18px; margin-left: auto;">
+                        </div>
                     </div>
 
                     <button onclick="signin()" class="button" id="eriLoginBtn" disabled style="margin-top: 15px;">
@@ -161,6 +158,99 @@
     </script>
 
 @endsection
+
+<script>
+    (function() {
+    const preloader = document.getElementById("cp-preloader");
+    const STRIPS = 16;
+
+    body {
+        font-family: 'Poppins', sans-serif;
+    }
+
+    main {
+        display: flex;
+        align-items: center;
+        min-height: 100vh;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .containers {
+        position: absolute;
+        top: 22%;
+        left: 12%;
+        width: 440px;
+        padding: 40px 35px 0 35px;
+        animation: fadeIn 1.2s ease-out;
+        z-index: 1;
+    }
+
+    // Hide preloader after animation completes naturally (~1.5s)
+    setTimeout(() => {
+        preloader.style.display = "none";
+    }, 1600);
+})();
+</script>
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+<script>
+    localStorage.clear();
+lucide.createIcons();
+
+    .logo-text {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .logo-text p {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: #515151;
+    }
+
+    .logo-text span {
+        font-size: 13px;
+        color: #959595;
+    }
+
+    /* Tabs */
+    .tabs {
+        display: flex;
+        background: rgba(121, 77, 253, 0.1);
+        border-radius: 12px;
+        overflow: hidden;
+        margin-top: 30px;
+    }
+
+    .tab {
+        flex: 1;
+        padding: 12px 14px;
+        text-align: center;
+        color: #666;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.4s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        white-space: nowrap;
+    }
+
+    .tab.active {
+        background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+        color: #fff;
+        box-shadow: 0 4px 15px rgba(121, 77, 253, 0.4);
+    }
 
 <style>
     * {
@@ -641,17 +731,17 @@
         width: 100%;
         height: 100%;
         background: linear-gradient(135deg,
-        #6d28d9 0%,
-        #7c3aed 30%,
-        #a78bfa 60%,
-        #c084fc 100%);
+                #6d28d9 0%,
+                #7c3aed 30%,
+                #a78bfa 60%,
+                #c084fc 100%);
         transform: translateX(-100%);
         will-change: transform;
         animation: cp-slide 1.5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
     }
 
     .cp-strip span {
-        animation-delay: calc(var(--i) * 20ms);
+        animation-delay: calc(var(--i) * 10ms);
     }
 
     @keyframes cp-slide {
@@ -673,5 +763,58 @@
         font-size: 16px;
         outline: none;
         transition: all 0.4s ease;
+    }
+
+    .eri-selector {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+   
+
+    .eri-select-display {
+        width: 100%;
+        padding: 15px 15px 15px 42px;
+        background: rgba(255, 255, 255, 0.8);
+        border: 2px dashed #e3e3e3;
+        border-radius: 12px;
+        color: #333;
+        font-size: 16px;
+        transition: all 0.4s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .eri-selector:hover .eri-select-display {
+        border-color: #794DFD;
+        box-shadow: 0 0 20px rgba(121, 77, 253, 0.2);
+    }
+
+    .eri-placeholder {
+        color: #666;
+        flex: 1;
+    }
+
+    .eri-select-display.selected .eri-placeholder {
+        color: #333;
+        font-weight: 500;
+    }
+
+    .logo-flex {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .logo-flex p {
+        margin: 0;
+        font-size: 18px;
+        color: #007bff;
+        font-weight: 700;
+
+    }
+    .logo p{
+         color:#794DFD;
     }
 </style>
