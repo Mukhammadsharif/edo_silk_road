@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Protocol;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin\MenuList;
+use App\Models\Admin\OrganizationUnits;
 use App\Models\Admin\Permission;
 use App\Models\Admin\Role;
 use App\Models\Admin\RoleMenu;
@@ -24,14 +25,67 @@ class ProtocolDocTypeController extends Controller
 {
     public function __construct(protected LanguageService $languageService){}
 
-    public function index()
+    public function index(Request $request)
     {
-        $parentDocTypes = ProtocolDocType::where('parent_id', 0)
+        //
+        if($this->isSuperUser()) {
+            return $this->superUserIndex($request);
+        } else {
+            return $this->adminIndex();
+        }
+    }
+
+    public function superUserIndex(Request $request)
+    {
+        $s_text = $request->input('s_text');
+
+        $search = OrganizationUnits::where('status', 1);
+
+        if (trim(''.$s_text.'')) {
+            $search->where(
+                DB::raw("(name_uz || ' ' || name_kr || ' ' || name_ru || ' ' || name_en)"),
+                'ILIKE',
+                "%{$s_text}%"
+            );
+        }
+
+        $organizations = $search->paginate(25);
+
+        $organizations->appends([
+            's_text' => $s_text
+        ]);
+
+        return view('document-settings.protocol.super-user-index', compact('organizations', 's_text'))
+            ->with('i', (request()->input('page', 1) - 1) * 25);
+    }
+
+    public function superUserOrgDocs(Request $request, $orgId)
+    {
+        $parentDocTypes = ProtocolDocType::where('org_id', $orgId)
+            ->where('parent_id', 0)
             ->where('status', 1)
             ->orderBy('order_number')
             ->get();
 
-        $models = ProtocolDocType::where('status', 1)
+        $models = ProtocolDocType::where('org_id', $orgId)
+            ->where('status', 1)
+            ->orderBy('id', 'DESC')
+            ->paginate(25);
+
+        return view('document-settings.protocol.index', compact('models', 'parentDocTypes'))
+            ->with('i', (request()->input('page', 1) - 1) * 25);
+    }
+
+    public function adminIndex()
+    {
+        $parentDocTypes = ProtocolDocType::where('org_id', $this->organizationId())
+            ->where('parent_id', 0)
+            ->where('status', 1)
+            ->orderBy('order_number')
+            ->get();
+
+        $models = ProtocolDocType::where('org_id', $this->organizationId())
+            ->where('status', 1)
             ->orderBy('id', 'DESC')
             ->paginate(25);
 
@@ -41,13 +95,21 @@ class ProtocolDocTypeController extends Controller
 
     public function create()
     {
-        $docTypes = ProtocolDocType::where('status', 1)
-            ->orderBy('order_number')
-            ->get();
-
         $languages = $this->languageService->getList();
 
-        return view('document-settings.protocol.create', compact('languages', 'docTypes'));
+        $isSuperUser = $this->isSuperUser();
+
+        if ($isSuperUser){
+            $docTypes = collect();
+        } else {
+            $docTypes = ProtocolDocType::where('status', 1)
+                ->orderBy('order_number')
+                ->get();
+        }
+
+        $organizations = OrganizationUnits::where('status', 1)->get();
+
+        return view('document-settings.protocol.create', compact('languages', 'docTypes', 'organizations', 'isSuperUser'));
     }
 
     public function store(Request $request)
@@ -104,6 +166,7 @@ class ProtocolDocTypeController extends Controller
             ]);
             // Create document type
             $docType = new ProtocolDocType();
+            $docType->org_id = $request->org_id ?: $this->organizationId();
             $docType->parent_id = $parent_id;
             $docType->title = $request->name_uz;
             $docType->lang_id = $lang->id;
@@ -152,7 +215,8 @@ class ProtocolDocTypeController extends Controller
     {
         $model = ProtocolDocType::where('doc_hash', $doc_hash)->firstOrFail();
 
-        $docTypes = ProtocolDocType::where('id', '<>', $model->id)
+        $docTypes = ProtocolDocType::where('org_id', $model->org_id)
+            ->where('id', '<>', $model->id)
             ->where('status', 1)
             ->orderBy('order_number')
             ->get();
@@ -160,6 +224,8 @@ class ProtocolDocTypeController extends Controller
         $users = UserWorkHistory::with('position')
             ->join('user_positions', 'user_work_histories.post_id', '=', 'user_positions.id')
             ->where('user_work_histories.status', 1)
+            ->join('users', 'user_work_histories.user_id', '=', 'users.id')
+            ->where('users.org_unit_id', $model->org_id)
             ->orderBy('user_positions.order_number')
             ->select('user_work_histories.*')
             ->get();

@@ -286,6 +286,7 @@ class ProtocolsController extends Controller
 
         $document_create = new ProtocolDocument();
         $document_create->doc_name = $request->doc_name;
+        $document_create->org_id = $this->organizationId();
         $document_create->doc_number = $request->doc_number;
         $document_create->doc_date = $request->doc_date;
         $document_create->doc_term = $request->doc_term;
