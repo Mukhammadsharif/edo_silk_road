@@ -106,151 +106,59 @@
     <script src="{{ asset('js/e_imzo_client.js') }}"></script>
     <script src="{{ asset('js/login_e_imzo.js') }}"></script>
 
-    <script>
-        (function () {
-            const preloader = document.getElementById("cp-preloader");
-            const STRIPS = 16;
-
-            for (let i = 0; i < STRIPS; i++) {
-                const strip = document.createElement("div");
-                strip.className = "cp-strip";
-
-                const inner = document.createElement("span");
-                inner.style.setProperty("--i", i);
-
-                strip.appendChild(inner);
-                preloader?.appendChild(strip);
-            }
-
-            setTimeout(() => {
-                // preloader.style.display = "none";
-            }, 3300);
-        })();
-    </script>
-
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-
-    <script>
-        localStorage.clear();
-        lucide.createIcons();
-
-        function showTab(tabName) {
-            document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-            document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-
-            if (tabName === 'login') {
-                document.querySelector('[data-tab="password"]').classList.add("active");
-                document.getElementById("login-tab").classList.add("active");
-            } else if (tabName === 'eri') {
-                document.querySelector('[data-tab="eri"]').classList.add("active");
-                document.getElementById("eri-tab").classList.add("active");
-            }
-
-            lucide.createIcons();
-        }
-
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-        }
-
-    </script>
-
-@endsection
-
 <script>
     (function() {
-    const preloader = document.getElementById("cp-preloader");
-    const STRIPS = 16;
+        const preloader = document.getElementById("cp-preloader");
+        const STRIPS = 16;
 
-    body {
-        font-family: 'Poppins', sans-serif;
-    }
+        for (let i = 0; i < STRIPS; i++) {
+            const strip = document.createElement("div");
+            strip.className = "cp-strip";
 
-    main {
-        display: flex;
-        align-items: center;
-        min-height: 100vh;
-        justify-content: center;
-        overflow: hidden;
-        position: relative;
-    }
+            const inner = document.createElement("span");
+            inner.style.setProperty("--i", i);
 
-    .containers {
-        position: absolute;
-        top: 22%;
-        left: 12%;
-        width: 440px;
-        padding: 40px 35px 0 35px;
-        animation: fadeIn 1.2s ease-out;
-        z-index: 1;
-    }
+            strip.appendChild(inner);
+            preloader.appendChild(strip);
+        }
 
-    // Hide preloader after animation completes naturally (~1.5s)
-    setTimeout(() => {
-        preloader.style.display = "none";
-    }, 1600);
-})();
+        // Hide preloader after animation completes naturally (~1.5s)
+        setTimeout(() => {
+            preloader.style.display = "none";
+        }, 1600);
+    })();
 </script>
 
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
-    }
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 
 <script>
     localStorage.clear();
-lucide.createIcons();
+    lucide.createIcons();
 
-    .logo-text {
-        display: flex;
-        flex-direction: column;
+    function showTab(tabName) {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+
+        if (tabName === 'login') {
+            document.querySelector('[data-tab="password"]').classList.add("active");
+            document.getElementById("login-tab").classList.add("active");
+        } else if (tabName === 'eri') {
+            document.querySelector('[data-tab="eri"]').classList.add("active");
+            document.getElementById("eri-tab").classList.add("active");
+        }
+
+        lucide.createIcons();
     }
 
-    .logo-text p {
-        margin: 0;
-        font-size: 16px;
-        font-weight: 600;
-        color: #515151;
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
     }
 
-    .logo-text span {
-        font-size: 13px;
-        color: #959595;
-    }
+</script>
 
-    /* Tabs */
-    .tabs {
-        display: flex;
-        background: rgba(121, 77, 253, 0.1);
-        border-radius: 12px;
-        overflow: hidden;
-        margin-top: 30px;
-    }
-
-    .tab {
-        flex: 1;
-        padding: 12px 14px;
-        text-align: center;
-        color: #666;
-        font-size: 15px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.4s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        white-space: nowrap;
-    }
-
-    .tab.active {
-        background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
-        color: #fff;
-        box-shadow: 0 4px 15px rgba(121, 77, 253, 0.4);
-    }
+@endsection
 
 <style>
     * {
@@ -731,10 +639,10 @@ lucide.createIcons();
         width: 100%;
         height: 100%;
         background: linear-gradient(135deg,
-                #6d28d9 0%,
-                #7c3aed 30%,
-                #a78bfa 60%,
-                #c084fc 100%);
+        #6d28d9 0%,
+        #7c3aed 30%,
+        #a78bfa 60%,
+        #c084fc 100%);
         transform: translateX(-100%);
         will-change: transform;
         animation: cp-slide 1.5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
@@ -770,7 +678,7 @@ lucide.createIcons();
         transition: all 0.3s ease;
     }
 
-   
+
 
     .eri-select-display {
         width: 100%;
@@ -815,6 +723,6 @@ lucide.createIcons();
 
     }
     .logo p{
-         color:#794DFD;
+        color:#794DFD;
     }
 </style>
