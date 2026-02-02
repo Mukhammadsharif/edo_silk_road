@@ -6,7 +6,7 @@
         </div>
         <div class="col-sm-6 text-center mt-2">
             <button id="submitBtn" class="btn btn-outline-dark" style="height: 40px; width: 100%">
-                <i class="ik ik-check-circle"></i> {{ __('action.confirm_key') }}
+                <i data-lucide="circle-check-big"></i> {{ __('action.confirm_key') }}
             </button>
         </div>
     </div>

@@ -1,176 +1,255 @@
 @extends('layouts.app')
+<link rel="stylesheet" href="{{ asset('css/templates/common-document-styles.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/users/show.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/select2.css') }}">
+
 @section('content')
-    <div class="container-fluid">
-        <div class="page-header">
-            <div class="row align-items-end">
-                <div class="col-md-3">
-                    <div class="page-header-title">
-                        <i class="ik ik-user bg-blue"></i>
-                        <div class="d-inline">
-                            <h5>{{ __('menu.users') }}</h5>
-                            <span>{{ __('action.edit') }}</span>
-                        </div>
+    <div class="document-page-modern">
+        <!-- Page Header -->
+        <div class="page-header-modern">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i data-lucide="user-cog"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>{{ __('menu.users') }}</h1>
+                        <p>{{ __('action.edit') }} - {{ $user->userPersonal->l_name??'' }} {{ $user->userPersonal->f_name??'' }}</p>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    @include('templates.alert')
-                </div>
-                <div class="col-md-3">
-                    <nav class="breadcrumb-container" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('home') }}"><i class="ik ik-home"></i></a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('users.index') }}">{{ __('menu.users') }}</a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('users.show', $user->user_hash) }}">
-                                    {{ $user->userPersonal->l_name??'' }} {{ $user->userPersonal->f_name??'' }}
-                                </a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">{{ __('action.edit') }}</li>
-                        </ol>
+                <div class="header-right">
+                    <nav class="breadcrumb-modern">
+                        <a href="{{ route('home') }}" class="breadcrumb-item">
+                            <i data-lucide="home"></i>
+                            <span>{{ __('menu.home') ?? 'Главная' }}</span>
+                        </a>
+                        <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                        <a href="{{ route('users.index') }}" class="breadcrumb-item">
+                            <span>{{ __('menu.users') }}</span>
+                        </a>
+                        <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                        <a href="{{ route('users.show', $user->user_hash) }}" class="breadcrumb-item">
+                            <span>{{ $user->userPersonal->l_name??'' }} {{ $user->userPersonal->f_name??'' }}</span>
+                        </a>
+                        <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                        <span class="breadcrumb-item active">{{ __('action.edit') }}</span>
                     </nav>
                 </div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-lg-4 col-md-5">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="text-center">
+        <!-- Alert Messages -->
+        <div class="col-md-12">
+            @include('templates.alert')
+        </div>
+
+        <div class="content-wrapper-modern user-profile-layout">
+            <!-- Left Sidebar - User Profile Card -->
+            <div class="profile-sidebar">
+                <div class="profile-card-modern">
+                    <!-- Profile Photo Section -->
+                    <div class="profile-photo-section">
+                        <div class="profile-photo-wrapper">
                             @if(file_exists(public_path().'/profile_img/'.'img_'.$user->id.'.png'))
-                                <img src="/profile_img/img_{{ $user->id }}.png" class="rounded-circle" width="150" />
+                                <img src="/profile_img/img_{{ $user->id }}.png" class="profile-photo" alt="Profile Photo" />
                             @else
-                                <img src="{{URL::asset('/images/profile_image1.png')}}" class="rounded-circle" width="150" />
+                                <img src="{{URL::asset('/images/profile_image1.png')}}" class="profile-photo" alt="Default Profile" />
                             @endif
-                            <h4 class="card-title mt-10">{{ $user->userPersonal->l_name??'' }} {{ $user->userPersonal->f_name??'' }}</h4>
-                            <p class="card-subtitle">{{ $user->userPersonal->m_name??'' }}</p>
-                            <div class="row text-center justify-content-md-center" hidden>
-                                <div class="col-4">
-                                    <a href="javascript:void(0)" class="link">
-                                        <i class="ik ik-user"></i> <font class="font-medium">-</font>
-                                    </a>
-                                </div>
-                                <div class="col-4">
-                                    <a href="javascript:void(0)" class="link">
-                                        <i class="ik ik-image"></i> <font class="font-medium">-</font>
-                                    </a>
-                                </div>
+                            <div class="profile-status-badge">
+                                <i data-lucide="check-circle"></i>
+                            </div>
+                        </div>
+                        <div class="profile-name-section">
+                            <h3 class="profile-name">{{ $user->userPersonal->l_name??'' }} {{ $user->userPersonal->f_name??'' }}</h3>
+                            <p class="profile-middle-name">{{ $user->userPersonal->m_name??'' }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Profile Info Section -->
+                    <div class="profile-info-section">
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i data-lucide="briefcase"></i>
+                                <span>{{ __('field.department') }}</span>
+                            </div>
+                            <div class="info-value">{{ $user->currentWork->department->name_uz??'-' }}</div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i data-lucide="user-check"></i>
+                                <span>{{ __('field.user_posts') }}</span>
+                            </div>
+                            <div class="info-value">{{ $user->currentWork->position->name_uz??'-' }}</div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i data-lucide="calendar"></i>
+                                <span>{{ __('field.user_position_from_date') }}</span>
+                            </div>
+                            <div class="info-value">
+                                @php($user_position_from_date = $user->currentWork->from_date??now())
+                                {{ date('d.m.Y', strtotime($user->fromPositionDate($user_position_from_date))) }}
                             </div>
                         </div>
                     </div>
-                    <hr class="mb-0">
-                    <div class="card-body">
-                        <h6 class="text-muted d-block">{{ __('field.department') }}:</h6>
-                        <h6>{{ $user->currentWork->department->name_uz??'' }}</h6>
-                        <h6 class="text-muted d-block pt-10">{{ __('field.user_posts') }}:</h6>
-                        <h6>{{ $user->currentWork->position->name_uz??'' }}</h6>
-                        <h6 class="text-muted d-block pt-10">{{ __('field.user_position_from_date') }}</h6>
-                        @php($user_position_from_date = $user->currentWork->from_date??now())
-                        <h6>{!! $user->fromPositionDate($user_position_from_date) !!}</h6>
 
-                        <h5 class="mt-30">{{ __('field.user_roles') }}</h5>
-                        <hr>
-                        @foreach($userRoles as $key => $item)
-                            <span class="badge badge-pill badge-primary mb-1">
-                                {{ $item->lang($item->role_id) }}
-                            </span>
-                        @endforeach
+                    <!-- User Roles Section -->
+                    <div class="profile-roles-section">
+                        <div class="roles-header">
+                            <i data-lucide="shield"></i>
+                            <span>{{ __('field.user_roles') }}</span>
+                        </div>
+                        <div class="roles-list">
+                            @foreach($userRoles as $key => $item)
+                                <span class="badge-modern badge-primary">
+                                    {{ $item->lang($item->role_id) }}
+                                </span>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-8 col-md-7">
-                <div class="card">
-                    <ul class="nav nav-pills custom-pills" id="pills-tab" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" id="pills-user-personal-tab" data-toggle="pill" href="#user-personal" role="tab" aria-controls="pills-user-personal" aria-selected="false">
-                                {{ __('field.user_personal_info') }}
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="pills-user-working-tab" data-toggle="pill" href="#user-working" role="tab" aria-controls="pills-user-working" aria-selected="true">
-                                {{ __('field.user_working_histories') }}
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="pills-user-login-password-tab" data-toggle="pill" href="#user-login-password" role="tab" aria-controls="pills-user-login-password" aria-selected="false">
-                                {{ __('field.user_login_password') }}
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="pills-user-setting-tab" data-toggle="pill" href="#user-setting" role="tab" aria-controls="pills-user-setting" aria-selected="false">
-                                {{ __('field.user_setting') }}
-                            </a>
-                        </li>
-                    </ul>
-                    <div class="tab-content" id="pills-tabContent">
-                        <div class="tab-pane fade show active" id="user-personal" role="tabpanel" aria-labelledby="pills-user-personal-tab">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-3 col-6"> <strong>Username (Login)</strong>
-                                        <br>
-                                        <p class="text-muted">{{ $user->username }}</p>
+
+            <!-- Right Content - Tabs Section -->
+            <div class="profile-content">
+                <div class="tabs-card-modern">
+                    <!-- Tab Navigation -->
+                    <div class="tabs-nav-modern">
+                        <button class="tab-link active" data-tab="user-personal">
+                            <i data-lucide="user"></i>
+                            <span>{{ __('field.user_personal_info') }}</span>
+                        </button>
+                        <button class="tab-link" data-tab="user-working">
+                            <i data-lucide="briefcase"></i>
+                            <span>{{ __('field.user_working_histories') }}</span>
+                        </button>
+                        <button class="tab-link" data-tab="user-login-password">
+                            <i data-lucide="lock"></i>
+                            <span>{{ __('field.user_login_password') }}</span>
+                        </button>
+                        <button class="tab-link" data-tab="user-setting">
+                            <i data-lucide="settings"></i>
+                            <span>{{ __('field.user_setting') }}</span>
+                        </button>
+                    </div>
+
+                    <!-- Tab Content -->
+                    <div class="tabs-content-modern">
+                        <!-- Personal Info Tab -->
+                        <div class="tab-pane active" id="user-personal">
+                            <div class="tab-pane-header">
+                                <h3>{{ __('field.user_personal_info') }}</h3>
+                            </div>
+
+                            <div class="personal-info-grid">
+                                <div class="info-card">
+                                    <div class="info-card-icon">
+                                        <i data-lucide="user" class="text-white"></i>
                                     </div>
-                                    <div class="col-md-3 col-6"> <strong>Email</strong>
-                                        <br>
-                                        <p class="text-muted">{{ $user->email }}</p>
-                                    </div>
-                                    <div class="col-md-3 col-6"> <strong>Mobile</strong>
-                                        <br>
-                                        <p class="text-muted">{{ $user->userPersonal->phone??'-' }}</p>
-                                    </div>
-                                    <div class="col-md-3 col-6"> <strong>Status</strong>
-                                        <br>
-                                        <p class="text-muted">
-                                            <span class="badge badge-pill @if($user->status == 1) badge-green @else badge-danger @endif text-white">
-                                                {{ $user->isActive($user->status) }}
-                                            </span>
-                                        </p>
+                                    <div class="info-card-content">
+                                        <div class="info-card-label">Username (Login)</div>
+                                        <div class="info-card-value">{{ $user->username }}</div>
                                     </div>
                                 </div>
-                                <hr>
-                                <p class="mt-30">Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt.Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim.</p>
-                                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries </p>
-                                <p>It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
 
-                                <hr>
-                                <a href="{{ route('users.edit', $user->user_hash) }}" class="btn btn-info">
-                                    <i class="ik ik-edit-1"></i> {{ __('action.edit') }}
+                                <div class="info-card">
+                                    <div class="info-card-icon">
+                                        <i data-lucide="mail" class="text-white"></i>
+                                    </div>
+                                    <div class="info-card-content">
+                                        <div class="info-card-label">Email</div>
+                                        <div class="info-card-value">{{ $user->email }}</div>
+                                    </div>
+                                </div>
+
+                                <div class="info-card">
+                                    <div class="info-card-icon">
+                                        <i data-lucide="phone" class="text-white"></i>
+                                    </div>
+                                    <div class="info-card-content">
+                                        <div class="info-card-label">Mobile</div>
+                                        <div class="info-card-value">{{ $user->userPersonal->phone??'-' }}</div>
+                                    </div>
+                                </div>
+
+                                <div class="info-card">
+                                    <div class="info-card-icon">
+                                        <i data-lucide="activity" class="text-white"></i>
+                                    </div>
+                                    <div class="info-card-content">
+                                        <div class="info-card-label">Status</div>
+                                        <div class="info-card-value">
+                                            @if($user->status == 1)
+                                                <span class="status-badge-modern badge-success">
+                                                    <i data-lucide="check-circle"></i>
+                                                    {{ $user->isActive($user->status) }}
+                                                </span>
+                                            @else
+                                                <span class="status-badge-modern badge-danger">
+                                                    <i data-lucide="x-circle"></i>
+                                                    {{ $user->isActive($user->status) }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="description-section">
+                                <h4>{{ __('field.description') ?? 'Описание' }}</h4>
+                            </div>
+
+                            <div class="action-buttons">
+                                <a href="{{ route('users.edit', $user->user_hash) }}" class="btn-modern btn-primary">
+                                    <i data-lucide="edit"></i>
+                                    <span>{{ __('action.edit') }}</span>
                                 </a>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="user-working" role="tabpanel" aria-labelledby="pills-user-working-tab">
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-bordered">
+
+                        <!-- Working History Tab -->
+                        <div class="tab-pane" id="user-working">
+                            <div class="tab-pane-header">
+                                <h3>{{ __('field.user_working_histories') }}</h3>
+                            </div>
+
+                            <div class="table-card-modern">
+                                <div class="table-wrapper-modern">
+                                    <table class="modern-table">
                                         <thead>
                                         <tr>
-                                            <th>{{ __('field.number') }}</th>
-                                            <th>{{ __('field.dep_id') }}</th>
-                                            <th>{{ __('field.post_id') }}</th>
-                                            <th>{{ __('field.from_date') }}</th>
-                                            <th>{{ __('field.to_date') }}</th>
-                                            <th>{{ __('field.status') }}</th>
-                                            <th>{{ __('field.date') }}</th>
+                                            <th><i data-lucide="hash"></i> {{ __('field.number') }}</th>
+                                            <th><i data-lucide="briefcase"></i> {{ __('field.dep_id') }}</th>
+                                            <th><i data-lucide="user-check"></i> {{ __('field.post_id') }}</th>
+                                            <th><i data-lucide="calendar"></i> {{ __('field.from_date') }}</th>
+                                            <th><i data-lucide="calendar-x"></i> {{ __('field.to_date') }}</th>
+                                            <th><i data-lucide="activity"></i> {{ __('field.status') }}</th>
+                                            <th><i data-lucide="clock"></i> {{ __('field.date') }}</th>
                                         </tr>
                                         </thead>
                                         <tbody>
                                         @forelse($userWorkingHistories as $key => $item)
-                                            <tr class="text-center">
-                                                <td>{{ $key+1 }}</td>
-                                                <td>{{ $item->department->name_uz??'' }}</td>
-                                                <td>{{ $item->position->name_uz??'' }}</td>
-                                                <td>{{ date('d.m.Y', strtotime($item->from_date)) }}</td>
-                                                <td>{{ date('d.m.Y', strtotime($item->to_date)) }}</td>
-                                                <td>{{ $item->status }}</td>
-                                                <td>{{ date('d.m.Y', strtotime($item->created_at)) }}</td>
+                                            <tr class="table-row-modern">
+                                                <td class="td-number">{{ $key+1 }}</td>
+                                                <td>{{ $item->department->name_uz??'-' }}</td>
+                                                <td>{{ $item->position->name_uz??'-' }}</td>
+                                                <td class="td-date">{{ date('d.m.Y', strtotime($item->from_date)) }}</td>
+                                                <td class="td-date">{{ date('d.m.Y', strtotime($item->to_date)) }}</td>
+                                                <td>
+                                                    <span class="badge-modern badge-info">{{ $item->status }}</span>
+                                                </td>
+                                                <td class="td-date">{{ date('d.m.Y', strtotime($item->created_at)) }}</td>
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="7" class="text-center">{{ __('field.not_found') }}</td>
+                                                <td colspan="7" class="empty-state">
+                                                    <div class="empty-state-content">
+                                                        <i data-lucide="briefcase"></i>
+                                                        <p>{{ __('field.not_found') }}</p>
+                                                    </div>
+                                                </td>
                                             </tr>
                                         @endforelse
                                         </tbody>
@@ -178,69 +257,173 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="user-login-password" role="tabpanel" aria-labelledby="pills-user-login-password-tab">
-                            <div class="card-body">
-                                <form method="POST" action="{{ url('admin/user/edit-user-login-password', [$user->id, $user->user_hash]) }}" class="form-horizontal">
-                                    @csrf
-                                    @method('PUT')
-                                    <div class="form-group">
-                                        <label for="example-name">{{ __('field.email') }}</label>
-                                        <input type="email" value="{{ $user->email }}" class="form-control" name="email">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="example-name">{{ __('field.username') }}</label>
-                                        <input type="text" value="{{ $user->username }}" class="form-control" name="username">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="example-password">{{ __('field.password') }}</label>
-                                        <input type="password" class="form-control" name="password" id="password">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="example-password">{{ __('field.confirm_password') }}</label>
-                                        <input type="password" class="form-control" name="password_confirmation" id="password_confirmation">
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i data-lucide="save"></i> {{ __('action.save') }}
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="user-setting" role="tabpanel" aria-labelledby="pills-user-setting-tab">
-                            <div class="card-body">
-                                <form method="POST" action="{{ url('admin/user/edit-user-status', [$user->id, $user->user_hash]) }}" class="form-horizontal">
-                                    @csrf
-                                    @method('PUT')
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label>{{ __('field.user_status') }}</label>
-                                                <select class="form-control select2" name="user_status" style="width: 100%">
-                                                    @foreach($statusList as $key => $item)
-                                                        <option value="{{ $item->code }}" @if($item->code == $user->status) selected @endif>
-                                                            {{ $key+1 }}. {{ $item->lang($item->id) }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
 
-                                        <div class="col-md-2">
-                                            <div class="form-group">
-                                                <label>{{ __('field.user_sort') }}</label>
-                                                <input class="form-control" name="user_sort" style="width: 50%"
-                                                       value="{{ $user->userPersonal->sort }}" type="number"/>
-                                            </div>
+                        <!-- Login & Password Tab -->
+                        <div class="tab-pane" id="user-login-password">
+                            <div class="tab-pane-header">
+                                <h3>{{ __('field.user_login_password') }}</h3>
+                            </div>
+
+                            <form method="POST" action="{{ url('admin/user/edit-user-login-password', [$user->id, $user->user_hash]) }}" class="modern-form">
+                                @csrf
+                                @method('PUT')
+
+                                <div class="form-grid">
+                                    <div class="form-group-modern full-width">
+                                        <label>
+                                            <i data-lucide="mail"></i>
+                                            {{ __('field.email') }}
+                                        </label>
+                                        <input type="email" value="{{ $user->email }}" class="form-control-modern" name="email" required>
+                                    </div>
+
+                                    <div class="form-group-modern full-width">
+                                        <label>
+                                            <i data-lucide="user"></i>
+                                            {{ __('field.username') }}
+                                        </label>
+                                        <input type="text" value="{{ $user->username }}" class="form-control-modern" name="username" required>
+                                    </div>
+
+                                    <div class="form-group-modern">
+                                        <label>
+                                            <i data-lucide="lock"></i>
+                                            {{ __('field.password') }}
+                                        </label>
+                                        <div class="password-input-wrapper">
+                                            <input type="password" class="form-control-modern" name="password" id="password" placeholder="{{ __('field.new_password') ?? 'Новый пароль' }}">
+                                            <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                                                <i data-lucide="eye"></i>
+                                            </button>
                                         </div>
                                     </div>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i data-lucide="save"></i> {{ __('action.save') }}
+
+                                    <div class="form-group-modern">
+                                        <label>
+                                            <i data-lucide="lock"></i>
+                                            {{ __('field.confirm_password') }}
+                                        </label>
+                                        <div class="password-input-wrapper">
+                                            <input type="password" class="form-control-modern" name="password_confirmation" id="password_confirmation" placeholder="{{ __('field.confirm_password') }}">
+                                            <button type="button" class="password-toggle" onclick="togglePassword('password_confirmation')">
+                                                <i data-lucide="eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn-modern btn-primary">
+                                        <i data-lucide="save"></i>
+                                        <span>{{ __('action.save') }}</span>
                                     </button>
-                                </form>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Settings Tab -->
+                        <div class="tab-pane" id="user-setting">
+                            <div class="tab-pane-header">
+                                <h3>{{ __('field.user_setting') }}</h3>
                             </div>
+
+                            <form method="POST" action="{{ url('admin/user/edit-user-status', [$user->id, $user->user_hash]) }}" class="modern-form">
+                                @csrf
+                                @method('PUT')
+
+                                <div class="form-grid">
+                                    <div class="form-group-modern">
+                                        <label>
+                                            <i data-lucide="activity"></i>
+                                            {{ __('field.user_status') }}
+                                        </label>
+                                        <select class="form-control-modern select2" name="user_status" style="width: 100%">
+                                            @foreach($statusList as $key => $item)
+                                                <option value="{{ $item->code }}" @if($item->code == $user->status) selected @endif>
+                                                    {{ $key+1 }}. {{ $item->lang($item->id) }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group-modern">
+                                        <label>
+                                            <i data-lucide="arrow-up-down"></i>
+                                            {{ __('field.user_sort') }}
+                                        </label>
+                                        <input class="form-control-modern" name="user_sort" value="{{ $user->userPersonal->sort }}" type="number" min="0"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn-modern btn-primary">
+                                        <i data-lucide="save"></i>
+                                        <span>{{ __('action.save') }}</span>
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        // Tab Switching Logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabLinks = document.querySelectorAll('.tab-link');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+
+            tabLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-tab');
+
+                    // Remove active class from all tabs and panes
+                    tabLinks.forEach(l => l.classList.remove('active'));
+                    tabPanes.forEach(p => p.classList.remove('active'));
+
+                    // Add active class to clicked tab and corresponding pane
+                    this.classList.add('active');
+                    document.getElementById(targetTab).classList.add('active');
+
+                    // Reinitialize Lucide icons for the new content
+                    if (typeof lucide !== 'undefined') {
+                        lucide.createIcons();
+                    }
+                });
+            });
+
+            // Initialize Select2
+            if (typeof $.fn.select2 !== 'undefined') {
+                $('.select2').select2({
+                    placeholder: "{{ __('action.select') }}",
+                    allowClear: true
+                });
+            }
+
+            // Initialize Lucide icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+
+        // Password Toggle Function
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const button = field.nextElementSibling;
+
+            if (field.type === 'password') {
+                field.type = 'text';
+                button.innerHTML = '<i data-lucide="eye-off"></i>';
+            } else {
+                field.type = 'password';
+                button.innerHTML = '<i data-lucide="eye"></i>';
+            }
+
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+    </script>
 @endsection

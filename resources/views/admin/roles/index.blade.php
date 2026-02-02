@@ -36,7 +36,7 @@
                 <div class="card">
                     <div class="card-header d-block">
                         <a href="{{ route('roles.create') }}" class="btn btn-primary">
-                            <i class="ik ik-plus-circle"></i> {{ __('action.create') }}
+                            <i data-lucide="circle-plus"></i> {{ __('action.create') }}
                         </a>
                     </div>
                     <div class="card-body template-demo">
@@ -67,13 +67,13 @@
                                         <td>
                                             <a href="{{ url('admin/roles/'.$model->id.'/give-permissions') }}"
                                                class="btn btn-sm btn-success">
-                                                <i class="ik ik-settings"></i> {{ __('action.add-edit-permission') }}
+                                                <i data-lucide="settings"></i> {{ __('action.add-edit-permission') }}
                                             </a>
                                         </td>
                                         <td>
                                             <a href="{{ url('admin/roles/'.$model->id.'/edit') }}"
                                                class="btn btn-sm btn-info">
-                                                <i class="ik ik-edit-1"></i> {{ __('action.edit') }}
+                                                <i data-lucide="square-pen"></i> {{ __('action.edit') }}
                                             </a>
                                             <button value="{{ $model->id }}" class="btn btn-sm btn-danger delete_btn">
                                                 <i class="ik ik-trash-2"></i> {{ __('action.delete') }}

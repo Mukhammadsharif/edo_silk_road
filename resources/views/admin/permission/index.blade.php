@@ -32,7 +32,7 @@
                 <div class="card">
                     <div class="card-header d-block">
                         <a href="{{ route('permissions.create') }}" class="btn btn-primary">
-                            <i class="ik ik-plus-circle"></i>{{ __('action.create') }}
+                            <i data-lucide="circle-plus"></i>{{ __('action.create') }}
                         </a>
                     </div>
                     <div class="card-body template-demo">
@@ -69,7 +69,7 @@
                                             @can('permission-edit')
                                                 <a href="{{ url('admin/permissions/'.$model->id.'/edit') }}"
                                                    class="btn btn-sm btn-info">
-                                                    <i class="ik ik-edit-1"></i> {{ __('action.edit') }}
+                                                    <i data-lucide="square-pen"></i> {{ __('action.edit') }}
                                                 </a>
                                             @endcan
 

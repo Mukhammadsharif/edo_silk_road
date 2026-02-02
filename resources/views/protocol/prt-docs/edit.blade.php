@@ -37,7 +37,7 @@
             <div class="col-md-8 offset-1">
                 <div class="card">
                     <div class="card-header">
-                        <h3><i class="ik ik-edit-1"></i> {{ __('action.edit_document') }}</h3>
+                        <h3><i data-lucide="square-pen"></i> {{ __('action.edit_document') }}</h3>
                     </div>
                     <div class="card-body">
                         <form method="POST" action="{{ route('prt-secretary-update', [$document->id, $document->doc_hash]) }}" enctype="multipart/form-data">

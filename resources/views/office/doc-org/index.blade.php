@@ -36,7 +36,7 @@
                 <div class="card">
                     <div class="card-header">
                         <a href="{{ route('doc-org.create') }}" class="btn btn-primary">
-                            <i class="ik ik-plus-circle"></i> {{ __('action.create') }}
+                            <i data-lucide="circle-plus"></i> {{ __('action.create') }}
                         </a>
                     </div>
                     <div class="card-header d-block">
@@ -49,10 +49,10 @@
                                            value="{{ $org_name??'' }}" class="form-control">
                                 </div>
                                     <button type="submit" class="btn btn-info mr-5 mr-10">
-                                        <i class="ik ik-search"></i> {{ __('action.search') }} ({{ $models->total() }})
+                                        <i data-lucide="search"></i> {{ __('action.search') }} ({{ $models->total() }})
                                     </button>
                                     <a href="{{ route('doc-org.index') }}" class="btn btn-light">
-                                        <i class="ik ik-refresh-ccw"></i>{{ __('action.clear') }}
+                                        <i data-lucide="refresh-ccw"></i>{{ __('action.clear') }}
                                     </a>
                             </div>
                         </form><hr>
@@ -92,7 +92,7 @@
                                         <td style="width: 200px">
                                             <a href="{{ route('doc-org.edit', $model->id) }}"
                                                class="btn btn-sm btn-info">
-                                                <i class="ik ik-edit-1"></i> {{ __('action.edit') }}
+                                                <i data-lucide="square-pen"></i> {{ __('action.edit') }}
                                             </a>
                                         </td>
                                         <td>{{ \Carbon\Carbon::parse($model->created_at)->format('d.m.y, H:i') }}</td>

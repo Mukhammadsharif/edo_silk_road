@@ -1,0 +1,605 @@
+/* ========================================
+   USER PROFILE PAGE STYLES
+   Стили для страницы профиля пользователя
+   ======================================== */
+
+/* ========================================
+   LAYOUT STRUCTURE
+   ======================================== */
+.user-profile-layout {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+/* ========================================
+   PROFILE SIDEBAR
+   ======================================== */
+.profile-sidebar {
+    position: sticky;
+    top: 2rem;
+}
+
+.profile-card-modern {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+}
+
+.profile-card-modern:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* ========================================
+   PROFILE PHOTO SECTION
+   ======================================== */
+.profile-photo-section {
+    padding: 2rem;
+    text-align: center;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.profile-photo-wrapper {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+.profile-photo {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 5px solid white;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.profile-photo:hover {
+    transform: scale(1.05);
+}
+
+.profile-status-badge {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-radius: 50%;
+    border: 3px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+}
+
+.profile-status-badge i {
+    width: 16px;
+    height: 16px;
+    color: white;
+}
+
+.profile-name-section {
+    margin-top: 1rem;
+}
+
+.profile-name {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.profile-middle-name {
+    margin: 0.5rem 0 0 0;
+    font-size: 14px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+/* ========================================
+   PROFILE INFO SECTION
+   ======================================== */
+.profile-info-section {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.info-item:hover {
+    background: #f1f5f9;
+    transform: translateX(4px);
+}
+
+.info-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-label i {
+    width: 16px;
+    height: 16px;
+    color: #794DFD;
+}
+
+.info-value {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1e293b;
+    padding-left: 1.5rem;
+}
+
+/* ========================================
+   PROFILE ROLES SECTION
+   ======================================== */
+.profile-roles-section {
+    padding: 1.5rem;
+    border-top: 2px solid #f1f5f9;
+}
+
+.roles-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1rem;
+}
+
+.roles-header i {
+    width: 20px;
+    height: 20px;
+    color: #794DFD;
+}
+
+.roles-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* ========================================
+   TABS CARD
+   ======================================== */
+.tabs-card-modern {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* ========================================
+   TABS NAVIGATION
+   ======================================== */
+.tabs-nav-modern {
+    display: flex;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-bottom: 2px solid #e2e8f0;
+    overflow-x: auto;
+}
+
+.tab-link {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    white-space: nowrap;
+}
+
+.tab-link i {
+    width: 18px;
+    height: 18px;
+}
+
+.tab-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.tab-link:hover {
+    color: #794DFD;
+    background: rgba(121, 77, 253, 0.05);
+}
+
+.tab-link.active {
+    color: #794DFD;
+    background: white;
+}
+
+.tab-link.active::after {
+    transform: scaleX(1);
+}
+
+/* ========================================
+   TABS CONTENT
+   ======================================== */
+.tabs-content-modern {
+    position: relative;
+}
+
+.tab-pane {
+    display: none;
+    padding: 2rem;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tab-pane-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.tab-pane-header h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.tab-pane-header h3::before {
+    content: '';
+    width: 4px;
+    height: 24px;
+    background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+    border-radius: 2px;
+}
+
+/* ========================================
+   PERSONAL INFO GRID
+   ======================================== */
+.personal-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.info-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.info-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-color: #794DFD;
+}
+
+.info-card-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(121, 77, 253, 0.3);
+}
+
+.info-card-icon i {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+
+.info-card-content {
+    flex: 1;
+}
+
+.info-card-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-card-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    word-break: break-word;
+}
+
+/* ========================================
+   DESCRIPTION SECTION
+   ======================================== */
+.description-section {
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+}
+
+.description-section h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.description-section h4::before {
+    content: '';
+    width: 3px;
+    height: 18px;
+    background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+    border-radius: 2px;
+}
+
+.description-section p {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #475569;
+    margin-bottom: 1rem;
+}
+
+.description-section p:last-child {
+    margin-bottom: 0;
+}
+
+/* ========================================
+   MODERN FORM STYLES
+   ======================================== */
+.modern-form {
+    width: 100%;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.form-group-modern {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group-modern.full-width {
+    grid-column: span 2;
+}
+
+.form-group-modern label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    margin: 0;
+}
+
+.form-group-modern label i {
+    width: 16px;
+    height: 16px;
+    color: #794DFD;
+}
+
+/* ========================================
+   PASSWORD INPUT WRAPPER
+   ======================================== */
+.password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-input-wrapper .form-control-modern {
+    padding-right: 3rem;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 0.75rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    transition: all 0.3s ease;
+    border-radius: 6px;
+}
+
+.password-toggle:hover {
+    color: #794DFD;
+    background: rgba(121, 77, 253, 0.1);
+}
+
+.password-toggle i {
+    width: 20px;
+    height: 20px;
+}
+
+/* ========================================
+   ACTION BUTTONS
+   ======================================== */
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 2px solid #f1f5f9;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+@media (max-width: 1200px) {
+    .user-profile-layout {
+        grid-template-columns: 300px 1fr;
+    }
+}
+
+@media (max-width: 992px) {
+    .user-profile-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-sidebar {
+        position: static;
+    }
+
+    .tabs-nav-modern {
+        overflow-x: auto;
+    }
+
+    .tab-link {
+        flex: none;
+        min-width: 150px;
+    }
+}
+
+@media (max-width: 768px) {
+    .document-page-modern {
+        padding: 1rem;
+    }
+
+    .personal-info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group-modern.full-width {
+        grid-column: span 1;
+    }
+
+    .profile-photo {
+        width: 120px;
+        height: 120px;
+    }
+
+    .tab-link span {
+        display: none;
+    }
+
+    .tab-link {
+        min-width: auto;
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .info-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .action-buttons,
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn-modern {
+        width: 100%;
+    }
+}
+
+/* ========================================
+   SMOOTH TRANSITIONS
+   ======================================== */
+* {
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+    transition-duration: 0.3s;
+    transition-timing-function: ease;
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+.tabs-nav-modern::-webkit-scrollbar {
+    height: 4px;
+}
+
+.tabs-nav-modern::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.tabs-nav-modern::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+    border-radius: 4px;
+}
+
+.tabs-nav-modern::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #6b42e4 0%, #8c5aed 100%);
+}

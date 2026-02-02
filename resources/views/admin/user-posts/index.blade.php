@@ -35,7 +35,7 @@
                 <div class="card">
                     <div class="card-header d-block">
                         <a href="{{ route('user-posts.create') }}" class="btn btn-primary">
-                            <i class="ik ik-plus-circle"></i>{{ __('action.create') }}
+                            <i data-lucide="circle-plus"></i>{{ __('action.create') }}
                         </a>
                     </div>
                     <div class="card-body template-demo">
@@ -46,9 +46,9 @@
                                     <div class="col-4">
                                         <input type="text" name="s_text" value="{{ $s_text??'' }}" class="form-control" placeholder="{{ __('action.search') }}...">
                                     </div>
-                                    <button type="submit" class="btn btn-info mr-1 mb-2 mr-10"><i class="ik ik-search"></i> {{ __('action.search') }} ({{ $models->total() }})</button>
+                                    <button type="submit" class="btn btn-info mr-1 mb-2 mr-10"><i data-lucide="search"></i> {{ __('action.search') }} ({{ $models->total() }})</button>
                                     <a href="{{ route('user-posts.index') }}" class="btn btn-light mb-2">
-                                        <i class="ik ik-refresh-ccw"></i>{{ __('action.clear') }}
+                                        <i data-lucide="refresh-ccw"></i>{{ __('action.clear') }}
                                     </a>
                                 </div>
                             </form>
@@ -83,7 +83,7 @@
                                         </td>
                                         <td>
                                             <a href="{{ route('user-posts.edit', $item->id) }}" class="btn btn-info">
-                                                <i class="ik ik-edit-1"></i> {{ __('action.edit') }}
+                                                <i data-lucide="square-pen"></i> {{ __('action.edit') }}
                                             </a>
                                         </td>
                                         <td>{{ \Carbon\Carbon::parse($item->created_at)->format('d.m.y, H:i') }}</td>

@@ -40,7 +40,7 @@
                                 <form action="{{ route('hr.emp') }}" method="POST" role="search" class="form-inline w-100">
                                     @csrf
                                     <a href="{{ route('hr.emp.create') }}" class="btn btn-primary mb-2 mr-sm-2">
-                                        <i class="ik ik-plus-circle"></i>{{ __('action.create') }}
+                                        <i data-lucide="circle-plus"></i>{{ __('action.create') }}
                                     </a>
                                     <input type="text" name="s_text" placeholder="{{ __('action.search') }}" value="{{ $s_text??'' }}" class="form-control w-25 mb-2 mr-sm-2">
 
@@ -67,7 +67,7 @@
                                     </div>
 
                                     <button type="submit" class="btn btn-info mb-2 mr-10">
-                                        <i class="ik ik-search"></i>
+                                        <i data-lucide="search"></i>
                                         {{ __('action.search') }} ({{ $models->total() }})
                                     </button>
                                     <a href="{{ route('hr.emp') }}" class="btn btn-light mb-2">

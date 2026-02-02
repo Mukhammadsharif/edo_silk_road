@@ -32,7 +32,7 @@
                     <div class="card-body template-demo">
                         @if($user->status == 1)
                             <a href="{{ route('education.show', $user->id) }}" class="btn btn-primary">
-                                <i class="ik ik-plus-circle"></i>{{ __('action.create') }}
+                                <i data-lucide="circle-plus"></i>{{ __('action.create') }}
                             </a>
                         @endif
                         <table class="table table-striped table-bordered">

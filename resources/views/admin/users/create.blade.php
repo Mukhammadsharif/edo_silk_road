@@ -34,7 +34,7 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h3><i class="ik ik-plus-circle"></i> {{ __('field.create_user') }}</h3>
+                        <h3><i data-lucide="circle-plus"></i> {{ __('field.create_user') }}</h3>
                     </div>
                     <div class="card-body">
                         <form method="POST" action="{{ route('users.store') }}">

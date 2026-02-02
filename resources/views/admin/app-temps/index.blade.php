@@ -34,7 +34,7 @@
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-header d-block">
-                        <a href="{{ route('app-temps.create') }}" class="btn btn-outline-primary"><i class="ik ik-plus-circle"></i>{{ __('create') }}</a>
+                        <a href="{{ route('app-temps.create') }}" class="btn btn-outline-primary"><i data-lucide="circle-plus"></i>{{ __('create') }}</a>
                     </div>
                     <div class="card-body template-demo">
                         <div class="table-responsive">

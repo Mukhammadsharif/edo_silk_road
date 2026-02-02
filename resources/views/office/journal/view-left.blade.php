@@ -197,7 +197,7 @@
                             @default
                                 <div class="file-item-modern">
                                     <div class="file-icon">
-                                        <i data-lucide="file" class="icon"></i>
+                                        <i data-lucide="file" class="icon text-white"></i>
                                     </div>
                                     <div class="file-info">
                                         <a href="{{ route('file.download', ['id'=>$file->id]) }}" class="file-link">

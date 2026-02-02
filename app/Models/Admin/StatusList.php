@@ -51,18 +51,18 @@ class StatusList extends Model
     {
         //
         $lang_name = StatusList::find($id);
-
         $name = 'Lang ID';
 
         if ($lang_name) {
-            $name = $lang_name->name_uz;
+            $name = $lang_name->title;
             $language = LanguageLine::find($lang_name->lang_id);
+
             if ($lang == 'ru') {
-                $name = $language->text['ru'] ?? '???';
+                $name = $language->text['ru'] ?? $name;
             } elseif ($lang == 'en') {
-                $name = $language->text['en'] ?? '???';
+                $name = $language->text['en'] ?? $name;
             } elseif ($lang == 'uz' || $lang == 'kr') {
-                $name = $language->text['uz'] ?? '???';
+                $name = $language->text['uz'] ?? $name;
             }
         }
 

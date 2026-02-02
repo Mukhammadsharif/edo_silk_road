@@ -8,7 +8,7 @@
 @endphp
 
 <header class="header-top d-flex justify-content-between align-items-center" header-theme="light">
-  
+
 
              <div class="logo">
                 <a href="{{ url('/edo') }}" class="logo-flex">
@@ -18,10 +18,10 @@
 
                 
             </div>
-      
+
                     <div class="top-menu d-flex align-items-center ms-auto">
 
-                    
+
                         @php $locale = session()->get('locale', 'uz'); @endphp
                         <div class="dropdown language-dropdown">
                             <a class="language-toggle d-flex align-items-center" href="#" id="menuDropdown"
@@ -48,7 +48,7 @@
                         </div>
 
 
-                     
+
                         <div class="dropdown ms-3">
                             <a class="dropdown-toggle d-flex align-items-center justify-content-center text-white"
                                href="#" id="userDropdown" role="button" data-toggle="dropdown"
@@ -69,8 +69,8 @@
                             </div>
                         </div>
                     </div>
-         
-   
+
+
 </header>
 
 
@@ -195,7 +195,7 @@
                 success: function (response) {
                     if (response.status === 200) {
                         modal.modal('hide');
-                    
+
                         setTimeout(() => window.location.reload(), 500);
                     }
                 },
@@ -283,7 +283,7 @@
 }
 
 .language-dropdown .dropdown-item:hover {
-    background-color: #f0f0ff; 
+    background-color: #f0f0ff;
     color: #794DFD;
 }
 
@@ -293,7 +293,7 @@
 }
 
 .language-dropdown .dropdown-item.active:hover {
-    background-color: #5f3de0; 
+    background-color: #5f3de0;
     color: white;
 }
 
@@ -331,7 +331,7 @@
 
 
     .flag-straight {
-    border-radius: 2px;         
+    border-radius: 2px;
     object-fit: cover;
     display: block;
     box-shadow: 0 1px 2px rgba(0,0,0,0.15);
@@ -417,11 +417,11 @@
         color: white;
     }
 
-    
+
     .flag-rounded {
-        border-radius: 4px;          
+        border-radius: 4px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-        object-fit: cover;            
+        object-fit: cover;
     }
 
 

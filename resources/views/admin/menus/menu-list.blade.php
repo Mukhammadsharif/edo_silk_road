@@ -25,7 +25,7 @@
                     <div class="card">
                         <div class="card-header">
                             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createModal">
-                                <i class="ik ik-plus-circle"></i> {{ __('action.create') }}
+                                <i data-lucide="circle-plus"></i> {{ __('action.create') }}
                             </button>
                         </div>
                         <div class="card-body">
@@ -529,6 +529,8 @@
                         else{
                             $( "#edit_status2" ).prop( "checked", true )
                         }
+
+                        if (window.lucide) lucide.createIcons();
                     },
                     complete:function(res){
                     }

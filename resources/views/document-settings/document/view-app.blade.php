@@ -44,10 +44,10 @@
                                            value="{{ $doc_name??'' }}" class="form-control">
                                 </div>
                                     <button type="submit" class="btn btn-info mr-5">
-                                        <i class="ik ik-search"></i> {{ __('action.search') }} ({{ $models->total() }})
+                                        <i data-lucide="search"></i> {{ __('action.search') }} ({{ $models->total() }})
                                     </button>
                                     <a href="{{ route('app-document') }}" class="btn btn-light">
-                                        <i class="ik ik-refresh-ccw"></i>{{ __('action.clear') }}
+                                        <i data-lucide="refresh-ccw"></i>{{ __('action.clear') }}
                                     </a>
                             </div>
                         </form>
@@ -79,7 +79,7 @@
                                         <td>
                                             <a href="{{ route('app-document.edit', $model->id) }}"
                                                class="btn btn-sm btn-info">
-                                                <i class="ik ik-edit-1"></i> {{ __('action.edit') }}
+                                                <i data-lucide="square-pen"></i> {{ __('action.edit') }}
                                             </a>
                                         </td>
                                         <td>{{ \Carbon\Carbon::parse($model->created_at)->format('d.m.Y H:i') }}</td>
