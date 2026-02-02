@@ -11,7 +11,7 @@
             </a>
         </div>
         <video class="auth-sidebar__video" playsinline autoplay loop muted
-            src="{{ asset('images/back2.mov') }}"></video>
+            src="{{ asset('images/back2.mp4') }}"></video>
 
         <div class="containers">
             <div class="tabs">
