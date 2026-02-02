@@ -48,9 +48,7 @@
                                 <input type="checkbox">
                                 {{ __('field.remember_me') }}
                             </label>
-                            <div class="forgot">
-{{--                                <a href="#">{{ __('field.forget_password_question') }}</a>--}}
-                            </div>
+                            <div class="forgot"></div>
                         </div>
 
                         <button type="submit" class="button">
@@ -63,13 +61,18 @@
                 <div class="tab-content" id="eri-tab">
                     <input type="hidden" name="eri" id="selectedEri" value="">
 
-                    <div class="input-group eri-selector" onclick="openUsbToken()">
+                    <div class="input-group">
                         <i data-lucide="key" class="icon"></i>
-                        <div class="eri-select-display" id="eriSelectDisplay">
-                            <span class="eri-placeholder">{{ __('action.choose_key') }}</span>
-                            <img src="https://esi.uz/oauth2/assets/images/icons/pfx.ico" alt="pfx" style="height: 18px; margin-left: auto;">
-                        </div>
+                        <select class="form-select" id="eriSelect" required  onmousedown="event.preventDefault(); openUsbToken();">
+                            <option value="">Tanlanmagan</option>
+                        </select>
                     </div>
+
+
+{{--                    <div class="button btn-usb input-group" onclick="openUsbToken()">--}}
+{{--                        <img src="https://esi.uz/oauth2/assets/images/icons/pfx.ico" alt="pfx" style="height: 20px">--}}
+{{--                        {{ __('action.choose_key') }}--}}
+{{--                    </div>--}}
 
                     <button onclick="signin()" class="button" id="eriLoginBtn" disabled style="margin-top: 15px;">
                         <i data-lucide="shield-check"></i>
@@ -105,29 +108,6 @@
     <script src="{{ asset('js/e_imzo.js') }}"></script>
     <script src="{{ asset('js/e_imzo_client.js') }}"></script>
     <script src="{{ asset('js/login_e_imzo.js') }}"></script>
-
-<script>
-    (function() {
-        const preloader = document.getElementById("cp-preloader");
-        const STRIPS = 16;
-
-        for (let i = 0; i < STRIPS; i++) {
-            const strip = document.createElement("div");
-            strip.className = "cp-strip";
-
-            const inner = document.createElement("span");
-            inner.style.setProperty("--i", i);
-
-            strip.appendChild(inner);
-            preloader.appendChild(strip);
-        }
-
-        // Hide preloader after animation completes naturally (~1.5s)
-        setTimeout(() => {
-            preloader.style.display = "none";
-        }, 1600);
-    })();
-</script>
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 
