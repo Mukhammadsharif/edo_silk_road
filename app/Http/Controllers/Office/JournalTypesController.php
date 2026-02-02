@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Office;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin\AppTemps;
+use App\Models\Admin\OrganizationUnits;
 use App\Models\Admin\Role;
 use App\Models\Document\DocumentExecutionRoles;
 use App\Models\Journal\JournalExecutionStepRoles;
@@ -12,7 +13,7 @@ use App\Models\Journal\JournalTypeControls;
 use App\Models\Journal\JournalTypes;
 use App\Services\LanguageService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 use Spatie\TranslationLoader\LanguageLine;
 
 class JournalTypesController extends Controller
@@ -23,9 +24,42 @@ class JournalTypesController extends Controller
     public function index(Request $request)
     {
         //
+        if($this->isSuperUser()) {
+            return $this->superUserIndex($request);
+        } else {
+            return $this->adminIndex($request);
+        }
+    }
+
+    public function superUserIndex(Request $request)
+    {
+        $s_text = $request->input('s_text');
+
+        $search = OrganizationUnits::where('status', 1);
+
+        if (trim(''.$s_text.'')) {
+            $search->where(
+                DB::raw("(name_uz || ' ' || name_kr || ' ' || name_ru || ' ' || name_en)"),
+                'ILIKE',
+                "%{$s_text}%"
+            );
+        }
+
+        $organizations = $search->paginate(25);
+
+        $organizations->appends([
+            's_text' => $s_text
+        ]);
+
+        return view('document-settings.document.super-user-index', compact('organizations', 's_text'))
+            ->with('i', (request()->input('page', 1) - 1) * 25);
+    }
+
+    public function superUserOrgDocs(Request $request, $orgId)
+    {
         $doc_name = $request->input('doc_name');
 
-        $search = JournalTypes::where('status', 1);
+        $search = JournalTypes::where('org_id', $orgId)->where('status', 1);
 
         if (trim(''.$doc_name.'')) {
             $search->where('title', 'LIKE', '%'.$doc_name.'%')->orWhere('doc_code', 'LIKE', '%'.$doc_name.'%');
@@ -37,7 +71,36 @@ class JournalTypesController extends Controller
             'doc_name' => $doc_name
         ]);
 
-        $parentDocumentTypes = JournalTypes::where('parent_id', 0)->where('status', 1)->orderBy('order_number')->get();
+        $parentDocumentTypes = JournalTypes::where('org_id', $orgId)
+            ->where('parent_id', 0)
+            ->where('status', 1)
+            ->orderBy('order_number')
+            ->get();
+
+        return view('document-settings.document.index', compact('models', 'doc_name', 'parentDocumentTypes'));
+    }
+
+    public function adminIndex(Request $request)
+    {
+        $doc_name = $request->input('doc_name');
+
+        $search = JournalTypes::where('org_id', $this->organizationId())->where('status', 1);
+
+        if (trim(''.$doc_name.'')) {
+            $search->where('title', 'LIKE', '%'.$doc_name.'%')->orWhere('doc_code', 'LIKE', '%'.$doc_name.'%');
+        }
+
+        $models = $search->orderBy('parent_id')->orderBy('order_number')->paginate(25);
+
+        $models->appends([
+            'doc_name' => $doc_name
+        ]);
+
+        $parentDocumentTypes = JournalTypes::where('org_id', $this->organizationId())
+            ->where('parent_id', 0)
+            ->where('status', 1)
+            ->orderBy('order_number')
+            ->get();
 
         return view('document-settings.document.index', compact('models', 'doc_name', 'parentDocumentTypes'));
     }
@@ -55,9 +118,27 @@ class JournalTypesController extends Controller
 
         $docCode = "APP";
 
-        $journalTypes = JournalTypes::where('status', 1)->get();
+        $isSuperUser = $this->isSuperUser();
 
-        return view('document-settings.document.create', compact('docCode', 'order', 'journalTypes'));
+        if ($isSuperUser){
+            $journalTypes = null;
+        } else {
+            $journalTypes = JournalTypes::where('org_id', $this->organizationId())->where('status', 1)->get();
+        }
+
+        $organizations = OrganizationUnits::where('status', 1)->get();
+
+        return view('document-settings.document.create', compact('docCode', 'order', 'journalTypes',
+            'isSuperUser', 'organizations'));
+    }
+
+    public function getOrganizationJournals($orgId)
+    {
+        return response()->json([
+           'data' => JournalTypes::where('org_id', $orgId)->where('status', 1)->get(),
+           'status' => 200,
+           'message' => 'success'
+        ]);
     }
 
     public function store(Request $request)
@@ -112,6 +193,7 @@ class JournalTypesController extends Controller
         }
 
         $journal_type = new JournalTypes();
+        $journal_type->org_id = $request->org_id ?: $this->organizationId();
         $journal_type->parent_id = $parent_id;
         $journal_type->title = $request->name_uz;
         $journal_type->lang_id = $lang_id;
