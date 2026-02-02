@@ -14,6 +14,7 @@ class ProtocolDocument extends Model
 {
 
     protected $fillable = [
+        'org_id',
         'doc_name',
         'doc_number',
         'doc_date',

@@ -180,7 +180,9 @@ Route::group(['middleware' => ['auth']], function() {
 
     Route::prefix('document-settings')->group(function () {
         Route::resource('document-type', JournalTypesController::class);
+        Route::any('super-user-docs/{orgId}', [JournalTypesController::class, 'superUserOrgDocs'])->name('document-type.super-user-docs');
         Route::any('document-search', [JournalTypesController::class, 'index'])->name('document-type.search');
+        Route::get('get-organization-journals/{orgId}', [JournalTypesController::class, 'getOrganizationJournals'])->name('document-type.get-organization-journals');
         Route::post('document-step-store', [JournalTypesController::class, 'stepStore'])->name('document.step.store');
         Route::any('document-step-roles/{step_id}/{j_type_id}', [JournalTypesController::class, 'stepRoles'])->name('document.step.roles');
         Route::post('document-control', [JournalTypesController::class, 'control'])->name('document.control');
