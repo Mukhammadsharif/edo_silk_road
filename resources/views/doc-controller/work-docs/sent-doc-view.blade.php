@@ -1,90 +1,105 @@
 @extends('layouts.app')
 
+<link rel="stylesheet" href="{{ asset('css/templates/universal-document-view.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/office/journal/work/templates/header.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/office/journal/view-right.css') }}">
+
 @section('content')
-    <div class="container-fluid">
-        <div class="page-header">
-            <div class="row align-items-end">
-                <div class="col-md-3">
-                    <div class="page-header-title">
-                        <i class="ik ik-arrow-up-right bg-blue"></i>
-                        <div class="d-inline">
-                            <h5>{{ __('title.outgoing') }}</h5>
-                        </div>
+    <div class="work-view-page-modern">
+        <div class="page-header-modern">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i data-lucide="send" class="text-white"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>{{ __('title.outgoing') }}</h1>
+                        <p>{{ __('message.view_outgoing_document') ?? 'Просмотр исходящего документа' }}</p>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="header-center">
                     @include('templates.alert')
                 </div>
-                <div class="col-md-3">
-                    <nav class="breadcrumb-container" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('home') }}"><i class="ik ik-home"></i></a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('office.outgoing-docs') }}">{{ __('title.outgoing') }}</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">{{ __('action.view') }}</li>
-                        </ol>
+                <div class="header-right">
+                    <nav class="breadcrumb-modern">
+                        <a href="{{ route('home') }}" class="breadcrumb-item">
+                            <i data-lucide="home"></i>
+                            <span>{{ __('menu.home') ?? 'Главная' }}</span>
+                        </a>
+                        <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                        <a href="{{ route('doc-controller.work-docs') }}" class="breadcrumb-item">
+                            <span>{{ __('title.work_docs') }}</span>
+                        </a>
+                        <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                        <span class="breadcrumb-item active">{{ __('action.view') }}</span>
                     </nav>
                 </div>
             </div>
         </div>
 
-        <div class="row">
+        <div class="document-view-layout">
 
             @include('templates.mini_editor_js')
 
-            @include('office.journal.view-left')
-
-            <div class="col-md-6">
-                @include('office.templates.sent-doc-body')
+            <div class="view-sidebar view-sidebar-left">
+                <div class="sidebar-card-modern">
+                    @include('office.journal.view-left')
+                </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="document-content-section">
+                <div class="work-doc-page" id="pdf2">
+                    @include('office.templates.sent-doc-body')
+                </div>
+            </div>
+
+            <div class="view-sidebar view-sidebar-right">
                 @if($directorDocument)
-                    <div class="card table-card">
-                        <div class="card-header">
+                    <div class="execution-card-modern">
+                        <div class="card-header-modern">
+                            <i data-lucide="pen-tool" class="text-white"></i>
                             <h3>{{ __('title.signing_status') }}</h3>
                         </div>
 
-                        <div class="p-4 border-top mt-15">
-                            <div class="row text-center">
-                                <div class="col-4 border-right">
-                                    <p>{{ __('status.exec_status') }}</p>
-                                    <span class="badge {{ $journal->statusOut->badgeClass??'' }}">
-                                        {{ $journal->statusOut->lang($journal->statusOut->id)??'unk' }}
-                                    </span>
+                        <div class="execution-status-modern">
+                            <div class="status-item-modern">
+                                <div class="status-label">{{ __('status.exec_status') }}</div>
+                                <span class="status-badge-modern {{ $journal->statusOut->badgeClass??'' }}">
+                                    {{ $journal->statusOut->lang($journal->statusOut->id)??'unk' }}
+                                </span>
+                            </div>
+                            <div class="status-item-modern">
+                                <div class="status-label">
+                                    @if($journal->status === 1)
+                                        {{ __('field.created_at') }}
+                                    @else
+                                        {{ __('field.date_sent_for_signature') }}
+                                    @endif
                                 </div>
-                                <div class="col-4 border-right">
-                                    <p>
-                                        @if($journal->status === 1)
-                                            {{ __('field.created_at') }}
-                                        @else
-                                            {{ __('field.date_sent_for_signature') }}
-                                        @endif
-                                    </p>
+                                <div class="status-value">
                                     <i data-lucide="clock"></i>
                                     {{ \Carbon\Carbon::parse($directorDocument->updated_at)->format('d.m.y, H:i') }}
                                 </div>
-                                <div class="col-4">
-                                    <p>
-                                        {{ $directorDocument->toUser->userPost->lang($directorDocument->toUser->userPost->id)??'' }}
-                                    </p>
-                                    <h6 class="fw-700">{{ $directorDocument->toUser->personal->shortName()??'' }}</h6>
+                            </div>
+                            <div class="status-item-modern">
+                                <div class="status-label">
+                                    {{ $directorDocument->toUser->userPost->lang($directorDocument->toUser->userPost->id)??'' }}
                                 </div>
+                                <div
+                                    class="status-value font-bold">{{ $directorDocument->toUser->personal->shortName()??'' }}</div>
                             </div>
                         </div>
                     </div>
                 @endif
 
                 @if($agreement_users && $agreement_users->count())
-                    <div class="card">
-                        <div class="card-header">
+                    <div class="execution-card-modern">
+                        <div class="card-header-modern">
+                            <i data-lucide="check-circle" class="text-white"></i>
                             <h3>{{ __('title.coordination') }}</h3>
                         </div>
 
-                        <div class="card-block">
+                        <div class="performers-list-modern">
                             @foreach($agreement_users as $key => $item)
                                 <div class="sl-item">
                                     <div class="sl-left fw-600 f-16">{{ $item->toUser->personal->fullName()??'' }}</div>
@@ -101,12 +116,15 @@
                                                     </p>
                                                 @endif
                                                 <div>
-                                                    <span class="badge badge-pill {{ $doc->statusReply->bg_class??'' }}">
+                                                    <span
+                                                        class="badge badge-pill {{ $doc->statusReply->bg_class??'' }}">
                                                         {{ __($doc->statusReply->lang_code??'unk') }}
                                                     </span>
                                                     @if($doc && $doc->status == 5 && $journal->workEcpInfo($document->id, $doc->from_user)
                                                         && $journal->workEcpInfo($document->id, $doc->from_user)->docInfo)
-                                                        <i data-lucide="feather" style="font-size: 18px; cursor: pointer" onclick="showEspInfo({{ $doc->id }})"></i>
+                                                        <i data-lucide="feather"
+                                                           style="font-size: 18px; cursor: pointer"
+                                                           onclick="showEspInfo({{ $doc->id }})"></i>
 
                                                         @include('templates.ecp.ecp-information')
                                                     @endif
@@ -115,17 +133,19 @@
                                                 <span class="sl-date pull-right"><i data-lucide="clock"></i>
                                                     {{ date('d.m.y, H:i', strtotime($doc->created_at)) }}
                                                 </span>
-                                                </div><hr>
+                                                </div>
+                                                <hr>
                                             @endforeach
                                         @else
                                             <div class="mt-10">
                                                 <span class="badge badge-pill {{ $item->statusSign->badgeClass??'' }}">
                                                     {{ $item->statusSign->lang($item->statusSign->id)??'unk' }}
                                                 </span>
-                                                @php($signer = $item)
-                                                @if($signer && $signer->status == 5 && $journal->workEcpInfo($document->id, $signer->to_user)
-                                                    && $journal->workEcpInfo($document->id, $signer->to_user)->docInfo)
-                                                    <i data-lucide="feather" style="font-size: 18px; cursor: pointer" onclick="showEspInfo({{ $signer->id }})"></i>
+                                                @php($sign_user = $item)
+                                                @if($sign_user && $sign_user->status == 5 && $journal->workEcpInfo($document->id, $sign_user->to_user)
+                                                    && $journal->workEcpInfo($document->id, $sign_user->to_user)->docInfo)
+                                                    <i data-lucide="feather" style="font-size: 18px; cursor: pointer"
+                                                       onclick="showEspInfo({{ $sign_user->id }})"></i>
 
                                                     @include('templates.ecp.signer-ecp-information')
                                                 @endif
@@ -148,27 +168,35 @@
 
                 @include('templates.comment_form')
 
-                <div class="card table-card">
-                    <div class="card-header">
+                <div class="execution-card-modern actions-card">
+                    <div class="card-header-modern">
+                        <i data-lucide="settings" class="text-white"></i>
                         <h3>{{ __('action.action') }}</h3>
                     </div>
-                    <div class="card-body">
-                        <button type="button" onclick="printContent()" class="btn btn-outline-secondary btn-rounded mr-5">
-                            <i data-lucide="printer"></i> {{ __('action.print') }}
+
+                    <div class="actions-body-modern-print">
+                        <button type="button" onclick="printContent()" class="btn-modern btn-primary">
+                            <i data-lucide="printer" class="icon text-white"></i>
+                            <span>{{ __('action.print') }}</span>
                         </button>
 
-                        <button type="button" onclick="downloadAsPDF()" class="btn btn-outline-dark m-1 btn-rounded">
-                            <i data-lucide="download"></i> {{ __('action.download') }}
+                        <button type="button" onclick="downloadAsPDF()" class="btn-modern btn-primary">
+                            <i data-lucide="download" class="icon text-white"></i>
+                            <span>{{ __('action.download') }}</span>
                         </button>
-                        <input id="downloadName" value="{{ $journal->journal->lang($journal->journal->lang_id)??'-' }} - {{ $journal->fromUser->personal->shortName()??'' }}" hidden/>
+                        <input id="downloadName"
+                               value="{{ $journal->journal->lang($journal->journal->lang_id)??'-' }} - {{ $journal->fromUser->personal->shortName()??'' }}"
+                               hidden/>
+                    </div>
 
-                        @if(in_array('IT admin', $authrole) && $journal->status != 13)
-                            <button type="button" class="btn btn-outline-danger btn-rounded mr-5" data-toggle="modal" data-target="#cancelModel" data-id="{{ $journal->doc_id }}">
+                    @if((in_array('IT_Admin', $authrole) || in_array('Super_Admin', $authrole)) && $journal->status != 13)
+                        <div class="actions-body-modern">
+                            <button type="button" class="btn-modern btn-danger" data-toggle="modal"
+                                    data-target="#cancelModel" data-id="{{ $journal->doc_id }}">
                                 <i class="ik ik-trash-2"></i> {{ __('action.delete') }}
                             </button>
-                        @endif
-                        <br><br>
-                    </div>
+                        </div>
+                    @endif
                 </div>
 
                 @include('office.templates.doc-steps')

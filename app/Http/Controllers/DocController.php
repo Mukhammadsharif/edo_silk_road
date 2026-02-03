@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin\OrganizationUnits;
 use App\Models\Admin\StatusList;
 use App\Models\Comment\DocumentComment;
 use App\Models\Comment\DocumentCommentUser;
@@ -32,7 +33,6 @@ use Illuminate\Support\Facades\Storage;
 
 class DocController extends Controller
 {
-    //
     protected DocumentService $documentService;
 
     public function __construct(DocumentService $documentService)
@@ -48,10 +48,13 @@ class DocController extends Controller
         $date_till = $request->input('date_till');
         $status = $request->input('status');
         $created_user = $request->input('created_user');
+        $org_id = $request->input('org_id');
 
         $cr_users = User::where('status', 1)->get();
 
-        if($this->isSuperUser()) {
+        $isSuperUser = $this->isSuperUser();
+
+        if($isSuperUser) {
             $search = DocumentJournals::whereNotIn('status', [1, 4, 13]);
         } else {
             $search = DocumentJournals::where('org_unit_id', $this->organizationId())->whereNotIn('status', [1, 4, 13]);
@@ -69,8 +72,8 @@ class DocController extends Controller
         } elseif ($status == '14') {
             $search->whereNotIn('status', [2, 10, 11])
                 ->whereHas('directorResolution', function ($directorResolutionQuery) use ($today) {
-                        $directorResolutionQuery->where('res_term', '<', $today);
-            });
+                    $directorResolutionQuery->where('res_term', '<', $today);
+                });
         } elseif ($status) {
             $search->where('status', $status);
         }
@@ -108,6 +111,10 @@ class DocController extends Controller
             });
         }
 
+        if ($org_id) {
+            $search->where('org_unit_id', $org_id);
+        }
+
         $models = $search->orderBy('id', 'DESC')->paginate(25);
 
         $models->appends([
@@ -116,23 +123,31 @@ class DocController extends Controller
             'date_from' => $date_from,
             'date_till' => $date_till,
             'status' => $status,
-            'created_user' => $created_user
+            'created_user' => $created_user,
+            'org_id' => $org_id,
         ]);
+
         $models->withQueryString();
 
-        $journal_types = JournalTypes::whereDoesntHave('childs')->where('status', 1)->orderBy('order_number')->get();
+        if ($isSuperUser) {
+            $journal_types = JournalTypes::whereDoesntHave('childs')->where('status', 1)->orderBy('order_number')->get();
+        } else {
+            $journal_types = JournalTypes::where('org_id', $this->organizationId())->whereDoesntHave('childs')->where('status', 1)->orderBy('order_number')->get();
+        }
 
         $statusNames = StatusList::where('type', 'work_document')->whereNotIn('code', [1, 4, 13])->orderBy('order_number')->get();
 
         $default_status = StatusList::where('type', 'work_document')->orderBy('code')->first();
 
+        $organizations = OrganizationUnits::all();
+
         return view('doc-controller.work-docs.index',
-            compact('models', 'doc_name', 'journal_types', 'doc_type', 'status', 'date_from', 'date_till', 'statusNames', 'default_status', 'created_user', 'cr_users'));
+            compact('models', 'doc_name', 'journal_types', 'doc_type', 'status', 'date_from', 'date_till', 'statusNames', 'default_status', 'created_user', 'cr_users',
+                'org_id', 'organizations', 'isSuperUser'));
     }
 
     public function actionRoute($id, $hash): View|Factory|Application
     {
-        //
         $journal = DocumentJournals::findOrFail($id);
 
         if ($journal->journal->doc_code === 'BASE_INCOMING') {
@@ -328,62 +343,113 @@ class DocController extends Controller
         $date_from = $request->input('date_from');
         $date_till = $request->input('date_till');
         $created_user = $request->input('created_user');
+        $org_id = $request->input('org_id');
 
-        $cr_users = User::where('status', 1)->get();
+        $isSuperUser = $this->isSuperUser();
 
-        $protocolTypes = ProtocolDocType::where('status', 1)->get();
-
-        $search = ProtocolDocument::whereNotIn('status', [1]);
-
-
-        if (trim('' . $s_text . '')) {
-            $search->where('doc_name', 'LIKE', '%' . $s_text . '%')->orWhere('doc_number', 'LIKE', '%' . $s_text . '%');
+        // Базовый запрос с учетом прав доступа
+        if ($isSuperUser) {
+            $search = ProtocolDocument::whereNotIn('status', [1]);
+        } else {
+            $search = ProtocolDocument::where('org_id', $this->organizationId())
+                ->whereNotIn('status', [1]);
         }
 
+        // Фильтр по тексту (название или номер документа)
+        if (trim($s_text)) {
+            $search->where(function($query) use ($s_text) {
+                $query->where('doc_name', 'LIKE', '%' . $s_text . '%')
+                    ->orWhere('doc_number', 'LIKE', '%' . $s_text . '%');
+            });
+        }
+
+        // Фильтр по типу протокола
         if ($s_type) {
             $search->where('doc_type_id', (int)$s_type);
         }
 
+        // Фильтр по статусу
         if ($s_status) {
             $search->where('status', $s_status);
         }
 
-        if ($created_user) {
-            $search->whereIn('created_user', $this->getWorkUserIds($created_user));
-        }
-
+        // Фильтр по датам
         if ($date_from && $date_till) {
-            $tmp_date_from = Carbon::createFromFormat('d.m.Y', $date_from)->format('Y/m/d');
-            $tmp_date_till = Carbon::createFromFormat('d.m.Y', $date_till)->format('Y/m/d');
+            $tmp_date_from = Carbon::createFromFormat('d.m.Y', $date_from)->format('Y-m-d');
+            $tmp_date_till = Carbon::createFromFormat('d.m.Y', $date_till)->format('Y-m-d');
             $search->whereBetween('doc_date', [$tmp_date_from, $tmp_date_till]);
         } elseif ($date_from && !$date_till) {
-            $tmp_date_from = Carbon::createFromFormat('d.m.Y', $date_from)->format('Y/m/d');
+            $tmp_date_from = Carbon::createFromFormat('d.m.Y', $date_from)->format('Y-m-d');
             $search->where('doc_date', '>=', $tmp_date_from);
         } elseif (!$date_from && $date_till) {
-            $tmp_date_till = Carbon::createFromFormat('d.m.Y', $date_till)->format('Y/m/d');
+            $tmp_date_till = Carbon::createFromFormat('d.m.Y', $date_till)->format('Y-m-d');
             $search->where('doc_date', '<=', $tmp_date_till);
         }
 
-        $models = $search->where('status', '!=', 6)->orderBy('id', 'DESC')->paginate(25);
+        // Фильтр по создателю
+        if ($created_user) {
+            $search->where('created_user', $created_user);
+        }
 
+        // Фильтр по организации (только для superUser)
+        if ($org_id && $isSuperUser) {
+            $search->where('org_id', $org_id);
+        }
+
+        // Исключаем удаленные документы и сортируем
+        $models = $search->where('status', '!=', 6)
+            ->orderBy('id', 'DESC')
+            ->paginate(25);
+
+        // Сохраняем параметры для пагинации
         $models->appends([
             's_text' => $s_text,
             's_status' => $s_status,
             's_type' => $s_type,
             'date_from' => $date_from,
             'date_till' => $date_till,
-            'created_user' => $created_user
+            'created_user' => $created_user,
+            'org_id' => $org_id,
         ]);
 
-        $statusList = StatusList::where('type', 'prt_status')->whereNotIn('code', [1, 5, 6, 7])->get();
+        $models->withQueryString();
 
-        return view('doc-controller.protocols.index', compact('models', 's_text', 's_status',
-            's_type', 'statusList', 'protocolTypes', 'date_from', 'date_till', 'cr_users', 'created_user'));
+        // Типы протоколов
+        if ($isSuperUser) {
+            $protocolTypes = ProtocolDocType::where('status', 1)->get();
+        } else {
+            $protocolTypes = ProtocolDocType::where('org_id', $this->organizationId())
+                ->where('status', 1)
+                ->get();
+        }
+
+        // Список статусов
+        $statusList = StatusList::where('type', 'prt_status')
+            ->whereNotIn('code', [1, 5, 6, 7])
+            ->orderBy('order_number')
+            ->get();
+
+        // Список пользователей для фильтра
+        if ($isSuperUser) {
+            $cr_users = User::where('status', 1)->get();
+        } else {
+            $cr_users = User::where('status', 1)
+                ->where('org_unit_id', $this->organizationId())
+                ->get();
+        }
+
+        // Список организаций (только для superUser)
+        $organizations = $isSuperUser ? OrganizationUnits::all() : collect();
+
+        return view('doc-controller.protocols.index', compact(
+            'models', 's_text', 's_status', 's_type', 'statusList',
+            'protocolTypes', 'date_from', 'date_till', 'cr_users',
+            'created_user', 'org_id', 'organizations', 'isSuperUser'
+        ));
     }
 
     public function protocolView($id, $doc_hash): View|Factory|Application
     {
-        //
         $document = ProtocolDocument::where('doc_hash', $doc_hash)->firstOrFail();
 
         $documentMember = ProtocolDocMember::where('id', $id)->where('doc_id', $document->id)->first();
@@ -394,11 +460,17 @@ class DocController extends Controller
 
         $documentFiles = ProtocolDocFile::where('doc_id', $document->id)->orderBy('file_ext', 'DESC')->get();
 
-        $documentMembers = ProtocolDocMember::where('doc_id', $document->id)->where('role_id', '!=', 4)->orderBy('order_number')->get();
+        $documentMembers = ProtocolDocMember::where('doc_id', $document->id)->where('role_id', '!=', 1)->orderBy('order_number')->get();
 
         $documentHrEmp = ProtocolDocMember::where('doc_id', $document->id)->where('role_id', 4)->orderBy('order_number')->get();
 
-        $documentMemberRoles = StatusList::where('type', 'prt_role_type')->orderBy('code')->get();
+        $present_roles = ProtocolDocMember::where('doc_id', $document->id)->pluck('role_id')->unique()->toArray();
+
+        $documentMemberRoles = StatusList::where('type', 'prt_sign_type')
+            ->where('code', '!=', 1)
+            ->whereIn('code', $present_roles)
+            ->orderBy('code')
+            ->get();
 
         $documentReplyComments = ProtocolDocReplyComment::where('doc_id', $document->id)->get();
 
@@ -500,42 +572,143 @@ class DocController extends Controller
 
     public function publicProtocols(Request $request): View|Factory|Application
     {
-        //
         $s_text = $request->input('s_text');
-
         $s_status = $request->input('s_status');
-
         $s_type = $request->input('s_type');
 
-        $protocolTypes = ProtocolDocType::where('status', 1)->get();
-
+        // Публичные протоколы доступны всем
         $search = ProtocolDocument::whereNotIn('status', [1])->where('visibility', 2);
 
-        if (trim('' . $s_text . '')) {
-            $search->where('doc_name', 'LIKE', '%' . $s_text . '%')->orWhere('doc_number', 'LIKE', '%' . $s_text . '%');
+        // Фильтр по тексту (название или номер документа)
+        if (trim($s_text)) {
+            $search->where(function($query) use ($s_text) {
+                $query->where('doc_name', 'LIKE', '%' . $s_text . '%')
+                    ->orWhere('doc_number', 'LIKE', '%' . $s_text . '%');
+            });
         }
 
+        // Фильтр по типу протокола
         if ($s_type) {
             $search->where('doc_type_id', (int)$s_type);
         }
 
+        // Фильтр по статусу
         if ($s_status) {
             $search->where('status', $s_status);
         }
 
+        // Исключаем удаленные документы
+        $models = $search->where('status', '!=', 6)
+            ->orderBy('id', 'DESC')
+            ->paginate(25);
 
-        $models = $search->where('status', '!=', 6)->orderBy('id', 'DESC')->paginate(25);
-
+        // Сохраняем параметры для пагинации
         $models->appends([
             's_text' => $s_text,
             's_status' => $s_status,
             's_type' => $s_type
         ]);
 
-        $statusList = StatusList::where('type', 'prt_status')->whereNotIn('code', [1, 5, 6, 7])->get();
+        $models->withQueryString();
 
+        // Типы протоколов
+        $protocolTypes = ProtocolDocType::where('status', 1)->get();
 
-        return view('doc-controller.protocols.public-index', compact('models', 's_text', 's_status',
-            's_type', 'statusList', 'protocolTypes'));
+        // Список статусов
+        $statusList = StatusList::where('type', 'prt_status')
+            ->whereNotIn('code', [1, 5, 6, 7])
+            ->orderBy('order_number')
+            ->get();
+
+        return view('doc-controller.protocols.public-index', compact(
+            'models', 's_text', 's_status', 's_type', 'statusList', 'protocolTypes'
+        ));
+    }
+
+    public function getFilterDataByOrg(Request $request): JsonResponse
+    {
+        $org_id = $request->input('org_id');
+
+        if (!$org_id) {
+            return response()->json(['success' => false, 'message' => 'Не указана организация']);
+        }
+
+        // Типы журналов (документов)
+        $journal_types = JournalTypes::where('org_id', $org_id)
+            ->whereDoesntHave('childs')
+            ->where('status', 1)
+            ->orderBy('order_number')
+            ->get();
+
+        // Статусы
+        $statusNames = StatusList::where('type', 'work_document')
+            ->whereNotIn('code', [1, 4, 13])
+            ->orderBy('order_number')
+            ->get();
+
+        // Пользователи-создатели
+        $cr_users = User::where('status', 1)
+            ->where('org_unit_id', $org_id)
+            ->get();
+
+        return response()->json([
+            'success'       => true,
+            'journal_types' => $journal_types->map(fn($t) => [
+                'id'   => $t->id,
+                'name' => $t->lang($t->lang_id),
+            ]),
+            'statuses'      => $statusNames->map(fn($s) => [
+                'code' => $s->code,
+                'name' => $s->lang($s->id),
+            ]),
+            'users'         => $cr_users->map(fn($u) => [
+                'id'   => $u->id,
+                'name' => $u->userPersonal->shortName() ?? $u->name ?? '—',
+            ]),
+        ]);
+    }
+
+    /**
+     * Получение данных фильтров для протоколов по организации
+     */
+    public function getProtocolFilterDataByOrg(Request $request): JsonResponse
+    {
+        $org_id = $request->input('org_id');
+
+        if (!$org_id) {
+            return response()->json(['success' => false, 'message' => 'Не указана организация']);
+        }
+
+        // Типы протоколов
+        $protocolTypes = ProtocolDocType::where('org_id', $org_id)
+            ->where('status', 1)
+            ->get();
+
+        // Статусы
+        $statusList = StatusList::where('type', 'prt_status')
+            ->whereNotIn('code', [1, 5, 6, 7])
+            ->orderBy('order_number')
+            ->get();
+
+        // Пользователи-создатели
+        $cr_users = User::where('status', 1)
+            ->where('org_unit_id', $org_id)
+            ->get();
+
+        return response()->json([
+            'success'        => true,
+            'protocol_types' => $protocolTypes->map(fn($t) => [
+                'id'   => $t->id,
+                'name' => $t->lang($t->id),
+            ]),
+            'statuses'       => $statusList->map(fn($s) => [
+                'code' => $s->code,
+                'name' => $s->lang($s->id),
+            ]),
+            'users'          => $cr_users->map(fn($u) => [
+                'id'   => $u->id,
+                'name' => $u->userPersonal->shortName() ?? $u->name ?? '—',
+            ]),
+        ]);
     }
 }

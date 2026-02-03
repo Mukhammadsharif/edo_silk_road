@@ -1,0 +1,444 @@
+/* ========================================
+   DOCUMENT LOGS PAGE - MODERN STYLES
+   Современные стили для страницы логов документов
+   ======================================== */
+
+/* ========================================
+   INFO ALERT MODERN
+   ======================================== */
+.info-alert-modern {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border-left: 4px solid #3b82f6;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+}
+
+.info-alert-modern i {
+    width: 24px;
+    height: 24px;
+    color: #1e40af;
+    flex-shrink: 0;
+}
+
+.info-alert-modern p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1e40af;
+    line-height: 1.5;
+}
+
+/* ========================================
+   EXPORT SECTION
+   ======================================== */
+.export-section-modern {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.export-header-modern {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.export-header-modern i {
+    width: 20px;
+    height: 20px;
+    color: #794DFD;
+}
+
+.export-header-modern h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.export-form-modern {
+    padding: 1.5rem;
+}
+
+.export-grid-modern {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr) auto;
+    gap: 1.25rem;
+    align-items: end;
+}
+
+/* ========================================
+   DATE INPUT MODERN
+   ======================================== */
+.date-input-group-modern {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.date-input-group-modern label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    margin: 0;
+}
+
+.date-input-group-modern label i {
+    width: 16px;
+    height: 16px;
+    color: #794DFD;
+}
+
+.date-input-group-modern .text-red {
+    color: #ef4444;
+    margin-left: 0.25rem;
+}
+
+.date-input-modern {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #1e293b;
+    transition: all 0.3s;
+    background: white;
+    font-family: inherit;
+}
+
+.date-input-modern:focus {
+    outline: none;
+    border-color: #794DFD;
+    box-shadow: 0 0 0 3px rgba(121, 77, 253, 0.1);
+}
+
+.date-input-modern::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    filter: invert(0.5);
+}
+
+/* ========================================
+   EXPORT BUTTON
+   ======================================== */
+.export-btn-modern {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.export-btn-modern i {
+    width: 18px;
+    height: 18px;
+}
+
+.export-btn-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+.export-btn-modern:active {
+    transform: translateY(0);
+}
+
+/* ========================================
+   LOGS TABLE ENHANCEMENTS
+   ======================================== */
+.logs-table-modern .doc-id-cell {
+    font-weight: 700;
+    color: #794DFD;
+    font-family: 'Courier New', monospace;
+    font-size: 15px;
+}
+
+.logs-table-modern .doc-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #4338ca;
+    font-family: 'Courier New', monospace;
+}
+
+.logs-table-modern .doc-type-badge i {
+    width: 14px;
+    height: 14px;
+}
+
+.logs-table-modern .doc-name-cell {
+    text-align: left !important;
+    font-weight: 500;
+    color: #1e293b;
+    max-width: 300px;
+}
+
+.logs-table-modern .doc-name-cell strong {
+    color: #794DFD;
+}
+
+.logs-table-modern .act-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.875rem;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.logs-table-modern .act-type-badge.created {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    color: #065f46;
+}
+
+.logs-table-modern .act-type-badge.updated {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1e40af;
+}
+
+.logs-table-modern .act-type-badge.deleted {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #991b1b;
+}
+
+.logs-table-modern .act-type-badge.viewed {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: #92400e;
+}
+
+.logs-table-modern .act-type-badge i {
+    width: 12px;
+    height: 12px;
+}
+
+.logs-table-modern .computer-id-cell {
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.logs-table-modern .user-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.logs-table-modern .user-cell i {
+    width: 16px;
+    height: 16px;
+    color: #794DFD;
+    flex-shrink: 0;
+}
+
+.logs-table-modern .user-cell span {
+    font-weight: 500;
+    color: #1e293b;
+}
+
+.logs-table-modern .date-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.logs-table-modern .date-cell .date {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 14px;
+}
+
+.logs-table-modern .date-cell .time {
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+/* ========================================
+   STATS CARDS FOR LOGS
+   ======================================== */
+.logs-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.logs-stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+}
+
+.logs-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.logs-stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.logs-stat-icon.primary {
+    background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+}
+
+.logs-stat-icon.success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.logs-stat-icon.warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.logs-stat-icon.danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.logs-stat-icon i {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+
+.logs-stat-content {
+    flex: 1;
+}
+
+.logs-stat-label {
+    font-size: 13px;
+    color: #64748b;
+    margin: 0 0 0.25rem 0;
+}
+
+.logs-stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+/* ========================================
+   FILTER CHIPS
+   ======================================== */
+.filter-chips-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    background: #f8fafc;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+}
+
+.filter-chip i {
+    width: 14px;
+    height: 14px;
+    color: #794DFD;
+}
+
+.filter-chip .value {
+    color: #794DFD;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+@media (max-width: 1024px) {
+    .export-grid-modern {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .export-grid-modern > :last-child {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 768px) {
+    .export-grid-modern {
+        grid-template-columns: 1fr;
+    }
+
+    .export-grid-modern > :last-child {
+        grid-column: span 1;
+    }
+
+    .logs-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .export-btn-modern {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+.logs-divider {
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, #e2e8f0 50%, transparent 100%);
+    margin: 1.5rem 0;
+    border: none;
+}
+
+.logs-helper-text {
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 0.5rem;
+    display: block;
+}

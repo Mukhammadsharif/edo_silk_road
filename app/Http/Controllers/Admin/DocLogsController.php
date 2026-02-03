@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Exports\ExportDocLog;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\DocLog;
+use App\Models\Admin\OrganizationUnits;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
@@ -20,8 +21,15 @@ class DocLogsController extends Controller
         //
         $from_date = $request->input('from_date');
         $to_date = $request->input('to_date');
+        $org_id = $request->input('org_id');
+
+        $organizations = OrganizationUnits::where('status', 1)->get();
 
         $searchModels = DocLog::where('id', '>', 0);
+
+        if (!$this->isSuperUser()) {
+            $searchModels->where('org_id', $this->organizationId());
+        }
 
         if ($from_date && $to_date) {
             $from_date = date('Y-m-d', strtotime($from_date));
@@ -33,10 +41,13 @@ class DocLogsController extends Controller
 
         $models->appends([
             'from_date' => $from_date,
-            'to_date' => $to_date
+            'to_date' => $to_date,
+            'org_id' => $org_id,
         ]);
 
-        return view('admin.doc-log.index', compact('models', 'from_date', 'to_date'))
+        $isSuperUser = $this->isSuperUser();
+
+        return view('admin.doc-log.index', compact('models', 'from_date', 'to_date', 'organizations', 'org_id', 'isSuperUser'))
             ->with('i', (request()->input('page', 1) - 1) * 25);
     }
 
@@ -44,8 +55,19 @@ class DocLogsController extends Controller
     {
         $from = $request->from_date;
         $to = $request->to_date;
+        $org_id = $request->org_id;
 
-        $model = DocLog::whereBetween('act_date', [$from, $to])->get();
+        $searchModels = DocLog::where('id', '>', 0);
+
+        if (!$this->isSuperUser()) {
+            $searchModels->where('org_id', $this->organizationId());
+        }
+
+        if ($org_id) {
+            $searchModels->where('org_id', $org_id);
+        }
+
+        $model = $searchModels->whereBetween('act_date', [$from, $to])->get();
 
         $excelHeader = [];
 

@@ -1,13 +1,18 @@
 @extends('layouts.app')
-
+<link rel="stylesheet" href="{{ asset('css/templates/universal-document-view.css') }}">
 @section('content')
-    <div class="container-fluid">
+    <div class="work-view-page-modern">
         @include('office.journal.work.templates.header')
 
-        <div class="row">
+        <div class="document-view-layout">
 
-            @include('office.journal.view-left')
-            <div class="col-md-6" id="pdf1">
+            <div class="view-sidebar view-sidebar-left">
+                <div class="sidebar-card-modern">
+                    @include('office.journal.view-left')
+                </div>
+            </div>
+
+            <div class="document-content-section" id="pdf1">
                 <div class="work-doc-page" id="pdf2">
                     <div class="work-doc-subpage" id="pdf3">
                         <div id="printPage" class="printPage">
@@ -35,10 +40,12 @@
                                             <td>
                                                 @switch($document->doc_lang)
                                                     @case('uz')
-                                                        {{ $document->dep->department->docLang($document->dep->department->id, $document->doc_lang)??'' }}  ga
+                                                        {{ $document->dep->department->docLang($document->dep->department->id, $document->doc_lang)??'' }}
+                                                        ga
                                                         @break
                                                     @case('kr')
-                                                        {{ $document->dep->department->docLang($document->dep->department->id, $document->doc_lang)??'' }}  га
+                                                        {{ $document->dep->department->docLang($document->dep->department->id, $document->doc_lang)??'' }}
+                                                        га
                                                         @break
                                                     @case('ru')
                                                         к {{ $document->dep->department->docLang($document->dep->department->id, $document->doc_lang)??'' }}
@@ -59,12 +66,6 @@
                                 @endif
                             </div>
 
-{{--                            <div class="doc-text" id="pdf4">--}}
-{{--                                {!! str_replace('&nbsp;', ' ', $document->doc_text) !!}--}}
-{{--                            </div>--}}
-
-{{--                            @include('office.journal.work.templates.document-files')--}}
-
                             @if(in_array($journal->journal->doc_code, ['ORDER_F', 'STATEMENT','HR_ORD_MT_META']))
                                 @include('office.journal.work.templates.verifier')
                             @endif
@@ -82,7 +83,11 @@
 
             @include('templates.mini_editor_js')
 
-            @include('doc-controller.work-docs.view-right')
+            <div class="view-sidebar view-sidebar-right">
+                <div class="sidebar-card-modern">
+                    @include('doc-controller.work-docs.view-right')
+                </div>
+            </div>
         </div>
 
     </div>
