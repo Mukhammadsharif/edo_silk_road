@@ -129,10 +129,12 @@
                             <i data-lucide="list"></i>
                             <span>{{ __('menu.doc_types') }} {{ __('menu.list') }}</span>
                         </div>
-                        <a href="{{ route('document-type.create') }}" class="btn-modern btn-primary" style="width: auto;">
-                            <i data-lucide="circle-plus"></i>
-                            {{ __('action.create') }}
-                        </a>
+                        @if(!$isSuperUser)
+                            <a href="{{ route('document-type.create') }}" class="btn-modern btn-primary" style="width: auto;">
+                                <i data-lucide="circle-plus"></i>
+                                {{ __('action.create') }}
+                            </a>
+                        @endif
                     </div>
 
                     <div class="table-wrapper-modern">

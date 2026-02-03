@@ -1,309 +1,376 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container-fluid">
-        <div class="page-header">
-            <div class="row align-items-end">
-                <div class="col-md-3">
-                    <div class="page-header-title">
-                        <i class="ik ik-user bg-blue"></i>
-                        <div class="d-inline">
-                            <h5>{{ __('menu.prt_doc_types') }}</h5>
-                            <span>{{ __('menu.list') }}</span>
-                        </div>
+    <link href="{{ asset('css/templates/common-document-styles.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/templates/document-types/protocol-types-modern.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/templates/document-types/document-types-modern.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/templates/select2.css') }}">
+
+    <!-- Modern Document Page Container -->
+    <div class="document-page-modern">
+
+        <!-- Modern Page Header -->
+        <div class="page-header-modern">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i data-lucide="file-edit"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>{{ __('action.edit') }} {{ __('menu.prt_doc_types') }}</h1>
+                        <p>{{ __('menu.prt_doc_types') }} / {{ __('action.edit') }}</p>
                     </div>
                 </div>
-                <div class="col-md-6">
+
+                <div class="header-center">
                     @include('templates.alert')
                 </div>
-                <div class="col-md-3">
-                    <nav class="breadcrumb-container" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('home') }}"><i class="ik ik-home"></i></a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('protocol-types.index') }}">{{ __('menu.prt_doc_types') }}</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">{{ __('action.edit') }}</li>
-                        </ol>
-                    </nav>
-                </div>
+
+                <!-- Breadcrumb Navigation -->
+                <nav class="breadcrumb-modern" style="margin-top: 1.5rem;">
+                    <a href="{{ route('home') }}" class="breadcrumb-item">
+                        <i data-lucide="home"></i>
+                        <span>{{ __('menu.home') }}</span>
+                    </a>
+                    <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                    <a href="{{ route('protocol-types.index') }}" class="breadcrumb-item">
+                        <span>{{ __('menu.prt_doc_types') }}</span>
+                    </a>
+                    <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                    <span class="breadcrumb-item active">{{ __('action.edit') }}</span>
+                </nav>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>{{ __('action.edit') }}</h3>
-                    </div>
-                    <div class="card-body">
-                        <form method="POST" action="{{ route('protocol-types.update', $model->id) }}"
-                              class="forms-sample">
-                            @csrf
-                            @method('PUT')
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="row">
-                                        <div class="col-sm-8" hidden>
-                                            <div class="form-group">
-                                                <label>{{ __('field.parent_id') }}</label>
-                                                <select name="parent_id" class="form-control select2">
-                                                    <option value="0">{{ __('action.choose') }}</option>
-                                                    @foreach($docTypes as $key => $item)
-                                                        <option
-                                                            value="{{ $item->id }}" {{ ($item->id == $model->parent_id ? "selected":"") }}>
-                                                            {{ $key+1 }}. {{ $item->lang($item->id) }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <div class="form-group">
-                                                <label class="form-label">{{ __('field.title') }} <span
-                                                        class="text-red">*</span></label>
-                                                <input type="text" class="form-control" name="title"
-                                                       value="{{ $model->title }}">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <div class="form-group">
-                                                <label class="form-label">{{ __('field.lang_id') }}</label>
-                                                <select class="form-control select2" name="lang_id">
-                                                    <option value="">{{ __('field.not_selected') }}</option>
-                                                    @foreach($languages as $key => $value)
-                                                        <option
-                                                            value="{{ $value->id }}" {{ ($value->id == $model->lang_id ? "selected":"") }}>
-                                                            {{ $key+1 }}. {{ __($value->group.'.'.$value->key) }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <div class="form-group">
-                                                <label class="form-label">{{ __('field.order_number') }}</label>
-                                                <input type="number" class="form-control" name="order_number"
-                                                       value="{{ $model->order_number }}">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <div class="form-group">
-                                                <label class="form-label">{{ __('field.doc_code') }}</label>
-                                                <input type="text" class="form-control" name="doc_code"
-                                                       value="{{ $model->doc_code }}">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <div class="form-radio">
-                                                <label>{{ __('field.status') }}</label>
-                                                <div class="radio radio-inline radio-success">
-                                                    <label>
-                                                        <input type="radio" name="status"
-                                                               value="1" {{ ($model->status == 1) ? 'checked':'' }}>
-                                                        <i class="helper"></i>{{ __('status.active') }}
-                                                    </label>
-                                                </div>
-                                                <div class="radio radio-inline radio-danger">
-                                                    <label>
-                                                        <input type="radio" name="status"
-                                                               value="2" {{ ($model->status == 2) ? 'checked':'' }}>
-                                                        <i class="helper"></i>{{ __('status.delete') }}
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <div class="col-md-6">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <label>{{ __('field.select_members') }} <span class="text-red">*</span></label>
-                                            <div class="input-group mb-2 mt-2">
-                                                <input type="text" class="form-control" id="userSearch" onkeyup="searchUserFunction()"
-                                                       placeholder="{{ __('action.search') }}...">
-                                            </div>
-                                            <ul id="sortable" class="sortable" style="max-height: 400px; overflow-x: auto">
-                                                @foreach($users as $key => $item)
-                                                    <li class="form-group select-user"
-                                                        data-id="{{ $item->id }}"
-                                                        style="display: flex; flex-direction: row; align-items: center; justify-content: space-between">
-                                                        <div style="display: flex; flex-direction: row; align-items: center; width: 75%">
-                                                            <input class="form-control w-10"
-                                                                   type="checkbox"
-                                                                   id="{{ $item->id }}"
-                                                                   value="{{ $item->id }}"
-                                                                   name="user_id[]"
-                                                                   @if(array_key_exists($item->id, $selectedUsers)) checked @endif>
-                                                            <div class="p0 text-primary">
-                                                                {{ $item->personal->l_name ?? '' }} {{ $item->personal->f_name ?? '' }}
-                                                                <p class="text-muted">
-                                                                    @php($department = $item->department ?? 0)
-                                                                    @if($department)
-                                                                        {{ $department->lang($department->id) }}
-                                                                    @endif
-                                                                    -
-                                                                    @php($position = $item->position ?? 0)
-                                                                    @if($position)
-                                                                        {{ $position->lang($position->id) }}
-                                                                    @endif
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                        <div class="d-flex">
-                                                            <select name="user_role_id[{{ $item->id }}]" class="form-control mr-5" style="width: 160px">
-                                                                @foreach($user_roles as $role)
-                                                                    <option value="{{ $role->code }}"
-                                                                            @if(
-                                                                                (isset($selectedUsers[$item->id]) && $selectedUsers[$item->id] == $role->code) ||
-                                                                                (!isset($selectedUsers[$item->id]) && $role->code == 2)
-                                                                            ) selected @endif>
-                                                                        {{ $role->lang($role->id) }}
-                                                                    </option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        </div>
+        <!-- Content Wrapper -->
+        <div class="content-wrapper-modern">
+
+            <!-- Two Column Grid -->
+            <div class="edit-grid-layout">
+
+                <!-- Left Column - Main Edit Form -->
+                <div class="table-card-modern">
+                    <div class="filters-header">
+                        <div class="filters-title">
+                            <i data-lucide="file-edit"></i>
+                            <span>{{ __('field.edit_protocol_type') }}</span>
+                        </div>
+                    </div>
+
+                    <form method="POST" action="{{ route('protocol-types.update', $model->id) }}" class="modern-form"
+                          style="padding: 2rem;">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="form-grid" style="grid-template-columns: 1fr;">
+                            <!-- Parent ID (Hidden) -->
+                            <div class="form-group-modern" style="display: none;">
+                                <label>
+                                    <i data-lucide="folder"></i>
+                                    {{ __('field.parent_id') }}
+                                </label>
+                                <select name="parent_id" class="form-control-modern select2">
+                                    <option value="0">{{ __('action.choose') }}</option>
+                                    @foreach($docTypes as $key => $item)
+                                        <option
+                                            value="{{ $item->id }}" {{ ($item->id == $model->parent_id ? "selected":"") }}>
+                                            {{ $key+1 }}. {{ $item->lang($item->id) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Title -->
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="type"></i>
+                                    {{ __('field.title') }}
+                                    <span class="text-red">*</span>
+                                </label>
+                                <input type="text"
+                                       class="form-control-modern"
+                                       name="title"
+                                       value="{{ $model->title }}"
+                                       required>
+                            </div>
+
+                            <!-- Language -->
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="languages"></i>
+                                    {{ __('field.lang_id') }}
+                                </label>
+                                <select class="form-control-modern select2" name="lang_id">
+                                    <option value="">{{ __('field.not_selected') }}</option>
+                                    @foreach($languages as $key => $value)
+                                        <option
+                                            value="{{ $value->id }}" {{ ($value->id == $model->lang_id ? "selected":"") }}>
+                                            {{ $key+1 }}. {{ __($value->group.'.'.$value->key) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Order Number -->
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="list-ordered"></i>
+                                    {{ __('field.order_number') }}
+                                </label>
+                                <input type="number"
+                                       class="form-control-modern"
+                                       name="order_number"
+                                       value="{{ $model->order_number }}"
+                                       min="0">
+                            </div>
+
+                            <!-- Document Code -->
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="code"></i>
+                                    {{ __('field.doc_code') }}
+                                </label>
+                                <input type="text"
+                                       class="form-control-modern font-mono"
+                                       name="doc_code"
+                                       value="{{ $model->doc_code }}">
+                            </div>
+
+                            <!-- Status -->
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="activity"></i>
+                                    {{ __('field.status') }}
+                                </label>
+                                <div class="radio-group-modern">
+                                    <div class="radio-option-modern success">
+                                        <input type="radio"
+                                               id="status_active"
+                                               name="status"
+                                               value="1"
+                                            {{ ($model->status == 1) ? 'checked':'' }}>
+                                        <label for="status_active">{{ __('status.active') }}</label>
                                     </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <a href="{{ route('protocol-types.index') }}" class="btn btn-light">
-                                        <i class="ik ik-x"></i> {{ __('action.cancel') }}
-                                    </a>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i data-lucide="save"></i> {{ __('action.save') }}
-                                    </button>
+                                    <div class="radio-option-modern danger">
+                                        <input type="radio"
+                                               id="status_inactive"
+                                               name="status"
+                                               value="2"
+                                            {{ ($model->status == 2) ? 'checked':'' }}>
+                                        <label for="status_inactive">{{ __('status.delete') }}</label>
+                                    </div>
                                 </div>
                             </div>
-                        </form>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <a href="{{ route('protocol-types.index') }}" class="btn-modern btn-secondary">
+                                <i data-lucide="x"></i>
+                                {{ __('action.cancel') }}
+                            </a>
+                            <button type="submit" class="btn-modern btn-primary">
+                                <i data-lucide="save"></i>
+                                {{ __('action.save') }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Right Column - User Selection -->
+                <div class="table-card-modern">
+                    <div class="filters-header">
+                        <div class="filters-title">
+                            <i data-lucide="users"></i>
+                            <span>{{ __('field.select_members') }}</span>
+                        </div>
+                    </div>
+
+                    <div class="user-selection-container">
+                        <div class="user-search-box">
+                            <input type="text"
+                                   id="userSearch"
+                                   onkeyup="searchUserFunction()"
+                                   placeholder="{{ __('action.search') }}...">
+                        </div>
+
+                        <ul id="sortable" class="sortable-user-list">
+                            @foreach($users as $key => $item)
+                                <li class="user-item-modern select-user" data-id="{{ $item->id }}">
+                                    <div class="user-item-left">
+                                        <input class="user-checkbox-modern"
+                                               type="checkbox"
+                                               id="user_{{ $item->id }}"
+                                               name="user_id[]"
+                                               value="{{ $item->id }}"
+                                               @if(array_key_exists($item->id, $selectedUsers)) checked @endif>
+                                        <div class="user-info-modern">
+                                            <span class="user-name-modern text-primary">
+                                                {{ $item->personal->l_name ?? '' }} {{ $item->personal->f_name ?? '' }}
+                                            </span>
+                                            <span class="user-role-modern">
+                                                <i data-lucide="briefcase"></i>
+                                                @php($department = $item->department ?? 0)
+                                                @if($department)
+                                                    {{ $department->lang($department->id) }}
+                                                @endif
+                                                                    -
+                                                                    @php($position = $item->position ?? 0)
+                                                @if($position)
+                                                    {{ $position->lang($position->id) }}
+                                                @endif
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="user-drag-handle">
+                                        <i data-lucide="grip-vertical"></i>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-12">
-                <form method="POST" action="{{ route('prt.doc.sign.roles') }}" class="forms-sample">
-                    @csrf
-                    <div class="card">
-                        <div class="card-header">
-                            <h3><i class="ik ik-edit"></i> {{ __('field.sign_roles') }}</h3>
-                        </div>
+            <!-- Sign Roles Card -->
+            <form method="POST" action="{{ route('prt.doc.sign.roles') }}" class="sign-roles-card">
+                @csrf
+                <input name="protocol_type_id" value="{{ $model->id }}" hidden>
 
-                        <div class="card-body">
-                            <input name="protocol_type_id" value="{{ $model->id }}" hidden>
-                            <ul id="signRolesSortable" class="list-group" style="margin: 0; padding: 0">
-                                @foreach($signRoleTypes as $key => $signRoleType)
-                                    <li class="list-group-item {{ $listGroupItemColors[$key % count($listGroupItemColors)] }}"
-                                        style="display: flex; flex-direction: row; align-items: center"
-                                        data-id="{{ $signRoleType->code }}">
-                                        @if($signRoleType->code == 1)
-                                            <input class="form-control w-10" type="checkbox"
-                                                   id="role_{{ $signRoleType->code }}"
-                                                   checked disabled>
-                                            <input type="hidden" name="roles[]" value="{{ $signRoleType->code }}">
-                                        @else
-                                            <input class="form-control w-10" type="checkbox"
-                                                   id="role_{{ $signRoleType->code }}"
-                                                   value="{{ $signRoleType->code }}"
-                                                   name="roles[]"
-                                                {{ in_array($signRoleType->code, $savedCodes) ? 'checked' : '' }}>
-                                        @endif
-                                        <label class="label text-bold"
-                                               for="role_{{ $signRoleType->code }}">{{ $signRoleType->lang($signRoleType->id) ?? '' }}</label>
-                                    </li>
-                                @endforeach
-                            </ul>
+                <div class="sign-roles-header">
+                    <i data-lucide="pen-line"></i>
+                    <h3>{{ __('field.sign_roles') }}</h3>
+                </div>
 
-                            <br><br>
-                            <h4 class="sub-title">Imzolash turi</h4>
+                <div class="sign-roles-body">
+                    <ul id="signRolesSortable" class="sign-roles-list">
+                        @foreach($signRoleTypes as $key => $signRoleType)
+                            <li class="sign-role-item role-{{ $listGroupItemColors[$key % count($listGroupItemColors)] }}"
+                                data-id="{{ $signRoleType->code }}">
+                                @if($signRoleType->code == 1)
+                                    <input class="sign-role-checkbox"
+                                           type="checkbox"
+                                           id="role_{{ $signRoleType->code }}"
+                                           checked
+                                           disabled>
+                                    <input type="hidden" name="roles[]" value="{{ $signRoleType->code }}">
+                                @else
+                                    <input class="sign-role-checkbox"
+                                           type="checkbox"
+                                           id="role_{{ $signRoleType->code }}"
+                                           value="{{ $signRoleType->code }}"
+                                           name="roles[]"
+                                        {{ in_array($signRoleType->code, $savedCodes) ? 'checked' : '' }}>
+                                @endif
+                                <label class="sign-role-label" for="role_{{ $signRoleType->code }}">
+                                    {{ $signRoleType->lang($signRoleType->id) ?? '' }}
+                                </label>
+                            </li>
+                        @endforeach
+                    </ul>
 
-                            <div class="form-radio">
-                                <div class="radio radio-inline">
-                                    <label>
-                                        <input type="radio" name="sign_type" value="0"
-                                            {{ $model->sign_type == 0 ? 'checked' : '' }}>
-                                        <i class="helper"></i>Ketma-ket
-                                    </label>
-                                </div>
-                                <div class="radio radio-inline">
-                                    <label>
-                                        <input type="radio" name="sign_type" value="1"
-                                            {{ $model->sign_type == 1 ? 'checked' : '' }}>
-                                        <i class="helper"></i>Parallel
-                                    </label>
-                                </div>
+                    <hr class="protocol-divider">
+
+                    <!-- Sign Type Section -->
+                    <div class="sign-type-section">
+                        <h4 class="sign-type-title">
+                            <i data-lucide="workflow"></i>
+                            Imzolash turi
+                        </h4>
+                        <div class="sign-type-options">
+                            <div class="sign-type-option">
+                                <input type="radio"
+                                       id="sign_sequential"
+                                       name="sign_type"
+                                       value="0"
+                                    {{ $model->sign_type == 0 ? 'checked' : '' }}>
+                                <label for="sign_sequential">
+                                    <i data-lucide="arrow-right"></i>
+                                    Ketma-ket
+                                </label>
+                            </div>
+                            <div class="sign-type-option">
+                                <input type="radio"
+                                       id="sign_parallel"
+                                       name="sign_type"
+                                       value="1"
+                                    {{ $model->sign_type == 1 ? 'checked' : '' }}>
+                                <label for="sign_parallel">
+                                    <i data-lucide="git-fork"></i>
+                                    Parallel
+                                </label>
                             </div>
                         </div>
-
-                        <div class="card-footer d-flex flex-row justify-content-end">
-                            <button type="submit" class="btn btn-primary">
-                                <i data-lucide="save"></i>{{ __('action.save') }}
-                            </button>
-                        </div>
                     </div>
-                </form>
-            </div>
+                </div>
+
+                <div style="padding: 1.5rem; border-top: 2px solid #f1f5f9; display: flex; justify-content: flex-end;">
+                    <button type="submit" class="btn-modern btn-primary" style="width: auto;">
+                        <i data-lucide="save"></i>
+                        {{ __('action.save') }}
+                    </button>
+                </div>
+            </form>
+
         </div>
     </div>
 
     <script src="{{ asset('/assets/js/js-sortable.js') }}"></script>
+    <script src="{{ asset('/ajax/jquery.min.js') }}"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.select2').select2({
+                placeholder: "{{ __('action.choose') }}",
+                allowClear: true
+            });
+        });
 
-    <script>
-        // Debug: Log to confirm script execution
-        console.log('Script loaded: Initializing search and sortable functions');
-
-        const sortableElement = document.getElementById('sortable');
-        const sortableSecretaryElement = document.getElementById('signRolesSortable');
-
+        // User search function
         function searchUserFunction() {
             const input = document.getElementById('userSearch').value.toLowerCase();
             const nodes = document.querySelectorAll('#sortable .select-user');
-            console.log('searchUserFunction called with input:', input, 'Nodes found:', nodes.length);
 
             nodes.forEach(node => {
-                const textContent = node.querySelector('.text-primary').textContent.toLowerCase();
+                const textContent = node.querySelector('.user-name-modern').textContent.toLowerCase();
                 node.style.display = textContent.includes(input) ? 'flex' : 'none';
             });
 
             // Refresh sortable after filtering
-            if (sortableElement) {
+            const sortableElement = document.getElementById('sortable');
+            if (sortableElement && Sortable.get(sortableElement)) {
                 Sortable.get(sortableElement).sort(Sortable.get(sortableElement).toArray());
             }
-
-            // Reapply disabled states after filtering
-            reapplyDisabledStates();
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize Sortable.js for both lists
-
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize Sortable for user list
+            const sortableElement = document.getElementById('sortable');
             if (sortableElement) {
                 new Sortable(sortableElement, {
                     animation: 150,
                     ghostClass: 'sortable-ghost',
+                    handle: '.user-drag-handle'
                 });
                 console.log('Sortable initialized for #sortable');
-            } else {
-                console.error('Element #sortable not found');
             }
 
-            if (sortableSecretaryElement) {
-                new Sortable(sortableSecretaryElement, {
+            // Initialize Sortable for sign roles
+            const signRolesSortable = document.getElementById('signRolesSortable');
+            if (signRolesSortable) {
+                new Sortable(signRolesSortable, {
                     animation: 150,
                     ghostClass: 'sortable-ghost',
-                    handle: '.list-group-item',
-                    filter: 'li:first-child', // первый элемент
+                    filter: 'li:first-child',
                     onMove: function (evt) {
-                        return evt.related !== evt.from.firstElementChild; // запрет на перемещение
+                        return evt.related !== evt.from.firstElementChild;
                     }
                 });
                 console.log('Sortable initialized for #signRolesSortable');
-            } else {
-                console.error('Element #signRolesSortable not found');
+            }
+
+            // Initialize Lucide icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
             }
         });
     </script>

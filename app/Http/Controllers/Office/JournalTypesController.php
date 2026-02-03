@@ -77,7 +77,9 @@ class JournalTypesController extends Controller
             ->orderBy('order_number')
             ->get();
 
-        return view('document-settings.document.index', compact('models', 'doc_name', 'parentDocumentTypes'));
+        $isSuperUser = $this->isSuperUser();
+
+        return view('document-settings.document.index', compact('models', 'doc_name', 'parentDocumentTypes', 'isSuperUser'));
     }
 
     public function adminIndex(Request $request)
@@ -102,7 +104,9 @@ class JournalTypesController extends Controller
             ->orderBy('order_number')
             ->get();
 
-        return view('document-settings.document.index', compact('models', 'doc_name', 'parentDocumentTypes'));
+        $isSuperUser = $this->isSuperUser();
+
+        return view('document-settings.document.index', compact('models', 'doc_name', 'parentDocumentTypes', 'isSuperUser'));
     }
 
     public function create()

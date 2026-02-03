@@ -1,106 +1,182 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container-fluid">
-        <div class="page-header">
-            <div class="row align-items-end">
-                <div class="col-md-3">
-                    <div class="page-header-title">
-                        <i class="ik ik-file bg-blue"></i>
-                        <div class="d-inline">
-                            <h5>{{ __('menu.prt_doc_types') }}</h5>
-                        </div>
+    <link href="{{ asset('css/templates/common-document-styles.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/templates/document-types/protocol-types-modern.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/templates/document-types/document-types-modern.css') }}" rel="stylesheet">
+
+    <!-- Modern Document Page Container -->
+    <div class="document-page-modern">
+
+        <!-- Modern Page Header -->
+        <div class="page-header-modern">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i data-lucide="file-signature"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>{{ __('menu.prt_doc_types') }}</h1>
+                        <p>{{ __('menu.home') }} / {{ __('menu.prt_doc_types') }}</p>
                     </div>
                 </div>
-                <div class="col-md-6">
+
+                <div class="header-center">
                     @include('templates.alert')
                 </div>
-                <div class="col-md-3">
-                    <nav class="breadcrumb-container" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('home') }}"><i class="ik ik-home"></i></a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="#">{{ __('menu.prt_doc_types') }}</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">{{ __('menu.list') }}</li>
-                        </ol>
-                    </nav>
-                </div>
+
+                <!-- Breadcrumb Navigation -->
+                <nav class="breadcrumb-modern" style="margin-top: 1.5rem;">
+                    <a href="{{ route('home') }}" class="breadcrumb-item">
+                        <i data-lucide="home"></i>
+                        <span>{{ __('menu.home') }}</span>
+                    </a>
+                    <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                    <a href="#" class="breadcrumb-item">
+                        <span>{{ __('menu.prt_doc_types') }}</span>
+                    </a>
+                    <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                    <span class="breadcrumb-item active">{{ __('menu.list') }}</span>
+                </nav>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>{{ __('menu.prt_doc_types') }}</h3>
+        <!-- Content Wrapper -->
+        <div class="content-wrapper-modern">
+
+            <!-- Main Content Grid -->
+            <div style="display: grid; grid-template-columns: 400px 1fr; gap: 1.5rem; align-items: start;">
+
+                <!-- Protocol Types Tree Sidebar -->
+                <div class="table-card-modern" style="position: sticky; top: 2rem;">
+                    <div class="filters-header">
+                        <div class="filters-title">
+                            <i data-lucide="git-branch"></i>
+                            <span>{{ __('menu.prt_doc_types') }}</span>
+                        </div>
                     </div>
-                    <div class="card-body">
+                    <div class="protocol-tree-modern">
                         @foreach($parentDocTypes as $key => $item)
-                            <div class="alert alert-primary" role="alert">
-                                {{ $key + 1 }}. {{ $item->lang($item->id) }}
+                            <div class="protocol-tree-item">
+                                <strong>{{ $key + 1 }}. {{ $item->lang($item->id) }}</strong>
                                 @if(count($item->child))
-                                    @include('document-settings.protocol.manageChild',['childs' => $item->child])
+                                    @include('document-settings.protocol.manageChild', ['childs' => $item->child])
                                 @endif
                             </div>
                         @endforeach
                     </div>
                 </div>
-            </div>
-            <div class="col-sm-8">
-                <div class="card">
-                    <div class="card-header d-block">
-                        <a href="{{ route('protocol-types.create') }}" class="btn btn-primary">
-                            <i data-lucide="circle-plus"></i> {{ __('action.create') }}
+
+                <!-- Protocol Types Table -->
+                <div class="table-card-modern">
+                    <div class="filters-header">
+                        <div class="filters-title">
+                            <i data-lucide="list"></i>
+                            <span>{{ __('menu.prt_doc_types') }} {{ __('menu.list') }}</span>
+                        </div>
+                        <a href="{{ route('protocol-types.create') }}" class="btn-modern btn-primary" style="width: auto;">
+                            <i data-lucide="circle-plus"></i>
+                            {{ __('action.create') }}
                         </a>
                     </div>
-                    <div class="card-body template-demo">
-                        <table class="table table-striped table-bordered">
+
+                    <div class="table-wrapper-modern">
+                        <table class="modern-table">
                             <thead>
-                            <tr class="text-center">
-                                <th>{{ __('field.number') }}</th>
-                                <th>{{ __('field.title') }}</th>
-                                <th>{{ __('field.doc_code') }}</th>
-                                <th>{{ __('field.role_id') }}</th>
-                                <th>{{ __('field.order_number') }}</th>
-                                <th>{{ __('field.status') }}</th>
-                                <th>{{ __('field.actions') }}</th>
+                            <tr>
+                                <th style="width: 60px;">
+                                    <i data-lucide="hash"></i>
+                                    {{ __('field.number') }}
+                                </th>
+                                <th style="text-align: left;">
+                                    <i data-lucide="tag"></i>
+                                    {{ __('field.title') }}
+                                </th>
+                                <th style="width: 120px;">
+                                    <i data-lucide="code"></i>
+                                    {{ __('field.doc_code') }}
+                                </th>
+                                <th>
+                                    <i data-lucide="user-check"></i>
+                                    {{ __('field.role_id') }}
+                                </th>
+                                <th style="width: 100px;">
+                                    <i data-lucide="list-ordered"></i>
+                                    {{ __('field.order_number') }}
+                                </th>
+                                <th style="width: 120px;">
+                                    <i data-lucide="activity"></i>
+                                    {{ __('field.status') }}
+                                </th>
+                                <th style="width: 120px;">
+                                    <i data-lucide="settings"></i>
+                                    {{ __('field.actions') }}
+                                </th>
                             </tr>
                             </thead>
                             <tbody>
                             @foreach ($models as $key => $model)
-                                <tr id="rowID{{ $model->id }}" class="text-center">
-                                    <td>{{ $key+1 }}</td>
-                                    <td>
-                                        <span class="text-primary">{{ $model->lang($model->parent_id) }}
-                                            <i class="ik ik-corner-right-down"></i>
-                                        </span><br>
-                                        {{ $model->lang($model->id) }}
+                                <tr id="rowID{{ $model->id }}" class="table-row-modern">
+                                    <td class="td-number">{{ $key + 1 }}</td>
+                                    <td class="td-doc-name">
+                                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+{{--                                            @if($model->lang($model->parent_id))--}}
+{{--                                                <div class="protocol-parent-badge">--}}
+{{--                                                    <i data-lucide="corner-right-down"></i>--}}
+{{--                                                    {{ $model->lang($model->parent_id) }}--}}
+{{--                                                </div>--}}
+{{--                                            @endif--}}
+                                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                <i data-lucide="file-signature" style="color: #794DFD; width: 16px; height: 16px;"></i>
+                                                <strong>{{ $model->lang($model->id) }}</strong>
+                                            </div>
+                                        </div>
                                     </td>
-                                    <td>{{ $model->doc_code }}</td>
-                                    <td>{{ $model->roleID->name??'-' }}</td>
-                                    <td>{{ $model->order_number }}</td>
-                                    <td>
-                                            <span
-                                                class="badge badge-pill @if($model->status == 1) badge-green @else badge-danger @endif text-white">
-                                                {{ $model->isActive($model->status) }}
+                                    <td class="text-center">
+                                        <span class="protocol-code-badge">{{ $model->doc_code }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        @if($model->roleID->name ?? null)
+                                            <span class="protocol-role-badge">{{ $model->roleID->name }}</span>
+                                        @else
+                                            <span class="badge-modern badge-info">-</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="order-number-badge">{{ $model->order_number }}</span>
+                                    </td>
+                                    <td class="td-status">
+                                        @if($model->status == 1)
+                                            <span class="status-badge-modern badge-success">
+                                                <i data-lucide="check-circle"></i>
+                                                {{ __('field.active') }}
                                             </span>
+                                        @else
+                                            <span class="status-badge-modern badge-danger">
+                                                <i data-lucide="x-circle"></i>
+                                                {{ __('field.inactive') }}
+                                            </span>
+                                        @endif
                                     </td>
-                                    <td>
-                                        <a href="{{ route('protocol-types.edit', $model->doc_hash) }}"
-                                           class="btn btn-sm btn-info">
-                                            <i data-lucide="square-pen"></i> {{ __('action.edit') }}
+                                    <td class="td-action">
+                                        <a href="{{ route('protocol-types.edit', $model->doc_hash) }}" class="action-btn view-btn">
+                                            <i data-lucide="square-pen"></i>
+                                            {{ __('action.edit') }}
                                         </a>
                                     </td>
                                 </tr>
                             @endforeach
                             </tbody>
                         </table>
-                        {!! $models->links() !!}
                     </div>
+
+                    @if($models->hasPages())
+                        <div class="pagination-wrapper-modern">
+                            {!! $models->links() !!}
+                        </div>
+                    @endif
                 </div>
+
             </div>
         </div>
     </div>
@@ -132,9 +208,7 @@
     </div>
 
     <script src="{{ asset('/ajax/jquery.min.js') }}"></script>
-
     <script>
-
         $(document).on('click', '.delete_btn', function () {
             let model_id = $(this).val();
             $('#DeleteModal').modal('show');
@@ -143,7 +217,6 @@
 
         $(document).on('click', '.yes_delete_btn', function (e) {
             e.preventDefault();
-
             $(this).text('Deleting..');
             let id = $('#deleteing_id').val();
 
@@ -158,7 +231,6 @@
                 url: "/protocol/prt-doc-types/" + id,
                 dataType: "json",
                 success: function (response) {
-                    // console.log(response);
                     $('#DeleteModal').modal('hide');
                     if (response.status === 200) {
                         $("#rowID" + id).addClass("table-danger").fadeOut(2000, function () {

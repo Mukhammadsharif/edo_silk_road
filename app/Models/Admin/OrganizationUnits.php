@@ -3,6 +3,7 @@
 namespace App\Models\Admin;
 
 use App\Models\Journal\JournalTypes;
+use App\Models\Protocol\ProtocolDocType;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -150,6 +151,11 @@ class OrganizationUnits extends Model
     public function journalTypes()
     {
         return $this->hasMany(JournalTypes::class, 'org_id', 'id')->where('status', 1);
+    }
+
+    public function protocolTypes()
+    {
+        return $this->hasMany(ProtocolDocType::class, 'org_id', 'id')->where('status', 1);
     }
 
     public function subscriptions()

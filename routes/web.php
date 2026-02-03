@@ -192,6 +192,8 @@ Route::group(['middleware' => ['auth']], function() {
 
         // Protocol Doc type
         Route::resource('protocol-types', ProtocolDocTypeController::class);
+        Route::any('protocol-types/index', [ProtocolDocTypeController::class, 'index'])->name('protocol-types.index');
+        Route::any('protocol-types/super-user-docs/{orgId}', [ProtocolDocTypeController::class, 'superUserOrgDocs'])->name('protocol-types.super-user-docs');
         Route::post('prt-doc-sign-roles', [ProtocolDocTypeController::class, 'signRoles'])->name('prt.doc.sign.roles');
 
         Route::resource('doc-org', DocOrganizationsController::class);
