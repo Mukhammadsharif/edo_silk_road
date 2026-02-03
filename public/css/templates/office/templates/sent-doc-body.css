@@ -102,9 +102,6 @@
 .signature-section-modern {
     margin-bottom: 2rem;
     padding: 1.5rem;
-    background: linear-gradient(135deg, #faf5ff 0%, #ffffff 100%);
-    border: 2px solid #e9d5ff;
-    border-radius: 12px;
 }
 
 .signature-row {
@@ -174,9 +171,6 @@
 /* Performer Section */
 .performer-section-modern {
     padding: 1rem 1.5rem;
-    background: #f8fafc;
-    border-left: 4px solid #794DFD;
-    border-radius: 8px;
 }
 
 .performer-row {

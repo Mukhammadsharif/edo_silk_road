@@ -174,7 +174,6 @@
     color: var(--color-text-secondary);
     margin-bottom: var(--spacing-lg);
     padding: var(--spacing-sm) var(--spacing-md);
-    background: var(--color-gray-50);
     border-radius: var(--radius-sm);
     display: inline-block;
     float: right;
@@ -218,16 +217,16 @@
 }
 
 .table-tr-3td td:first-child {
-    width: 20%;
+    width: 40%;
 }
 
 .table-tr-3td td:nth-child(2) {
-    width: 30%;
+    width: 20%;
     text-align: center;
 }
 
 .table-tr-3td td:last-child {
-    width: 50%;
+    width: 40%;
     text-align: right;
 }
 
@@ -241,7 +240,6 @@
 .header-verifier-modern {
     margin-top: var(--spacing-2xl);
     padding: var(--spacing-lg);
-    background: linear-gradient(to bottom, transparent 0%, var(--color-gray-50) 100%);
     border-radius: var(--radius-md);
 }
 
@@ -251,7 +249,6 @@
     color: var(--color-gray-800);
     margin-bottom: var(--spacing-lg);
     padding-bottom: var(--spacing-sm);
-    border-bottom: 2px solid var(--color-primary);
     display: inline-block;
 }
 
@@ -274,11 +271,11 @@
 .signature-table tr:hover,
 .app-table tr:hover,
 .executor-table tr:hover {
-    background-color: var(--color-gray-50);
+
 }
 
 .signature-table tr.row-alt {
-    background-color: #fafbfc;
+
 }
 
 .signature-table td,
@@ -291,7 +288,7 @@
 
 /* ========== TABLE CELLS ========== */
 .position-cell {
-    width: 45%;
+    width: 100%;
 }
 
 .position-label {
@@ -748,7 +745,6 @@
     }
 
     .qr-wrapper {
-        border: 1px solid var(--color-gray-400);
         box-shadow: none;
     }
 
