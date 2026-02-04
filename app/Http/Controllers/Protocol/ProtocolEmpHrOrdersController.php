@@ -103,8 +103,8 @@ class ProtocolEmpHrOrdersController extends Controller
         $model = OnlyOfficeDoc::where('doc_type', 'PRT')->where('doc_id', $document->id)->first();
         if ($model) {
             $path = $model->doc_path.$model->doc_key.'.html';
-            if (Storage::disk('public')->exists($path)){
-                $html_doc = Storage::disk('public')->get($path);
+            if (Storage::disk('ftp')->exists($path)){
+                $html_doc = Storage::disk('ftp')->get($path);
             }
         }
 

@@ -472,7 +472,7 @@ class DocumentController extends Controller
                 $filename = $documentKey . '.docx';
                 $file = $request->file('main_file');
                 if ($file) {
-                    Storage::disk('public')->putFileAs($ood_path, $file, $filename);
+                    Storage::disk('ftp')->putFileAs($ood_path, $file, $filename);
                 }
             }
 
