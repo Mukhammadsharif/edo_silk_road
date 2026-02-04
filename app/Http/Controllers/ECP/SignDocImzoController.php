@@ -819,8 +819,8 @@ class SignDocImzoController extends Controller
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => $postData,
             CURLOPT_HTTPHEADER     => [
-                'X-Real-IP: 84.54.116.179',
-                'Host: edo.eai.uz',
+                'X-Real-IP: 185.183.242.43',
+                'Host: edoline.uz',
                 'Content-Type: application/json'
             ],
         ]);
