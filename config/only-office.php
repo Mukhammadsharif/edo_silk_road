@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'APP_INTERNAL_URL' => env('APP_INTERNAL_URL', 'http://10.10.20.13:8082'),
+    'APP_INTERNAL_URL' => env('APP_INTERNAL_URL', 'https://edoline.uz'),
     'APP_BLANK_DOC_PATH' => env('APP_BLANK_DOC_PATH', '/docs/blank.docx'),
     'ONLY_OFFICE_INTERNAL_URL' => env('ONLY_OFFICE_INTERNAL_URL', '10.10.20.13:8081'),
     'ONLY_OFFICE_EXTERNAL_URL' => env('ONLY_OFFICE_EXTERNAL_URL', '83.69.136.85:18081'),
