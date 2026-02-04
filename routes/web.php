@@ -180,7 +180,9 @@ Route::group(['middleware' => ['auth']], function() {
 
     Route::prefix('document-settings')->group(function () {
         Route::resource('document-type', JournalTypesController::class);
+        Route::any('super-user-docs/{orgId}', [JournalTypesController::class, 'superUserOrgDocs'])->name('document-type.super-user-docs');
         Route::any('document-search', [JournalTypesController::class, 'index'])->name('document-type.search');
+        Route::get('get-organization-journals/{orgId}', [JournalTypesController::class, 'getOrganizationJournals'])->name('document-type.get-organization-journals');
         Route::post('document-step-store', [JournalTypesController::class, 'stepStore'])->name('document.step.store');
         Route::any('document-step-roles/{step_id}/{j_type_id}', [JournalTypesController::class, 'stepRoles'])->name('document.step.roles');
         Route::post('document-control', [JournalTypesController::class, 'control'])->name('document.control');
@@ -190,6 +192,8 @@ Route::group(['middleware' => ['auth']], function() {
 
         // Protocol Doc type
         Route::resource('protocol-types', ProtocolDocTypeController::class);
+        Route::any('protocol-types/index', [ProtocolDocTypeController::class, 'index'])->name('protocol-types.index');
+        Route::any('protocol-types/super-user-docs/{orgId}', [ProtocolDocTypeController::class, 'superUserOrgDocs'])->name('protocol-types.super-user-docs');
         Route::post('prt-doc-sign-roles', [ProtocolDocTypeController::class, 'signRoles'])->name('prt.doc.sign.roles');
 
         Route::resource('doc-org', DocOrganizationsController::class);
@@ -199,6 +203,7 @@ Route::group(['middleware' => ['auth']], function() {
 
         Route::any('document-templates', [DocumentTemplatesController::class, 'index'])->name('document.templates');
         Route::any('document-templates/create', [DocumentTemplatesController::class, 'create'])->name('document.templates.create');
+        Route::get('get-organization-journals-temps/{orgId}', [DocumentTemplatesController::class, 'getOrganizationJournals'])->name('document.templates-organization-journals-temps');
         Route::any('document-templates/store', [DocumentTemplatesController::class, 'store'])->name('document.templates.store');
         Route::any('document-templates/edit/{id}', [DocumentTemplatesController::class, 'edit'])->name('document.templates.edit');
         Route::any('document-templates/update/{id}', [DocumentTemplatesController::class, 'update'])->name('document.templates.update');
@@ -357,7 +362,10 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('protocols-view/{id}/{hash}', [DocController::class, 'protocolView'])->name('doc-controller.protocol-view');
         Route::any('delete/protocol-document/{id}', [DocController::class, 'delProtocol'])->name('del-protocol');
         Route::any('public-protocols', [DocController::class, 'publicProtocols'])->name('doc-controller.public-protocols');
+        Route::get('work-docs/filter-data', [DocController::class, 'getFilterDataByOrg'])->name('doc-controller.work-docs.filter-data');
+        Route::get('protocols/filter-data', [DocController::class, 'getProtocolFilterDataByOrg'])->name('doc-controller.protocols.filter-data');
     });
+
 
     Route::prefix('comment')->group(function () {
         Route::get('counts', [DocumentCommentController::class, 'getCounts'])->name('doc.comment.counts');

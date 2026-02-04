@@ -1,0 +1,670 @@
+/* ========================================
+   DOCUMENT TYPES PAGES - MODERN STYLES
+   Современные стили для страниц типов документов
+   ======================================== */
+
+/* ========================================
+   TREE VIEW STYLES
+   ======================================== */
+.document-types-tree {
+    font-family: inherit;
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 12px;
+}
+
+.document-types-tree h4 {
+    margin: 0 0 1.5rem 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.document-types-tree h4 i {
+    width: 20px;
+    height: 20px;
+    color: #794DFD;
+}
+
+.document-types-tree ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.document-types-tree > ul > li {
+    margin-bottom: 0.75rem;
+}
+
+.document-types-tree li {
+    padding: 0.75rem 1rem;
+    margin: 0.25rem 0;
+    border-left: 3px solid #794DFD;
+    background: white;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    /*display: flex;*/
+    /*align-items: center;*/
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.document-types-tree li:hover {
+    background: #f8f9ff;
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(121, 77, 253, 0.1);
+}
+
+.document-types-tree ul ul {
+    margin-top: 0.5rem;
+    padding-left: 1.5rem;
+}
+
+.document-types-tree ul ul li {
+    border-left-color: #9d6fff;
+    font-size: 14px;
+}
+
+.document-types-tree ul ul ul li {
+    border-left-color: #cbd5e1;
+    font-size: 13px;
+}
+
+.tree-item-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tree-item-text {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.tree-item-code {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #4338ca;
+    font-family: 'Courier New', monospace;
+}
+
+.tree-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tree-edit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-radius: 6px;
+    color: white;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.tree-edit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    color: white;
+}
+
+.tree-edit-btn i {
+    width: 16px;
+    height: 16px;
+}
+
+/* ========================================
+   FORM STYLES FOR CREATE/EDIT
+   ======================================== */
+.modern-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.form-group-modern {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group-modern.full-width {
+    grid-column: span 2;
+}
+
+.form-group-modern label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    margin: 0;
+}
+
+.form-group-modern label i {
+    width: 16px;
+    height: 16px;
+    color: #794DFD;
+}
+
+.form-group-modern .text-danger,
+.form-group-modern .text-red {
+    color: #ef4444;
+    margin-left: 0.25rem;
+}
+
+.form-group-modern input[type="text"],
+.form-group-modern input[type="number"],
+.form-group-modern textarea,
+.form-group-modern select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #1e293b;
+    transition: all 0.3s;
+    background: white;
+}
+
+.form-group-modern input[type="text"]:focus,
+.form-group-modern input[type="number"]:focus,
+.form-group-modern textarea:focus,
+.form-group-modern select:focus {
+    outline: none;
+    border-color: #794DFD;
+    box-shadow: 0 0 0 3px rgba(121, 77, 253, 0.1);
+}
+
+.form-group-modern textarea {
+    min-height: 120px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.form-group-modern .border-danger,
+.form-group-modern .form-control-warning {
+    border-color: #ef4444 !important;
+}
+
+.form-group-modern .border-danger:focus,
+.form-group-modern .form-control-warning:focus {
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+.form-group-modern small,
+.form-group-modern .text-danger {
+    font-size: 12px;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.form-group-modern small {
+    color: #64748b;
+}
+
+/* ========================================
+   RADIO BUTTONS MODERN STYLE
+   ======================================== */
+.form-radio-modern {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.form-radio-modern > label:first-child {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    margin: 0;
+}
+
+.radio-group-modern {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.radio-option-modern {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.radio-option-modern:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.radio-option-modern input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
+}
+
+.radio-option-modern label {
+    margin: 0;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.radio-option-modern.success {
+    border-color: #10b981;
+}
+
+.radio-option-modern.success input[type="radio"]:checked ~ label {
+    color: #059669;
+    font-weight: 600;
+}
+
+.radio-option-modern.danger {
+    border-color: #ef4444;
+}
+
+.radio-option-modern.danger input[type="radio"]:checked ~ label {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+/* ========================================
+   FORM ACTIONS
+   ======================================== */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding-top: 1rem;
+    border-top: 2px solid #f1f5f9;
+}
+
+/* ========================================
+   EXECUTION STEPS CARD
+   ======================================== */
+.execution-steps-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.execution-steps-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.execution-steps-header i {
+    width: 20px;
+    height: 20px;
+    color: #794DFD;
+}
+
+.execution-steps-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.execution-steps-body {
+    padding: 1.5rem;
+}
+
+.steps-list-modern {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.step-item-modern {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 10px;
+    border-left: 4px solid #cbd5e1;
+    transition: all 0.3s ease;
+}
+
+.step-item-modern:hover {
+    background: #f1f5f9;
+    transform: translateX(4px);
+}
+
+.step-item-modern.step-primary {
+    border-left-color: #794DFD;
+    background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+}
+
+.step-item-modern.step-success {
+    border-left-color: #10b981;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+}
+
+.step-item-modern.step-info {
+    border-left-color: #3b82f6;
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+}
+
+.step-item-modern.step-warning {
+    border-left-color: #f59e0b;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+}
+
+.step-checkbox-modern {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.step-label-modern {
+    flex: 1;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1e293b;
+    cursor: pointer;
+}
+
+.step-label-modern i {
+    color: #64748b;
+    font-style: italic;
+    font-weight: 400;
+}
+
+/* ========================================
+   ROLES SELECTION CARD
+   ======================================== */
+.roles-card-modern {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    height: fit-content;
+}
+
+.roles-list-modern {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.role-item-modern {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.role-item-modern:hover {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+}
+
+.role-item-modern input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.role-item-modern label {
+    flex: 1;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1e293b;
+    cursor: pointer;
+}
+
+/* ========================================
+   CONTROL SECTION
+   ======================================== */
+.control-section-modern {
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-radius: 12px;
+    border: 2px solid #fbbf24;
+    margin-top: 1.5rem;
+}
+
+.control-option-modern {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.control-option-modern input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-top: 0.25rem;
+    cursor: pointer;
+}
+
+.control-option-modern label {
+    flex: 1;
+    margin: 0;
+    font-size: 14px;
+    color: #78350f;
+}
+
+.control-option-modern label strong {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.control-option-modern label i {
+    display: block;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 13px;
+    color: #92400e;
+    margin-top: 0.25rem;
+}
+
+/* ========================================
+   GRID LAYOUTS FOR EDIT PAGE
+   ======================================== */
+.edit-grid-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.roles-grid-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+/* ========================================
+   TABLE ENHANCEMENTS
+   ======================================== */
+.modern-table tbody tr {
+    transition: all 0.3s ease;
+}
+
+.modern-table tbody tr:hover {
+    background: #f8fafc;
+    transform: scale(1.001);
+}
+
+.order-number-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    padding: 0.25rem 0.5rem;
+    background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+    color: white;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+@media (max-width: 1024px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group-modern.full-width {
+        grid-column: span 1;
+    }
+
+    .edit-grid-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .roles-grid-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions .btn-modern {
+        width: 100%;
+    }
+
+    .radio-group-modern {
+        flex-direction: column;
+    }
+
+    .radio-option-modern {
+        width: 100%;
+    }
+
+    .document-types-tree {
+        padding: 1rem;
+    }
+}
+
+/* ========================================
+   RICH TEXT EDITOR WRAPPER
+   ======================================== */
+.rte-wrapper-modern {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.rte-wrapper-modern:focus-within {
+    border-color: #794DFD;
+    box-shadow: 0 0 0 3px rgba(121, 77, 253, 0.1);
+}
+
+/* ========================================
+   SEARCH SECTION ENHANCEMENTS
+   ======================================== */
+.search-results-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4338ca;
+}
+
+.search-results-info i {
+    width: 16px;
+    height: 16px;
+}
+
+/* ========================================
+   PARENT SELECT ENHANCEMENT
+   ======================================== */
+.select2-modern {
+    width: 100% !important;
+}
+
+.select2-container--default .select2-selection--single {
+    border: 2px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    height: auto !important;
+    padding: 0.75rem 1rem !important;
+}
+
+.select2-container--default .select2-selection--single:focus {
+    border-color: #794DFD !important;
+    box-shadow: 0 0 0 3px rgba(121, 77, 253, 0.1) !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: normal !important;
+    padding: 0 !important;
+    color: #1e293b !important;
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+.text-muted-modern {
+    color: #64748b;
+}
+
+.font-mono {
+    font-family: 'Courier New', monospace;
+}
+
+.divider-modern {
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, #e2e8f0 50%, transparent 100%);
+    margin: 1.5rem 0;
+    border: none;
+}

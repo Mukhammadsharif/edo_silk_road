@@ -1,12 +1,19 @@
 <ul>
     @foreach($childs as $key => $child)
         <li>
-            <i>{{ $child->order_number }}. {{ $child->lang($child->lang_id) }}</i> - ({{ $child->doc_code }})
-            <a href="{{ route('document-type.edit', $child->id) }}">
-                <i class="ik ik-edit-1 f-16 ml-5 text-info"></i>
-            </a>
+            <div class="tree-item-content">
+                <span class="order-number-badge">{{ $child->order_number }}</span>
+                <span class="tree-item-text" style="font-style: italic;">{{ $child->lang($child->lang_id) }}</span>
+                <span class="tree-item-code">{{ $child->doc_code }}</span>
+
+                <div class="tree-item-actions">
+                    <a href="{{ route('document-type.edit', $child->id) }}" class="tree-edit-btn">
+                        <i data-lucide="square-pen"></i>
+                    </a>
+                </div>
+            </div>
             @if(count($child->childs))
-                @include('document-settings.document.manageChild',['childs' => $child->childs])
+                @include('document-settings.document.manageChild', ['childs' => $child->childs])
             @endif
         </li>
     @endforeach

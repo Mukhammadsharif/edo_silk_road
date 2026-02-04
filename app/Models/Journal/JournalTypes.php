@@ -13,6 +13,7 @@ class JournalTypes extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'org_id',
         'parent_id',
         'title',
         'lang_id',

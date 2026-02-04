@@ -25,6 +25,7 @@ use App\Models\Protocol\ProtocolDocReplyComment;
 use App\Models\Protocol\ProtocolDocument;
 use App\Models\Resolution\ReplyCommentTypes;
 use App\Models\User;
+use App\Services\Organizations\JournalCloneByCodeService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -538,7 +539,10 @@ class SignDocImzoController extends Controller
         return Http::get($this->eriSrvIp.'/frontend/challenge?_uc='.now().'_'.rand());
     }
 
-    public function backendAuthLogin(Request $request)
+    public function backendAuthLogin(
+        Request $request,
+        JournalCloneByCodeService $journalCloneService
+    )
     {
         try {
             $pkcs7 = $request->pkcs7;
@@ -581,6 +585,35 @@ class SignDocImzoController extends Controller
                 }
             }
 
+
+            $orgId = $user->user->org_unit_id ?? null;
+
+            if ($orgId) {
+                $alreadyExists = JournalTypes::where('org_id', $orgId)->exists();
+
+                if (!$alreadyExists) {
+                    $codes = [
+                        'MESS',
+                        'BASE_INCOMING',
+                        'BASE_OUTGOING',
+                        'APP',
+                        'NOTIFICATION',
+                        'ORDER_F',
+                        'REPORT',
+                        'STATEMENT',
+                        'COMMAND',
+                        'OTHERS',
+                        'APP_MT_META',
+                    ];
+
+                    $journalCloneService->cloneByCodes(
+                        fromOrgId: 1,
+                        toOrgId: $orgId,
+                        codes: $codes
+                    );
+                }
+            }
+
             Auth::loginUsingId($user->user_id ?? $user->id);
 
             return response()->json([
@@ -610,6 +643,11 @@ class SignDocImzoController extends Controller
                     throw new \Exception('Tax number отсутствует для организации');
                 }
 
+                $existingOrganization = OrganizationUnits::where('tax_number', $subjectName['1.2.860.3.16.1.1'])->first();
+                if ($existingOrganization) {
+                    throw new \Exception('Organization with this tax number already exists');
+                }
+
                 $org_code = $this->uniqueHash(6);
                 $organization = OrganizationUnits::create([
                     'code' => $org_code,
@@ -637,9 +675,19 @@ class SignDocImzoController extends Controller
                 throw new \Exception('Serial number отсутствует в сертификате');
             }
 
+            $existingUserWithThisUserName = User::where('username', strtolower($subjectName['Name'][0]) . '_' . strtolower($subjectName['SURNAME']))->first();
+            if ($existingUserWithThisUserName) {
+                throw new \Exception('User with this name already exists');
+            }
+
+            $existingUserWithThisEmail = User::where('email', strtolower($subjectName['Name']) . '_' . strtolower($subjectName['SURNAME']) . '@edoline.uz')->first();
+            if ($existingUserWithThisEmail) {
+                throw new \Exception('User with this email already exists');
+            }
+
             $user = User::create([
                 'username' => strtolower($subjectName['Name'][0]) . '_' . strtolower($subjectName['SURNAME']),
-                'email' => strtolower($subjectName['Name']) . '_' . strtolower($subjectName['SURNAME']) . '@gmail.com',
+                'email' => strtolower($subjectName['Name']) . '_' . strtolower($subjectName['SURNAME']) . '@edoline.uz',
                 'password' => Hash::make($jsonDecodeBack['subjectCertificateInfo']['serialNumber']),
                 'user_hash' => $this->uniqueId(),
                 'org_unit_id' => $isOrg ? $organization->id : 1,

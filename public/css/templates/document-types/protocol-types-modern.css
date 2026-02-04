@@ -1,0 +1,453 @@
+/* ========================================
+   PROTOCOL TYPES PAGES - MODERN STYLES
+   Современные стили для типов протоколов
+   ======================================== */
+
+/* ========================================
+   PROTOCOL TREE VIEW
+   ======================================== */
+.protocol-tree-modern {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.5rem;
+}
+
+.protocol-tree-item {
+    padding: 1rem 1.25rem;
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border-left: 4px solid #3b82f6;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.protocol-tree-item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+}
+
+.protocol-tree-item ul {
+    list-style: none;
+    padding-left: 1.5rem;
+    margin-top: 0.75rem;
+    margin-bottom: 0;
+}
+
+.protocol-tree-item li {
+    padding: 0.5rem 0.75rem;
+    margin: 0.25rem 0;
+    background: white;
+    border-left: 3px solid #93c5fd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.protocol-tree-item li:hover {
+    background: #f8fafc;
+    transform: translateX(2px);
+}
+
+/* ========================================
+   USER SELECTION LIST
+   ======================================== */
+.user-selection-container {
+    background: white;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    padding: 1.5rem;
+}
+
+.user-search-box {
+    margin-bottom: 1.5rem;
+}
+
+.user-search-box input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.user-search-box input:focus {
+    outline: none;
+    border-color: #794DFD;
+    box-shadow: 0 0 0 3px rgba(121, 77, 253, 0.1);
+}
+
+.sortable-user-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.user-item-modern {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem !important;
+    margin-bottom: 0.5rem;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    cursor: move;
+}
+
+.user-item-modern:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+}
+
+.user-item-modern.sortable-ghost {
+    opacity: 0.4;
+    background: #e0e7ff;
+}
+
+.user-item-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+}
+
+.user-checkbox-modern {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.user-info-modern {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.user-name-modern {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.user-role-modern {
+    font-size: 12px;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.user-drag-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    color: #94a3b8;
+    cursor: move;
+}
+
+.user-drag-handle i {
+    width: 20px;
+    height: 20px;
+}
+
+/* ========================================
+   SIGN ROLES SECTION
+   ======================================== */
+.sign-roles-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-top: 1.5rem;
+}
+
+.sign-roles-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-bottom: 2px solid #fbbf24;
+}
+
+.sign-roles-header i {
+    width: 20px;
+    height: 20px;
+    color: #92400e;
+}
+
+.sign-roles-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #78350f;
+}
+
+.sign-roles-body {
+    padding: 1.5rem;
+}
+
+.sign-roles-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.sign-role-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 10px;
+    border-left: 4px solid;
+    transition: all 0.3s ease;
+}
+
+.sign-role-item:hover {
+    transform: translateX(4px);
+}
+
+/* Sign role color variations */
+.sign-role-item.role-list-group-item-primary {
+    background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+    border-left-color: #794DFD;
+}
+
+.sign-role-item.role-list-group-item-success {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border-left-color: #10b981;
+}
+
+.sign-role-item.role-list-group-item-info {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border-left-color: #3b82f6;
+}
+
+.sign-role-item.role-list-group-item-warning {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border-left-color: #f59e0b;
+}
+
+.sign-role-item.role-list-group-item-danger {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border-left-color: #ef4444;
+}
+
+.sign-role-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.sign-role-label {
+    flex: 1;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+    cursor: pointer;
+}
+
+/* ========================================
+   SIGN TYPE SECTION
+   ======================================== */
+.sign-type-section {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+}
+
+.sign-type-title {
+    margin: 0 0 1rem 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sign-type-title i {
+    width: 20px;
+    height: 20px;
+    color: #794DFD;
+}
+
+.sign-type-options {
+    display: flex;
+    gap: 1rem;
+}
+
+.sign-type-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+}
+
+.sign-type-option:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.sign-type-option input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.sign-type-option label {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #475569;
+    cursor: pointer;
+    flex: 1;
+}
+
+.sign-type-option input[type="radio"]:checked ~ label {
+    color: #794DFD;
+    font-weight: 600;
+}
+
+/* ========================================
+   PROTOCOL TABLE ENHANCEMENTS
+   ======================================== */
+.protocol-parent-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #1e40af;
+    margin-bottom: 0.5rem;
+}
+
+.protocol-parent-badge i {
+    width: 14px;
+    height: 14px;
+}
+
+.protocol-code-badge {
+    display: inline-flex;
+    padding: 0.25rem 0.5rem;
+    background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #6b21a8;
+    font-family: 'Courier New', monospace;
+}
+
+.protocol-role-badge {
+    display: inline-flex;
+    padding: 0.25rem 0.75rem;
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #166534;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+@media (max-width: 1024px) {
+    .protocol-tree-modern {
+        padding: 1rem;
+    }
+
+    .user-selection-container {
+        padding: 1rem;
+    }
+
+    .sign-type-options {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 768px) {
+    .user-item-modern {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .user-item-left {
+        width: 100%;
+    }
+
+    .user-drag-handle {
+        align-self: flex-end;
+    }
+
+    .protocol-tree-item {
+        padding: 0.75rem 1rem;
+    }
+
+    .sign-roles-body {
+        padding: 1rem;
+    }
+
+    .sign-type-section {
+        padding: 1rem;
+    }
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+.sortable-user-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sortable-user-list::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+.sortable-user-list::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+    border-radius: 3px;
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+.protocol-divider {
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, #e2e8f0 50%, transparent 100%);
+    margin: 1.5rem 0;
+    border: none;
+}
+
+.w-10 {
+    width: 10% !important;
+}
+
+.w-75 {
+    width: 75% !important;
+}

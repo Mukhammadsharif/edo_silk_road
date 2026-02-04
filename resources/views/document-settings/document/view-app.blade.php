@@ -1,101 +1,182 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container-fluid">
-        <div class="page-header">
-            <div class="row align-items-end">
-                <div class="col-md-3">
-                    <div class="page-header-title">
-                        <i class="ik ik-file bg-blue"></i>
-                        <div class="d-inline">
-                            <h5>{{ __('field.app_temps') }}</h5>
-                        </div>
+    <link href="{{ asset('css/templates/common-document-styles.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/templates/document-types/document-types-modern.css') }}" rel="stylesheet">
+
+    <!-- Modern Document Page Container -->
+    <div class="document-page-modern">
+
+        <!-- Modern Page Header -->
+        <div class="page-header-modern">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i data-lucide="file-type"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>{{ __('field.app_temps') }}</h1>
+                        <p>{{ __('menu.home') }} / {{ __('field.app_temps') }}</p>
                     </div>
                 </div>
-                <div class="col-md-5">
+
+                <div class="header-center">
                     @include('templates.alert')
                 </div>
-                <div class="col-md-4">
-                    <nav class="breadcrumb-container" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('home') }}"><i class="ik ik-home"></i></a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="#">{{ __('field.app_temps') }}</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">{{ __('menu.list') }}</li>
-                        </ol>
-                    </nav>
-                </div>
+
+                <!-- Breadcrumb Navigation -->
+                <nav class="breadcrumb-modern" style="margin-top: 1.5rem;">
+                    <a href="{{ route('home') }}" class="breadcrumb-item">
+                        <i data-lucide="home"></i>
+                        <span>{{ __('menu.home') }}</span>
+                    </a>
+                    <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                    <a href="#" class="breadcrumb-item">
+                        <span>{{ __('field.app_temps') }}</span>
+                    </a>
+                    <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                    <span class="breadcrumb-item active">{{ __('menu.list') }}</span>
+                </nav>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="card">
-                    <div class="card-header d-block pb-3">
-                        <form action="{{ route('app-document') }}" method="post" role="search"
-                              class="form-horizontal">
-                            @csrf
-                            <div class="row">
-                                <div class="col-md-6 col-sm-6 col-lg-4">
-                                    <input type="text" name="doc_name" placeholder="{{ __('input.doc_name') }}"
-                                           value="{{ $doc_name??'' }}" class="form-control">
-                                </div>
-                                    <button type="submit" class="btn btn-info mr-5">
-                                        <i data-lucide="search"></i> {{ __('action.search') }} ({{ $models->total() }})
-                                    </button>
-                                    <a href="{{ route('app-document') }}" class="btn btn-light">
-                                        <i data-lucide="refresh-ccw"></i>{{ __('action.clear') }}
-                                    </a>
-                            </div>
-                        </form>
+        <!-- Content Wrapper -->
+        <div class="content-wrapper-modern">
+
+            <!-- Filters Card -->
+            <div class="filters-card-modern">
+                <div class="filters-header">
+                    <div class="filters-title">
+                        <i data-lucide="search"></i>
+                        <span>{{ __('action.search') }} & {{ __('field.filters') }}</span>
                     </div>
-                    <div class="card-body template-demo">
-                        <div class="table-responsive">
-                            <table class="table table-striped table-bordered">
-                                <thead>
-                                <tr>
-                                    <th>{{ __('field.#') }}</th>
-                                    <th>{{ __('field.name') }}</th>
-                                    <th>{{ __('field.status') }}</th>
-                                    <th>{{ __('field.action') }}</th>
-                                    <th>{{ __('field.created_date') }}</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                @php($k = 1)
-                                @forelse($models as $key => $model)
-                                    <tr class="text-center">
-                                        <td>{{ $k++ }}</td>
-                                        <td>{{ $model->t_name }}</td>
-                                        <td>
-                                            <span
-                                                class="badge badge-pill @if($model->status == 1) badge-green @else badge-danger @endif text-white">
-                                                {{ $model->isActive($model->status) }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <a href="{{ route('app-document.edit', $model->id) }}"
-                                               class="btn btn-sm btn-info">
-                                                <i data-lucide="square-pen"></i> {{ __('action.edit') }}
-                                            </a>
-                                        </td>
-                                        <td>{{ \Carbon\Carbon::parse($model->created_at)->format('d.m.Y H:i') }}</td>
-                                    </tr>
-                                @empty
-                                    <tr class="text-center">
-                                        <td colspan="5">{{ __('field.not_found') }}</td>
-                                    </tr>
-                                @endforelse
-                                </tbody>
-                            </table>
-                            {!! $models->links() !!}
-                        </div>
+                    <div class="filters-count">
+                        <span class="count-badge">{{ $models->total() }}</span>
+                        <span class="count-label">{{ __('field.total') }}</span>
                     </div>
                 </div>
+
+                <form action="{{ route('app-document') }}" method="post" class="filters-form-modern">
+                    @csrf
+                    <div class="filters-grid">
+                        <div class="filter-item" style="grid-column: span 2;">
+                            <label>
+                                <i data-lucide="search"></i>
+                                {{ __('input.doc_name') }}
+                            </label>
+                            <input type="text"
+                                   name="doc_name"
+                                   value="{{ $doc_name ?? '' }}"
+                                   class="form-control-modern"
+                                   placeholder="{{ __('input.doc_name') }}">
+                        </div>
+
+                        <div class="filter-actions">
+                            <button type="submit" class="btn-modern btn-primary">
+                                <i data-lucide="search"></i>
+                                {{ __('action.search') }}
+                            </button>
+                            <a href="{{ route('app-document') }}" class="btn-modern btn-secondary">
+                                <i data-lucide="refresh-ccw"></i>
+                                {{ __('action.clear') }}
+                            </a>
+                        </div>
+                    </div>
+                </form>
             </div>
+
+            <!-- Templates Table -->
+            <div class="table-card-modern">
+                <div class="filters-header">
+                    <div class="filters-title">
+                        <i data-lucide="list"></i>
+                        <span>{{ __('field.app_temps') }} {{ __('menu.list') }}</span>
+                    </div>
+                </div>
+
+                <div class="table-wrapper-modern">
+                    <table class="modern-table">
+                        <thead>
+                        <tr>
+                            <th style="width: 60px;">
+                                <i data-lucide="hash"></i>
+                                {{ __('field.#') }}
+                            </th>
+                            <th style="text-align: left;">
+                                <i data-lucide="file-text"></i>
+                                {{ __('field.name') }}
+                            </th>
+                            <th style="width: 120px;">
+                                <i data-lucide="activity"></i>
+                                {{ __('field.status') }}
+                            </th>
+                            <th style="width: 140px;">
+                                <i data-lucide="settings"></i>
+                                {{ __('field.action') }}
+                            </th>
+                            <th style="width: 160px;">
+                                <i data-lucide="calendar"></i>
+                                {{ __('field.created_date') }}
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @forelse($models as $key => $model)
+                            <tr class="table-row-modern">
+                                <td class="td-number">{{ $key + 1 }}</td>
+                                <td class="td-doc-name">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <i data-lucide="file-type" style="color: #794DFD; width: 16px; height: 16px;"></i>
+                                        <strong>{{ $model->t_name }}</strong>
+                                    </div>
+                                </td>
+                                <td class="td-status">
+                                    @if($model->status == 1)
+                                        <span class="status-badge-modern badge-success">
+                                            <i data-lucide="check-circle"></i>
+                                            {{ __('field.active') }}
+                                        </span>
+                                    @else
+                                        <span class="status-badge-modern badge-danger">
+                                            <i data-lucide="x-circle"></i>
+                                            {{ __('field.inactive') }}
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="td-action">
+                                    <a href="{{ route('app-document.edit', $model->id) }}" class="action-btn view-btn">
+                                        <i data-lucide="square-pen"></i>
+                                        {{ __('action.edit') }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <div class="datetime-cell">
+                                        <span class="date">{{ \Carbon\Carbon::parse($model->created_at)->format('d.m.Y') }}</span>
+                                        <span class="time">{{ \Carbon\Carbon::parse($model->created_at)->format('H:i') }}</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="empty-state">
+                                    <div class="empty-state-content">
+                                        <i data-lucide="folder-x"></i>
+                                        <p>{{ __('field.not_found') }}</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                @if($models->hasPages())
+                    <div class="pagination-wrapper-modern">
+                        {!! $models->links() !!}
+                    </div>
+                @endif
+            </div>
+
         </div>
     </div>
 @endsection

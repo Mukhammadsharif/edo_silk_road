@@ -1,14 +1,22 @@
 @extends('layouts.app')
 
+<link rel="stylesheet" href="{{ asset('css/templates/universal-document-view.css') }}">
+
 @section('content')
-    <div class="container-fluid">
+    <div class="work-view-page-modern">
         @include('office.journal.work.templates.header')
 
-        <div class="row">
-            @include('office.journal.view-left')
-            <div class="col-md-6">
-                <div class="work-doc-page">
-                    <div class="work-doc-subpage">
+        <div class="document-view-layout">
+
+            <div class="view-sidebar view-sidebar-left">
+                <div class="sidebar-card-modern">
+                    @include('office.journal.view-left')
+                </div>
+            </div>
+
+            <div class="document-content-section" id="pdf1">
+                <div class="work-doc-page" id="pdf2">
+                    <div class="work-doc-subpage" id="pdf3">
                         <div id="printPage" class="printPage">
 
                             @if($journal->docStatus->doc_code !== 'OPEN')
@@ -27,12 +35,6 @@
                                 @endif
                             </div>
 
-{{--                            <div class="doc-text">--}}
-{{--                                {!! $document->doc_text !!}--}}
-{{--                            </div>--}}
-
-{{--                            @include('office.journal.work.templates.document-files')--}}
-
                             @include('office.journal.work.templates.verifier')
 
                             @include('office.journal.work.templates.signer')
@@ -45,7 +47,11 @@
                 </div>
             </div>
 
-            @include('doc-controller.work-docs.view-right')
+            <div class="view-sidebar view-sidebar-right">
+                <div class="sidebar-card-modern">
+                    @include('doc-controller.work-docs.view-right')
+                </div>
+            </div>
         </div>
 
     </div>

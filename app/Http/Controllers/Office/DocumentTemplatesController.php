@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Office;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\OrganizationUnits;
 use App\Models\DocumentTypeTemps\DocumentTypeTemps;
 use App\Models\Journal\JournalTypes;
 use Illuminate\Http\Request;
@@ -14,6 +15,7 @@ class DocumentTemplatesController extends Controller
     {
         //
         $doc_name = $request->input('doc_name');
+        $org_id = $request->input('org_id');
 
         $search = DocumentTypeTemps::query();
 
@@ -23,13 +25,32 @@ class DocumentTemplatesController extends Controller
             });
         }
 
+
+        $organizations = OrganizationUnits::where('status', 1)->get();
+
+        $isSuperUser = $this->isSuperUser();
+
+        if ($isSuperUser && $org_id) {
+            $search->whereHas('document', function ($query) use ($org_id) {
+                $query->where('org_id', $org_id);
+            });
+        } elseif ($isSuperUser && !$org_id) {
+            $search->whereHas('document', function ($query) {});
+        } else {
+            $search->whereHas('document', function ($query) {
+                $query->where('org_id', $this->organizationId());
+            });
+        }
+
         $models = $search->orderBy('id')->paginate(25);
 
         $models->appends([
-            'doc_name' => $doc_name
+            'doc_name' => $doc_name,
+            'org_id' => $org_id,
         ]);
 
-        return view('document-settings.document-templates.index', compact('models', 'doc_name'));
+        return view('document-settings.document-templates.index', compact('models', 'doc_name', 'organizations',
+            'org_id', 'isSuperUser'));
     }
 
     public function create()
@@ -37,9 +58,28 @@ class DocumentTemplatesController extends Controller
         //
         $mainTypes =  JournalTypes::whereHas('childs')->pluck('id')->toArray();
 
-        $documentTypes = JournalTypes::whereNotIn('id', $mainTypes)->where('status', 1)->orderBy('order_number')->get();
+        $isSuperUser = $this->isSuperUser();
 
-        return view('document-settings.document-templates.create', compact('documentTypes'));
+        if ($isSuperUser){
+            $documentTypes = null;
+        } else {
+            $documentTypes = JournalTypes::where('org_id', $this->organizationId())->whereNotIn('id', $mainTypes)->where('status', 1)->orderBy('order_number')->get();
+        }
+
+        $organizations = OrganizationUnits::where('status', 1)->get();
+
+        return view('document-settings.document-templates.create', compact('documentTypes', 'isSuperUser', 'organizations'));
+    }
+
+    public function getOrganizationJournals($orgId)
+    {
+        $mainTypes =  JournalTypes::where('org_id', $orgId)->whereHas('childs')->pluck('id')->toArray();
+
+        return response()->json([
+            'data' => JournalTypes::where('org_id', $orgId)->whereNotIn('id', $mainTypes)->where('status', 1)->get(),
+            'status' => 200,
+            'message' => 'success'
+        ]);
     }
 
     public function store(Request $request)

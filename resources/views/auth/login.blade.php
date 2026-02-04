@@ -5,10 +5,13 @@
 <body>
     <main>
         <div class="logo">
-            <img src="{{ asset('images/edofy.svg') }}" style="width: 120px" alt="">
+            <a href="{{ url('/') }}" class="logo-flex">
+                <img src="{{ asset('images/edoline.svg') }}" style="width:30px" alt="">
+                <p>EDOLINE</p>
+            </a>
         </div>
         <video class="auth-sidebar__video" playsinline autoplay loop muted
-               src="{{ asset('images/back2.mp4') }}"></video>
+            src="{{ asset('images/back2.mp4') }}"></video>
 
         <div class="containers">
             <div class="tabs">
@@ -35,8 +38,7 @@
                         <div class="input-group">
                             <i data-lucide="lock" class="icon"></i>
                             <input type="password" id="password" name="password"
-                                   placeholder="{{ __('field.type_password') }}"
-                                   required>
+                                placeholder="{{ __('field.type_password') }}" required>
                             <i data-lucide="eye" onclick="togglePassword()"
                                style="position: absolute; right: 15px; top: 13px; cursor: pointer; color: #999;"></i>
                         </div>
@@ -46,9 +48,7 @@
                                 <input type="checkbox">
                                 {{ __('field.remember_me') }}
                             </label>
-                            <div class="forgot">
-{{--                                <a href="#">{{ __('field.forget_password_question') }}</a>--}}
-                            </div>
+                            <div class="forgot"></div>
                         </div>
 
                         <button type="submit" class="button">
@@ -63,16 +63,16 @@
 
                     <div class="input-group">
                         <i data-lucide="key" class="icon"></i>
-                        <select class="form-select" id="eriSelect" disabled required>
+                        <select class="form-select" id="eriSelect" required  onmousedown="event.preventDefault(); openUsbToken();">
                             <option value="">Tanlanmagan</option>
                         </select>
                     </div>
 
 
-                    <div class="button btn-usb input-group" onclick="openUsbToken()">
-                        <img src="https://esi.uz/oauth2/assets/images/icons/pfx.ico" alt="pfx" style="height: 20px">
-                        {{ __('action.choose_key') }}
-                    </div>
+{{--                    <div class="button btn-usb input-group" onclick="openUsbToken()">--}}
+{{--                        <img src="https://esi.uz/oauth2/assets/images/icons/pfx.ico" alt="pfx" style="height: 20px">--}}
+{{--                        {{ __('action.choose_key') }}--}}
+{{--                    </div>--}}
 
                     <button onclick="signin()" class="button" id="eriLoginBtn" disabled style="margin-top: 15px;">
                         <i data-lucide="shield-check"></i>
@@ -109,56 +109,34 @@
     <script src="{{ asset('js/e_imzo_client.js') }}"></script>
     <script src="{{ asset('js/login_e_imzo.js') }}"></script>
 
-    <script>
-        (function () {
-            const preloader = document.getElementById("cp-preloader");
-            const STRIPS = 16;
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 
-            for (let i = 0; i < STRIPS; i++) {
-                const strip = document.createElement("div");
-                strip.className = "cp-strip";
+<script>
+    localStorage.clear();
+    lucide.createIcons();
 
-                const inner = document.createElement("span");
-                inner.style.setProperty("--i", i);
+    function showTab(tabName) {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
 
-                strip.appendChild(inner);
-                preloader?.appendChild(strip);
-            }
+        if (tabName === 'login') {
+            document.querySelector('[data-tab="password"]').classList.add("active");
+            document.getElementById("login-tab").classList.add("active");
+        } else if (tabName === 'eri') {
+            document.querySelector('[data-tab="eri"]').classList.add("active");
+            document.getElementById("eri-tab").classList.add("active");
+        }
 
-            setTimeout(() => {
-                // preloader.style.display = "none";
-            }, 3300);
-        })();
-    </script>
-
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-
-    <script>
-        localStorage.clear();
         lucide.createIcons();
+    }
 
-        function showTab(tabName) {
-            document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-            document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+    }
 
-            if (tabName === 'login') {
-                document.querySelector('[data-tab="password"]').classList.add("active");
-                document.getElementById("login-tab").classList.add("active");
-            } else if (tabName === 'eri') {
-                document.querySelector('[data-tab="eri"]').classList.add("active");
-                document.getElementById("eri-tab").classList.add("active");
-            }
-
-            lucide.createIcons();
-        }
-
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-        }
-
-    </script>
+</script>
 
 @endsection
 
@@ -651,7 +629,7 @@
     }
 
     .cp-strip span {
-        animation-delay: calc(var(--i) * 20ms);
+        animation-delay: calc(var(--i) * 10ms);
     }
 
     @keyframes cp-slide {
@@ -673,5 +651,58 @@
         font-size: 16px;
         outline: none;
         transition: all 0.4s ease;
+    }
+
+    .eri-selector {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+
+
+    .eri-select-display {
+        width: 100%;
+        padding: 15px 15px 15px 42px;
+        background: rgba(255, 255, 255, 0.8);
+        border: 2px dashed #e3e3e3;
+        border-radius: 12px;
+        color: #333;
+        font-size: 16px;
+        transition: all 0.4s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .eri-selector:hover .eri-select-display {
+        border-color: #794DFD;
+        box-shadow: 0 0 20px rgba(121, 77, 253, 0.2);
+    }
+
+    .eri-placeholder {
+        color: #666;
+        flex: 1;
+    }
+
+    .eri-select-display.selected .eri-placeholder {
+        color: #333;
+        font-weight: 500;
+    }
+
+    .logo-flex {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .logo-flex p {
+        margin: 0;
+        font-size: 18px;
+        color: #007bff;
+        font-weight: 700;
+
+    }
+    .logo p{
+        color:#794DFD;
     }
 </style>

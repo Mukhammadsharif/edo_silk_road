@@ -1027,7 +1027,7 @@ figure table {
     }
 
 
-    
+
     .breadcrumb-modern {
     display: flex;
     align-items: center;
@@ -1036,17 +1036,17 @@ figure table {
     padding: 0.75rem 1.25rem;
     border-radius: 8px;
 }
-    
+
 
 
 .page-header-modern {
     background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
     border-radius: 16px;
     padding: 8px 1rem !important;
-  
+
     margin-bottom: 2rem;
     box-shadow: 0 8px 24px rgba(121, 77, 253, 0.2);
-   
+
 }
 
 .header-icon {

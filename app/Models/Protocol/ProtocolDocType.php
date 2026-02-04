@@ -14,6 +14,7 @@ use Spatie\TranslationLoader\LanguageLine;
 class ProtocolDocType extends Model
 {
     protected $fillable = [
+        'org_id',
         'parent_id',
         'title',
         'lang_id',
