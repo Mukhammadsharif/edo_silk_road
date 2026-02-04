@@ -1,0 +1,551 @@
+/* ========================================
+   TARIFFS PAGES - MODERN STYLES
+   Современные стили для страниц тарифов
+   ======================================== */
+
+/* ========================================
+   PRICING CARDS GRID
+   ======================================== */
+.pricing-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.pricing-card-modern {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.pricing-card-modern:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(121, 77, 253, 0.2);
+}
+
+.pricing-card-modern.featured {
+    border: 3px solid #794DFD;
+}
+
+.pricing-card-modern.featured::before {
+    content: 'Popular';
+    position: absolute;
+    top: 20px;
+    right: -35px;
+    background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+    color: white;
+    padding: 0.5rem 3rem;
+    transform: rotate(45deg);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    box-shadow: 0 4px 8px rgba(121, 77, 253, 0.3);
+}
+
+.pricing-card-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.pricing-card-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1rem;
+    background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pricing-card-icon i {
+    width: 32px;
+    height: 32px;
+    color: white;
+}
+
+.pricing-card-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 0.5rem 0;
+}
+
+.pricing-card-code {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #4338ca;
+    font-family: 'Courier New', monospace;
+}
+
+.pricing-card-price {
+    margin: 1.5rem 0;
+}
+
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+}
+
+.price-label {
+    font-size: 14px;
+    color: #64748b;
+}
+
+.price-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #794DFD;
+}
+
+.price-currency {
+    font-size: 14px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.pricing-card-features {
+    margin: 1.5rem 0;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+}
+
+.feature-icon {
+    width: 20px;
+    height: 20px;
+    color: #10b981;
+    flex-shrink: 0;
+}
+
+.feature-text {
+    font-size: 14px;
+    color: #475569;
+}
+
+.feature-value {
+    font-weight: 700;
+    color: #1e293b;
+}
+
+/* ========================================
+   TARIFF TABLE ENHANCEMENTS
+   ======================================== */
+.tariff-table-modern .tariff-code {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    color: #794DFD;
+    font-size: 14px;
+}
+
+.tariff-table-modern .tariff-name {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.tariff-table-modern .limit-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e40af;
+}
+
+.tariff-table-modern .limit-badge i {
+    width: 14px;
+    height: 14px;
+}
+
+.tariff-table-modern .price-cell {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    color: #059669;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.tariff-table-modern .price-cell .currency {
+    font-size: 12px;
+    color: #64748b;
+}
+
+/* ========================================
+   STATUS BADGE FOR TARIFFS
+   ======================================== */
+.tariff-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.tariff-status-badge i {
+    width: 14px;
+    height: 14px;
+}
+
+.tariff-status-badge.active {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    color: #065f46;
+}
+
+.tariff-status-badge.inactive {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #991b1b;
+}
+
+/* ========================================
+   TARIFF FORM ENHANCEMENTS
+   ======================================== */
+.tariff-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.tariff-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.tariff-form-group.full-width {
+    grid-column: span 2;
+}
+
+.tariff-form-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    margin: 0;
+}
+
+.tariff-form-group label i {
+    width: 16px;
+    height: 16px;
+    color: #794DFD;
+}
+
+.tariff-form-group .text-danger {
+    color: #ef4444;
+    margin-left: 0.25rem;
+}
+
+.tariff-input-modern {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #1e293b;
+    transition: all 0.3s;
+    background: white;
+}
+
+.tariff-input-modern:focus {
+    outline: none;
+    border-color: #794DFD;
+    box-shadow: 0 0 0 3px rgba(121, 77, 253, 0.1);
+}
+
+.tariff-input-modern[type="number"] {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+}
+
+/* Input with icon */
+.input-with-icon {
+    position: relative;
+}
+
+.input-with-icon i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: #94a3b8;
+    pointer-events: none;
+}
+
+.input-with-icon .tariff-input-modern {
+    padding-left: 3rem;
+}
+
+/* Currency suffix */
+.input-currency-wrapper {
+    position: relative;
+}
+
+.input-currency-wrapper::after {
+    content: "so'm";
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    color: #64748b;
+    font-weight: 600;
+    pointer-events: none;
+}
+
+.input-currency-wrapper .tariff-input-modern {
+    padding-right: 4rem;
+}
+
+/* ========================================
+   DELETE MODAL MODERN
+   ======================================== */
+.delete-modal-modern .modal-content {
+    border-radius: 16px;
+    border: none;
+    overflow: hidden;
+}
+
+.delete-modal-modern .modal-header {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    border: none;
+    padding: 1.5rem;
+}
+
+.delete-modal-modern .modal-header h5 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    font-weight: 700;
+}
+
+.delete-modal-modern .modal-header i {
+    width: 24px;
+    height: 24px;
+}
+
+.delete-modal-modern .modal-body {
+    padding: 2rem;
+}
+
+.delete-modal-modern .modal-body .warning-box {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-left: 4px solid #f59e0b;
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.delete-modal-modern .modal-body .warning-box strong {
+    color: #92400e;
+}
+
+.delete-modal-modern .modal-footer {
+    border: none;
+    padding: 1rem 2rem 2rem;
+}
+
+/* ========================================
+   ACTION BUTTONS IN TABLE
+   ======================================== */
+.tariff-actions-cell {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.tariff-edit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border-radius: 8px;
+    color: white;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+}
+
+.tariff-edit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    color: white;
+}
+
+.tariff-edit-btn i {
+    width: 18px;
+    height: 18px;
+}
+
+.tariff-delete-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border-radius: 8px;
+    color: white;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.tariff-delete-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.tariff-delete-btn i {
+    width: 18px;
+    height: 18px;
+}
+
+/* ========================================
+   INFO CARDS
+   ======================================== */
+.tariff-info-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.tariff-info-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.tariff-info-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.tariff-info-icon.total {
+    background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+}
+
+.tariff-info-icon.active {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.tariff-info-icon.inactive {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.tariff-info-icon i {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+
+.tariff-info-content p {
+    margin: 0;
+    font-size: 13px;
+    color: #64748b;
+}
+
+.tariff-info-content h3 {
+    margin: 0.25rem 0 0 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+@media (max-width: 768px) {
+    .tariff-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tariff-form-group.full-width {
+        grid-column: span 1;
+    }
+
+    .pricing-cards-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tariff-actions-cell {
+        flex-direction: column;
+    }
+
+    .tariff-info-cards {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+.tariff-divider {
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, #e2e8f0 50%, transparent 100%);
+    margin: 2rem 0;
+    border: none;
+}
+
+.tariff-helper-text {
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 0.5rem;
+    display: block;
+}
+
+.tariff-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1.5rem;
+}
+
+.tariff-section-title i {
+    width: 24px;
+    height: 24px;
+    color: #794DFD;
+}
