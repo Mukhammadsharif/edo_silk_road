@@ -203,6 +203,7 @@ Route::group(['middleware' => ['auth']], function() {
 
         Route::any('document-templates', [DocumentTemplatesController::class, 'index'])->name('document.templates');
         Route::any('document-templates/create', [DocumentTemplatesController::class, 'create'])->name('document.templates.create');
+        Route::get('get-organization-journals-temps/{orgId}', [DocumentTemplatesController::class, 'getOrganizationJournals'])->name('document.templates-organization-journals-temps');
         Route::any('document-templates/store', [DocumentTemplatesController::class, 'store'])->name('document.templates.store');
         Route::any('document-templates/edit/{id}', [DocumentTemplatesController::class, 'edit'])->name('document.templates.edit');
         Route::any('document-templates/update/{id}', [DocumentTemplatesController::class, 'update'])->name('document.templates.update');
@@ -361,7 +362,10 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('protocols-view/{id}/{hash}', [DocController::class, 'protocolView'])->name('doc-controller.protocol-view');
         Route::any('delete/protocol-document/{id}', [DocController::class, 'delProtocol'])->name('del-protocol');
         Route::any('public-protocols', [DocController::class, 'publicProtocols'])->name('doc-controller.public-protocols');
+        Route::get('work-docs/filter-data', [DocController::class, 'getFilterDataByOrg'])->name('doc-controller.work-docs.filter-data');
+        Route::get('protocols/filter-data', [DocController::class, 'getProtocolFilterDataByOrg'])->name('doc-controller.protocols.filter-data');
     });
+
 
     Route::prefix('comment')->group(function () {
         Route::get('counts', [DocumentCommentController::class, 'getCounts'])->name('doc.comment.counts');

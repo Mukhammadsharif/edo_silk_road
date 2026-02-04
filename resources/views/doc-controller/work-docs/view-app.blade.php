@@ -1,16 +1,22 @@
 @extends('layouts.app')
 
+<link rel="stylesheet" href="{{ asset('css/templates/universal-document-view.css') }}">
+
 @section('content')
-    <div class="container-fluid">
+    <div class="work-view-page-modern">
         @include('office.journal.work.templates.header')
 
-        <div class="row">
+        <div class="document-view-layout">
 
-            @include('office.journal.view-left')
+            <div class="view-sidebar view-sidebar-left">
+                <div class="sidebar-card-modern">
+                    @include('office.journal.view-left')
+                </div>
+            </div>
 
-            <div class="col-md-6">
-                <div class="work-doc-page">
-                    <div class="work-doc-subpage">
+            <div class="document-content-section" id="pdf1">
+                <div class="work-doc-page" id="pdf2">
+                    <div class="work-doc-subpage" id="pdf3">
                         <div id="printPage" class="printPage">
 
                             @if($journal->docStatus->doc_code !== 'OPEN')
@@ -29,16 +35,17 @@
                                         <td></td>
                                         <td>
                                             <p>
-                                                {!! $directorDocument->signQrCode($document->id, $directorDocument->to_user, $directorDocument->id) !!} <br>
+                                                {!! $directorDocument->signQrCode($document->id, $directorDocument->to_user, $directorDocument->id) !!}
+                                                <br>
                                                 @if($directorDocument->status > 2)
-                                                    <span class="font-size-12">{{ date('d.m.Y', strtotime($directorDocument->updated_at)) }}</span>
+                                                    <span
+                                                        class="font-size-12">{{ date('d.m.Y', strtotime($directorDocument->updated_at)) }}</span>
                                                 @endif
                                             </p>
                                         </td>
                                         <td>
                                             {{ $directorDocument->toUser->userPost->lang($directorDocument->toUser->userPost->id)??'' }}
                                             <p>{{ $directorDocument->toUser->personal->shortName()??''}}</p>
-
 
 
                                             {{ $journal->fromUser->userPost->lang($journal->fromUser->userPost->id)??'' }}
@@ -54,12 +61,6 @@
                                 @endif
                             </div>
 
-{{--                            <div class="doc-text">--}}
-{{--                                {!! $document->doc_text !!}--}}
-{{--                            </div>--}}
-
-{{--                            @include('office.journal.work.templates.document-files')--}}
-
                             @include('office.journal.work.templates.agreement')
 
                             @include('office.journal.work.templates.executor')
@@ -67,7 +68,12 @@
                     </div>
                 </div>
             </div>
-            @include('doc-controller.work-docs.view-right')
+
+            <div class="view-sidebar view-sidebar-right">
+                <div class="sidebar-card-modern">
+                    @include('doc-controller.work-docs.view-right')
+                </div>
+            </div>
         </div>
     </div>
 

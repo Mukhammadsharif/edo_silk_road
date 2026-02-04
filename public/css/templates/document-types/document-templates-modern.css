@@ -1,0 +1,609 @@
+/* ========================================
+   DOCUMENT TEMPLATES PAGES - MODERN STYLES
+   Современные стили для страниц шаблонов документов
+   ======================================== */
+
+/* ========================================
+   RICH TEXT EDITOR CONTAINER
+   ======================================== */
+.rte-container-modern {
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.rte-container-modern:focus-within {
+    border-color: #794DFD;
+    box-shadow: 0 0 0 4px rgba(121, 77, 253, 0.1);
+}
+
+.rte-container-modern .rte_editor {
+    min-height: 600px !important;
+    border: none !important;
+}
+
+/* Rich Text Editor Toolbar Enhancement */
+.rte-container-modern .rte-toolbar {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
+    border-bottom: 2px solid #e2e8f0 !important;
+    padding: 0.75rem !important;
+}
+
+/* ========================================
+   TEMPLATE PREVIEW CARD
+   ======================================== */
+.template-preview-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.template-preview-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.template-preview-header i {
+    width: 20px;
+    height: 20px;
+    color: #794DFD;
+}
+
+.template-preview-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.template-preview-body {
+    padding: 1.5rem;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* ========================================
+   DOCUMENT TYPE SELECT ENHANCEMENT
+   ======================================== */
+.doc-type-select-wrapper {
+    /*position: relative;*/
+}
+
+.doc-type-select-wrapper::before {
+    content: '';
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.doc-type-select-wrapper select {
+    padding-left: 3rem !important;
+}
+
+/* ========================================
+   TEMPLATE STATS CARDS
+   ======================================== */
+.template-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.template-stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+}
+
+.template-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.template-stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.template-stat-icon.primary {
+    background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+}
+
+.template-stat-icon.success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.template-stat-icon.danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.template-stat-icon i {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+
+.template-stat-content {
+    flex: 1;
+}
+
+.template-stat-label {
+    font-size: 13px;
+    color: #64748b;
+    margin: 0 0 0.25rem 0;
+}
+
+.template-stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+/* ========================================
+   TEMPLATE TABLE ENHANCEMENTS
+   ======================================== */
+.template-table-modern .doc-type-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.template-table-modern .parent-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #4338ca;
+}
+
+.template-table-modern .parent-badge i {
+    width: 14px;
+    height: 14px;
+}
+
+.template-table-modern .doc-name-cell {
+    text-align: left !important;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.template-table-modern .created-date-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.template-table-modern .created-date-cell .date {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.template-table-modern .created-date-cell .time {
+    font-size: 12px;
+    color: #64748b;
+}
+
+/* ========================================
+   TEMPLATE ACTION BUTTONS
+   ======================================== */
+.template-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.template-action-btn i {
+    width: 16px;
+    height: 16px;
+}
+
+.template-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    color: white;
+}
+
+.template-action-btn.edit {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.template-action-btn.edit:hover {
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.template-action-btn.delete {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.template-action-btn.delete:hover {
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.template-action-btn.view {
+    background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+}
+
+.template-action-btn.view:hover {
+    box-shadow: 0 4px 12px rgba(121, 77, 253, 0.3);
+}
+
+/* ========================================
+   SEARCH SECTION FOR TEMPLATES
+   ======================================== */
+.template-search-section {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem;
+    align-items: center;
+}
+
+.template-create-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+    color: white;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.template-create-btn i {
+    width: 18px;
+    height: 18px;
+}
+
+.template-create-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(121, 77, 253, 0.4);
+    color: white;
+}
+
+.template-search-input-wrapper {
+    position: relative;
+}
+
+.template-search-input-wrapper i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: #94a3b8;
+    pointer-events: none;
+}
+
+.template-search-input {
+    width: 100%;
+    padding: 0.5rem 1rem 0.5rem 3rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #1e293b;
+    transition: all 0.3s;
+}
+
+.template-search-input:focus {
+    outline: none;
+    border-color: #794DFD;
+    box-shadow: 0 0 0 3px rgba(121, 77, 253, 0.1);
+}
+
+.template-search-input::placeholder {
+    color: #94a3b8;
+}
+
+.template-search-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+/* ========================================
+   FORM ENHANCEMENTS FOR CREATE/EDIT
+   ======================================== */
+.template-form-section {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.template-form-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.template-form-header i {
+    width: 20px;
+    height: 20px;
+    color: #794DFD;
+}
+
+.template-form-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.template-form-body {
+    padding: 2rem;
+}
+
+.template-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.template-form-group:last-child {
+    margin-bottom: 0;
+}
+
+.template-form-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 0.5rem;
+}
+
+.template-form-group label i {
+    width: 16px;
+    height: 16px;
+    color: #794DFD;
+}
+
+.template-form-group .text-red {
+    color: #ef4444;
+    margin-left: 0.25rem;
+}
+
+/* ========================================
+   STATUS RADIO BUTTONS MODERN
+   ======================================== */
+.status-radio-modern {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.status-radio-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1.5rem;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+}
+
+.status-radio-option:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.status-radio-option.success {
+    border-color: #10b981;
+}
+
+.status-radio-option.success:has(input:checked) {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    border-color: #10b981;
+}
+
+.status-radio-option.danger {
+    border-color: #ef4444;
+}
+
+.status-radio-option.danger:has(input:checked) {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border-color: #ef4444;
+}
+
+.status-radio-option input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: #794DFD;
+}
+
+.status-radio-option label {
+    margin: 0 !important;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    flex: 1;
+}
+
+.status-radio-option.success label {
+    color: #059669;
+}
+
+.status-radio-option.danger label {
+    color: #dc2626;
+}
+
+/* ========================================
+   FORM ACTIONS SECTION
+   ======================================== */
+.template-form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding-top: 1.5rem;
+    border-top: 2px solid #f1f5f9;
+    margin-top: 2rem;
+}
+
+.template-btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: #e2e8f0;
+    color: #475569;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.template-btn-cancel i {
+    width: 18px;
+    height: 18px;
+}
+
+.template-btn-cancel:hover {
+    background: #cbd5e1;
+    transform: translateY(-2px);
+    color: #475569;
+}
+
+.template-btn-save {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+    color: white;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.template-btn-save i {
+    width: 18px;
+    height: 18px;
+}
+
+.template-btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(121, 77, 253, 0.4);
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+@media (max-width: 1024px) {
+    .template-search-section {
+        grid-template-columns: 1fr;
+    }
+
+    .template-search-actions {
+        width: 100%;
+    }
+
+    .template-search-actions button,
+    .template-search-actions a {
+        flex: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .template-form-body {
+        padding: 1.5rem;
+    }
+
+    .template-form-actions {
+        flex-direction: column;
+    }
+
+    .template-form-actions button,
+    .template-form-actions a {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .status-radio-modern {
+        flex-direction: column;
+    }
+
+    .template-stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+.template-divider {
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, #e2e8f0 50%, transparent 100%);
+    margin: 2rem 0;
+    border: none;
+}
+
+.template-helper-text {
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 0.5rem;
+    display: block;
+}
+
+.template-required-mark {
+    color: #ef4444;
+    margin-left: 0.25rem;
+}

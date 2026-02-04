@@ -9,7 +9,7 @@
             <i data-lucide="printer"></i> {{ __('field.print') }}
         </button>
 
-        @if(in_array('IT admin', $authrole) && $document->status != 6)
+        @if(in_array('IT_Admin', $authrole) && $document->status != 6)
             <button type="button" class="btn-modern btn-danger btn-rounded" data-toggle="modal" data-target="#cancelModel" data-id="{{ $document->id }}">
                 <i class="ik ik-trash-2"></i> {{ __('action.delete') }}
             </button>

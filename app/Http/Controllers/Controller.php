@@ -168,6 +168,7 @@ class Controller extends BaseController
         $log = new DocLog();
         $log->user_id = $this->authActiveUser()->id;
         $log->doc_id = $doc_id;
+        $log->org_id = $this->organizationId();
         $log->act_id = $act_id;
         $log->act_date = now();
         $log->log_type = $log_type;
