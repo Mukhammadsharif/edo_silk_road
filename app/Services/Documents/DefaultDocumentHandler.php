@@ -34,7 +34,7 @@ class DefaultDocumentHandler implements DocumentHandlerInterface
             $filename = $documentKey . '.docx';
             $file = $request->file('main_file');
             if ($file && $file->isValid()) {
-                Storage::disk('public')->putFileAs($ood_path, $file, $filename);
+                Storage::disk('ftp')->putFileAs($ood_path, $file, $filename);
             }
         }
 
