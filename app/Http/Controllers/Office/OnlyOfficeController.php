@@ -63,6 +63,6 @@ class OnlyOfficeController extends Controller
 
         $service = $this->onlyOfficeService->createHtmlToPDFConverted($model->doc_key, $model->doc_path);
 
-        return Storage::disk('internal')->download($service);
+        return Storage::disk('ftp')->download($service);
     }
 }

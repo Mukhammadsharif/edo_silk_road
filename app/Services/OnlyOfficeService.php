@@ -86,7 +86,7 @@ class OnlyOfficeService
             'url' => $document_blank_url,
             'call_back_url' => $call_back_url,
             'only_office_url' => $only_office_url,
-            'only_office_js_url' => url('http://'.$this->onlyOfficeExternalUrl.'/web-apps/apps/api/documents/api.js'),
+            'only_office_js_url' => url($this->onlyOfficeExternalUrl.'/web-apps/apps/api/documents/api.js'),
             "id" => Auth::id(),
             "name" => Auth::user()->username,
             'permissions' => [
@@ -119,8 +119,8 @@ class OnlyOfficeService
 
         $doc_path = $documentOnly->doc_path.$documentOnly->doc_key.'.docx';
 
-        if (Storage::disk('internal')->exists($doc_path)) {
-            $document_blank_url = Storage::disk('internal')->url($doc_path);
+        if (Storage::disk('ftp')->exists($doc_path)) {
+            $document_blank_url = Storage::disk('ftp')->url($doc_path);
         }
 
         $now = time();
@@ -168,7 +168,7 @@ class OnlyOfficeService
             'url' => $document_blank_url,
             'call_back_url' => $call_back_url,
             'only_office_url' => $only_office_url,
-            'only_office_js_url' => url('http://'.$this->onlyOfficeExternalUrl.'/web-apps/apps/api/documents/api.js'),
+            'only_office_js_url' => url($this->onlyOfficeExternalUrl.'/web-apps/apps/api/documents/api.js'),
             "id" => Auth::id(),
             "name" => Auth::user()->username,
             'permissions' => [
@@ -189,7 +189,7 @@ class OnlyOfficeService
         $day = $today->day;
         $path = 'ood/' . $year . '/' . $month . '/' . $day . '/';
         $word_file_path = $path . $document_key . '.docx';
-        $example_document_url = Storage::disk('internal')->url($word_file_path);
+        $example_document_url = Storage::disk('ftp')->url($word_file_path);
         $html_path = $path . $document_key . '.html';
 
         // Create JWT token and save JSON file
@@ -204,10 +204,10 @@ class OnlyOfficeService
         $jwtToken = JWT::encode($body, $secret_key, 'HS256');
         $json_file_path = $path . $document_key . '.json';
 
-        Storage::disk('internal')->put($json_file_path, json_encode(['key' => $document_key, 'token' => $jwtToken]));
+        Storage::disk('ftp')->put($json_file_path, json_encode(['key' => $document_key, 'token' => $jwtToken]));
 
         // Check if HTML file already exists
-        if (!Storage::disk('internal')->exists($html_path)) {
+        if (!Storage::disk('ftp')->exists($html_path)) {
             try {
                 $options = ['timeout' => 60];
                 $options['verify'] = false;
@@ -248,7 +248,7 @@ class OnlyOfficeService
 
                             $convertedContent = Http::withOptions($options1)->get($convertedUrl)->body();
 
-                            Storage::disk('internal')->put($html_path, $convertedContent);
+                            Storage::disk('ftp')->put($html_path, $convertedContent);
 
                         } catch (\Exception $e) {
                             Log::error('Failed to fetch converted content from: ' . $convertedUrl . ' - Error: ' . $e->getMessage());
@@ -273,20 +273,20 @@ class OnlyOfficeService
         if ($model) {
             // Delete old Word file
             $word_path = $model->doc_path . $model->doc_key . '.docx';
-            if (Storage::disk('public')->exists($word_path)) {
+            if (Storage::disk('ftp')->exists($word_path)) {
                 //Storage::disk('public')->delete($word_path);
             }
 
             // Delete old JSON file
             $json_path = $model->doc_path . $model->doc_key . '.json';
-            if (Storage::disk('public')->exists($json_path)) {
-                Storage::disk('public')->delete($json_path);
+            if (Storage::disk('ftp')->exists($json_path)) {
+                Storage::disk('ftp')->delete($json_path);
             }
 
             // Delete old HTML file
             $html_path = $model->doc_path . $model->doc_key . '.html';
-            if (Storage::disk('public')->exists($html_path)) {
-                Storage::disk('public')->delete($html_path);
+            if (Storage::disk('ftp')->exists($html_path)) {
+                Storage::disk('ftp')->delete($html_path);
             }
 
             // OnlyOffice Document JSON file save
@@ -297,7 +297,7 @@ class OnlyOfficeService
             $day = $today->day;
             $path = 'ood/' . $year . '/' . $month . '/' . $day . '/';
             $filename = $document_key . '.docx';
-            $example_document_url = Storage::disk('internal')->url($path . $filename);
+            $example_document_url = Storage::disk('ftp')->url($path . $filename);
             $html_path = $path . $document_key . '.html';
 
             $body = [
@@ -311,7 +311,7 @@ class OnlyOfficeService
             $jwtToken = JWT::encode($body, $secret_key, 'HS256');
             $json = json_encode(['key' => $document_key, 'token' => $jwtToken]);
             $json_file_path = $path . $document_key . '.json';
-            Storage::disk('internal')->put($json_file_path, $json);
+            Storage::disk('ftp')->put($json_file_path, $json);
 
             // Update document key and path in the database
             $model->update([
@@ -320,7 +320,7 @@ class OnlyOfficeService
             ]);
 
             // Check if HTML file already exists
-            if (!Storage::disk('internal')->exists($html_path)) {
+            if (!Storage::disk('ftp')->exists($html_path)) {
                 try {
                     $options = ['timeout' => 60];
                     $options['verify'] = false;
@@ -359,7 +359,7 @@ class OnlyOfficeService
                                     $options1['proxy'] = config('only-office.HTTP_PROXY');
                                 }
                                 $convertedContent = Http::withOptions($options1)->get($convertedUrl)->body();
-                                Storage::disk('internal')->put($html_path, $convertedContent);
+                                Storage::disk('ftp')->put($html_path, $convertedContent);
                             } catch (\Exception $e) {
                                 Log::error('Failed to fetch converted content from: ' . $convertedUrl . ' - Error: ' . $e->getMessage());
                             }
@@ -389,7 +389,7 @@ class OnlyOfficeService
         $day = $today->day;
         $path = 'ood/' . $year . '/' . $month . '/' . $day . '/';
         $html_file_path = $document_path . $document_key . '.html';
-        $example_document_url = Storage::disk('internal')->url($html_file_path);
+        $example_document_url = Storage::disk('ftp')->url($html_file_path);
         $pdf_path = $path . $document_key . '.pdf';
 
         // Create JWT token and save JSON file
@@ -404,7 +404,7 @@ class OnlyOfficeService
         $jwtToken = JWT::encode($body, $secret_key, 'HS256');
 
         // Check if HTML file already exists
-        if (!Storage::disk('internal')->exists($pdf_path)) {
+        if (!Storage::disk('ftp')->exists($pdf_path)) {
             try {
                 $options = ['timeout' => 60];
                 $options['verify'] = false;
@@ -442,7 +442,7 @@ class OnlyOfficeService
                                 $options1['proxy'] = config('only-office.HTTP_PROXY');
                             }
                             $convertedContent = Http::withOptions($options1)->get($convertedUrl)->body();
-                            Storage::disk('internal')->put($pdf_path, $convertedContent);
+                            Storage::disk('ftp')->put($pdf_path, $convertedContent);
                         } catch (\Exception $e) {
                             Log::error('Failed to fetch converted content from: ' . $convertedUrl . ' - Error: ' . $e->getMessage());
                         }

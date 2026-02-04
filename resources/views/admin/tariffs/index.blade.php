@@ -1,114 +1,214 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container-fluid">
-        <div class="page-header">
-            <div class="row align-items-end">
-                <div class="col-lg-8">
-                    <div class="page-header-title">
-                        <i class="ik ik-package bg-blue"></i>
-                        <div class="d-inline">
-                            <h5>{{ __('menu.tariffs') }}</h5>
-                            <span>{{ __('menu.list') }}</span>
-                        </div>
+    <link href="{{ asset('css/templates/common-document-styles.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/templates/tariffs/tariffs-modern.css') }}" rel="stylesheet">
+
+    <!-- Modern Document Page Container -->
+    <div class="document-page-modern">
+
+        <!-- Modern Page Header -->
+        <div class="page-header-modern">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i data-lucide="package"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>{{ __('menu.tariffs') }}</h1>
+                        <p>{{ __('menu.tariffs') }} / {{ __('menu.list') }}</p>
                     </div>
                 </div>
-                <div class="col-lg-4">
-                    <nav class="breadcrumb-container" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('home') }}"><i class="ik ik-home"></i></a></li>
-                            <li class="breadcrumb-item active">{{ __('menu.tariffs') }}</li>
-                        </ol>
-                    </nav>
+
+                <div class="header-center">
+                    @include('templates.alert')
                 </div>
+
+                <!-- Breadcrumb Navigation -->
+                <nav class="breadcrumb-modern" style="margin-top: 1.5rem;">
+                    <a href="{{ route('home') }}" class="breadcrumb-item">
+                        <i data-lucide="home"></i>
+                        <span>{{ __('menu.home') }}</span>
+                    </a>
+                    <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                    <span class="breadcrumb-item active">{{ __('menu.tariffs') }}</span>
+                </nav>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between">
-                        <h3>{{ __('menu.tariffs') }}</h3>
-                        <a href="{{ route('tariffs.create') }}" class="btn btn-primary">
-                            <i class="ik ik-plus"></i> {{ __('action.create') }}
-                        </a>
+        <!-- Content Wrapper -->
+        <div class="content-wrapper-modern">
+
+            <!-- Main Table Card -->
+            <div class="table-card-modern">
+                <div class="filters-header">
+                    <div class="filters-title">
+                        <i data-lucide="list"></i>
+                        <span>{{ __('menu.tariffs') }}</span>
                     </div>
-                    <div class="card-body">
-                        @include('templates.alert')
-                        <div class="table-responsive">
-                            <table class="table table-striped table-bordered">
-                                <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>{{ __('field.code') }}</th>
-                                    <th>{{ __('field.name') }}</th>
-                                    <th>{{ __('field.max_users') }}</th>
-                                    <th>{{ __('field.max_documents') }}</th>
-                                    <th>{{ __('field.price_monthly') }}</th>
-                                    <th>{{ __('field.price_yearly') }}</th>
-                                    <th>{{ __('field.status') }}</th>
-                                    <th>{{ __('field.action') }}</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                @forelse($models as $key => $item)
-                                    <tr>
-                                        <td>{{ $models->firstItem() + $key }}</td>
-                                        <td><strong>{{ $item->code }}</strong></td>
-                                        <td>{{ $item->name }}</td>
-                                        <td>{{ $item->max_users }}</td>
-                                        <td>{{ $item->max_documents }}</td>
-                                        <td>{{ number_format($item->price_monthly) }} so'm</td>
-                                        <td>{{ number_format($item->price_yearly) }} so'm</td>
-                                        <td>{!! $item->getStatusBadgeAttribute() !!}</td>
-                                        <td class="d-flex flex-row justify-content-around">
-                                            <a href="{{ route('tariffs.edit', $item->id) }}" class="btn btn-info btn-sm">
-                                                <i class="ik ik-edit ml-1"></i>
-                                            </a>
-                                            <button type="button" class="btn btn-danger btn-sm delete-btn"
-                                                    data-id="{{ $item->id }}"
-                                                    data-name="{{ $item->name }}">
-                                                <i class="ik ik-trash ml-1"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="9" class="text-center">{{ __('field.not_found') }}</td>
-                                    </tr>
-                                @endforelse
-                                </tbody>
-                            </table>
-                            {!! $models->links() !!}
-                        </div>
-                    </div>
+                    <a href="{{ route('tariffs.create') }}" class="btn-modern btn-primary" style="width: auto;">
+                        <i data-lucide="circle-plus"></i>
+                        {{ __('action.create') }}
+                    </a>
                 </div>
+
+                <div class="table-wrapper-modern">
+                    <table class="modern-table tariff-table-modern">
+                        <thead>
+                        <tr>
+                            <th style="width: 60px;">
+                                <i data-lucide="hash"></i>
+                                #
+                            </th>
+                            <th style="width: 120px;">
+                                <i data-lucide="code"></i>
+                                {{ __('field.code') }}
+                            </th>
+                            <th style="text-align: left;">
+                                <i data-lucide="tag"></i>
+                                {{ __('field.name') }}
+                            </th>
+                            <th style="width: 130px;">
+                                <i data-lucide="users"></i>
+                                {{ __('field.max_users') }}
+                            </th>
+                            <th style="width: 140px;">
+                                <i data-lucide="file-text"></i>
+                                {{ __('field.max_documents') }}
+                            </th>
+                            <th style="width: 150px;">
+                                <i data-lucide="calendar"></i>
+                                {{ __('field.price_monthly') }}
+                            </th>
+                            <th style="width: 150px;">
+                                <i data-lucide="calendar-range"></i>
+                                {{ __('field.price_yearly') }}
+                            </th>
+                            <th style="width: 120px;">
+                                <i data-lucide="activity"></i>
+                                {{ __('field.status') }}
+                            </th>
+                            <th style="width: 100px;">
+                                <i data-lucide="settings"></i>
+                                {{ __('field.action') }}
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @forelse($models as $key => $item)
+                            <tr class="table-row-modern">
+                                <td class="td-number">{{ $models->firstItem() + $key }}</td>
+                                <td class="tariff-code">{{ $item->code }}</td>
+                                <td class="tariff-name" style="text-align: left;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <i data-lucide="package" style="color: #794DFD; width: 16px; height: 16px;"></i>
+                                        {{ $item->name }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="limit-badge">
+                                        <i data-lucide="users"></i>
+                                        {{ $item->max_users }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="limit-badge">
+                                        <i data-lucide="file-text"></i>
+                                        {{ $item->max_documents }}
+                                    </span>
+                                </td>
+                                <td class="price-cell">
+                                    {{ number_format($item->price_monthly) }}
+                                    <span class="currency">so'm</span>
+                                </td>
+                                <td class="price-cell">
+                                    {{ number_format($item->price_yearly) }}
+                                    <span class="currency">so'm</span>
+                                </td>
+                                <td>
+                                    @if($item->status == 1)
+                                        <span class="tariff-status-badge active">
+                                            <i data-lucide="check-circle"></i>
+                                            Faol
+                                        </span>
+                                    @else
+                                        <span class="tariff-status-badge inactive">
+                                            <i data-lucide="x-circle"></i>
+                                            No faol
+                                        </span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <div class="tariff-actions-cell">
+                                        <a href="{{ route('tariffs.edit', $item->id) }}" class="tariff-edit-btn">
+                                            <i data-lucide="square-pen"></i>
+                                        </a>
+                                        <button type="button" class="tariff-delete-btn delete-btn"
+                                                data-id="{{ $item->id }}"
+                                                data-name="{{ $item->name }}">
+                                            <i data-lucide="trash-2"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="9" class="empty-state">
+                                    <div class="empty-state-content">
+                                        <i data-lucide="folder-x"></i>
+                                        <p>{{ __('field.not_found') }}</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                @if($models->hasPages())
+                    <div class="pagination-wrapper-modern">
+                        {!! $models->links() !!}
+                    </div>
+                @endif
             </div>
+
         </div>
     </div>
 
-    <div class="modal fade" id="deleteTariffModal" tabindex="-1" role="dialog">
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade delete-modal-modern" id="deleteTariffModal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title"><i class="ik ik-alert-octagon"></i> O'chirishni tasdiqlash</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i data-lucide="alert-octagon"></i>
+                        O'chirishni tasdiqlash
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white; opacity: 1;">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p><strong id="deleteTariffName"></strong> tarifini o'chirishni tasdiqlaysizmi?</p>
-                    <p class="text-danger"><strong>Diqqat!</strong> Bu amalni ortga qaytarib bo'lmaydi.</p>
+                    <p style="font-size: 16px; color: #1e293b; margin-bottom: 0;">
+                        <strong id="deleteTariffName" style="color: #794DFD;"></strong> tarifini o'chirishni tasdiqlaysizmi?
+                    </p>
+                    <div class="warning-box">
+                        <p style="margin: 0; color: #92400e;">
+                            <strong>Diqqat!</strong> Bu amalni ortga qaytarib bo'lmaydi.
+                        </p>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-dismiss="modal">
-                        <i class="ik ik-x"></i> Bekor qilish
+                    <button type="button" class="btn-modern btn-secondary" data-dismiss="modal" style="width: auto;">
+                        <i data-lucide="x"></i>
+                        Bekor qilish
                     </button>
                     <form id="deleteTariffForm" method="POST" style="display: inline;">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger">
-                            <i class="ik ik-trash"></i> Ha, o'chirish
+                        <button type="submit" class="btn-modern" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; width: auto;">
+                            <i data-lucide="trash-2"></i>
+                            Ha, o'chirish
                         </button>
                     </form>
                 </div>
@@ -116,6 +216,7 @@
         </div>
     </div>
 
+    <script src="{{ asset('/ajax/jquery.min.js') }}"></script>
     <script>
         $(document).ready(function () {
             $('.delete-btn').on('click', function () {

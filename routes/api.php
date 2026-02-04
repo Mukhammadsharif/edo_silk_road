@@ -87,7 +87,7 @@ Route::post('/callback', function (Request $request) {
         $filename = $key . '.docx';
         $path = $ood_path . $filename;
 
-        Storage::disk('public')->put($path, $response->body());
+        Storage::disk('ftp')->put($path, $response->body());
 
         return response()->json(['error' => 0]);
 
