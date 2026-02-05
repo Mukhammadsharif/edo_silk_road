@@ -82,6 +82,18 @@ return [
             'ssl'      => false,
             'timeout'  => 30,
         ],
+
+        'ftp_13' => [
+            'driver'   => 'ftp',
+            'host'     => env('FTP_HOST'),
+            'username' => env('FTP_USERNAME'),
+            'password' => env('FTP_PASSWORD'),
+            'root'     => env('FTP_ROOT', '/files'),
+            'port'     => 21,
+            'passive'  => true,
+            'ssl'      => false,
+            'timeout'  => 30,
+        ],
     ],
 
     /*
