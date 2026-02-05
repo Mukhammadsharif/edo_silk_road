@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+
 use App\Models\Document\DocumentJournals;
 use App\Models\Messages\OnlyOfficeDoc;
 use App\Models\Protocol\ProtocolDocument;
@@ -21,48 +22,59 @@ class OnlyOfficeService
 
     public function __construct()
     {
-        $this->appInternalUrl           = config('only-office.APP_INTERNAL_URL');
-        $this->appBlankDocPath          = config('only-office.APP_BLANK_DOC_PATH');
-        $this->onlyOfficeInternalUrl    = config('only-office.ONLY_OFFICE_INTERNAL_URL');
-        $this->onlyOfficeExternalUrl    = config('only-office.ONLY_OFFICE_EXTERNAL_URL');
-        $this->onlyOfficeJwtSecret      = config('only-office.ONLY_OFFICE_JWT_SECRET');
+        $this->appInternalUrl = config('only-office.APP_INTERNAL_URL');
+        $this->appBlankDocPath = config('only-office.APP_BLANK_DOC_PATH');
+        $this->onlyOfficeInternalUrl = config('only-office.ONLY_OFFICE_INTERNAL_URL');
+        $this->onlyOfficeExternalUrl = config('only-office.ONLY_OFFICE_EXTERNAL_URL');
+        $this->onlyOfficeJwtSecret = config('only-office.ONLY_OFFICE_JWT_SECRET');
     }
 
-    public function openWordEditor(): array
+    /**
+     * Генерирует HTTP URL для документа через прокси
+     */
+    protected function getDocumentUrl(string $filePath): string
     {
-        //
-        $key = uniqid().'_'.time();
+        $encodedPath = base64_encode($filePath);
+        return route('document.proxy', ['path' => $encodedPath]);
+    }
 
-        $only_office_url = $this->onlyOfficeInternalUrl;
-
-        $secret_key = $this->onlyOfficeJwtSecret;
-
-        $call_back_url = $this->appInternalUrl.'/api/callback';
-
-        $document_blank_url = Storage::disk('internal')->url($this->appBlankDocPath);
-
+    /**
+     * Генерирует JWT токен для OnlyOffice
+     */
+    protected function generateJwtToken(array $payload): string
+    {
         $now = time();
+        $payload['iat'] = $now;
+        $payload['exp'] = $now + 3600;
 
-        $payload = [
-            "document" => [
-                "fileType" => "docx",
-                "key" => $key,
-                "title" => "Yangi hujjat",
-                "url" => $document_blank_url,
+        return JWT::encode($payload, $this->onlyOfficeJwtSecret, 'HS256');
+    }
+
+    /**
+     * Базовая конфигурация для документа
+     */
+    protected function getBaseDocumentConfig(string $key, string $title, string $documentUrl): array
+    {
+        return [
+            'document' => [
+                'fileType' => 'docx',
+                'key' => $key,
+                'title' => $title,
+                'url' => $documentUrl,
                 'permissions' => [
                     'edit' => true,
                     'download' => true,
                     'save' => true
                 ]
             ],
-            "documentType" => "word",
-            "editorConfig" => [
-                "callbackUrl" => $call_back_url,
-                "mode" => "edit",
-                "lang" => "ru",
-                "user" => [
-                    "id" => Auth::id(),
-                    "name" => Auth::user()->username
+            'documentType' => 'word',
+            'editorConfig' => [
+                'callbackUrl' => $this->appInternalUrl . '/api/callback',
+                'mode' => 'edit',
+                'lang' => 'ru',
+                'user' => [
+                    'id' => Auth::id(),
+                    'name' => Auth::user()->username
                 ],
                 'customization' => [
                     'autosave' => false,
@@ -72,391 +84,346 @@ class OnlyOfficeService
                     'mode' => 'strict',
                     'change' => false
                 ]
-            ],
-            'iat' => $now,
-            'exp' => $now + 3600,
+            ]
         ];
+    }
 
-        $token = JWT::encode($payload, $secret_key, 'HS256');
+    /**
+     * Открыть редактор для нового документа
+     */
+    public function openWordEditor(): array
+    {
+        $key = uniqid() . '_' . time();
+        $documentUrl = Storage::disk('internal')->url($this->appBlankDocPath);
 
-        $document_params = [
+        $payload = $this->getBaseDocumentConfig($key, 'Yangi hujjat', $documentUrl);
+        $token = $this->generateJwtToken($payload);
+
+        $documentParams = [
             'fileType' => 'docx',
             'title' => 'Yangi hujjat',
             'key' => $key,
-            'url' => $document_blank_url,
-            'call_back_url' => $call_back_url,
-            'only_office_url' => $only_office_url,
-            'only_office_js_url' => url($this->onlyOfficeExternalUrl.'/web-apps/apps/api/documents/api.js'),
-            "id" => Auth::id(),
-            "name" => Auth::user()->username,
-            'permissions' => [
-                'edit' => true,
-            ],
+            'url' => $documentUrl,
+            'call_back_url' => $this->appInternalUrl . '/api/callback',
+            'only_office_url' => $this->onlyOfficeInternalUrl,
+            'only_office_js_url' => url($this->onlyOfficeExternalUrl . '/web-apps/apps/api/documents/api.js'),
+            'id' => Auth::id(),
+            'name' => Auth::user()->username,
+            'permissions' => ['edit' => true],
         ];
 
-        return ['token' => $token, 'document_params' => $document_params];
+        return ['token' => $token, 'document_params' => $documentParams];
     }
 
-    public function editWordEditor($j_id, $doc_type): array
+    /**
+     * Редактировать существующий документ
+     */
+    public function editWordEditor(int $jId, string $docType): array
     {
-        $key = uniqid().'_'.time();
+        $key = uniqid() . '_' . time();
 
-        if ($doc_type === 'DOC') {
-            $journal = DocumentJournals::findOrFail($j_id);
-            $documentOnly = OnlyOfficeDoc::where('doc_type', 'DOC')->where('doc_id', $journal->doc_id)->firstOrFail();
-        } else {
-            $protocol = ProtocolDocument::findOrFail($j_id);
-            $documentOnly = OnlyOfficeDoc::where('doc_type', 'PRT')->where('doc_id', $protocol->id)->firstOrFail();
-        }
+        // Получаем документ
+        $documentOnly = $this->getDocument($jId, $docType);
 
-        $only_office_url = $this->onlyOfficeInternalUrl;
+        // Определяем URL документа
+        $documentUrl = $this->getEditDocumentUrl($documentOnly);
 
-        $secret_key = $this->onlyOfficeJwtSecret;
+        $payload = $this->getBaseDocumentConfig($key, 'Hujjat tahrirlash', $documentUrl);
+        $token = $this->generateJwtToken($payload);
 
-        $call_back_url = $this->appInternalUrl.'/api/callback';
-
-        $document_blank_url = Storage::disk('internal')->url($this->appBlankDocPath);
-
-        $doc_path = $documentOnly->doc_path.$documentOnly->doc_key.'.docx';
-
-        if (Storage::disk('ftp')->exists($doc_path)) {
-            $document_blank_url = Storage::disk('ftp')->url($doc_path);
-        }
-
-        $now = time();
-
-        $payload = [
-            "document" => [
-                "fileType" => "docx",
-                "key" => $key,
-                "title" => "Hujjat tahrirlash",
-                "url" => $document_blank_url,
-                'permissions' => [
-                    'edit' => true,
-                    'download' => true,
-                    'save' => true
-                ]
-            ],
-            "documentType" => "word",
-            "editorConfig" => [
-                "callbackUrl" => $call_back_url,
-                "mode" => "edit",
-                "lang" => "ru",
-                "user" => [
-                    "id" => Auth::id(),
-                    "name" => Auth::user()->username
-                ],
-                'customization' => [
-                    'autosave' => false,
-                    'forcesave' => true
-                ],
-                'coEditing' => [
-                    'mode' => 'strict',
-                    'change' => false
-                ]
-            ],
-            'iat' => $now,
-            'exp' => $now + 3600,
-        ];
-
-        $token = JWT::encode($payload, $secret_key, 'HS256');
-
-        $document_params = [
+        $documentParams = [
             'fileType' => 'docx',
             'title' => 'Hujjat tahrirlash',
             'key' => $key,
-            'url' => $document_blank_url,
-            'call_back_url' => $call_back_url,
-            'only_office_url' => $only_office_url,
-            'only_office_js_url' => url($this->onlyOfficeExternalUrl.'/web-apps/apps/api/documents/api.js'),
-            "id" => Auth::id(),
-            "name" => Auth::user()->username,
-            'permissions' => [
-                'edit' => true,
-            ],
+            'url' => $documentUrl,
+            'call_back_url' => $this->appInternalUrl . '/api/callback',
+            'only_office_url' => $this->onlyOfficeInternalUrl,
+            'only_office_js_url' => url($this->onlyOfficeExternalUrl . '/web-apps/apps/api/documents/api.js'),
+            'id' => Auth::id(),
+            'name' => Auth::user()->username,
+            'permissions' => ['edit' => true],
         ];
 
-        return ['token' => $token, 'document_params' => $document_params];
+        return ['token' => $token, 'document_params' => $documentParams];
     }
 
-    public function createWordToHtmlConverted($document_key): true
+    /**
+     * Получить модель документа
+     */
+    protected function getDocument(int $jId, string $docType): OnlyOfficeDoc
     {
-        //
-        $secret_key = $this->onlyOfficeJwtSecret;
-        $today = Carbon::today();
-        $year = $today->year;
-        $month = $today->month;
-        $day = $today->day;
-        $path = 'ood/' . $year . '/' . $month . '/' . $day . '/';
-        $word_file_path = $path . $document_key . '.docx';
-        $example_document_url = Storage::disk('ftp')->url($word_file_path);
-        $html_path = $path . $document_key . '.html';
-
-        // Create JWT token and save JSON file
-        $body = [
-            'async' => false,
-            'url' => $example_document_url,
-            'outputtype' => 'html',
-            'filetype' => 'docx',
-            'title' => $document_key,
-            'key' => $document_key,
-        ];
-        $jwtToken = JWT::encode($body, $secret_key, 'HS256');
-        $json_file_path = $path . $document_key . '.json';
-
-        Storage::disk('ftp')->put($json_file_path, json_encode(['key' => $document_key, 'token' => $jwtToken]));
-
-        // Check if HTML file already exists
-        if (!Storage::disk('ftp')->exists($html_path)) {
-            try {
-                $options = ['timeout' => 60];
-                $options['verify'] = false;
-                $options['max_redirects'] = 10;
-                $options['http_version'] = '1.1';
-                if (config('only-office.HTTP_PROXY')) {
-                    $options['proxy'] = config('only-office.HTTP_PROXY');
-                }
-                $response = Http::withToken($jwtToken)
-                    ->withHeaders([
-                        'Content-Type' => 'application/json',
-                    ])
-                    ->timeout(5)
-                    ->withOptions($options)
-                    ->post($this->onlyOfficeInternalUrl . '/converter', [
-                        'async' => false,
-                        'url' => $example_document_url,
-                        'outputtype' => 'html',
-                        'filetype' => 'docx',
-                        'title' => $document_key,
-                        'key' => $document_key
-                    ]);
-
-                if (!$response->failed()) {
-                    $response_decode = $response->json();
-                    if (isset($response_decode['fileUrl'])) {
-                        $convertedUrl = str_replace(
-                            $this->onlyOfficeExternalUrl,
-                            $this->onlyOfficeInternalUrl,
-                            $response_decode['fileUrl']
-                        );
-
-                        try {
-                            $options1 = ['timeout' => 60];
-                            if (config('only-office.HTTP_PROXY')) {
-                                $options1['proxy'] = config('only-office.HTTP_PROXY');
-                            }
-
-                            $convertedContent = Http::withOptions($options1)->get($convertedUrl)->body();
-
-                            Storage::disk('ftp')->put($html_path, $convertedContent);
-
-                        } catch (\Exception $e) {
-                            Log::error('Failed to fetch converted content from: ' . $convertedUrl . ' - Error: ' . $e->getMessage());
-                        }
-                    }
-                }
-
-            } catch (\Exception $e) {
-                Log::error('HTTP error during conversion for key: ' . $document_key . ' - ' . $e->getMessage());
-            }
-        } else {
-            Log::info('HTML file already exists for: ' . $document_key);
+        if ($docType === 'DOC') {
+            $journal = DocumentJournals::findOrFail($jId);
+            return OnlyOfficeDoc::where('doc_type', 'DOC')
+                ->where('doc_id', $journal->doc_id)
+                ->firstOrFail();
         }
+
+        $protocol = ProtocolDocument::findOrFail($jId);
+        return OnlyOfficeDoc::where('doc_type', 'PRT')
+            ->where('doc_id', $protocol->id)
+            ->firstOrFail();
+    }
+
+    /**
+     * Получить URL для редактирования документа
+     */
+    protected function getEditDocumentUrl(OnlyOfficeDoc $documentOnly): string
+    {
+        $docPath = $documentOnly->doc_path . $documentOnly->doc_key . '.docx';
+
+        if (Storage::disk('ftp')->exists($docPath)) {
+            // ВАЖНО: Используем HTTP прокси вместо FTP URL
+            return $this->getDocumentUrl($docPath);
+        }
+
+        // Если файл не найден, используем пустой шаблон
+        return Storage::disk('internal')->url($this->appBlankDocPath);
+    }
+
+    /**
+     * Конвертировать DOCX в HTML
+     */
+    public function createWordToHtmlConverted(string $documentKey): bool
+    {
+        $path = $this->getTodayPath();
+        $wordFilePath = $path . $documentKey . '.docx';
+        $htmlPath = $path . $documentKey . '.html';
+
+        // Проверяем, существует ли уже HTML
+        if (Storage::disk('ftp')->exists($htmlPath)) {
+            Log::info('HTML file already exists', ['key' => $documentKey]);
+            return true;
+        }
+
+        // ВАЖНО: Используем HTTP URL через прокси
+        $documentUrl = $this->getDocumentUrl($wordFilePath);
+
+        // Выполняем конвертацию
+        $this->convertDocument($documentKey, $documentUrl, 'html', 'docx', $htmlPath);
+
+        // Сохраняем JSON с токеном
+        $this->saveConversionToken($documentKey, $documentUrl, 'html', 'docx', $path);
 
         return true;
     }
 
-    public function editWordToHtmlConverted($document_key, $doc_id, $doc_type): true
+    /**
+     * Обновить и конвертировать документ
+     */
+    public function editWordToHtmlConverted(string $documentKey, int $docId, string $docType): bool
     {
-        //
-        $model = OnlyOfficeDoc::where('doc_type', $doc_type)->where('doc_id', $doc_id)->first();
-        if ($model) {
-            // Delete old Word file
-            $word_path = $model->doc_path . $model->doc_key . '.docx';
-            if (Storage::disk('ftp')->exists($word_path)) {
-                //Storage::disk('public')->delete($word_path);
-            }
+        $model = OnlyOfficeDoc::where('doc_type', $docType)
+            ->where('doc_id', $docId)
+            ->first();
 
-            // Delete old JSON file
-            $json_path = $model->doc_path . $model->doc_key . '.json';
-            if (Storage::disk('ftp')->exists($json_path)) {
-                Storage::disk('ftp')->delete($json_path);
-            }
+        if (!$model) {
+            return false;
+        }
 
-            // Delete old HTML file
-            $html_path = $model->doc_path . $model->doc_key . '.html';
-            if (Storage::disk('ftp')->exists($html_path)) {
-                Storage::disk('ftp')->delete($html_path);
-            }
+        // Удаляем старые файлы
+        $this->deleteOldFiles($model);
 
-            // OnlyOffice Document JSON file save
-            $secret_key = $this->onlyOfficeJwtSecret;
-            $today = Carbon::today();
-            $year = $today->year;
-            $month = $today->month;
-            $day = $today->day;
-            $path = 'ood/' . $year . '/' . $month . '/' . $day . '/';
-            $filename = $document_key . '.docx';
-            $example_document_url = Storage::disk('ftp')->url($path . $filename);
-            $html_path = $path . $document_key . '.html';
+        // Новый путь
+        $path = $this->getTodayPath();
+        $wordFilePath = $path . $documentKey . '.docx';
+        $htmlPath = $path . $documentKey . '.html';
 
-            $body = [
-                'async' => false,
-                'url' => $example_document_url,
-                'outputtype' => 'html',
-                'filetype' => 'docx',
-                'title' => $document_key,
-                'key' => $document_key,
-            ];
-            $jwtToken = JWT::encode($body, $secret_key, 'HS256');
-            $json = json_encode(['key' => $document_key, 'token' => $jwtToken]);
-            $json_file_path = $path . $document_key . '.json';
-            Storage::disk('ftp')->put($json_file_path, $json);
+        // Обновляем модель
+        $model->update([
+            'doc_key' => $documentKey,
+            'doc_path' => $path,
+        ]);
 
-            // Update document key and path in the database
-            $model->update([
-                'doc_key' => $document_key,
-                'doc_path' => $path,
-            ]);
+        // ВАЖНО: Используем HTTP URL через прокси
+        $documentUrl = $this->getDocumentUrl($wordFilePath);
 
-            // Check if HTML file already exists
-            if (!Storage::disk('ftp')->exists($html_path)) {
-                try {
-                    $options = ['timeout' => 60];
-                    $options['verify'] = false;
-                    $options['max_redirects'] = 10;
-                    $options['http_version'] = '1.1';
-                    if (config('only-office.HTTP_PROXY')) {
-                        $options['proxy'] = config('only-office.HTTP_PROXY');
-                    }
+        // Выполняем конвертацию
+        if (!Storage::disk('ftp')->exists($htmlPath)) {
+            $this->convertDocument($documentKey, $documentUrl, 'html', 'docx', $htmlPath);
+        }
 
-                    $response = Http::withToken($jwtToken)
-                        ->withHeaders([
-                            'Content-Type' => 'application/json',
-                        ])
-                        ->withOptions($options)
-                        ->post($this->onlyOfficeInternalUrl . '/converter', [
-                            'async' => false,
-                            'url' => $example_document_url,
-                            'outputtype' => 'html',
-                            'filetype' => 'docx',
-                            'title' => $document_key,
-                            'key' => $document_key
-                        ]);
+        // Сохраняем JSON с токеном
+        $this->saveConversionToken($documentKey, $documentUrl, 'html', 'docx', $path);
 
-                    if (!$response->failed()) {
-                        $response_decode = $response->json();
-                        if (isset($response_decode['fileUrl'])) {
-                            $convertedUrl = str_replace(
-                                $this->onlyOfficeExternalUrl,
-                                $this->onlyOfficeInternalUrl,
-                                $response_decode['fileUrl']
-                            );
+        return true;
+    }
 
-                            try {
-                                $options1 = ['timeout' => 60];
-                                if (config('only-office.HTTP_PROXY')) {
-                                    $options1['proxy'] = config('only-office.HTTP_PROXY');
-                                }
-                                $convertedContent = Http::withOptions($options1)->get($convertedUrl)->body();
-                                Storage::disk('ftp')->put($html_path, $convertedContent);
-                            } catch (\Exception $e) {
-                                Log::error('Failed to fetch converted content from: ' . $convertedUrl . ' - Error: ' . $e->getMessage());
-                            }
-                        } else {
-                            Log::error('No fileUrl in response for key: ' . $document_key . ' - Response: ' . json_encode($response_decode));
-                        }
-                    }
+    /**
+     * Конвертировать HTML в PDF
+     */
+    public function createHtmlToPDFConverted(string $documentKey, string $documentPath): string
+    {
+        $path = $this->getTodayPath();
+        $htmlFilePath = $documentPath . $documentKey . '.html';
+        $pdfPath = $path . $documentKey . '.pdf';
 
-                } catch (\Exception $e) {
-                    Log::error('HTTP error during conversion for key: ' . $document_key . ' - ' . $e->getMessage());
+        if (Storage::disk('ftp')->exists($pdfPath)) {
+            Log::info('PDF file already exists', ['key' => $documentKey]);
+            return $pdfPath;
+        }
+
+        // ВАЖНО: Используем HTTP URL через прокси
+        $documentUrl = $this->getDocumentUrl($htmlFilePath);
+
+        // Выполняем конвертацию
+        $this->convertDocument($documentKey, $documentUrl, 'pdf', 'html', $pdfPath);
+
+        return $pdfPath;
+    }
+
+    /**
+     * Общий метод конвертации документов
+     */
+    protected function convertDocument(
+        string $key,
+        string $url,
+        string $outputType,
+        string $fileType,
+        string $savePath
+    ): void {
+        $body = [
+            'async' => false,
+            'url' => $url,
+            'outputtype' => $outputType,
+            'filetype' => $fileType,
+            'title' => $key,
+            'key' => $key,
+        ];
+
+        $jwtToken = JWT::encode($body, $this->onlyOfficeJwtSecret, 'HS256');
+
+        try {
+            $response = $this->sendConversionRequest($jwtToken, $body);
+
+            if ($response->successful()) {
+                $responseData = $response->json();
+
+                if (isset($responseData['fileUrl'])) {
+                    $this->downloadConvertedFile($responseData['fileUrl'], $savePath);
+                } else {
+                    Log::error('No fileUrl in conversion response', [
+                        'key' => $key,
+                        'response' => $responseData
+                    ]);
                 }
             } else {
-                Log::info('HTML file already exists for: ' . $document_key);
+                Log::error('Conversion request failed', [
+                    'key' => $key,
+                    'status' => $response->status()
+                ]);
             }
+        } catch (\Exception $e) {
+            Log::error('Conversion error', [
+                'key' => $key,
+                'error' => $e->getMessage()
+            ]);
         }
-
-        return true;
     }
 
-    public function createHtmlToPDFConverted($document_key, $document_path): string
+    /**
+     * Отправить запрос на конвертацию
+     */
+    protected function sendConversionRequest(string $token, array $body)
     {
-        //
-        $secret_key = $this->onlyOfficeJwtSecret;
-        $today = Carbon::today();
-        $year = $today->year;
-        $month = $today->month;
-        $day = $today->day;
-        $path = 'ood/' . $year . '/' . $month . '/' . $day . '/';
-        $html_file_path = $document_path . $document_key . '.html';
-        $example_document_url = Storage::disk('ftp')->url($html_file_path);
-        $pdf_path = $path . $document_key . '.pdf';
+        $options = [
+            'timeout' => 60,
+            'verify' => false,
+            'max_redirects' => 10,
+            'http_version' => '1.1',
+        ];
 
-        // Create JWT token and save JSON file
+        if (config('only-office.HTTP_PROXY')) {
+            $options['proxy'] = config('only-office.HTTP_PROXY');
+        }
+
+        return Http::withToken($token)
+            ->withHeaders(['Content-Type' => 'application/json'])
+            ->withOptions($options)
+            ->post($this->onlyOfficeInternalUrl . '/converter', $body);
+    }
+
+    /**
+     * Скачать сконвертированный файл
+     */
+    protected function downloadConvertedFile(string $fileUrl, string $savePath): void
+    {
+        // Заменяем external URL на internal
+        $convertedUrl = str_replace(
+            $this->onlyOfficeExternalUrl,
+            $this->onlyOfficeInternalUrl,
+            $fileUrl
+        );
+
+        try {
+            $options = ['timeout' => 60];
+
+            if (config('only-office.HTTP_PROXY')) {
+                $options['proxy'] = config('only-office.HTTP_PROXY');
+            }
+
+            $content = Http::withOptions($options)->get($convertedUrl)->body();
+            Storage::disk('ftp')->put($savePath, $content);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to download converted file', [
+                'url' => $convertedUrl,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Сохранить токен конвертации
+     */
+    protected function saveConversionToken(
+        string $key,
+        string $url,
+        string $outputType,
+        string $fileType,
+        string $path
+    ): void {
         $body = [
             'async' => false,
-            'url' => $example_document_url,
-            'outputtype' => 'pdf',
-            'filetype' => 'html',
-            'title' => $document_key,
-            'key' => $document_key,
+            'url' => $url,
+            'outputtype' => $outputType,
+            'filetype' => $fileType,
+            'title' => $key,
+            'key' => $key,
         ];
-        $jwtToken = JWT::encode($body, $secret_key, 'HS256');
 
-        // Check if HTML file already exists
-        if (!Storage::disk('ftp')->exists($pdf_path)) {
-            try {
-                $options = ['timeout' => 60];
-                $options['verify'] = false;
-                $options['max_redirects'] = 10;
-                $options['http_version'] = '1.1';
-                if (config('only-office.HTTP_PROXY')) {
-                    $options['proxy'] = config('only-office.HTTP_PROXY');
-                }
-                $response = Http::withToken($jwtToken)
-                    ->withHeaders([
-                        'Content-Type' => 'application/json',
-                    ])
-                    ->withOptions($options)
-                    ->post($this->onlyOfficeInternalUrl . '/converter', [
-                        'async' => false,
-                        'url' => $example_document_url,
-                        'outputtype' => 'pdf',
-                        'filetype' => 'html',
-                        'title' => $document_key,
-                        'key' => $document_key
-                    ]);
+        $jwtToken = JWT::encode($body, $this->onlyOfficeJwtSecret, 'HS256');
+        $jsonFilePath = $path . $key . '.json';
 
-                if (!$response->failed()) {
-                    $response_decode = $response->json();
-                    if (isset($response_decode['fileUrl'])) {
-                        $convertedUrl = str_replace(
-                            $this->onlyOfficeExternalUrl,
-                            $this->onlyOfficeInternalUrl,
-                            $response_decode['fileUrl']
-                        );
-
-                        try {
-                            $options1 = ['timeout' => 60];
-                            if (config('only-office.HTTP_PROXY')) {
-                                $options1['proxy'] = config('only-office.HTTP_PROXY');
-                            }
-                            $convertedContent = Http::withOptions($options1)->get($convertedUrl)->body();
-                            Storage::disk('ftp')->put($pdf_path, $convertedContent);
-                        } catch (\Exception $e) {
-                            Log::error('Failed to fetch converted content from: ' . $convertedUrl . ' - Error: ' . $e->getMessage());
-                        }
-                    }
-
-                }
-            } catch (\Exception $e) {
-                Log::error('HTTP error during conversion for key: ' . $document_key . ' - ' . $e->getMessage());
-            }
-        } else {
-            Log::info('HTML file already exists for: ' . $document_key);
-        }
-
-        return $pdf_path;
+        Storage::disk('ftp')->put(
+            $jsonFilePath,
+            json_encode(['key' => $key, 'token' => $jwtToken])
+        );
     }
 
+    /**
+     * Удалить старые файлы документа
+     */
+    protected function deleteOldFiles(OnlyOfficeDoc $model): void
+    {
+        $files = [
+            $model->doc_path . $model->doc_key . '.json',
+            $model->doc_path . $model->doc_key . '.html',
+        ];
+
+        foreach ($files as $file) {
+            if (Storage::disk('ftp')->exists($file)) {
+                Storage::disk('ftp')->delete($file);
+            }
+        }
+    }
+
+    /**
+     * Получить путь для сегодняшней даты
+     */
+    protected function getTodayPath(): string
+    {
+        $today = Carbon::today();
+        return sprintf('ood/%d/%d/%d/', $today->year, $today->month, $today->day);
+    }
 }

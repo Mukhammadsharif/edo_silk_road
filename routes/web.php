@@ -13,6 +13,7 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\Office\DepartmentJournalsController;
 use App\Http\Controllers\Office\DocOrganizationsController;
 use App\Http\Controllers\Office\DocumentController;
+use App\Http\Controllers\Office\DocumentProxyController;
 use App\Http\Controllers\Office\DocumentTemplatesController;
 use App\Http\Controllers\Office\JournalController;
 use App\Http\Controllers\Office\JournalTypesController;
@@ -413,3 +414,7 @@ Route::post('/confirm-key', [QrCodeDocController::class, 'confirmKey'])->name('c
 Route::post('/create-key', [QrCodeDocController::class, 'createQrKeyCode'])->name('create-key');
 
 Route::get('/send-telegram-notification/{user_id}', [TelegramWebhookController::class, 'sendTelegramNotification']);
+
+Route::get('/proxy-document/{path}', [DocumentProxyController::class, 'show'])
+    ->name('document.proxy')
+    ->where('path', '[A-Za-z0-9+/=]+');
