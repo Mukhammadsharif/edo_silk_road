@@ -205,10 +205,10 @@
                             <div style="display: flex; align-items: center; gap: 0.75rem;">
                                 <i data-lucide="info" style="width: 20px; height: 20px; color: #4338ca;"></i>
                                 <div>
-                                    <strong style="color: #4338ca; font-size: 14px;">Tarif ma'lumotlari</strong>
+                                    <strong style="color: #4338ca; font-size: 14px;">{{ __('field.tariff_information') }}</strong>
                                     <p style="margin: 0.25rem 0 0 0; font-size: 13px; color: #6366f1;">
                                         Kod: <strong>{{ $model->code }}</strong> |
-                                        Yaratilgan: {{ \Carbon\Carbon::parse($model->created_at)->format('d.m.Y H:i') }}
+                                        {{ __('field.created') }}: {{ \Carbon\Carbon::parse($model->created_at)->format('d.m.Y H:i') }}
                                     </p>
                                 </div>
                             </div>

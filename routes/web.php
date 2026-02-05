@@ -112,6 +112,8 @@ Route::group(['middleware' => ['auth']], function() {
 
         // user post
         Route::resource('user-posts', UserPostController::class);
+        Route::any('super-user-posts/{orgId}', [UserPostController::class, 'superUserPosts'])->name('user-posts.super-user-posts');
+        Route::get('user-posts/get-organization-departments/{orgId}', [UserPostController::class, 'getOrganizationDepartments'])->name('user-posts.get-organization-departments');
         Route::any('user-posts-search', [UserPostController::class, 'index'])->name('user-posts.search');
 
         Route::resource('users', UserController::class);

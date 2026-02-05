@@ -1,0 +1,479 @@
+/* ========================================
+   LANGUAGES PAGE - MODERN STYLES
+   Современные стили для страницы языков
+   ======================================== */
+
+/* ========================================
+   LANGUAGE TABLE ENHANCEMENTS
+   ======================================== */
+.languages-table-modern .group-cell {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    color: #794DFD;
+    font-size: 13px;
+}
+
+.languages-table-modern .key-cell {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: #3b82f6;
+    font-size: 13px;
+}
+
+.languages-table-modern .translation-cell {
+    text-align: left !important;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ========================================
+   LANGUAGE MODAL MODERN
+   ======================================== */
+.language-modal-modern .modal-content {
+    border-radius: 16px;
+    border: none;
+    overflow: hidden;
+}
+
+.language-modal-modern .modal-header {
+    background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+    color: white;
+    border: none;
+    padding: 1.5rem;
+}
+
+.language-modal-modern .modal-header h4 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.language-modal-modern .modal-header i {
+    width: 24px;
+    height: 24px;
+}
+
+.language-modal-modern .modal-header .close {
+    color: white;
+    opacity: 1;
+    text-shadow: none;
+    font-size: 28px;
+    font-weight: 300;
+}
+
+.language-modal-modern .modal-body {
+    padding: 2rem;
+}
+
+.language-modal-modern .modal-footer {
+    border: none;
+    padding: 1rem 2rem 2rem;
+    justify-content: center !important;
+}
+
+/* ========================================
+   MODAL FORM GROUPS
+   ======================================== */
+.modal-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.modal-form-group:last-of-type {
+    margin-bottom: 0;
+}
+
+.modal-form-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 0.5rem;
+}
+
+.modal-form-group label svg {
+    width: 16px;
+    height: 16px;
+    color: #794DFD;
+}
+
+.modal-input-modern {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #1e293b;
+    transition: all 0.3s;
+    background: white;
+}
+
+.modal-input-modern:focus {
+    outline: none;
+    border-color: #794DFD;
+    box-shadow: 0 0 0 3px rgba(121, 77, 253, 0.1);
+}
+
+.modal-input-modern::placeholder {
+    color: #94a3b8;
+}
+
+/* ========================================
+   TRANSLATION INPUTS SECTION
+   ======================================== */
+.translations-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin: 1.5rem 0;
+    border: 2px dashed #e2e8f0;
+}
+
+.translations-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 16px;
+    font-weight: 700;
+    color: #475569;
+    margin-bottom: 1.5rem;
+}
+
+.translations-section-title i {
+    width: 20px;
+    height: 20px;
+    color: #794DFD;
+}
+
+.translation-input-group {
+    margin-bottom: 1rem;
+}
+
+.translation-input-group:last-child {
+    margin-bottom: 0;
+}
+
+.translation-input-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+}
+
+.language-flag-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+/* Language flag colors */
+.flag-uz {
+    background: linear-gradient(to bottom, #0099B5 0%, #0099B5 33%, white 33%, white 66%, #1EB53A 66%, #1EB53A 100%);
+}
+
+.flag-ru {
+    background: linear-gradient(to bottom, white 0%, white 33%, #0039A6 33%, #0039A6 66%, #D52B1E 66%, #D52B1E 100%);
+}
+
+.flag-en {
+    background: linear-gradient(135deg, #012169 0%, #C8102E 100%);
+}
+
+/* ========================================
+   DELETE MODAL MODERN
+   ======================================== */
+.delete-modal-modern .modal-header {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.delete-icon-container {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0;
+}
+
+.delete-icon-wrapper {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse-delete 2s infinite;
+}
+
+@keyframes pulse-delete {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.delete-icon-wrapper i {
+    width: 64px;
+    height: 64px;
+    color: #dc2626;
+}
+
+.delete-confirmation-text {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.delete-confirmation-text h4 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1rem;
+}
+
+.delete-confirmation-text p {
+    font-size: 14px;
+    color: #64748b;
+    margin: 0;
+}
+
+/* ========================================
+   SEARCH SECTION ENHANCEMENTS
+   ======================================== */
+.language-search-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto auto;
+    gap: 1rem;
+    align-items: center;
+}
+
+.search-input-with-icon {
+    position: relative;
+}
+
+.search-input-with-icon svg {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: #94a3b8;
+    pointer-events: none;
+}
+
+.search-input-with-icon input {
+    padding-left: 3rem;
+}
+
+/* ========================================
+   ACTION BUTTONS IN TABLE
+   ======================================== */
+.lang-actions-cell {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.lang-edit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border-radius: 8px;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+}
+
+.lang-edit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    color: white;
+}
+
+.lang-edit-btn i {
+    width: 16px;
+    height: 16px;
+}
+
+.lang-delete-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border-radius: 8px;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.lang-delete-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.lang-delete-btn i {
+    width: 16px;
+    height: 16px;
+}
+
+/* ========================================
+   GROUP FILTER SELECT
+   ======================================== */
+.group-select-wrapper {
+    position: relative;
+}
+
+.group-select-modern {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    padding-right: 3rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #1e293b;
+    transition: all 0.3s;
+    background: white;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+}
+
+.group-select-modern:focus {
+    outline: none;
+    border-color: #794DFD;
+    box-shadow: 0 0 0 3px rgba(121, 77, 253, 0.1);
+}
+
+/* ========================================
+   ERROR/SUCCESS MESSAGES
+   ======================================== */
+.alert-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.alert-list li {
+    padding: 0.5rem 0;
+    font-size: 14px;
+}
+
+/* ========================================
+   MODAL BUTTONS
+   ======================================== */
+.modal-btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: #e2e8f0;
+    color: #475569;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.modal-btn-cancel:hover {
+    background: #cbd5e1;
+    transform: translateY(-2px);
+    color: #475569;
+}
+
+.modal-btn-cancel i {
+    width: 18px;
+    height: 18px;
+}
+
+.modal-btn-save {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+    color: white;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.modal-btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(121, 77, 253, 0.4);
+}
+
+.modal-btn-save i {
+    width: 18px;
+    height: 18px;
+}
+
+.modal-btn-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.modal-btn-danger:hover {
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+@media (max-width: 768px) {
+    .language-search-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .lang-actions-cell {
+        flex-direction: column;
+    }
+
+    .translations-section {
+        padding: 1rem;
+    }
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+.languages-divider {
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, #e2e8f0 50%, transparent 100%);
+    margin: 1.5rem 0;
+    border: none;
+}
+
+.languages-helper-text {
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 0.5rem;
+    display: block;
+}

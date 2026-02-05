@@ -533,12 +533,22 @@ class UserController extends Controller
     {
         $lang = session()->get('locale', 'uz');
 
+        $department = Department::find($depId);
+
         $nameColumn = $lang === 'ru' ? 'name_ru' : ($lang === 'en' ? 'name_en' : 'name_uz');
 
-        $positions = UserPosition::select('id', DB::raw("COALESCE($nameColumn, name_uz) as name"))
-            ->where('status', 1)
-            ->orderBy('order_number')
-            ->get();
+        if ($department && $department->org_unit_id) {
+            $positions = UserPosition::select('id', DB::raw("COALESCE($nameColumn, name_uz) as name"))
+                ->where('status', 1)
+                ->where('org_id', $department->org_unit_id)
+                ->orderBy('order_number')
+                ->get();
+        } else {
+            $positions = UserPosition::select('id', DB::raw("COALESCE($nameColumn, name_uz) as name"))
+                ->where('status', 1)
+                ->orderBy('order_number')
+                ->get();
+        }
 
         return response()->json([
             'positions' => $positions
