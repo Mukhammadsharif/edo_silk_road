@@ -8,6 +8,7 @@ use Spatie\TranslationLoader\LanguageLine;
 class UserPosition extends Model
 {
     protected $fillable = [
+        'org_id',
         'name_uz',
         'name_kr',
         'name_ru',

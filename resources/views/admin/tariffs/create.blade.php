@@ -176,17 +176,15 @@
                                         <input type="radio"
                                                name="status"
                                                id="status_active"
-                                               value="1"
-                                            {{ old('status', 1) == 1 ? 'checked' : '' }}>
-                                        <label for="status_active">Faol</label>
+                                               value="1">
+                                        <label for="status_active">{{ __('status.active') }}</label>
                                     </div>
                                     <div class="status-radio-option danger">
                                         <input type="radio"
                                                name="status"
                                                id="status_inactive"
-                                               value="0"
-                                            {{ old('status') == 0 ? 'checked' : '' }}>
-                                        <label for="status_inactive">No faol</label>
+                                               value="0">
+                                        <label for="status_inactive">{{ __('status.inactive') }}</label>
                                     </div>
                                 </div>
                             </div>
