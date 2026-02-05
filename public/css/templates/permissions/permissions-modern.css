@@ -1,0 +1,466 @@
+/* ========================================
+   PERMISSIONS PAGES - MODERN STYLES
+   Современные стили для страниц разрешений
+   ======================================== */
+
+/* ========================================
+   PARENT RADIO GROUP
+   ======================================== */
+.parent-radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+}
+
+.parent-radio-group .btn-check {
+    display: none;
+}
+
+.parent-radio-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 0;
+}
+
+.parent-radio-btn i {
+    width: 18px;
+    height: 18px;
+    color: #94a3b8;
+    transition: all 0.3s ease;
+}
+
+.parent-radio-btn:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.parent-radio-btn:hover i {
+    color: #794DFD;
+}
+
+/* Active/Checked State */
+.btn-check:checked + .parent-radio-btn {
+    background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+    border-color: #794DFD;
+    color: white;
+    box-shadow: 0 4px 16px rgba(121, 77, 253, 0.3);
+}
+
+.btn-check:checked + .parent-radio-btn i {
+    color: white;
+}
+
+/* ========================================
+   ACTION BUTTONS GROUP (same as roles)
+   ======================================== */
+.action-buttons-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.action-btn i {
+    width: 18px;
+    height: 18px;
+}
+
+/* Edit Button */
+.edit-btn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+}
+
+.edit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    color: white;
+}
+
+/* Delete Button */
+.delete-btn {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+}
+
+.delete-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* ========================================
+   MODERN MODAL STYLES (same as roles)
+   ======================================== */
+.modern-modal {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modern-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-bottom: 2px solid #e2e8f0;
+    border-radius: 16px 16px 0 0;
+}
+
+.modal-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    flex-shrink: 0;
+}
+
+.modal-icon-wrapper.danger {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+}
+
+.modal-icon-wrapper i {
+    width: 24px;
+    height: 24px;
+    color: #dc2626;
+}
+
+.modern-modal-header h4 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e293b;
+    flex: 1;
+}
+
+.close-modal {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.close-modal i {
+    width: 20px;
+    height: 20px;
+    color: #64748b;
+}
+
+.close-modal:hover {
+    background: #f1f5f9;
+}
+
+.modern-modal-body {
+    padding: 2rem;
+}
+
+.modern-modal-body p {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    font-size: 15px;
+    color: #475569;
+}
+
+.modern-modal-body p i {
+    width: 20px;
+    height: 20px;
+    color: #794DFD;
+}
+
+.modern-modal-footer {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding: 1.5rem 2rem;
+    background: #f8fafc;
+    border-top: 2px solid #e2e8f0;
+    border-radius: 0 0 16px 16px;
+}
+
+/* ========================================
+   DANGER BUTTON FOR MODAL
+   ======================================== */
+.btn-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+}
+
+/* Spinner animation for loading state */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+/* ========================================
+   TABLE ROW FADE OUT ANIMATION
+   ======================================== */
+.table-danger {
+    background-color: #fef2f2 !important;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+@media (max-width: 768px) {
+    .parent-radio-group {
+        flex-direction: column;
+        padding: 1rem;
+    }
+
+    .parent-radio-btn {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .action-buttons-group {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .action-btn {
+        width: 100%;
+        justify-content: flex-start;
+        padding: 0 1rem;
+        gap: 0.5rem;
+    }
+
+    .action-btn::after {
+        content: attr(title);
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .modern-modal-footer {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .parent-radio-btn {
+        padding: 0.625rem 1rem;
+        font-size: 13px;
+    }
+
+    .parent-radio-btn i {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+/* ========================================
+   ADDITIONAL BADGE STYLES
+   ======================================== */
+.badge-modern.badge-info {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.badge-modern.badge-primary {
+    background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+    color: white;
+}
+
+/* ========================================
+   PERMISSION SPECIFIC ENHANCEMENTS
+   ======================================== */
+.permission-hierarchy-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #0369a1;
+}
+
+.permission-hierarchy-indicator i {
+    width: 12px;
+    height: 12px;
+}
+
+/* ========================================
+   FORM GRID ENHANCEMENT
+   ======================================== */
+.form-grid .form-group-modern.full-width {
+    grid-column: span 2;
+}
+
+/* ========================================
+   SELECT2 COMPATIBILITY
+   ======================================== */
+.select2-container--default .select2-selection--single {
+    border: 2px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    height: auto !important;
+}
+
+.select2-container--default .select2-selection--single:focus {
+    border-color: #794DFD !important;
+    box-shadow: 0 0 0 3px rgba(121, 77, 253, 0.1) !important;
+}
+
+/* ========================================
+   FORM STYLES FOR CREATE/EDIT
+   ======================================== */
+.modern-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.form-group-modern {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group-modern.full-width {
+    grid-column: span 2;
+}
+
+.form-group-modern label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    margin: 0;
+}
+
+.form-group-modern label i {
+    width: 16px;
+    height: 16px;
+    color: #794DFD;
+}
+
+.form-group-modern .text-danger,
+.form-group-modern .text-red {
+    color: #ef4444;
+    margin-left: 0.25rem;
+}
+
+.form-group-modern input[type="text"],
+.form-group-modern input[type="number"],
+.form-group-modern textarea,
+.form-group-modern select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #1e293b;
+    transition: all 0.3s;
+    background: white;
+}
+
+.form-group-modern input[type="text"]:focus,
+.form-group-modern input[type="number"]:focus,
+.form-group-modern textarea:focus,
+.form-group-modern select:focus {
+    outline: none;
+    border-color: #794DFD;
+    box-shadow: 0 0 0 3px rgba(121, 77, 253, 0.1);
+}
+
+.form-group-modern textarea {
+    min-height: 120px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.form-group-modern .border-danger,
+.form-group-modern .form-control-warning {
+    border-color: #ef4444 !important;
+}
+
+.form-group-modern .border-danger:focus,
+.form-group-modern .form-control-warning:focus {
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+.form-group-modern small,
+.form-group-modern .text-danger {
+    font-size: 12px;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.form-group-modern small {
+    color: #64748b;
+}
+
+/* ========================================
+   FORM ACTIONS
+   ======================================== */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding-top: 1rem;
+    border-top: 2px solid #f1f5f9;
+}
