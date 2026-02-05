@@ -3065,7 +3065,7 @@ input[type="button"].btn-block {
 }
 
 .dropdown-item.active, .dropdown-item:active {
-  color: #fff;
+ 
   text-decoration: none;
   background-color: #000637;
 }

@@ -10,9 +10,12 @@
                 <p>EDOLINE</p>
             </a>
         </div>
-        <video class="auth-sidebar__video" playsinline autoplay loop muted
-            src="{{ asset('images/back2.mp4') }}"></video>
 
+    <video class="auth-sidebar__video" playsinline autoplay loop muted
+            src="{{ asset('images/back1.mp4') }}"></video>
+        
+
+         
         <div class="containers">
             <div class="tabs">
                 <div class="tab active" data-tab="password" onclick="showTab('login')">
@@ -382,6 +385,9 @@
         z-index: -1;
     }
 
+    .auth-sidebar__video video{
+        width:700px;
+    }
 
     .eri-modal {
         display: none;
@@ -704,5 +710,10 @@
     }
     .logo p{
         color:#794DFD;
+    }
+    .auth-sidebar__video{
+        width:50vw;
+        height:100vh;
+        height:100%;
     }
 </style>
