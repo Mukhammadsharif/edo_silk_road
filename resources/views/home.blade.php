@@ -113,7 +113,7 @@
             </div>
         </div>
 
-        @if(!Auth::user()->pendingSubscription)
+        @if(Auth::user()->pendingSubscription)
             <div class="pending">
                 <div class="subscription-card">
                     <button class="card-close" onclick="closeSubscriptionCard()">
