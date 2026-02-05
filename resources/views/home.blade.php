@@ -10,7 +10,6 @@
 <link rel="stylesheet" href="{{ asset('css/templates/pricing.css') }}">
 
 @section('content')
-
     <div class="container-fluid dashboard-modern">
         <div class="page-header-modern mb-4">
             <div class="header-content">
@@ -19,7 +18,8 @@
                         <i data-lucide="home"></i>
                     </div>
                     <div class="header-text">
-                        <h1>{{ __('field.main') }}</h1>
+                        <h1>Asosiy</h1>
+                        <p>Protokol hujjatlari va jarayonlarni boshqarish</p>
                     </div>
                 </div>
 
@@ -31,7 +31,7 @@
                     <nav class="breadcrumb-modern">
                         <a href="{{ route('home') }}" class="breadcrumb-item">
                             <i data-lucide="home"></i>
-                            <span>{{ __('menu.home') }}</span>
+                            <span>Bosh sahifa</span>
                         </a>
                     </nav>
                 </div>
@@ -39,7 +39,7 @@
         </div>
 
 
-           <div class="row g-4 mb-4">
+        <div class="row g-4 mb-4">
 
 
             <div class="col-xl-3 col-lg-6 col-md-6">
@@ -49,13 +49,11 @@
                     </div>
                     <div class="card-content">
                         <h3>{{ $docs_count['doc_conf_menu_id'] ?? 0 }}</h3>
-                        <p>{{ __('menu.for_resolution') }}</p>
+                        <p>Ko'rib chiqish uchun</p>
                     </div>
                     <div class="stat-overlay"></div>
                     <div class="stat-overlay2"></div>
-                    <div class="access">
-                        <a href="{{ route('documents.for-confirm.index') }}"><i data-lucide="arrow-right" class="text-white"></i></a>
-                    </div>
+                    <div class="access"><i data-lucide="arrow-right"></i></div>
                 </div>
             </div>
 
@@ -67,13 +65,11 @@
                     </div>
                     <div class="card-content">
                         <h3>{{ $docs_count['doc_sign_menu_id'] ?? 0 }}</h3>
-                        <p>{{ __('menu.for_sign') }}</p>
+                        <p>Imzolash uchun</p>
                     </div>
                     <div class="stat-overlay"></div>
                     <div class="stat-overlay2"></div>
-                    <div class="access">
-                        <a href="{{ route('documents.for-sign.index') }}"><i data-lucide="arrow-right" class="text-white"></i></a>
-                    </div>
+                    <div class="access"><i data-lucide="arrow-right"></i></div>
                 </div>
             </div>
 
@@ -85,13 +81,11 @@
                     </div>
                     <div class="card-content">
                         <h3>{{ $docs_count['doc_approve_menu_id'] ?? 0 }}</h3>
-                        <p>{{ __('menu.for_coillaborate') }}</p>
+                        <p>Hamkorlik uchun</p>
                     </div>
                     <div class="stat-overlay"></div>
                     <div class="stat-overlay2"></div>
-                    <div class="access">
-                        <a href="{{ route('documents.for-approval.index') }}"><i data-lucide="arrow-right" class="text-white"></i></a>
-                    </div>
+                    <div class="access"><i data-lucide="arrow-right"></i></div>
                 </div>
             </div>
 
@@ -103,58 +97,56 @@
                     </div>
                     <div class="card-content">
                         <h3>{{ $docs_count['my_docs_menu_id'] ?? 0 }}</h3>
-                        <p>{{ __('menu.my_docs') }}</p>
+                        <p>Mening hujjatlarim</p>
                     </div>
                     <div class="stat-overlay"></div>
                     <div class="stat-overlay2"></div>
-                    <div class="access">
-                        <a href="{{ route('office.work-docs') }}"><i data-lucide="arrow-right" class="text-white"></i></a>
-                    </div>
+                    <div class="access"><i data-lucide="arrow-right"></i></div>
                 </div>
             </div>
 
         </div>
 
- <div class="pending">
-    
-    <div class="subscription-card">
-        <button class="card-close" onclick="closeSubscriptionCard()">
-    <i data-lucide="x"></i>
-</button>
-        <div class="icon-wrap">⏳</div>
+        <div class="pending">
 
-        <h1>Obuna so‘rovingiz qabul qilindi!</h1>
+            <div class="subscription-card">
+                <button class="card-close" onclick="closeSubscriptionCard()">
+                    <i data-lucide="x"></i>
+                </button>
+                <div class="icon-wrap">⏳</div>
 
-        <div class="status">
-            Administrator tasdiqlashini kutmoqdamiz
+                <h1>Obuna so‘rovingiz qabul qilindi!</h1>
+
+                <div class="status">
+                    Administrator tasdiqlashini kutmoqdamiz
+                </div>
+
+                <p class="pending-text">
+                    Tez orada obunangiz faollashadi (odatda 1–2 ish kuni ichida).
+                    Sabr qilganingiz uchun rahmat!
+                </p>
+
+                <div class="checklist">
+                    <div class="check-item done">Ro‘yxatdan o‘tish</div>
+                    <div class="check-item done">Tarif tanlash</div>
+                    <div class="check-item pending-item">
+                        <span class="spinner"></span>
+                        Admin tasdiqlashi
+                    </div>
+                    <div class="check-item">Dashboardga kirish va boshlash</div>
+                </div>
+
+                <div class="actions">
+                    <button class="sub-btn sub-btn-outline">So‘rov tafsilotlari</button>
+                    <button class="sub-btn sub-btn-primary">Support bilan bog‘lanish</button>
+                </div>
+            </div>
+
+
         </div>
 
-        <p class="pending-text">
-            Tez orada obunangiz faollashadi (odatda 1–2 ish kuni ichida).
-            Sabr qilganingiz uchun rahmat!
-        </p>
 
-        <div class="checklist">
-            <div class="check-item done">Ro‘yxatdan o‘tish</div>
-            <div class="check-item done">Tarif tanlash</div>
-            <div class="check-item pending-item">
-    <span class="spinner"></span>
-    Admin tasdiqlashi
-</div>
-            <div class="check-item">Dashboardga kirish va boshlash</div>
-        </div>
-
-       <div class="actions">
-    <button class="sub-btn sub-btn-outline">So‘rov tafsilotlari</button>
-    <button class="sub-btn sub-btn-primary">Support bilan bog‘lanish</button>
-</div>
     </div>
-
-    
-</div>
-
-
-</div>
 
     <script>
         lucide.createIcons();
@@ -162,11 +154,11 @@
 
     <script>
         const chartData = [
-            {value: 35, color: '#7B40F2'},
-            {value: 25, color: '#8753F4'},
-            {value: 20, color: '#9467F6'},
-            {value: 15, color: '#A07AF7'},
-            {value: 5, color: '#AE8EF9'}
+            { value: 35, color: '#7B40F2' },
+            { value: 25, color: '#8753F4' },
+            { value: 20, color: '#9467F6' },
+            { value: 15, color: '#A07AF7' },
+            { value: 5,  color: '#AE8EF9' }
         ];
 
         function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
@@ -231,12 +223,11 @@
         }
 
         renderDonutChart();
-
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-    const tabs = document.querySelectorAll(".custom-tab");
-    const contents = document.querySelectorAll(".custom-tab-content");
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const tabs = document.querySelectorAll(".custom-tab");
+            const contents = document.querySelectorAll(".custom-tab-content");
 
             tabs.forEach(tab => {
                 tab.addEventListener("click", () => {
@@ -252,20 +243,18 @@
                 });
             });
         });
-    });
-});
 
-function closeSubscriptionCard() {
-    const card = document.querySelector('.subscription-card');
-    if (card) {
-        card.style.opacity = "0";
-        card.style.transform = "translateY(-10px)";
-        setTimeout(() => {
-            card.style.display = "none";
-        }, 200);
-    }
-}
-</script>
+        function closeSubscriptionCard() {
+            const card = document.querySelector('.subscription-card');
+            if (card) {
+                card.style.opacity = "0";
+                card.style.transform = "translateY(-10px)";
+                setTimeout(() => {
+                    card.style.display = "none";
+                }, 200);
+            }
+        }
+    </script>
 
 @endsection
 
@@ -382,27 +371,8 @@ function closeSubscriptionCard() {
         opacity: 0.28;
         background: var(--overlay-color);
         pointer-events: none;
-        
-    .stat-overlay2 {
-        position: absolute;
-        width: 160px;
-        height: 160px;
-        transform: rotate(45deg) translate(0, 0);
-        border-radius: 16px;
-        opacity: 0.28;
-        background: var(--overlay-color);
-        pointer-events: none;
-    .stat-overlay2 {
-        position: absolute;
-        width: 160px;
-        height: 160px;
-        transform: rotate(45deg) translate(0, 0);
-        border-radius: 16px;
-        opacity: 0.28;
-        background: var(--overlay-color);
-        pointer-events: none;
 
-        transition: {
+        transition:
             transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
             opacity 0.4s ease;
     }
@@ -411,6 +381,7 @@ function closeSubscriptionCard() {
         transform: translateY(-2px) scale(1);
         box-shadow: 0 4px 8px rgba(126, 126, 126, 0.22);
     }
+
 
 
     .gradient-red {
@@ -433,8 +404,7 @@ function closeSubscriptionCard() {
         background: linear-gradient(135deg, #a78bfa, #7c3aed);
     }
 
-    .card-icon i {
-    }
+    .card-icon i {}
 
     .card-icon {
         background: rgba(255, 255, 255, 0.2) !important;
@@ -587,44 +557,6 @@ function closeSubscriptionCard() {
         color: #fff;
     }
 
-    .stat-card {
-        position: relative;
-        overflow: hidden;
-        border-radius: 16px;
-        padding: 1rem 1.4rem 2rem;
-        color: #fff;
-    }
-    .stat-card {
-        position: relative;
-        overflow: hidden;
-        border-radius: 16px;
-        padding: 1rem 1.4rem 2rem;
-        color: #fff;
-    }
-
-    .stat-overlay,
-    .stat-overlay2 {
-        position: absolute;
-        width: 160px;
-        height: 160px;
-        transform: rotate(45deg);
-        border-radius: 16px;
-        opacity: 0.28;
-        background: var(--overlay-color);
-        pointer-events: none;
-    }
-
-    .stat-overlay,
-    .stat-overlay2 {
-        position: absolute;
-        width: 160px;
-        height: 160px;
-        transform: rotate(45deg);
-        border-radius: 16px;
-        opacity: 0.28;
-        background: var(--overlay-color);
-        pointer-events: none;
-    }
     .stat-overlay,
     .stat-overlay2 {
         position: absolute;
@@ -642,24 +574,6 @@ function closeSubscriptionCard() {
         right: -40px;
     }
 
-    .stat-overlay {
-        top: -50px;
-        right: -40px;
-    }
-    .stat-overlay {
-        top: -50px;
-        right: -40px;
-    }
-
-    .stat-overlay2 {
-        top: 20px;
-        right: -60px;
-    }
-
-    .stat-overlay2 {
-        top: 20px;
-        right: -60px;
-    }
     .stat-overlay2 {
         top: 20px;
         right: -60px;
@@ -671,25 +585,7 @@ function closeSubscriptionCard() {
         --overlay-color: #d07cd8;
     }
 
-    .gradient-red {
-        background: linear-gradient(180deg, #A53FB6 0%, #B83F91 100%);
-        --overlay-color: #d07cd8;
-    }
-    .gradient-red {
-        background: linear-gradient(180deg, #A53FB6 0%, #B83F91 100%);
-        --overlay-color: #d07cd8;
-    }
 
-
-    .gradient-orange {
-        background: linear-gradient(180deg, #FC804A 0%, #F99B52 100%);
-        --overlay-color: #ffd1a3;
-    }
-
-    .gradient-orange {
-        background: linear-gradient(180deg, #FC804A 0%, #F99B52 100%);
-        --overlay-color: #ffd1a3;
-    }
     .gradient-orange {
         background: linear-gradient(180deg, #FC804A 0%, #F99B52 100%);
         --overlay-color: #ffd1a3;
@@ -700,24 +596,8 @@ function closeSubscriptionCard() {
         background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
         --overlay-color: #9cc6ff;
     }
-    .gradient-blue {
-        background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-        --overlay-color: #9cc6ff;
-    }
-    .gradient-blue {
-        background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-        --overlay-color: #9cc6ff;
-    }
 
-    .gradient-green {
-        background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
-        --overlay-color: #9ff0c0;
-    }
 
-    .gradient-green {
-        background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
-        --overlay-color: #9ff0c0;
-    }
     .gradient-green {
         background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
         --overlay-color: #9ff0c0;
@@ -728,26 +608,6 @@ function closeSubscriptionCard() {
         max-width: 34%;
     }
 
-    .custom-tabs {
-        max-width: 34%;
-    }
-    .custom-tabs {
-        max-width: 34%;
-    }
-
-    .custom-tabs__header {
-        display: flex;
-        background: rgba(121, 77, 253, 0.1);
-        border-radius: 12px;
-        overflow: hidden;
-    }
-
-    .custom-tabs__header {
-        display: flex;
-        background: rgba(121, 77, 253, 0.1);
-        border-radius: 12px;
-        overflow: hidden;
-    }
     .custom-tabs__header {
         display: flex;
         background: rgba(121, 77, 253, 0.1);
@@ -771,48 +631,6 @@ function closeSubscriptionCard() {
         transition: all 0.35s ease;
     }
 
-    .custom-tab {
-        flex: 1;
-        padding: 12px 14px;
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        font-size: 15px;
-        font-weight: 500;
-        color: #666;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        transition: all 0.35s ease;
-    }
-    .custom-tab {
-        flex: 1;
-        padding: 12px 14px;
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        font-size: 15px;
-        font-weight: 500;
-        color: #666;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        transition: all 0.35s ease;
-    }
-
-    .custom-tab.active {
-        background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
-        color: #fff;
-        box-shadow: 0 4px 15px rgba(121, 77, 253, 0.4);
-    }
-
-    .custom-tab.active {
-        background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
-        color: #fff;
-        box-shadow: 0 4px 15px rgba(121, 77, 253, 0.4);
-    }
     .custom-tab.active {
         background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
         color: #fff;
@@ -824,24 +642,7 @@ function closeSubscriptionCard() {
         margin-top: 35px;
         min-height: 200px;
     }
-    .custom-tabs__body {
-        position: relative;
-        margin-top: 35px;
-        min-height: 200px;
-    }
-    .custom-tabs__body {
-        position: relative;
-        margin-top: 35px;
-        min-height: 200px;
-    }
 
-    .custom-tab-content {
-        display: none;
-    }
-
-    .custom-tab-content {
-        display: none;
-    }
     .custom-tab-content {
         display: none;
     }
@@ -851,307 +652,307 @@ function closeSubscriptionCard() {
     }
 
     .pending {
-    display: flex;
-    justify-content: center;
-    margin-top: 40px;
-}
-
-.subscription-card {
-    background: rgba(255,255,255,0.96);
-    border-radius: 24px;
-    box-shadow: 0 20px 60px rgba(124,58,237,0.18);
-    padding: 3rem 2.5rem;
-    max-width: 580px;
-    width: 100%;
-    text-align: center;
-    border: 1px solid rgba(124,58,237,0.12);
-}
-
-.icon-wrap {
-    width: 100px;
-    height: 100px;
-    margin: 0 auto 1.5rem;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #7c3aed, #a78bfa);
-    display: grid;
-    place-items: center;
-    font-size: 3rem;
-    color: white;
-    box-shadow: 0 16px 40px rgba(124,58,237,0.3);
-    animation: gentlePulse 3s ease-in-out infinite;
-}
-
-@keyframes gentlePulse {
-    0%,100% { transform: scale(1); }
-    50% { transform: scale(1.06); }
-}
-
-.subscription-card h1 {
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-}
-
-.status {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.6rem 1.4rem;
-    background: rgba(124,58,237,0.1);
-    color: #7c3aed;
-    border-radius: 999px;
-    font-weight: 600;
-    margin-bottom: 1.8rem;
-}
-
-.pending-text {
-    color: #64748b;
-    margin-bottom: 2rem;
-    line-height: 1.6;
-}
-
-.checklist {
-    text-align: left;
-    margin: 2rem 0;
-    display: grid;
-    gap: 1rem;
-}
-
-.check-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    font-size: 1.05rem;
-}
-
-.check-item.done::before {
-    content: "✓";
-    color: #10b981;
-    font-weight: bold;
-}
-
-
-
-.actions {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.btn {
-    padding: 0.9rem 1.8rem;
-    border-radius: 999px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.25s;
-}
-
-.btn-primary {
-    background: #7c3aed;
-    color: white;
-    border: none;
-}
-
-.btn-outline {
-    background: transparent;
-    border: 1px solid #a78bfa;
-    color: #7c3aed;
-}
-
-.pending {
-    display: flex;
-    justify-content: flex-start;  
-    margin-top: 30px;
-}
-
-.subscription-card {
-    background: rgba(255,255,255,0.96);
-    border-radius: 16px;
-    box-shadow: 0 12px 30px rgba(124,58,237,0.12);
-    padding: 1.8rem 1.6rem;
-    max-width: 420px;   
-    width: 100%;
-    text-align: left;  
-    border: 1px solid rgba(124,58,237,0.1);
-}
-
-
-.icon-wrap {
-    width: 60px;
-    height: 60px;
-    margin: 0 0 1rem 0; 
-    border-radius: 50%;
-    background: linear-gradient(135deg, #7c3aed, #a78bfa);
-    display: grid;
-    place-items: center;
-    font-size: 1.8rem;
-    color: white;
-    box-shadow: 0 8px 20px rgba(124,58,237,0.25);
-}
-
-.subscription-card h1 {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 0.6rem;
-}
-
-.status {
-    display: inline-flex;
-    padding: 0.35rem 0.9rem;
-    background: rgba(124,58,237,0.1);
-    color: #7c3aed;
-    border-radius: 999px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-}
-
-
-.pending-text {
-    color: #64748b;
-    font-size: 0.9rem;
-    margin-bottom: 1.2rem;
-    line-height: 1.5;
-}
-
-
-.checklist {
-    margin: 1.2rem 0;
-    display: grid;
-    gap: 0.6rem;
-}
-
-.check-item {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    font-size: 0.9rem;
-}
-
-.check-item.done::before {
-    content: "✓";
-    color: #10b981;
-    font-weight: bold;
-}
-
-
-
-.actions {
-    display: flex;
-    gap: 0.6rem;
-    flex-wrap: wrap;
-    margin-top: 1rem;
-}
-
-.btn {
-    padding: 0.5rem 1rem;
-    border-radius: 999px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.btn-primary {
-    background: #7c3aed;
-    color: white;
-    border: none;
-}
-
-.btn-outline {
-    background: transparent;
-    border: 2px dashed #a78bfa;
-    color: #7c3aed;
-}
-
-.sub-btn {
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border: none;
-}
-
-.sub-btn-primary {
-    background: #7c3aed;
-    color: #fff;
-}
-
-.sub-btn-primary:hover {
-    background: #6d28d9;
-    transform: translateY(-1px);
-}
-
-.sub-btn-outline {
-    background: transparent;
-    border: 2px dashed #a78bfa;
-    color: #7c3aed;
-}
-
-.sub-btn-outline:hover {
-    background: rgba(124,58,237,0.08);
-}
-
-.check-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.9rem;
-}
-
-.check-item.done::before {
-    content: "✓";
-    color: #10b981;
-    font-weight: bold;
-}
-
-.spinner {
-    width: 14px;
-    height: 14px;
-    border: 2px solid rgba(124,58,237,0.2);
-    border-top: 2px solid #7c3aed;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
+        display: flex;
+        justify-content: center;
+        margin-top: 40px;
     }
-}
+
+    .subscription-card {
+        background: rgba(255,255,255,0.96);
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(124,58,237,0.18);
+        padding: 3rem 2.5rem;
+        max-width: 580px;
+        width: 100%;
+        text-align: center;
+        border: 1px solid rgba(124,58,237,0.12);
+    }
+
+    .icon-wrap {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 1.5rem;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #7c3aed, #a78bfa);
+        display: grid;
+        place-items: center;
+        font-size: 3rem;
+        color: white;
+        box-shadow: 0 16px 40px rgba(124,58,237,0.3);
+        animation: gentlePulse 3s ease-in-out infinite;
+    }
+
+    @keyframes gentlePulse {
+        0%,100% { transform: scale(1); }
+        50% { transform: scale(1.06); }
+    }
+
+    .subscription-card h1 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .status {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.6rem 1.4rem;
+        background: rgba(124,58,237,0.1);
+        color: #7c3aed;
+        border-radius: 999px;
+        font-weight: 600;
+        margin-bottom: 1.8rem;
+    }
+
+    .pending-text {
+        color: #64748b;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .checklist {
+        text-align: left;
+        margin: 2rem 0;
+        display: grid;
+        gap: 1rem;
+    }
+
+    .check-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-size: 1.05rem;
+    }
+
+    .check-item.done::before {
+        content: "✓";
+        color: #10b981;
+        font-weight: bold;
+    }
 
 
-.subscription-card {
-    position: relative; 
-}
 
-.card-close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #64748b;
-    transition: all 0.2s ease;
-}
+    .actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
 
-.card-close:hover {
-    background: rgba(124,58,237,0.08);
-    color: #7c3aed;
-}
+    .btn {
+        padding: 0.9rem 1.8rem;
+        border-radius: 999px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.25s;
+    }
 
-.card-close i {
-    width: 16px;
-    height: 16px;
-}
+    .btn-primary {
+        background: #7c3aed;
+        color: white;
+        border: none;
+    }
+
+    .btn-outline {
+        background: transparent;
+        border: 1px solid #a78bfa;
+        color: #7c3aed;
+    }
+
+    .pending {
+        display: flex;
+        justify-content: flex-start;
+        margin-top: 30px;
+    }
+
+    .subscription-card {
+        background: rgba(255,255,255,0.96);
+        border-radius: 16px;
+        box-shadow: 0 12px 30px rgba(124,58,237,0.12);
+        padding: 1.8rem 1.6rem;
+        max-width: 420px;
+        width: 100%;
+        text-align: left;
+        border: 1px solid rgba(124,58,237,0.1);
+    }
+
+
+    .icon-wrap {
+        width: 60px;
+        height: 60px;
+        margin: 0 0 1rem 0;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #7c3aed, #a78bfa);
+        display: grid;
+        place-items: center;
+        font-size: 1.8rem;
+        color: white;
+        box-shadow: 0 8px 20px rgba(124,58,237,0.25);
+    }
+
+    .subscription-card h1 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.6rem;
+    }
+
+    .status {
+        display: inline-flex;
+        padding: 0.35rem 0.9rem;
+        background: rgba(124,58,237,0.1);
+        color: #7c3aed;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+
+    .pending-text {
+        color: #64748b;
+        font-size: 0.9rem;
+        margin-bottom: 1.2rem;
+        line-height: 1.5;
+    }
+
+
+    .checklist {
+        margin: 1.2rem 0;
+        display: grid;
+        gap: 0.6rem;
+    }
+
+    .check-item {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 0.9rem;
+    }
+
+    .check-item.done::before {
+        content: "✓";
+        color: #10b981;
+        font-weight: bold;
+    }
+
+
+
+    .actions {
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }
+
+    .btn {
+        padding: 0.5rem 1rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .btn-primary {
+        background: #7c3aed;
+        color: white;
+        border: none;
+    }
+
+    .btn-outline {
+        background: transparent;
+        border: 2px dashed #a78bfa;
+        color: #7c3aed;
+    }
+
+    .sub-btn {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+    }
+
+    .sub-btn-primary {
+        background: #7c3aed;
+        color: #fff;
+    }
+
+    .sub-btn-primary:hover {
+        background: #6d28d9;
+        transform: translateY(-1px);
+    }
+
+    .sub-btn-outline {
+        background: transparent;
+        border: 2px dashed #a78bfa;
+        color: #7c3aed;
+    }
+
+    .sub-btn-outline:hover {
+        background: rgba(124,58,237,0.08);
+    }
+
+    .check-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+    }
+
+    .check-item.done::before {
+        content: "✓";
+        color: #10b981;
+        font-weight: bold;
+    }
+
+    .spinner {
+        width: 14px;
+        height: 14px;
+        border: 2px solid rgba(124,58,237,0.2);
+        border-top: 2px solid #7c3aed;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+
+    .subscription-card {
+        position: relative;
+    }
+
+    .card-close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        transition: all 0.2s ease;
+    }
+
+    .card-close:hover {
+        background: rgba(124,58,237,0.08);
+        color: #7c3aed;
+    }
+
+    .card-close i {
+        width: 16px;
+        height: 16px;
+    }
 
 </style>
