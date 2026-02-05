@@ -1,81 +1,119 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container-fluid">
-        <div class="page-header">
-            <div class="row align-items-end">
-                <div class="col-md-3">
-                    <div class="page-header-title">
-                        <i class="ik ik-user bg-blue"></i>
-                        <div class="d-inline">
-                            <h5>{{ __('menu.roles') }}</h5>
-                            <span>{{ __('menu.roles') }}</span>
-                        </div>
+    <link href="{{ asset('css/templates/common-document-styles.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/templates/roles/roles-modern.css') }}" rel="stylesheet">
+
+    <!-- Modern Document Page Container -->
+    <div class="document-page-modern">
+
+        <!-- Modern Page Header -->
+        <div class="page-header-modern">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i data-lucide="shield-plus"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>{{ __('action.create') }} {{ __('menu.roles') }}</h1>
+                        <p>{{ __('menu.roles') }} / {{ __('action.create') }}</p>
                     </div>
                 </div>
-                <div class="col-md-6">
+
+                <div class="header-center">
                     @include('templates.alert')
                 </div>
-                <div class="col-md-3">
-                    <nav class="breadcrumb-container" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('home') }}"><i class="ik ik-home"></i></a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('roles.index') }}">{{ __('route.roles') }}</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">{{ __('route.create') }}</li>
-                        </ol>
-                    </nav>
-                </div>
+
+                <!-- Breadcrumb Navigation -->
+                <nav class="breadcrumb-modern" style="margin-top: 1.5rem;">
+                    <a href="{{ route('home') }}" class="breadcrumb-item">
+                        <i data-lucide="home"></i>
+                        <span>{{ __('menu.home') }}</span>
+                    </a>
+                    <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                    <a href="{{ route('roles.index') }}" class="breadcrumb-item">
+                        <span>{{ __('route.roles') }}</span>
+                    </a>
+                    <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                    <span class="breadcrumb-item active">{{ __('route.create') }}</span>
+                </nav>
             </div>
         </div>
-        <div class="row">
-            <div class="col-sm-6 offset-2">
-                <div class="card">
-                    <div class="card-header">
-                        <h3><i data-lucide="circle-plus"></i> {{ __('action.create') }}</h3>
-                    </div>
-                    <div class="card-body">
-                        <form method="POST" action="{{ route('roles.store') }}" class="forms-sample">
-                            @csrf
-                            <div class="form-group row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>{{ __('field.name_uz') }} <span class="text-red">*</span></label>
-                                        <input type="text" name="name_uz" class="form-control" placeholder="{{ __('field.name_uz') }}" value="{{ old('name_uz') }}" required>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <div class="form-group row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>{{ __('field.name_ru') }}</label>
-                                        <input type="text" name="name_ru" class="form-control" placeholder="{{ __('field.name_ru') }}" value="{{ old('name_ru') }}">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>{{ __('field.name_en') }}</label>
-                                        <input type="text" name="name_en" class="form-control" placeholder="{{ __('field.name_en') }}" value="{{ old('name_en') }}">
-                                    </div>
-                                </div>
-                            </div>
+        <!-- Content Wrapper -->
+        <div class="content-wrapper-modern">
 
-                            <a href="{{ url('admin/roles') }}" class="btn btn-light mr-5">
-                                <i class="ik ik-x"></i>{{ __('action.cancel') }}
-                            </a>
-
-                            <button type="submit" class="btn btn-primary">
-                                <i data-lucide="save"></i>{{ __('action.save') }}
-                            </button>
-
-                        </form>
+            <!-- Create Form Card -->
+            <div class="table-card-modern" style="max-width: 800px; margin: 0 auto;">
+                <div class="filters-header">
+                    <div class="filters-title">
+                        <i data-lucide="shield-plus"></i>
+                        <span>{{ __('field.new_role') }}</span>
                     </div>
                 </div>
+
+                <div style="padding: 2rem;">
+                    <form method="POST" action="{{ route('roles.store') }}" class="modern-form">
+                        @csrf
+
+                        <div class="form-grid">
+                            <!-- Name UZ -->
+                            <div class="form-group-modern full-width">
+                                <label>
+                                    <i data-lucide="type"></i>
+                                    {{ __('field.name_uz') }}
+                                    <span class="text-red">*</span>
+                                </label>
+                                <input type="text"
+                                       name="name_uz"
+                                       class="form-control-modern"
+                                       placeholder="{{ __('field.name_uz') }}"
+                                       value="{{ old('name_uz') }}"
+                                       required>
+                            </div>
+
+                            <!-- Name RU -->
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="type"></i>
+                                    {{ __('field.name_ru') }}
+                                </label>
+                                <input type="text"
+                                       name="name_ru"
+                                       class="form-control-modern"
+                                       placeholder="{{ __('field.name_ru') }}"
+                                       value="{{ old('name_ru') }}">
+                            </div>
+
+                            <!-- Name EN -->
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="type"></i>
+                                    {{ __('field.name_en') }}
+                                </label>
+                                <input type="text"
+                                       name="name_en"
+                                       class="form-control-modern"
+                                       placeholder="{{ __('field.name_en') }}"
+                                       value="{{ old('name_en') }}">
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <a href="{{ route('roles.index') }}" class="btn-modern btn-secondary">
+                                <i data-lucide="x"></i>
+                                {{ __('action.cancel') }}
+                            </a>
+                            <button type="submit" class="btn-modern btn-primary">
+                                <i data-lucide="save"></i>
+                                {{ __('action.save') }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
+
         </div>
     </div>
 @endsection

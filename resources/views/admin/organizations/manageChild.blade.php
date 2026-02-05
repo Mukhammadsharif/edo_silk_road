@@ -6,7 +6,7 @@
                 @if($child->status != 1)
                     <span style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 6px; font-size: 11px; font-weight: 600; color: #78350f;">
                         <i data-lucide="alert-circle" style="width: 12px; height: 12px; color: #f59e0b;"></i>
-                        {{ __('field.inactive') }}
+                        {{ __('status.inactive') }}
                     </span>
                 @else
                     <span style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-radius: 6px; font-size: 11px; font-weight: 600; color: #065f46;">

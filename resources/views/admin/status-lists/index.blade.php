@@ -1,122 +1,220 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container-fluid">
-        <div class="page-header">
-            <div class="row align-items-end">
-                <div class="col-md-3">
-                    <div class="page-header-title">
-                        <i class="ik ik-user bg-blue"></i>
-                        <div class="d-inline">
-                            <h5>{{ __('menu.status_list') }}</h5>
-                        </div>
+    <link href="{{ asset('css/templates/common-document-styles.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/templates/status-lists/status-lists-modern.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/templates/select2.css') }}">
+
+    <!-- Modern Document Page Container -->
+    <div class="document-page-modern">
+
+        <!-- Modern Page Header -->
+        <div class="page-header-modern">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i data-lucide="list-checks"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>{{ __('menu.status_list') }}</h1>
+                        <p>{{ __('menu.status_list') }} / {{ __('menu.list') }}</p>
                     </div>
                 </div>
-                <div class="col-md-6">
+
+                <div class="header-center">
                     @include('templates.alert')
                 </div>
-                <div class="col-md-3">
-                    <nav class="breadcrumb-container" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('home') }}"><i class="ik ik-home"></i></a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="#">{{ __('menu.status_list') }}</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">{{ __('menu.list') }}</li>
-                        </ol>
-                    </nav>
-                </div>
+
+                <!-- Breadcrumb Navigation -->
+                <nav class="breadcrumb-modern" style="margin-top: 1.5rem;">
+                    <a href="{{ route('home') }}" class="breadcrumb-item">
+                        <i data-lucide="home"></i>
+                        <span>{{ __('menu.home') }}</span>
+                    </a>
+                    <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                    <a href="#" class="breadcrumb-item">
+                        <span>{{ __('menu.status_list') }}</span>
+                    </a>
+                    <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                    <span class="breadcrumb-item active">{{ __('menu.list') }}</span>
+                </nav>
             </div>
         </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="card">
-                    <div class="card-header d-block">
-                        <a href="{{ route('status-lists.create') }}" class="btn btn-primary">
-                            <i data-lucide="circle-plus"></i> {{ __('action.create') }}
-                        </a>
+
+        <!-- Content Wrapper -->
+        <div class="content-wrapper-modern">
+
+            <!-- Filters Card -->
+            <div class="filters-card-modern">
+                <div class="filters-header">
+                    <div class="filters-title">
+                        <i data-lucide="search"></i>
+                        <span>{{ __('action.search') }} & {{ __('field.filters') }}</span>
                     </div>
+                    <div class="filters-count">
+                        <span class="count-badge">{{ $models->total() }}</span>
+                        <span class="count-label">{{ __('field.total') }}</span>
+                    </div>
+                </div>
 
-                    <div class="card-body template-demo">
-                        <form action="{{ route('status-lists.index') }}" method="post" role="search" class="form-horizontal">
-                            @csrf
-                            <div class="row ml-1">
-                                <div class="mb-2 mr-sm-2 w-25">
-                                    <input type="text" name="s_text" value="{{ $s_text??'' }}" class="form-control" placeholder="{{ __('action.search') }}...">
-                                </div>
+                <form action="{{ route('status-lists.index') }}" method="post" class="filters-form-modern">
+                    @csrf
+                    <div class="filters-grid">
+                        <div class="filter-item">
+                            <label>
+                                <i data-lucide="search"></i>
+                                {{ __('action.search') }}
+                            </label>
+                            <input type="text"
+                                   name="s_text"
+                                   value="{{ $s_text ?? '' }}"
+                                   class="form-control-modern"
+                                   placeholder="{{ __('action.search') }}...">
+                        </div>
 
-                                <div class="mb-2 mr-sm-2 w-25">
-                                    <select name="s_type" class="form-control select2" style="width: 100%">
-                                        <option value="">{{ __('field.fields') }}</option>
-                                        @foreach($types as $key => $item)
-                                            <option value="{{ $item->type }}" {{ $s_type == $item->type ? 'selected':''}}>
-                                                {{ $key+1 }}. {{ $item->type ?? '-' }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                        <div class="filter-item">
+                            <label>
+                                <i data-lucide="filter"></i>
+                                {{ __('field.type') }}
+                            </label>
+                            <select name="s_type" class="form-control-modern select2">
+                                <option value="">{{ __('field.fields') }}</option>
+                                @foreach($types as $key => $item)
+                                    <option value="{{ $item->type }}" {{ $s_type == $item->type ? 'selected':'' }}>
+                                        {{ $key+1 }}. {{ $item->type ?? '-' }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                                <button type="submit" class="btn btn-info mr-sm-2 mb-2">
-                                    <i data-lucide="search"></i> {{ __('action.search') }} ({{ $models->total() }})
-                                </button>
-                                <a href="{{ route('status-lists.index') }}" class="btn btn-light mb-2">
-                                    <i data-lucide="refresh-ccw"></i> {{ __('action.clear') }}
-                                </a>
-                            </div>
-                        </form><hr>
-
-                        <div class="dt-responsive">
-                            <table class="table table-striped table-bordered">
-                                <thead>
-                                    <tr class="text-center">
-                                        <th>{{ __('field.number') }}</th>
-                                        <th>{{ __('field.title') }}</th>
-                                        <th>{{ __('field.lang_id') }}</th>
-                                        <th>{{ __('field.type') }}</th>
-                                        <th>{{ __('field.code') }}</th>
-                                        <th>{{ __('field.order_number') }}</th>
-                                        <th>{{ __('field.action') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                @forelse($models as $key => $model)
-                                    <tr class="text-center">
-                                        <td>{{ $key+1 }}</td>
-                                        <td>{{ $model->title }}</td>
-                                        <td>
-                                            <span class="{{ $model->badgeClass->name??'-' }}">
-                                               <i class="{{ $model->iconClass->name??'-' }}"></i> {{ $model->lang($model->id) }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge badge-pill badge-secondary mb-1">{{ $model->type }}</span>
-                                        </td>
-                                        <td>{{ $model->code }}</td>
-                                        <td>{{ $model->order_number??'' }}</td>
-                                        <td>
-                                            <a href="{{ route('status-lists.edit', $model->id) }}" class="btn btn-sm btn-info">
-                                                <i data-lucide="square-pen"></i> {{ __('action.edit') }}
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="7" class="text-center">{{ __('field.not_found') }}</td>
-                                    </tr>
-                                @endforelse
-                                </tbody>
-                            </table>
-
-                            {!! $models->links() !!}
+                        <div class="filter-actions">
+                            <button type="submit" class="btn-modern btn-primary">
+                                <i data-lucide="search"></i>
+                                {{ __('action.search') }}
+                            </button>
+                            <a href="{{ route('status-lists.index') }}" class="btn-modern btn-secondary">
+                                <i data-lucide="refresh-ccw"></i>
+                                {{ __('action.clear') }}
+                            </a>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
+
+            <!-- Table Card -->
+            <div class="table-card-modern">
+                <div class="filters-header">
+                    <div class="filters-title">
+                        <i data-lucide="list"></i>
+                        <span>{{ __('menu.status_list') }}</span>
+                    </div>
+                    <a href="{{ route('status-lists.create') }}" class="btn-modern btn-primary" style="width: auto;">
+                        <i data-lucide="circle-plus"></i>
+                        {{ __('action.create') }}
+                    </a>
+                </div>
+
+                <div class="table-wrapper-modern">
+                    <table class="modern-table">
+                        <thead>
+                        <tr>
+                            <th style="width: 60px;">
+                                <i data-lucide="hash"></i>
+                                {{ __('field.number') }}
+                            </th>
+                            <th style="text-align: left;">
+                                <i data-lucide="type"></i>
+                                {{ __('field.title') }}
+                            </th>
+                            <th>
+                                <i data-lucide="languages"></i>
+                                {{ __('field.lang_id') }}
+                            </th>
+                            <th>
+                                <i data-lucide="tag"></i>
+                                {{ __('field.type') }}
+                            </th>
+                            <th style="width: 100px;">
+                                <i data-lucide="binary"></i>
+                                {{ __('field.code') }}
+                            </th>
+                            <th style="width: 100px;">
+                                <i data-lucide="list-ordered"></i>
+                                {{ __('field.order_number') }}
+                            </th>
+                            <th style="width: 120px;">
+                                <i data-lucide="settings"></i>
+                                {{ __('field.action') }}
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @forelse($models as $key => $model)
+                            <tr class="table-row-modern">
+                                <td class="td-number">{{ $key + 1 }}</td>
+                                <td class="td-doc-name">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        @if($model->iconClass)
+                                            <i data-lucide="{{ $model->iconClass->name }}" style="color: #794DFD; width: 16px; height: 16px;"></i>
+                                        @endif
+                                        <strong>{{ $model->title }}</strong>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge-modern {{ $model->badgeClass->name ?? 'badge-info' }}">
+                                        @if($model->iconClass)
+                                            <i data-lucide="{{ $model->iconClass->name }}"></i>
+                                        @endif
+                                        {{ $model->lang($model->id) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge-modern badge-primary">{{ $model->type }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="code-badge">{{ $model->code }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="order-number-badge">{{ $model->order_number ?? '' }}</span>
+                                </td>
+                                <td class="td-action">
+                                    <a href="{{ route('status-lists.edit', $model->id) }}" class="action-btn view-btn">
+                                        <i data-lucide="square-pen"></i>
+                                        {{ __('action.edit') }}
+                                    </a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="empty-state">
+                                    <div class="empty-state-content">
+                                        <i data-lucide="folder-x"></i>
+                                        <p>{{ __('field.not_found') }}</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                @if($models->hasPages())
+                    <div class="pagination-wrapper-modern">
+                        {!! $models->links() !!}
+                    </div>
+                @endif
+            </div>
+
         </div>
     </div>
+
+    <script src="{{ asset('/ajax/jquery.min.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            $('.select2').select2({
+                placeholder: "{{ __('action.choose') }}",
+                allowClear: true
+            });
+        });
+    </script>
 @endsection
-
-<script src="{{ asset('/ajax/jquery.min.js') }}"></script>
-

@@ -1,89 +1,140 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container-fluid">
-        <div class="page-header">
-            <div class="row align-items-end">
-                <div class="col-md-3">
-                    <div class="page-header-title">
-                        <i class="ik ik-user bg-blue"></i>
-                        <div class="d-inline">
-                            <h5>{{ __('menu.roles') }}</h5>
-                            <span>{{ __('menu.roles') }}</span>
-                        </div>
+    <link href="{{ asset('css/templates/common-document-styles.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/templates/roles/roles-modern.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/templates/select2.css') }}">
+
+    <!-- Modern Document Page Container -->
+    <div class="document-page-modern">
+
+        <!-- Modern Page Header -->
+        <div class="page-header-modern">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i data-lucide="shield-check"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>{{ __('action.edit') }} {{ __('menu.roles') }}</h1>
+                        <p>{{ __('menu.roles') }} / {{ __('action.edit') }}</p>
                     </div>
                 </div>
-                <div class="col-md-6">
+
+                <div class="header-center">
                     @include('templates.alert')
                 </div>
-                <div class="col-md-3">
-                    <nav class="breadcrumb-container" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('home') }}"><i class="ik ik-home"></i></a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('roles.index') }}">Roles</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">Create</li>
-                        </ol>
-                    </nav>
-                </div>
+
+                <!-- Breadcrumb Navigation -->
+                <nav class="breadcrumb-modern" style="margin-top: 1.5rem;">
+                    <a href="{{ route('home') }}" class="breadcrumb-item">
+                        <i data-lucide="home"></i>
+                        <span>{{ __('menu.home') }}</span>
+                    </a>
+                    <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                    <a href="{{ route('roles.index') }}" class="breadcrumb-item">
+                        <span>Roles</span>
+                    </a>
+                    <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                    <span class="breadcrumb-item active">Edit</span>
+                </nav>
             </div>
         </div>
-        <div class="row">
-            <div class="col-sm-6 offset-2">
-                <div class="card">
-                    <div class="card-header">
-                        <h3><i class="ik ik-edit"></i> {{ __('action.edit') }}</h3>
-                    </div>
-                    <div class="card-body">
-                        <form method="POST" action="{{ route('roles.update', $role->id) }}" class="forms-sample">
-                            @csrf
-                            @method('PUT')
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label for="nameInput" class="form-label">{{ __('field.code') }}</label>
-                                        <input type="text" class="form-control" name="name" value="{{ $role->name }}" placeholder="@lang('translation.name')">
-                                    </div>
-                                </div>
-                                <!--end col-->
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label for="roleNameInput" class="form-label">{{ __('form.lang-id') }}</label>
-                                        <select class="form-control select2" name="lang_id">
-                                            <option value="">{{ __('page.not-selected') }}</option>
-                                            @foreach($languages as $key => $value)
-                                                <option value="{{ $value->id }}" @if($value->id == $role->lang_id) selected @endif>{{ $key+1 }}. {{ __($value->group.'.'.$value->key) }} </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <!--end col-->
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label for="roleNameInput" class="form-label">{{ __('field.status') }}</label>
-                                        <input type="checkbox" name="status" value="1" class="js-switch"  name="status" @if($role->status === 1) checked="" @endif />
-                                    </div>
-                                </div>
-                                <!--end col-->
-                                <div class="col-lg-12">
-                                    <div class="hstack gap-2 justify-content-end">
-                                        <a href="{{ url('admin/roles') }}" class="btn btn-light">
-                                            <i class="ik ik-x"></i> {{ __('action.cancel') }}
-                                        </a>
-                                        <button type="submit" class="btn btn-primary">
-                                            <i data-lucide="save"></i> {{ __('action.save') }}
-                                        </button>
-                                    </div>
-                                </div>
-                                <!--end col-->
-                            </div>
-                        </form>
+
+        <!-- Content Wrapper -->
+        <div class="content-wrapper-modern">
+
+            <!-- Edit Form Card -->
+            <div class="table-card-modern" style="max-width: 800px; margin: 0 auto;">
+                <div class="filters-header">
+                    <div class="filters-title">
+                        <i data-lucide="shield-check"></i>
+                        <span>{{ __('action.edit') }} {{ __('field.role') }}</span>
                     </div>
                 </div>
+
+                <div style="padding: 2rem;">
+                    <form method="POST" action="{{ route('roles.update', $role->id) }}" class="modern-form">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="form-grid">
+                            <!-- Code -->
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="code"></i>
+                                    {{ __('field.code') }}
+                                </label>
+                                <input type="text"
+                                       name="name"
+                                       class="form-control-modern"
+                                       placeholder="{{ __('field.code') }}"
+                                       value="{{ $role->name }}">
+                            </div>
+
+                            <!-- Language -->
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="languages"></i>
+                                    {{ __('form.lang-id') }}
+                                </label>
+                                <select class="form-control-modern select2" name="lang_id">
+                                    <option value="">{{ __('page.not-selected') }}</option>
+                                    @foreach($languages as $key => $value)
+                                        <option value="{{ $value->id }}" @if($value->id == $role->lang_id) selected @endif>
+                                            {{ $key+1 }}. {{ __($value->group.'.'.$value->key) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="form-group-modern full-width">
+                                <label>
+                                    <i data-lucide="activity"></i>
+                                    {{ __('field.status') }}
+                                </label>
+                                <div class="status-toggle-wrapper">
+                                    <label class="status-toggle">
+                                        <input type="checkbox"
+                                               name="status"
+                                               value="1"
+                                               class="js-switch"
+                                               @if($role->status === 1) checked @endif>
+                                        <span class="toggle-label">
+                                            <i data-lucide="check-circle"></i>
+                                            {{ __('field.active') }}
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <a href="{{ route('roles.index') }}" class="btn-modern btn-secondary">
+                                <i data-lucide="x"></i>
+                                {{ __('action.cancel') }}
+                            </a>
+                            <button type="submit" class="btn-modern btn-primary">
+                                <i data-lucide="save"></i>
+                                {{ __('action.save') }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
+
         </div>
     </div>
+
+    <script src="{{ asset('/ajax/jquery.min.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            $('.select2').select2({
+                placeholder: "{{ __('action.choose') }}",
+                allowClear: true
+            });
+        });
+    </script>
 @endsection

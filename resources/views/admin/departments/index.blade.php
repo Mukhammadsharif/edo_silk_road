@@ -185,7 +185,7 @@
                                         @else
                                             <span class="status-badge-modern badge-danger">
                                                     <i data-lucide="ban"></i>
-                                                    {{ __('field.inactive') }}
+                                                    {{ __('status.inactive') }}
                                                 </span>
                                         @endif
                                     </td>
