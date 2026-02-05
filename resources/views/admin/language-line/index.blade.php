@@ -1,243 +1,409 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container-fluid">
-        <div class="page-header">
-            <div class="row align-items-end">
-                <div class="col-lg-8">
-                    <div class="page-header-title">
-                        <i class="ik ik-user bg-blue"></i>
-                        <div class="d-inline">
-                            <h5>{{ __('title.language') }}</h5>
-                        </div>
+    <link href="{{ asset('css/templates/common-document-styles.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/templates/languages/languages-modern.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/templates/select2.css') }}">
+
+    <!-- Modern Document Page Container -->
+    <div class="document-page-modern">
+
+        <!-- Modern Page Header -->
+        <div class="page-header-modern">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i data-lucide="languages"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>{{ __('title.language') }}</h1>
+                        <p>{{ __('title.language') }} / {{ __('menu.list') }}</p>
                     </div>
                 </div>
-                <div class="col-lg-4">
-                    <nav class="breadcrumb-container" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('home') }}"><i class="ik ik-home"></i></a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="#">{{ __('title.language') }}</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">{{ __('menu.list') }}</li>
-                        </ol>
-                    </nav>
-                </div>
+
+                <!-- Breadcrumb Navigation -->
+                <nav class="breadcrumb-modern" style="margin-top: 1.5rem;">
+                    <a href="{{ route('home') }}" class="breadcrumb-item">
+                        <i data-lucide="home"></i>
+                        <span>{{ __('menu.home') }}</span>
+                    </a>
+                    <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                    <a href="#" class="breadcrumb-item">
+                        <span>{{ __('title.language') }}</span>
+                    </a>
+                    <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                    <span class="breadcrumb-item active">{{ __('menu.list') }}</span>
+                </nav>
             </div>
         </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="card">
-                    <div class="card-header">
-                        @can('language-create')
-                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#AddModal">
-                                <i data-lucide="circle-plus"></i> {{ __('action.create') }}
-                            </button>
-                        @endcan
+
+        <!-- Content Wrapper -->
+        <div class="content-wrapper-modern">
+
+            <!-- Filters Card -->
+            <div class="filters-card-modern">
+                <div class="filters-header">
+                    <div class="filters-title">
+                        <i data-lucide="filter"></i>
+                        <span>{{ __('action.search') }}</span>
                     </div>
-
-                    <div class="card-body template-demo table-responsive">
-                        <form action="{{ route('language.index') }}" method="post" role="search" class="form-horizontal">
-                            @csrf
-                            <div class="row ml-1">
-                                <div class="mb-2 mr-sm-2 w-25">
-                                    <input type="text" name="s_text" value="{{ $s_text??'' }}" class="form-control" placeholder="{{ __('action.search') }}...">
-                                </div>
-
-                                <div class="mb-2 mr-sm-2 w-25">
-                                    <select name="s_field" class="form-control select2" style="width: 100%">
-                                        <option value="">{{ __('field.fields') }}</option>
-                                        @foreach($groups as $key => $item)
-                                            <option value="{{ $item->group }}" {{ $s_field == $item->group ? 'selected':''}}>
-                                                {{ $key+1 }}. {{ $item->group ?? '-' }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <button type="submit" class="btn btn-info">
-                                    <i data-lucide="search"></i> {{ __('action.search') }} ({{ $models->total() }})
-                                </button>
-                                <a href="{{ route('language.index') }}" class="btn btn-light">
-                                    <i data-lucide="refresh-ccw"></i> {{ __('action.clear') }}
-                                </a>
-                            </div>
-                        </form><hr>
-
-                        <div class="dt-responsive">
-                            <table class="table table-striped table-bordered">
-                                <thead>
-                                <tr class="text-center">
-                                    <th>{{ __('field.#') }}</th>
-                                    <th>{{ __('field.group') }}</th>
-                                    <th>{{ __('field.key') }}</th>
-                                    <th>{{ __('field.lang_uz') }}</th>
-                                    <th>{{ __('field.lang_ru') }}</th>
-                                    <th>{{ __('field.lang_en') }}</th>
-                                    <th colspan="2">{{ __('action.action') }}</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse($models as $key => $item)
-                                        <tr class="text-center">
-                                            <td>{{ $key+1 }}</td>
-                                            <td>{{ $item->group??'' }}</td>
-                                            <td>{{ $item->key??'' }}</td>
-                                            <td>{{ $item->text['uz']??'' }}</td>
-                                            <td>{{ $item->text['ru']??'' }}</td>
-                                            <td>{{ $item->text['en']??'' }}</td>
-                                            <td>
-                                                <button type="button" value="{{ $item->id }}" class="btn btn-info edit_btn btn-sm">
-                                                    <i class="ri-edit-line me-1"></i> <i data-lucide="square-pen"></i>
-                                                </button>
-                                            </td>
-                                            <td>
-                                                <button type="button" value="{{ $item->id }}" class="btn btn-danger delete_btn btn-sm">
-                                                    <i class="ri-delete-bin-line me-1"></i> <i class="ik ik-trash-2"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="8" class="text-center">{{ __('field.not_found') }}</td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-
-                            {!! $models->links() !!}
-                        </div>
+                    <div class="filters-count">
+                        <span class="count-badge">{{ $models->total() }}</span>
+                        <span class="count-label">{{ __('field.total') }}</span>
                     </div>
                 </div>
+
+                <form action="{{ route('language.index') }}" method="post" class="filters-form-modern">
+                    @csrf
+                    <div class="language-search-grid">
+                        <!-- Search Input -->
+                        <div class="search-input-with-icon">
+                            <i data-lucide="search"></i>
+                            <input type="text"
+                                   name="s_text"
+                                   value="{{ $s_text ?? '' }}"
+                                   class="form-control-modern"
+                                   placeholder="{{ __('action.search') }}...">
+                        </div>
+
+                        <!-- Group Filter -->
+                        <div class="group-select-wrapper">
+                            <select name="s_field" class="group-select-modern select2">
+                                <option value="">{{ __('field.fields') }}</option>
+                                @foreach($groups as $key => $item)
+                                    <option value="{{ $item->group }}" {{ $s_field == $item->group ? 'selected' : '' }}>
+                                        {{ $key+1 }}. {{ $item->group ?? '-' }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Search Button -->
+                        <button type="submit" class="btn-modern btn-primary">
+                            <i data-lucide="search"></i>
+                            {{ __('action.search') }}
+                        </button>
+
+                        <!-- Clear Button -->
+                        <a href="{{ route('language.index') }}" class="btn-modern btn-secondary">
+                            <i data-lucide="refresh-ccw"></i>
+                            {{ __('action.clear') }}
+                        </a>
+                    </div>
+                </form>
             </div>
+
+            <!-- Main Table Card -->
+            <div class="table-card-modern">
+                <div class="filters-header">
+                    <div class="filters-title">
+                        <i data-lucide="list"></i>
+                        <span>{{ __('title.language') }}</span>
+                    </div>
+                    @can('language-create')
+                        <button type="button" class="btn-modern btn-primary" data-toggle="modal" data-target="#AddModal" style="width: auto;">
+                            <i data-lucide="circle-plus"></i>
+                            {{ __('action.create') }}
+                        </button>
+                    @endcan
+                </div>
+
+                <div class="table-wrapper-modern">
+                    <table class="modern-table languages-table-modern">
+                        <thead>
+                        <tr>
+                            <th style="width: 60px;">
+                                <i data-lucide="hash"></i>
+                                {{ __('field.#') }}
+                            </th>
+                            <th style="width: 150px;">
+                                <i data-lucide="folder"></i>
+                                {{ __('field.group') }}
+                            </th>
+                            <th style="width: 180px;">
+                                <i data-lucide="key"></i>
+                                {{ __('field.key') }}
+                            </th>
+                            <th>
+                                <i data-lucide="flag"></i>
+                                {{ __('field.lang_uz') }}
+                            </th>
+                            <th>
+                                <i data-lucide="flag"></i>
+                                {{ __('field.lang_ru') }}
+                            </th>
+                            <th>
+                                <i data-lucide="flag"></i>
+                                {{ __('field.lang_en') }}
+                            </th>
+                            <th style="width: 180px;" colspan="2">
+                                <i data-lucide="settings"></i>
+                                {{ __('action.action') }}
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @forelse($models as $key => $item)
+                            <tr class="table-row-modern">
+                                <td class="td-number">{{ $key+1 }}</td>
+                                <td class="group-cell">{{ $item->group ?? '' }}</td>
+                                <td class="key-cell">{{ $item->key ?? '' }}</td>
+                                <td class="translation-cell" title="{{ $item->text['uz'] ?? '' }}">
+                                    {{ $item->text['uz'] ?? '' }}
+                                </td>
+                                <td class="translation-cell" title="{{ $item->text['ru'] ?? '' }}">
+                                    {{ $item->text['ru'] ?? '' }}
+                                </td>
+                                <td class="translation-cell" title="{{ $item->text['en'] ?? '' }}">
+                                    {{ $item->text['en'] ?? '' }}
+                                </td>
+                                <td>
+                                    <button type="button" value="{{ $item->id }}" class="lang-edit-btn edit_btn">
+                                        <i data-lucide="square-pen"></i>
+                                        {{ __('action.edit') }}
+                                    </button>
+                                </td>
+                                <td>
+                                    <button type="button" value="{{ $item->id }}" class="lang-delete-btn delete_btn">
+                                        <i data-lucide="trash-2"></i>
+                                        {{ __('action.delete') }}
+                                    </button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" class="empty-state">
+                                    <div class="empty-state-content">
+                                        <i data-lucide="folder-x"></i>
+                                        <p>{{ __('field.not_found') }}</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                @if($models->hasPages())
+                    <div class="pagination-wrapper-modern">
+                        {!! $models->links() !!}
+                    </div>
+                @endif
+            </div>
+
         </div>
     </div>
+    {{-- MODALS SECTION --}}
 
     <!-- Create Modal -->
-    <div class="modal fade" id="AddModal">
-        <div class="modal-dialog" role="document">
+    <div class="modal fade language-modal-modern" id="AddModal" tabindex="-1">
+        <div class="modal-dialog">
             <div class="modal-content">
-
                 <div class="modal-header">
-                    <h4 class="modal-title"><i class="fa fa-plus-circle"></i> {{ __('action.create') }}</h4>
+                    <h4 class="modal-title">
+                        <i data-lucide="circle-plus"></i>
+                        {{ __('action.create') }}
+                    </h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                    <div class="modal-body">
-                        <ul id="save_msgList"></ul>
-                        <div class="form-group mb-3">
-                            <label for="">{{ __('field.group') }}</label>
-                            <input type="text" required class="group_input form-control">
-                        </div>
-                        <div class="form-group mb-3">
-                            <label for="">{{ __('field.key') }}</label>
-                            <input type="text" required class="key_input form-control" id="key_input_c">
-                        </div>
-                        <div class="form-group mb-3">
-                            <label for="">{{ __('field.lang_uz') }}</label>
-                            <input type="text" required class="text_uz_input form-control">
-                        </div>
-                        <div class="form-group mb-3">
-                            <label for="">{{ __('field.lang_ru') }}</label>
-                            <input type="text" required class="text_ru_input form-control">
-                        </div>
-                        <div class="form-group mb-3">
-                            <label for="">{{ __('field.lang_en') }}</label>
-                            <input type="text" required class="text_en_input form-control" id="text_en_input_c">
-                        </div>
+                <div class="modal-body">
+                    <ul id="save_msgList" class="alert-list"></ul>
+
+                    <!-- Group Input -->
+                    <div class="modal-form-group">
+                        <label>
+                            <i data-lucide="folder"></i>
+                            {{ __('field.group') }}
+                        </label>
+                        <input type="text" required class="group_input modal-input-modern" placeholder="Masalan: menu">
                     </div>
 
-                    <div class="modal-footer justify-content-between">
-                        <button type="button" class="btn btn-light" data-dismiss="modal"><i class="ik ik-x"></i>{{ __('action.cancel') }}</button>
-                        <button type="submit" class="btn btn-outline-info save_btn"><i data-lucide="save"></i>{{ __('action.save') }}</button>
+                    <!-- Key Input -->
+                    <div class="modal-form-group">
+                        <label>
+                            <i data-lucide="key"></i>
+                            {{ __('field.key') }}
+                        </label>
+                        <input type="text" required class="key_input modal-input-modern" id="key_input_c" placeholder="Masalan: home">
                     </div>
 
+                    <!-- Translations Section -->
+                    <div class="translations-section">
+                        <div class="translations-section-title">
+                            <i data-lucide="languages"></i>
+                            <span>{{ __('field.translations') }}</span>
+                        </div>
+
+                        <!-- UZ Translation -->
+                        <div class="translation-input-group">
+                            <label>
+                                <div class="language-flag-icon flag-uz"></div>
+                                {{ __('field.lang_uz') }}
+                            </label>
+                            <input type="text" required class="text_uz_input modal-input-modern" placeholder="O'zbekcha tarjima">
+                        </div>
+
+                        <!-- RU Translation -->
+                        <div class="translation-input-group">
+                            <label>
+                                <div class="language-flag-icon flag-ru"></div>
+                                {{ __('field.lang_ru') }}
+                            </label>
+                            <input type="text" required class="text_ru_input modal-input-modern" placeholder="Перевод на русский">
+                        </div>
+
+                        <!-- EN Translation -->
+                        <div class="translation-input-group">
+                            <label>
+                                <div class="language-flag-icon flag-en"></div>
+                                {{ __('field.lang_en') }}
+                            </label>
+                            <input type="text" required class="text_en_input modal-input-modern" id="text_en_input_c" placeholder="English translation">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="modal-btn-cancel" data-dismiss="modal">
+                        <i data-lucide="x"></i>
+                        {{ __('action.cancel') }}
+                    </button>
+                    <button type="submit" class="modal-btn-save save_btn">
+                        <i data-lucide="save"></i>
+                        {{ __('action.save') }}
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Edit Modal -->
-    <div class="modal fade" id="editModal">
+    <div class="modal fade language-modal-modern" id="editModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title"><i class="fa fa-pencil-alt"></i> {{ __('field.edit') }}</h4>
+                    <h4 class="modal-title">
+                        <i data-lucide="square-pen"></i>
+                        {{ __('field.edit') }}
+                    </h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                    <div class="modal-body">
-                        <ul id="update_msgList"></ul>
+                <div class="modal-body">
+                    <ul id="update_msgList" class="alert-list"></ul>
+                    <input type="hidden" id="model_id" />
 
-                        <input type="hidden" id="model_id" />
-
-                        <div class="form-group mb-3">
-                            <label for="">{{ __('field.group') }}</label>
-                            <input type="text" id="group_input" required class="form-control">
-                        </div>
-                        <div class="form-group mb-3">
-                            <label for="">{{ __('field.key') }}</label>
-                            <input type="text" id="key_input" required class="form-control">
-                        </div>
-                        <div class="form-group mb-3">
-                            <label for="">{{ __('field.lang_uz') }}</label>
-                            <input type="text" id="text_uz_input" required class="form-control">
-                        </div>
-                        <div class="form-group mb-3">
-                            <label for="">{{ __('field.lang_ru') }}</label>
-                            <input type="text" id="text_ru_input" required class="form-control">
-                        </div>
-                        <div class="form-group mb-3">
-                            <label for="">{{ __('field.lang_en') }}</label>
-                            <input type="text" id="text_en_input" required class="form-control">
-                        </div>
+                    <!-- Group Input -->
+                    <div class="modal-form-group">
+                        <label>
+                            <i data-lucide="folder"></i>
+                            {{ __('field.group') }}
+                        </label>
+                        <input type="text" id="group_input" required class="modal-input-modern">
                     </div>
 
-                    <div class="modal-footer justify-content-between">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('action.cancel') }}</button>
-                        <button type="button" class="btn btn-outline-info update_btn">{{ __('action.save_change') }}</button>
+                    <!-- Key Input -->
+                    <div class="modal-form-group">
+                        <label>
+                            <i data-lucide="key"></i>
+                            {{ __('field.key') }}
+                        </label>
+                        <input type="text" id="key_input" required class="modal-input-modern">
                     </div>
+
+                    <!-- Translations Section -->
+                    <div class="translations-section">
+                        <div class="translations-section-title">
+                            <i data-lucide="languages"></i>
+                            <span>{{ __('field.translations') }}</span>
+                        </div>
+
+                        <!-- UZ Translation -->
+                        <div class="translation-input-group">
+                            <label>
+                                <div class="language-flag-icon flag-uz"></div>
+                                {{ __('field.lang_uz') }}
+                            </label>
+                            <input type="text" id="text_uz_input" required class="modal-input-modern">
+                        </div>
+
+                        <!-- RU Translation -->
+                        <div class="translation-input-group">
+                            <label>
+                                <div class="language-flag-icon flag-ru"></div>
+                                {{ __('field.lang_ru') }}
+                            </label>
+                            <input type="text" id="text_ru_input" required class="modal-input-modern">
+                        </div>
+
+                        <!-- EN Translation -->
+                        <div class="translation-input-group">
+                            <label>
+                                <div class="language-flag-icon flag-en"></div>
+                                {{ __('field.lang_en') }}
+                            </label>
+                            <input type="text" id="text_en_input" required class="modal-input-modern">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="modal-btn-cancel" data-dismiss="modal">
+                        <i data-lucide="x"></i>
+                        {{ __('action.cancel') }}
+                    </button>
+                    <button type="button" class="modal-btn-save update_btn">
+                        <i data-lucide="save"></i>
+                        {{ __('action.save_change') }}
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-
-    {{-- Delete Modal --}}
-    <div class="modal fade" id="DeleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- Delete Modal -->
+    <div class="modal fade language-modal-modern delete-modal-modern" id="DeleteModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header bg-danger">
-                    <i class="ik ik-x-circle text-white cancel_delete_btn" style="font-size: 20px; cursor: pointer"></i>
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <i data-lucide="alert-octagon"></i>
+                        {{ __('text.delete_confirm') }}
+                    </h4>
+                    <button type="button" class="close cancel_delete_btn" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
-                    <div class="text-center">
-                        <lord-icon src="/build/json/trash-bin.json" trigger="loop" colors="primary:#0ab39c,secondary:#405189" style="width:120px;height:120px"></lord-icon>
-                        <div class="mt-4 pt-2 fs-15"><h4>{{ __('text.delete_confirm') }}</h4>
-                            <p class="text-muted mx-4 mb-0"><span class="ri-question-line me-1"></span>{{ __('text.delete_confirm_text') }}</p>
+                    <div class="delete-icon-container">
+                        <div class="delete-icon-wrapper">
+                            <i data-lucide="trash-2"></i>
                         </div>
+                    </div>
+                    <div class="delete-confirmation-text">
+                        <h4>{{ __('text.delete_confirm') }}</h4>
+                        <p>{{ __('text.delete_confirm_text') }}</p>
                     </div>
                     <input type="hidden" id="deleteing_id">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-light cancel_delete_btn" data-bs-dismiss="modal">
-                        <i class="ri-close-line me-1"></i>{{ __('action.cancel') }}
+                    <button type="button" class="modal-btn-cancel cancel_delete_btn">
+                        <i data-lucide="x"></i>
+                        {{ __('action.cancel') }}
                     </button>
-                    <button type="button" class="btn btn-soft-danger yes_delete_btn">
-                        <i class="ri-check-line me-1"></i>{{ __('action.yes_delete') }}
+                    <button type="button" class="modal-btn-save modal-btn-danger yes_delete_btn">
+                        <i data-lucide="trash-2"></i>
+                        {{ __('action.yes_delete') }}
                     </button>
                 </div>
             </div>
         </div>
     </div>
-    {{-- End - Delete Modal --}}
 
+    {{-- SCRIPTS SECTION --}}
     <script src="{{ asset('/ajax/jquery.min.js') }}"></script>
-
     <script type="text/javascript">
-
         $(document).ready(function () {
             $.ajaxSetup({
                 headers: {
@@ -245,67 +411,14 @@
                 }
             });
 
-            // fetchLang();
+            // Initialize Select2
+            $('.select2').select2({
+                placeholder: "{{ __('action.choose') }}",
+                allowClear: true
+            });
 
-            function fetchLang() {
-                $.ajax({
-                    type: "GET",
-                    url: "/admin/lang/fetch-lang",
-                    dataType: "json",
-                    beforeSend: function () {
-                        //$('.overlay-icon').show();
-                    },
-                    complete: function(){
-                        //$('.overlay-icon').hide();
-                    },
-                    success: function (response) {
-                        tableData(response)
-                    },
-                    error: function (s) {
-                        console.log(s);
-                    }
-                });
-            }
-
-            function searchLang(text) {
-                if (text.length > 2) {
-                    $.ajax({
-                        type: "GET",
-                        url: "/admin/lang/search-lang/" + text,
-                        success: function (response) {
-                            tableData(response)
-                        }
-                    });
-                } else if(text.length == '') {
-                    fetchLang();
-                }
-            }
-
-            function tableData(response) {
-                $('tbody').html("");
-                $.each(response.models.data, function (key, item) {
-                    let text = JSON.parse(JSON.stringify(item.text));
-                    //console.log(JSON.parse(JSON.stringify(item.text)))
-                    let edit_lang = "{{ __('action.edit') }}";
-                    let delete_lang = "{{ __('action.delete') }}";
-                    $('tbody').append('<tr class="text-center">\
-                            <td>' + item.group + '</td>\
-                            <td>' + item.key + '</td>\
-                            <td>' + text.uz + '</td>\
-                            <td>' + text.ru + '</td>\
-                            <td>' + text.en + '</td>\
-                            <td><button type="button" value="' + item.id + '" class="btn btn-info edit_btn btn-sm">\
-                            <i class="ri-edit-line me-1"></i> <i data-lucide="square-pen"></i>'+edit_lang+'</button>\
-                            </td>\
-                            <td><button type="button" value="' + item.id + '" class="btn btn-danger delete_btn btn-sm">\
-                            <i class="ri-delete-bin-line me-1"></i> <i class="ik ik-trash-2"></i>'+delete_lang+'</button>\
-                            </td>\
-                        \</tr>');
-                });
-            }
-
+            // Save Language
             $(document).on('click', '.save_btn', function(e){
-
                 e.preventDefault();
 
                 var data = {
@@ -320,9 +433,6 @@
                     url: '/admin/lang/store',
                     method: 'POST',
                     data: data,
-                    beforeSend: function(){
-
-                    },
                     success: function(response){
                         if (response.status === 400) {
                             $('#save_msgList').html("");
@@ -330,38 +440,33 @@
                             $.each(response.errors, function (key, err_value) {
                                 $('#save_msgList').append('<li>' + err_value + '</li>');
                             });
-                            $('.create_btn').text('Save');
+                            $('.save_btn').text('Save');
                         } else {
                             $('#save_msgList').html("");
-                            $('#success_message').addClass('alert alert-success');
-                            $('#success_message').text(response.message);
                             $('#AddModal').find('input').val('');
-                            $('.save_btn').text('Save');
+                            $('.save_btn').html('<i data-lucide="save"></i>{{ __("action.save") }}');
                             $('#AddModal').modal('hide');
-                            // fetchLang();
-                            setTimeout(() => window.location.reload(), 500)
+                            setTimeout(() => window.location.reload(), 500);
                         }
                     },
                 }).error(function(err){
-                    console.log(err)
-                })
+                    console.log(err);
+                });
+            });
 
-            })
-
+            // Edit Language
             $(document).on('click', '.edit_btn', function (e) {
                 e.preventDefault();
                 let model_id = $(this).val();
                 $('#editModal').modal('show');
+
                 $.ajax({
                     type: "GET",
                     url: "/admin/lang/edit-lang/" + model_id,
                     success: function (response) {
-
                         let text = JSON.parse(JSON.stringify(response.model.text));
 
                         if (response.status === 404) {
-                            $('#success_message').addClass('alert alert-success');
-                            $('#success_message').text(response.message);
                             $('#editModal').modal('hide');
                         } else {
                             $('#group_input').val(response.model.group);
@@ -373,17 +478,15 @@
                         }
                     }
                 });
-                $('.btn-close').find('input').val('');
-
             });
 
+            // Update Language
             $(document).on('click', '.update_btn', function(e){
                 e.preventDefault();
 
-                $(this).text('Updating..');
+                $(this).html('<i data-lucide="loader" class="rotating"></i> Updating...');
 
                 let id = $('#model_id').val();
-
                 var data1 = {
                     'group_input': $('#group_input').val(),
                     'key_input': $('#key_input').val(),
@@ -398,31 +501,25 @@
                     data: data1,
                     dataType: "json",
                     success: function (response) {
-                        // console.log(response);
                         if (response.status === 400) {
                             $('#update_msgList').html("");
                             $('#update_msgList').addClass('alert alert-danger');
                             $.each(response.errors, function (key, err_value) {
-                                $('#update_msgList').append('<li>' + err_value +
-                                    '</li>');
+                                $('#update_msgList').append('<li>' + err_value + '</li>');
                             });
-                            $('.update_btn').text('Update');
+                            $('.update_btn').html('<i data-lucide="save"></i>{{ __("action.save_change") }}');
                         } else {
                             $('#update_msgList').html("");
-
-                            $('#success_message').addClass('alert alert-success');
-                            $('#success_message').text(response.message);
                             $('#editModal').find('input').val('');
-                            $('.update_btn').text('Update');
+                            $('.update_btn').html('<i data-lucide="save"></i>{{ __("action.save_change") }}');
                             $('#editModal').modal('hide');
-                            let text = $("#lang_search").val();
-                            // searchLang(text);
-                            setTimeout(() => window.location.reload(), 500)
+                            setTimeout(() => window.location.reload(), 500);
                         }
                     }
                 });
             });
 
+            // Delete Language
             $(document).on('click', '.delete_btn', function () {
                 let model_id = $(this).val();
                 $('#DeleteModal').modal('show');
@@ -432,32 +529,20 @@
             $(document).on('click', '.yes_delete_btn', function (e) {
                 e.preventDefault();
 
-                $(this).text('Deleting..');
+                $(this).html('<i data-lucide="loader" class="rotating"></i> Deleting...');
                 let id = $('#deleteing_id').val();
-
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                });
 
                 $.ajax({
                     type: "DELETE",
                     url: "/admin/lang/delete-lang/" + id,
                     dataType: "json",
                     success: function (response) {
-                        // console.log(response);
                         if (response.status === 404) {
-                            $('#success_message').addClass('alert alert-success');
-                            $('#success_message').text(response.message);
-                            $('.delete_btn').text('Yes Delete');
+                            $('.yes_delete_btn').html('<i data-lucide="trash-2"></i>{{ __("action.yes_delete") }}');
                         } else {
-                            $('#success_message').html("");
-                            $('#success_message').addClass('alert alert-success');
-                            $('#success_message').text(response.message);
-                            $('.delete_btn').text('Yes Delete');
+                            $('.yes_delete_btn').html('<i data-lucide="trash-2"></i>{{ __("action.yes_delete") }}');
                             $('#DeleteModal').modal('hide');
-                            setTimeout(() => window.location.reload(), 500)
+                            setTimeout(() => window.location.reload(), 500);
                         }
                     }
                 });
@@ -465,60 +550,40 @@
 
             $(document).on('click', '.cancel_delete_btn', function (e){
                 $('#DeleteModal').modal('hide');
-            })
-
-            $(document).on('keyup', '#lang_search', function (e) {
-                e.preventDefault();
-                let text = $(this).val();
-                searchLang(text)
             });
 
+            // Auto-fill EN from Key
             const input_c = document.getElementById("key_input_c");
             const duplicateFieldC = document.getElementById("text_en_input_c");
 
-            input_c.addEventListener('keyup',() => {
-                duplicateFieldC.value = capitalizeFirstLetter(input_c.value);
-            });
+            if(input_c && duplicateFieldC) {
+                input_c.addEventListener('keyup',() => {
+                    duplicateFieldC.value = capitalizeFirstLetter(input_c.value);
+                });
+            }
 
             const input = document.getElementById("key_input");
             const duplicateField = document.getElementById("text_en_input");
 
-            input.addEventListener('keyup',() => {
-                duplicateField.value = capitalizeFirstLetter(input.value);
-            });
+            if(input && duplicateField) {
+                input.addEventListener('keyup',() => {
+                    duplicateField.value = capitalizeFirstLetter(input.value);
+                });
+            }
 
             function capitalizeFirstLetter(string) {
                 return string.charAt(0).toUpperCase() + string.slice(1);
             }
-
         });
-
-        $(function () {
-            //Enable check and uncheck all functionality
-            $('.checkbox-toggle').click(function () {
-                var clicks = $(this).data('clicks')
-                if (clicks) {
-                    $(".deleteMessage").hide(200);
-                    //Uncheck all checkboxes
-                    $('.mailbox-messages input[type=\'checkbox\']').prop('checked', false)
-                    $('.checkbox-toggle .far.fa-check-square').removeClass('fa-check-square').addClass('fa-square')
-                } else {
-                    //Check all checkboxes
-                    $(".deleteMessage").show(300);
-                    $('.mailbox-messages input[type=\'checkbox\']').prop('checked', true)
-                    $('.checkbox-toggle .far.fa-square').removeClass('fa-square').addClass('fa-check-square')
-                }
-                $(this).data('clicks', !clicks)
-            })
-
-            $(".checkbox-checked").click(function() {
-                var numberNotChecked = $('input:checkbox:checked').length;
-                if(numberNotChecked > 0) {
-                    $(".deleteMessage").show(300);
-                } else {
-                    $(".deleteMessage").hide(200);
-                }
-            });
-        })
     </script>
+
+    <style>
+        .rotating {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
 @endsection
