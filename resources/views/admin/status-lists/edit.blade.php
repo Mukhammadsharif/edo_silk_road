@@ -1,131 +1,227 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container-fluid">
-        <div class="page-header">
-            <div class="row align-items-end">
-                <div class="col-md-3">
-                    <div class="page-header-title">
-                        <i class="ik ik-user bg-blue"></i>
-                        <div class="d-inline">
-                            <h5>{{ __('menu.status_list') }}</h5>
-                            <span>{{ __('menu.status_list') }}</span>
-                        </div>
+    <link href="{{ asset('css/templates/common-document-styles.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/templates/status-lists/status-lists-modern.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/templates/select2.css') }}">
+
+    <!-- Modern Document Page Container -->
+    <div class="document-page-modern">
+
+        <!-- Modern Page Header -->
+        <div class="page-header-modern">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i data-lucide="square-pen"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>{{ __('action.edit') }} {{ __('menu.status_list') }}</h1>
+                        <p>{{ __('menu.status_list') }} / {{ __('action.edit') }}</p>
                     </div>
                 </div>
-                <div class="col-md-6">
+
+                <div class="header-center">
                     @include('templates.alert')
                 </div>
-                <div class="col-md-3">
-                    <nav class="breadcrumb-container" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('home') }}"><i class="ik ik-home"></i></a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('status-lists.index') }}">{{ __('menu.status_list') }}</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">{{ __('action.edit') }}</li>
-                        </ol>
-                    </nav>
-                </div>
+
+                <!-- Breadcrumb Navigation -->
+                <nav class="breadcrumb-modern" style="margin-top: 1.5rem;">
+                    <a href="{{ route('home') }}" class="breadcrumb-item">
+                        <i data-lucide="home"></i>
+                        <span>{{ __('menu.home') }}</span>
+                    </a>
+                    <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                    <a href="{{ route('status-lists.index') }}" class="breadcrumb-item">
+                        <span>{{ __('menu.status_list') }}</span>
+                    </a>
+                    <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                    <span class="breadcrumb-item active">{{ __('action.edit') }}</span>
+                </nav>
             </div>
         </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>{{ __('action.edit') }}</h3>
-                    </div>
-                    <div class="card-body">
-                        <form method="POST" action="{{ route('status-lists.update', $model->id) }}" class="forms-sample">
-                            @csrf
-                            @method('PUT')
 
-                            <div class="form-group row">
-                                <div class="col-sm-3">
-                                    <label>{{ __('field.title') }}</label>
-                                    <input type="text" name="title" class="form-control" value="{{ $model->title }}">
-                                </div>
-                                <!--end col-->
-                                <div class="col-sm-3">
-                                    <label for="roleNameInput" class="form-label">{{ __('form.lang-id') }}</label>
-                                    <select class="form-control select2" name="lang_id">
-                                        <option value="">{{ __('page.not-selected') }}</option>
-                                        @foreach($languages as $key => $value)
-                                            <option value="{{ $value->id }}" @if($value->id == $model->lang_id) selected @endif>{{ $key+1 }}. {{ __($value->group.'.'.$value->key) }} </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <div class="col-sm-3">
-                                    <label>{{ __('field.type') }}</label>
-                                    <input type="text" name="type" class="form-control" value="{{ $model->type }}">
-                                </div>
-                                <div class="col-sm-3">
-                                    <label>{{ __('field.code') }}</label>
-                                    <input type="number" name="code" class="form-control" value="{{ $model->code }}">
-                                </div>
-                                <div class="col-sm-3">
-                                    <label>{{ __('field.order_number') }}</label>
-                                    <input type="number" name="order_number" class="form-control" value="{{ $model->order_number  }}">
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <div class="col-sm-12">
-                                    <label>{{ __('field.icon_id') }}</label>
-                                    <input type="text" id="searchIconCreate" onkeyup="searchIconsCreate()" placeholder="Search..." class="form-control mb-10">
-                                    <div class="row icon-list-wrap">
-                                        <div class="form-radio">
-                                            @foreach($iconClassList->where('type', 2) as $key => $item)
-                                                <div class="radio radio-inline icon_div_list_create">
-                                                    <label>
-                                                        <input type="radio" name="icon_id" value="{{ $item->id }}" @if($model->icon_id == $item->id) checked @endif>
-                                                        <i class="helper"></i>
-                                                        <div class="icon-list-item">
-                                                            <i data-lucide="{{ $item->name }}"></i><div class="name">{{ $item->name }}</div>
-                                                        </div>
-                                                    </label>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-12">
-                                    <label>{{ __('field.class_id') }}</label>
-                                    <div class="row icon-list-wrap">
-                                        <div class="form-radio">
-                                            @foreach($iconClassList->where('type', 3) as $key => $item)
-                                                <div class="radio radio-inline">
-                                                    <label>
-                                                        <input type="radio" name="class_id" value="{{ $item->id }}" @if($model->class_id == $item->id) checked @endif>
-                                                        <i class="helper"></i>
-                                                        <div class="icon-list-item">
-                                                            <span class="{{ $item->name }}">{{ $item->name }}</span>
-                                                        </div>
-                                                    </label>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!--end col-->
-                            <div class="col-lg-12">
-                                <div class="hstack gap-2 justify-content-end">
-                                    <a href="{{ url('admin/status-lists') }}" class="btn btn-light">
-                                        <i class="ik ik-x"></i> {{ __('action.cancel') }}
-                                    </a>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i data-lucide="save"></i> {{ __('action.save') }}
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
+        <!-- Content Wrapper -->
+        <div class="content-wrapper-modern">
+
+            <!-- Edit Form Card -->
+            <div class="table-card-modern" style="max-width: 1200px; margin: 0 auto;">
+                <div class="filters-header">
+                    <div class="filters-title">
+                        <i data-lucide="square-pen"></i>
+                        <span>{{ __('action.edit') }} {{ __('field.status') }}</span>
                     </div>
                 </div>
+
+                <div style="padding: 2rem;">
+                    <form method="POST" action="{{ route('status-lists.update', $model->id) }}" class="modern-form">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="form-grid">
+                            <!-- Title -->
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="type"></i>
+                                    {{ __('field.title') }}
+                                    <span class="text-red">*</span>
+                                </label>
+                                <input type="text"
+                                       name="title"
+                                       class="form-control-modern"
+                                       placeholder="{{ __('field.title') }}"
+                                       value="{{ $model->title }}"
+                                       required>
+                            </div>
+
+                            <!-- Language -->
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="languages"></i>
+                                    {{ __('form.lang-id') }}
+                                </label>
+                                <select class="form-control-modern select2" name="lang_id">
+                                    <option value="">{{ __('page.not-selected') }}</option>
+                                    @foreach($languages as $key => $value)
+                                        <option value="{{ $value->id }}" @if($value->id == $model->lang_id) selected @endif>
+                                            {{ $key+1 }}. {{ __($value->group.'.'.$value->key) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Type -->
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="tag"></i>
+                                    {{ __('field.type') }}
+                                </label>
+                                <input type="text"
+                                       name="type"
+                                       class="form-control-modern"
+                                       placeholder="{{ __('field.type') }}"
+                                       value="{{ $model->type }}">
+                            </div>
+
+                            <!-- Code -->
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="binary"></i>
+                                    {{ __('field.code') }}
+                                </label>
+                                <input type="number"
+                                       name="code"
+                                       class="form-control-modern"
+                                       placeholder="{{ __('field.code') }}"
+                                       value="{{ $model->code }}">
+                            </div>
+
+                            <!-- Order Number -->
+                            <div class="form-group-modern full-width">
+                                <label>
+                                    <i data-lucide="list-ordered"></i>
+                                    {{ __('field.order_number') }}
+                                </label>
+                                <input type="number"
+                                       name="order_number"
+                                       class="form-control-modern"
+                                       placeholder="{{ __('field.order_number') }}"
+                                       value="{{ $model->order_number }}">
+                            </div>
+                        </div>
+
+                        <!-- Icon Selection -->
+                        <div class="icon-selection-section">
+                            <div class="section-header">
+                                <i data-lucide="sparkles"></i>
+                                <h3>{{ __('field.icon_id') }}</h3>
+                            </div>
+
+                            <input type="text"
+                                   id="searchIconCreate"
+                                   onkeyup="searchIconsCreate()"
+                                   placeholder="Search icons..."
+                                   class="form-control-modern"
+                                   style="margin-bottom: 1.5rem;">
+
+                            <div class="icon-grid-modern">
+                                @foreach($iconClassList->where('type', 2) as $key => $item)
+                                    <label class="icon-option-modern icon_div_list_create">
+                                        <input type="radio"
+                                               name="icon_id"
+                                               value="{{ $item->id }}"
+                                               @if($model->icon_id == $item->id) checked @endif>
+                                        <div class="icon-card">
+                                            <i data-lucide="{{ $item->name }}"></i>
+                                            <span>{{ $item->name }}</span>
+                                        </div>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <!-- Class Selection -->
+                        <div class="icon-selection-section">
+                            <div class="section-header">
+                                <i data-lucide="palette"></i>
+                                <h3>{{ __('field.class_id') }}</h3>
+                            </div>
+
+                            <div class="class-grid-modern">
+                                @foreach($iconClassList->where('type', 3) as $key => $item)
+                                    <label class="class-option-modern">
+                                        <input type="radio"
+                                               name="class_id"
+                                               value="{{ $item->id }}"
+                                               @if($model->class_id == $item->id) checked @endif>
+                                        <div class="class-card">
+                                            <span class="{{ $item->name }}">{{ $item->name }}</span>
+                                        </div>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <a href="{{ route('status-lists.index') }}" class="btn-modern btn-secondary">
+                                <i data-lucide="x"></i>
+                                {{ __('action.cancel') }}
+                            </a>
+                            <button type="submit" class="btn-modern btn-primary">
+                                <i data-lucide="save"></i>
+                                {{ __('action.save') }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
+
         </div>
     </div>
+
+    <script src="{{ asset('/ajax/jquery.min.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            $('.select2').select2({
+                placeholder: "{{ __('action.choose') }}",
+                allowClear: true
+            });
+        });
+
+        function searchIconsCreate() {
+            const input = document.getElementById('searchIconCreate');
+            const filter = input.value.toUpperCase();
+            const iconDivs = document.getElementsByClassName('icon_div_list_create');
+
+            for (let i = 0; i < iconDivs.length; i++) {
+                const iconName = iconDivs[i].querySelector('.icon-card span').textContent;
+                if (iconName.toUpperCase().indexOf(filter) > -1) {
+                    iconDivs[i].style.display = '';
+                } else {
+                    iconDivs[i].style.display = 'none';
+                }
+            }
+        }
+    </script>
 @endsection

@@ -1,255 +1,325 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container-fluid">
-        <div class="page-header">
-            <div class="row align-items-end">
-                <div class="col-md-3">
-                    <div class="page-header-title">
-                        <i class="ik ik-user bg-blue"></i>
-                        <div class="d-inline">
-                            <h5>{{ __('menu.programm_settings') }}</h5>
-                        </div>
+    <link href="{{ asset('css/templates/common-document-styles.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/templates/settings/settings-modern.css') }}" rel="stylesheet">
+
+    <!-- Modern Document Page Container -->
+    <div class="document-page-modern">
+
+        <!-- Modern Page Header -->
+        <div class="page-header-modern">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i data-lucide="settings"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>{{ __('menu.programm_settings') }}</h1>
+                        <p>{{ __('menu.programm_settings') }}</p>
                     </div>
                 </div>
-                <div class="col-md-6">
+
+                <div class="header-center">
                     @include('templates.alert')
                 </div>
-                <div class="col-md-3">
-                    <nav class="breadcrumb-container" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('home') }}"><i class="ik ik-home"></i></a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="#">{{ __('menu.programm_settings') }}</a>
-                            </li>
-                        </ol>
-                    </nav>
-                </div>
+
+                <!-- Breadcrumb Navigation -->
+                <nav class="breadcrumb-modern" style="margin-top: 1.5rem;">
+                    <a href="{{ route('home') }}" class="breadcrumb-item">
+                        <i data-lucide="home"></i>
+                        <span>{{ __('menu.home') }}</span>
+                    </a>
+                    <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                    <span class="breadcrumb-item active">{{ __('menu.programm_settings') }}</span>
+                </nav>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-sm-12">
-                @if(in_array('Super_Admin', $roles))
-                    <div class="card">
-                        <div class="card-body template-demo">
-                            <div class="row">
-                                <div class="col-lg-2 col-md-4 col-6">
-                                    <div class="widget social-widget">
-                                        <div class="widget-body">
-                                            <div class="icon"><i class="ik ik-alert-triangle text-danger"></i></div>
-                                            <div class="content">
-                                                <div class="text">
-                                                    <a href="{{ route('settings.log-file', ['key' => 'log']) }}" class="link-share"
-                                                       target="_blank"
-                                                       onclick="window.open('<?php echo ('/admin/settings-file/log'); ?>',
-                                                           'modal',
-                                                           'width=800,height=900,top=30,left=500');
-                                                           return false;">
-                                                        Log File</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-2 col-md-4 col-6">
-                                    <div class="widget social-widget">
-                                        <div class="widget-body">
-                                            <div class="icon"><i class="ik ik-refresh-ccw text-warning"></i></div>
-                                            <div class="content">
-                                                <div class="text"><a href="{{ route('settings.cache.clear', ['type' => 'route']) }}">Route Clear</a></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-2 col-md-4 col-6">
-                                    <div class="widget social-widget">
-                                        <div class="widget-body">
-                                            <div class="icon"><i class="ik ik-activity text-primary"></i></div>
-                                            <div class="content">
-                                                <div class="text"><a href="{{ route('settings.cache.clear', ['type' => 'config']) }}">Config Cache</a></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-2 col-md-4 col-6">
-                                    <div class="widget social-widget">
-                                        <div class="widget-body">
-                                            <div class="icon"><i class="ik ik-rotate-ccw text-info"></i></div>
-                                            <div class="content">
-                                                <div class="text"><a href="{{ route('settings.cache.clear', ['type' => 'clear']) }}">Clear Cache</a></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-2 col-md-4 col-6">
-                                    <div class="widget social-widget">
-                                        <div class="widget-body">
-                                            <div class="icon"><i class="ik ik-rotate-cw text-navy"></i></div>
-                                            <div class="content">
-                                                <div class="text"><a href="{{ route('settings.cache.clear', ['type' => 'view']) }}">View Cache</a></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-2 col-md-4 col-6">
-                                    <div class="widget social-widget">
-                                        <div class="widget-body">
-                                            <div class="icon"><i class="fab fa-behance text-behance"></i></div>
-                                            <div class="content">
-                                                <div class="text">Test</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+        <!-- Content Wrapper -->
+        <div class="content-wrapper-modern">
 
-
-                                <div class="col-lg-2 col-md-4 col-6">
-                                    <div class="widget social-widget">
-                                        <div class="widget-body">
-                                            <div class="icon"><i class="ik ik-help-circle text-navy"></i></div>
-                                            <div class="content">
-                                                <form action="{{ route('settings.set.demo') }}" method="post">
-                                                    @csrf
-                                                    <div class="col-sm-12 mt-30">
-                                                        <p>
-                                                            <input id="control" type="checkbox" name="is_demo" class="js-switch"
-                                                                   @if($isDemo === true) checked @endif
-                                                            />
-                                                            <label for="control">Demo (ECP)</label>
-                                                        </p>
-
-                                                        <button type="submit" class="btn btn-primary mt-20">
-                                                            <i data-lucide="save"></i>{{ __('action.save') }}
-                                                        </button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="col-md-3">
-                            <div class="d-inline">
-                                <h5><i data-lucide="settings"></i> {{ __('title.images') }}</h5>
-                            </div>
+            @if(in_array('Super_Admin', $roles))
+                <!-- System Management Card -->
+                <div class="table-card-modern">
+                    <div class="filters-header">
+                        <div class="filters-title">
+                            <i data-lucide="server"></i>
+                            <span>{{ __('field.system_management') }}</span>
                         </div>
                     </div>
 
-                    <div class="card-body template-demo">
-                        <div class="row">
-                            <div class="col-md-3 mb-4">
-                                <h6>{{ __('field.background_image') }}</h6>
-                                <div>
-                                    <img style="width: 200px; height: 120px" src="{{ asset($backgroundImage)  }}" alt="background_image">
-                                </div>
+                    <div class="settings-grid-container">
+                        <!-- Log File -->
+                        <a href="{{ route('settings.log-file', ['key' => 'log']) }}"
+                           target="_blank"
+                           onclick="window.open('<?php echo ('/admin/settings-file/log'); ?>', 'modal', 'width=800,height=900,top=30,left=500'); return false;"
+                           class="settings-card-modern danger">
+                            <div class="settings-icon">
+                                <i data-lucide="alert-triangle"></i>
                             </div>
-                            <div class="col-md-3 mb-4">
-                                <h6>{{ __('field.logo') }}</h6>
-                                <div class="logo-centered">
-                                    <img style="width: 100px; height: 100px" src="{{ $logoImage }}" alt="logo">
-                                </div>
+                            <div class="settings-content">
+                                <h4>Log File</h4>
+                                <p>View system logs</p>
                             </div>
-                            <div class="col-md-3 mb-4">
-                                <h6>{{ __('field.favicon') }}</h6>
-                                <div class="logo-centered">
-                                    <img style="width: 100px; height: 100px" src="{{ $favicon }}" alt="logo">
-                                </div>
+                            <div class="settings-arrow">
+                                <i data-lucide="external-link"></i>
                             </div>
-                            <div class="col-md-3 mb-4">
-                                <h6>{{ __('field.out_doc_banner') }}</h6>
-                                <div class="logo-centered">
-                                    <img style="width: 100%; height: 80px" src="{{ $sentDocImage }}" alt="sent_doc_image">
-                                </div>
-                            </div>
-                        </div>
+                        </a>
 
-                        <div class="row">
-                            <div class="col-md-12">
-                                <form action="{{ route('images.upload') }}" method="POST" enctype="multipart/form-data">
+                        <!-- Route Clear -->
+                        <a href="{{ route('settings.cache.clear', ['type' => 'route']) }}" class="settings-card-modern warning">
+                            <div class="settings-icon">
+                                <i data-lucide="refresh-ccw"></i>
+                            </div>
+                            <div class="settings-content">
+                                <h4>Route Clear</h4>
+                                <p>Clear route cache</p>
+                            </div>
+                            <div class="settings-arrow">
+                                <i data-lucide="chevron-right"></i>
+                            </div>
+                        </a>
+
+                        <!-- Config Cache -->
+                        <a href="{{ route('settings.cache.clear', ['type' => 'config']) }}" class="settings-card-modern primary">
+                            <div class="settings-icon">
+                                <i data-lucide="activity"></i>
+                            </div>
+                            <div class="settings-content">
+                                <h4>Config Cache</h4>
+                                <p>Clear config cache</p>
+                            </div>
+                            <div class="settings-arrow">
+                                <i data-lucide="chevron-right"></i>
+                            </div>
+                        </a>
+
+                        <!-- Clear Cache -->
+                        <a href="{{ route('settings.cache.clear', ['type' => 'clear']) }}" class="settings-card-modern info">
+                            <div class="settings-icon">
+                                <i data-lucide="rotate-ccw"></i>
+                            </div>
+                            <div class="settings-content">
+                                <h4>Clear Cache</h4>
+                                <p>Clear all cache</p>
+                            </div>
+                            <div class="settings-arrow">
+                                <i data-lucide="chevron-right"></i>
+                            </div>
+                        </a>
+
+                        <!-- View Cache -->
+                        <a href="{{ route('settings.cache.clear', ['type' => 'view']) }}" class="settings-card-modern navy">
+                            <div class="settings-icon">
+                                <i data-lucide="rotate-cw"></i>
+                            </div>
+                            <div class="settings-content">
+                                <h4>View Cache</h4>
+                                <p>Clear view cache</p>
+                            </div>
+                            <div class="settings-arrow">
+                                <i data-lucide="chevron-right"></i>
+                            </div>
+                        </a>
+
+                        <!-- Demo Mode Setting -->
+                        <div class="settings-card-modern demo">
+                            <div class="settings-icon">
+                                <i data-lucide="help-circle"></i>
+                            </div>
+                            <div class="settings-content">
+                                <h4>Demo Mode (ECP)</h4>
+                                <form action="{{ route('settings.set.demo') }}" method="post" class="demo-form">
                                     @csrf
-                                    <div class="row">
-                                        <div class="mb-3 col-md-3">
-                                            <label for="background_image" class="form-label">{{ __('field.background_image') }}</label>
-                                            <input type="file" class="form-control" id="background_image" name="background_image" accept="image/*">
-                                        </div>
-                                        <div class="mb-3 col-md-3">
-                                            <label for="logo_image" class="form-label">{{ __('field.logo') }}</label>
-                                            <input type="file" class="form-control" id="logo_image" name="logo_image" accept="image/*">
-                                        </div>
-                                        <div class="mb-3 col-md-3">
-                                            <label for="favicon" class="form-label">{{ __('field.favicon') }}</label>
-                                            <input type="file" class="form-control" id="favicon" name="favicon" accept="image/*">
-                                        </div>
-                                        <div class="mb-3 col-md-3">
-                                            <label for="sent_doc_image" class="form-label">{{ __('field.out_doc_banner') }}</label>
-                                            <input type="file" class="form-control" id="sent_doc_image" name="sent_doc_image" accept="image/*">
-                                        </div>
+                                    <div class="demo-toggle">
+                                        <input id="control"
+                                               type="checkbox"
+                                               name="is_demo"
+                                               class="js-switch"
+                                               @if($isDemo === true) checked @endif>
+                                        <label for="control">Enable Demo Mode</label>
                                     </div>
-
-                                    <div class="d-flex flex-row justify-content-end">
-                                        <button type="submit" class="btn btn-primary">
-                                            <i data-lucide="save"></i>{{ __('action.save') }}
-                                        </button>
-                                    </div>
+                                    <button type="submit" class="btn-modern btn-primary" style="width: auto; margin-top: 1rem;">
+                                        <i data-lucide="save"></i>
+                                        {{ __('action.save') }}
+                                    </button>
                                 </form>
                             </div>
                         </div>
                     </div>
                 </div>
+            @endif
 
+            <!-- Images Settings Card -->
+            <div class="table-card-modern">
+                <div class="filters-header">
+                    <div class="filters-title">
+                        <i data-lucide="image"></i>
+                        <span>{{ __('title.images') }}</span>
+                    </div>
+                </div>
 
-                <div class="card">
-                    <div class="card-header">
-                        <div class="col-md-3">
-                            <div class="d-inline">
-                                <h5><i data-lucide="settings"></i> {{ __('menu.config') }} (.ENV)</h5>
+                <div style="padding: 2rem;">
+                    <!-- Current Images Preview -->
+                    <div class="images-preview-grid">
+                        <div class="image-preview-card">
+                            <h6>{{ __('field.background_image') }}</h6>
+                            <div class="image-wrapper">
+                                <img src="{{ asset($backgroundImage) }}" alt="background_image">
+                            </div>
+                        </div>
+
+                        <div class="image-preview-card">
+                            <h6>{{ __('field.logo') }}</h6>
+                            <div class="image-wrapper logo">
+                                <img src="{{ $logoImage }}" alt="logo">
+                            </div>
+                        </div>
+
+                        <div class="image-preview-card">
+                            <h6>{{ __('field.favicon') }}</h6>
+                            <div class="image-wrapper logo">
+                                <img src="{{ $favicon }}" alt="favicon">
+                            </div>
+                        </div>
+
+                        <div class="image-preview-card">
+                            <h6>{{ __('field.out_doc_banner') }}</h6>
+                            <div class="image-wrapper banner">
+                                <img src="{{ $sentDocImage }}" alt="sent_doc_image">
                             </div>
                         </div>
                     </div>
 
-                    <div class="card-body template-demo">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <form action="{{ route('settings.set.env') }}" method="POST" enctype="multipart/form-data">
-                                    @csrf
-                                    <div class="row">
-                                        <div class="mb-3 col-md-4">
-                                            <label for="bot_token" class="form-label">TELEGRAM_BOT_TOKEN</label>
-                                            <input type="text" class="form-control" id="bot_token" name="bot_token" value="{{ $telegramBotToken??'' }}">
-                                        </div>
-                                        <div class="mb-3 col-md-4">
-                                            <label for="webhook_url" class="form-label">WEBHOOK_URL</label>
-                                            <input type="text" class="form-control" id="webhook_url" name="webhook_url" value="{{ $telegramWebHookUrl??'' }}">
-                                        </div>
-                                        <div class="mb-3 col-md-4">
-                                            <label for="app_url" class="form-label">APP_URL</label>
-                                            <input type="text" class="form-control" id="app_url" name="app_url" value="{{ $appUrl??'' }}">
-                                        </div>
-                                    </div>
+                    <!-- Upload Form -->
+                    <form action="{{ route('images.upload') }}" method="POST" enctype="multipart/form-data" class="modern-form" style="margin-top: 2rem;">
+                        @csrf
+                        <div class="form-grid">
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="image"></i>
+                                    {{ __('field.background_image') }}
+                                </label>
+                                <input type="file"
+                                       class="form-control-modern file-input"
+                                       id="background_image"
+                                       name="background_image"
+                                       accept="image/*">
+                            </div>
 
-                                    <div class="d-flex flex-row justify-content-end">
-                                        <button type="submit" class="btn btn-primary">
-                                            <i data-lucide="save"></i>{{ __('action.save') }}
-                                        </button>
-                                    </div>
-                                </form>
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="image"></i>
+                                    {{ __('field.logo') }}
+                                </label>
+                                <input type="file"
+                                       class="form-control-modern file-input"
+                                       id="logo_image"
+                                       name="logo_image"
+                                       accept="image/*">
+                            </div>
+
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="image"></i>
+                                    {{ __('field.favicon') }}
+                                </label>
+                                <input type="file"
+                                       class="form-control-modern file-input"
+                                       id="favicon"
+                                       name="favicon"
+                                       accept="image/*">
+                            </div>
+
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="image"></i>
+                                    {{ __('field.out_doc_banner') }}
+                                </label>
+                                <input type="file"
+                                       class="form-control-modern file-input"
+                                       id="sent_doc_image"
+                                       name="sent_doc_image"
+                                       accept="image/*">
                             </div>
                         </div>
-                    </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn-modern btn-primary">
+                                <i data-lucide="save"></i>
+                                {{ __('action.save') }}
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
+
+            <!-- Environment Configuration Card -->
+            <div class="table-card-modern">
+                <div class="filters-header">
+                    <div class="filters-title">
+                        <i data-lucide="terminal"></i>
+                        <span>{{ __('menu.config') }} (.ENV)</span>
+                    </div>
+                </div>
+
+                <div style="padding: 2rem;">
+                    <form action="{{ route('settings.set.env') }}" method="POST" class="modern-form">
+                        @csrf
+                        <div class="form-grid">
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="message-circle"></i>
+                                    TELEGRAM_BOT_TOKEN
+                                </label>
+                                <input type="text"
+                                       class="form-control-modern"
+                                       id="bot_token"
+                                       name="bot_token"
+                                       value="{{ $telegramBotToken ?? '' }}"
+                                       placeholder="Enter telegram bot token">
+                            </div>
+
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="link"></i>
+                                    WEBHOOK_URL
+                                </label>
+                                <input type="text"
+                                       class="form-control-modern"
+                                       id="webhook_url"
+                                       name="webhook_url"
+                                       value="{{ $telegramWebHookUrl ?? '' }}"
+                                       placeholder="Enter webhook URL">
+                            </div>
+
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="globe"></i>
+                                    APP_URL
+                                </label>
+                                <input type="text"
+                                       class="form-control-modern"
+                                       id="app_url"
+                                       name="app_url"
+                                       value="{{ $appUrl ?? '' }}"
+                                       placeholder="Enter application URL">
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn-modern btn-primary">
+                                <i data-lucide="save"></i>
+                                {{ __('action.save') }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
         </div>
     </div>
+
+    <script src="{{ asset('/ajax/jquery.min.js') }}"></script>
 @endsection
-
-<script src="{{ asset('/ajax/jquery.min.js') }}"></script>
-
