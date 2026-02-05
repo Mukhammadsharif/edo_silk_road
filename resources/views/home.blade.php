@@ -39,117 +39,114 @@
         </div>
 
 
-        <div class="row g-4 mb-4">
+    <div class="row g-4 mb-4">
 
 
-            <div class="col-xl-3 col-lg-6 col-md-6">
-                <div class="stat-card gradient-red">
-                    <div class="card-icon">
-                        <i data-lucide="file-check"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3>{{ $docs_count['doc_conf_menu_id'] ?? 0 }}</h3>
-                        <p>{{ __('menu.for_resolution') }}</p>
-                    </div>
-                    <div class="stat-overlay"></div>
-                    <div class="stat-overlay2"></div>
-                    <div class="access">
-                        <a href="{{ route('documents.for-confirm.index') }}"><i data-lucide="arrow-right" class="text-white"></i></a>
-                    </div>
+        <div class="col-xl-3 col-lg-6 col-md-6">
+            <div class="stat-card gradient-red">
+                <div class="card-icon">
+                    <i data-lucide="file-check"></i>
                 </div>
-            </div>
-
-
-            <div class="col-xl-3 col-lg-6 col-md-6">
-                <div class="stat-card gradient-orange">
-                    <div class="card-icon">
-                        <i data-lucide="pen-tool"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3>{{ $docs_count['doc_sign_menu_id'] ?? 0 }}</h3>
-                        <p>{{ __('menu.for_sign') }}</p>
-                    </div>
-                    <div class="stat-overlay"></div>
-                    <div class="stat-overlay2"></div>
-                    <div class="access">
-                        <a href="{{ route('documents.for-sign.index') }}"><i data-lucide="arrow-right" class="text-white"></i></a>
-                    </div>
+                <div class="card-content">
+                    <h3>{{ $docs_count['doc_conf_menu_id'] ?? 0 }}</h3>
+                    <p>Ko'rib chiqish uchun</p>
                 </div>
+                <div class="stat-overlay"></div>
+                <div class="stat-overlay2"></div>
+                <div class="access"><i data-lucide="arrow-right"></i></div>
             </div>
-
-
-            <div class="col-xl-3 col-lg-6 col-md-6">
-                <div class="stat-card gradient-blue">
-                    <div class="card-icon">
-                        <i data-lucide="users"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3>{{ $docs_count['doc_approve_menu_id'] ?? 0 }}</h3>
-                        <p>{{ __('menu.for_coillaborate') }}</p>
-                    </div>
-                    <div class="stat-overlay"></div>
-                    <div class="stat-overlay2"></div>
-                    <div class="access">
-                        <a href="{{ route('documents.for-approval.index') }}"><i data-lucide="arrow-right" class="text-white"></i></a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 4 -->
-            <div class="col-xl-3 col-lg-6 col-md-6">
-                <div class="stat-card gradient-green">
-                    <div class="card-icon">
-                        <i data-lucide="folder"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3>{{ $docs_count['my_docs_menu_id'] ?? 0 }}</h3>
-                        <p>{{ __('menu.my_docs') }}</p>
-                    </div>
-                    <div class="stat-overlay"></div>
-                    <div class="stat-overlay2"></div>
-                    <div class="access">
-                        <a href="{{ route('office.work-docs') }}"><i data-lucide="arrow-right" class="text-white"></i></a>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
 
-        <div class="row g-4">
-            <div class="col-xl-8">
-                <div class="glass-card p-4">
-                    <div class="custom-tabs">
-                        <div class="custom-tabs__header">
-                            <button class="custom-tab active" data-tab="tab-1">
-                                <i data-lucide="file-input" style="width: 18px"></i>
-                                {{ __('title.work_documents') }}
-                            </button>
-                            <button class="custom-tab" data-tab="tab-2">
-
-                                <i data-lucide="message-circle-more" style="width: 18px"></i>
-                                {{ __('title.outgoing') }}
-                            </button>
-                        </div>
-
-                        <div class="custom-tabs__body">
-                            <div class="custom-tab-content active" id="tab-1">
-                                <p>{{ __('title.work_documents') }}</p>
-                            </div>
-
-                            <div class="custom-tab-content" id="tab-2">
-                                <p>{{ __('title.outgoing') }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-
+        <div class="col-xl-3 col-lg-6 col-md-6">
+            <div class="stat-card gradient-orange">
+                <div class="card-icon">
+                    <i data-lucide="pen-tool"></i>
                 </div>
-
+                <div class="card-content">
+                    <h3>{{ $docs_count['doc_sign_menu_id'] ?? 0 }}</h3>
+                    <p>Imzolash uchun</p>
+                </div>
+                <div class="stat-overlay"></div>
+                <div class="stat-overlay2"></div>
+                <div class="access"><i data-lucide="arrow-right"></i></div>
             </div>
-
         </div>
+
+
+        <div class="col-xl-3 col-lg-6 col-md-6">
+            <div class="stat-card gradient-blue">
+                <div class="card-icon">
+                    <i data-lucide="users"></i>
+                </div>
+                <div class="card-content">
+                    <h3>{{ $docs_count['doc_approve_menu_id'] ?? 0 }}</h3>
+                    <p>Hamkorlik uchun</p>
+                </div>
+                <div class="stat-overlay"></div>
+                <div class="stat-overlay2"></div>
+                <div class="access"><i data-lucide="arrow-right"></i></div>
+            </div>
+        </div>
+
+        <!-- 4 -->
+        <div class="col-xl-3 col-lg-6 col-md-6">
+            <div class="stat-card gradient-green">
+                <div class="card-icon">
+                    <i data-lucide="folder"></i>
+                </div>
+                <div class="card-content">
+                    <h3>{{ $docs_count['my_docs_menu_id'] ?? 0 }}</h3>
+                    <p>Mening hujjatlarim</p>
+                </div>
+                <div class="stat-overlay"></div>
+                <div class="stat-overlay2"></div>
+                <div class="access"><i data-lucide="arrow-right"></i></div>
+            </div>
+        </div>
+
     </div>
+
+ <div class="pending">
+    
+    <div class="subscription-card">
+        <button class="card-close" onclick="closeSubscriptionCard()">
+    <i data-lucide="x"></i>
+</button>
+        <div class="icon-wrap">⏳</div>
+
+        <h1>Obuna so‘rovingiz qabul qilindi!</h1>
+
+        <div class="status">
+            Administrator tasdiqlashini kutmoqdamiz
+        </div>
+
+        <p class="pending-text">
+            Tez orada obunangiz faollashadi (odatda 1–2 ish kuni ichida).
+            Sabr qilganingiz uchun rahmat!
+        </p>
+
+        <div class="checklist">
+            <div class="check-item done">Ro‘yxatdan o‘tish</div>
+            <div class="check-item done">Tarif tanlash</div>
+            <div class="check-item pending-item">
+    <span class="spinner"></span>
+    Admin tasdiqlashi
+</div>
+            <div class="check-item">Dashboardga kirish va boshlash</div>
+        </div>
+
+       <div class="actions">
+    <button class="sub-btn sub-btn-outline">So‘rov tafsilotlari</button>
+    <button class="sub-btn sub-btn-primary">Support bilan bog‘lanish</button>
+</div>
+    </div>
+
+    
+</div>
+
+
+</div>
 
     <script>
         lucide.createIcons();
@@ -226,11 +223,11 @@
         }
 
         renderDonutChart();
-    </script>
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const tabs = document.querySelectorAll(".custom-tab");
-            const contents = document.querySelectorAll(".custom-tab-content");
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+    const tabs = document.querySelectorAll(".custom-tab");
+    const contents = document.querySelectorAll(".custom-tab-content");
 
             tabs.forEach(tab => {
                 tab.addEventListener("click", () => {
@@ -242,11 +239,22 @@
                     tab.classList.add("active");
                     document.getElementById(target).classList.add("active");
 
-                    if (window.lucide) lucide.createIcons();
-                });
-            });
+            if (window.lucide) lucide.createIcons();
         });
-    </script>
+    });
+});
+
+function closeSubscriptionCard() {
+    const card = document.querySelector('.subscription-card');
+    if (card) {
+        card.style.opacity = "0";
+        card.style.transform = "translateY(-10px)";
+        setTimeout(() => {
+            card.style.display = "none";
+        }, 200);
+    }
+}
+</script>
 
 @endsection
 
@@ -372,9 +380,19 @@
         opacity: 0.28;
         background: var(--overlay-color);
         pointer-events: none;
+    .stat-overlay2 {
+        position: absolute;
+        width: 160px;
+        height: 160px;
+        transform: rotate(45deg) translate(0, 0);
+        border-radius: 16px;
+        opacity: 0.28;
+        background: var(--overlay-color);
+        pointer-events: none;
 
-        transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
-        opacity 0.4s ease;
+        transition:
+            transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+            opacity 0.4s ease;
     }
 
     .stat-card:hover {
@@ -544,6 +562,7 @@
     }
 
 
+
     .col-xl-8 {
         min-width: 100% !important;
     }
@@ -562,7 +581,25 @@
         padding: 1rem 1.4rem 2rem;
         color: #fff;
     }
+    .stat-card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 16px;
+        padding: 1rem 1.4rem 2rem;
+        color: #fff;
+    }
 
+    .stat-overlay,
+    .stat-overlay2 {
+        position: absolute;
+        width: 160px;
+        height: 160px;
+        transform: rotate(45deg);
+        border-radius: 16px;
+        opacity: 0.28;
+        background: var(--overlay-color);
+        pointer-events: none;
+    }
     .stat-overlay,
     .stat-overlay2 {
         position: absolute;
@@ -594,7 +631,15 @@
         top: -50px;
         right: -40px;
     }
+    .stat-overlay {
+        top: -50px;
+        right: -40px;
+    }
 
+    .stat-overlay2 {
+        top: 20px;
+        right: -60px;
+    }
     .stat-overlay2 {
         top: 20px;
         right: -60px;
@@ -613,8 +658,16 @@
         background: linear-gradient(180deg, #A53FB6 0%, #B83F91 100%);
         --overlay-color: #d07cd8;
     }
+    .gradient-red {
+        background: linear-gradient(180deg, #A53FB6 0%, #B83F91 100%);
+        --overlay-color: #d07cd8;
+    }
 
 
+    .gradient-orange {
+        background: linear-gradient(180deg, #FC804A 0%, #F99B52 100%);
+        --overlay-color: #ffd1a3;
+    }
     .gradient-orange {
         background: linear-gradient(180deg, #FC804A 0%, #F99B52 100%);
         --overlay-color: #ffd1a3;
@@ -633,8 +686,16 @@
         background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
         --overlay-color: #9cc6ff;
     }
+    .gradient-blue {
+        background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+        --overlay-color: #9cc6ff;
+    }
 
 
+    .gradient-green {
+        background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+        --overlay-color: #9ff0c0;
+    }
     .gradient-green {
         background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
         --overlay-color: #9ff0c0;
@@ -651,7 +712,16 @@
     .custom-tabs {
         max-width: 34%;
     }
+    .custom-tabs {
+        max-width: 34%;
+    }
 
+    .custom-tabs__header {
+        display: flex;
+        background: rgba(121, 77, 253, 0.1);
+        border-radius: 12px;
+        overflow: hidden;
+    }
     .custom-tabs__header {
         display: flex;
         background: rgba(121, 77, 253, 0.1);
@@ -695,7 +765,27 @@
         gap: 6px;
         transition: all 0.35s ease;
     }
+    .custom-tab {
+        flex: 1;
+        padding: 12px 14px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 500;
+        color: #666;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: all 0.35s ease;
+    }
 
+    .custom-tab.active {
+        background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+        color: #fff;
+        box-shadow: 0 4px 15px rgba(121, 77, 253, 0.4);
+    }
     .custom-tab.active {
         background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
         color: #fff;
@@ -717,7 +807,15 @@
         margin-top: 35px;
         min-height: 200px;
     }
+    .custom-tabs__body {
+        position: relative;
+        margin-top: 35px;
+        min-height: 200px;
+    }
 
+    .custom-tab-content {
+        display: none;
+    }
     .custom-tab-content {
         display: none;
     }
@@ -728,5 +826,309 @@
     .custom-tab-content.active {
         display: block;
     }
+
+    .pending {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.subscription-card {
+    background: rgba(255,255,255,0.96);
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(124,58,237,0.18);
+    padding: 3rem 2.5rem;
+    max-width: 580px;
+    width: 100%;
+    text-align: center;
+    border: 1px solid rgba(124,58,237,0.12);
+}
+
+.icon-wrap {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 1.5rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
+    display: grid;
+    place-items: center;
+    font-size: 3rem;
+    color: white;
+    box-shadow: 0 16px 40px rgba(124,58,237,0.3);
+    animation: gentlePulse 3s ease-in-out infinite;
+}
+
+@keyframes gentlePulse {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+}
+
+.subscription-card h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.6rem 1.4rem;
+    background: rgba(124,58,237,0.1);
+    color: #7c3aed;
+    border-radius: 999px;
+    font-weight: 600;
+    margin-bottom: 1.8rem;
+}
+
+.pending-text {
+    color: #64748b;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.checklist {
+    text-align: left;
+    margin: 2rem 0;
+    display: grid;
+    gap: 1rem;
+}
+
+.check-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.05rem;
+}
+
+.check-item.done::before {
+    content: "✓";
+    color: #10b981;
+    font-weight: bold;
+}
+
+
+
+.actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 0.9rem 1.8rem;
+    border-radius: 999px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s;
+}
+
+.btn-primary {
+    background: #7c3aed;
+    color: white;
+    border: none;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid #a78bfa;
+    color: #7c3aed;
+}
+
+.pending {
+    display: flex;
+    justify-content: flex-start;  
+    margin-top: 30px;
+}
+
+.subscription-card {
+    background: rgba(255,255,255,0.96);
+    border-radius: 16px;
+    box-shadow: 0 12px 30px rgba(124,58,237,0.12);
+    padding: 1.8rem 1.6rem;
+    max-width: 420px;   
+    width: 100%;
+    text-align: left;  
+    border: 1px solid rgba(124,58,237,0.1);
+}
+
+
+.icon-wrap {
+    width: 60px;
+    height: 60px;
+    margin: 0 0 1rem 0; 
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
+    display: grid;
+    place-items: center;
+    font-size: 1.8rem;
+    color: white;
+    box-shadow: 0 8px 20px rgba(124,58,237,0.25);
+}
+
+.subscription-card h1 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+}
+
+.status {
+    display: inline-flex;
+    padding: 0.35rem 0.9rem;
+    background: rgba(124,58,237,0.1);
+    color: #7c3aed;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+
+.pending-text {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 1.2rem;
+    line-height: 1.5;
+}
+
+
+.checklist {
+    margin: 1.2rem 0;
+    display: grid;
+    gap: 0.6rem;
+}
+
+.check-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.9rem;
+}
+
+.check-item.done::before {
+    content: "✓";
+    color: #10b981;
+    font-weight: bold;
+}
+
+
+
+.actions {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-primary {
+    background: #7c3aed;
+    color: white;
+    border: none;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px dashed #a78bfa;
+    color: #7c3aed;
+}
+
+.sub-btn {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.sub-btn-primary {
+    background: #7c3aed;
+    color: #fff;
+}
+
+.sub-btn-primary:hover {
+    background: #6d28d9;
+    transform: translateY(-1px);
+}
+
+.sub-btn-outline {
+    background: transparent;
+    border: 2px dashed #a78bfa;
+    color: #7c3aed;
+}
+
+.sub-btn-outline:hover {
+    background: rgba(124,58,237,0.08);
+}
+
+.check-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.check-item.done::before {
+    content: "✓";
+    color: #10b981;
+    font-weight: bold;
+}
+
+.spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(124,58,237,0.2);
+    border-top: 2px solid #7c3aed;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+.subscription-card {
+    position: relative; 
+}
+
+.card-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    transition: all 0.2s ease;
+}
+
+.card-close:hover {
+    background: rgba(124,58,237,0.08);
+    color: #7c3aed;
+}
+
+.card-close i {
+    width: 16px;
+    height: 16px;
+}
 
 </style>
