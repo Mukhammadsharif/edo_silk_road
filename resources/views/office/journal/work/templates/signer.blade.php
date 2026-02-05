@@ -1,5 +1,5 @@
 @if($signer)
-    <div class="signature-section-modern">
+    <div class="">
         <table class="signature-table">
             <tr>
                 <td class="position-cell">

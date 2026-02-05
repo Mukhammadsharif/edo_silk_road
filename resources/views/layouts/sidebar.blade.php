@@ -1,5 +1,6 @@
 @php
-    use App\Models\Admin\OrganizationUnits;use App\Models\Admin\RequestForOrgs;
+    use App\Models\Admin\OrganizationUnits;
+    use App\Models\Admin\RequestForOrgs;
     use Illuminate\Support\Facades\Auth;
 @endphp
 
@@ -34,21 +35,21 @@
                 <div class="submenu">
                     <div class="submenu-item">
                         <a href="{{ url('/office/document/create/incoming') }}">
-                              <img src="{{ asset('images/leftdown.svg') }}"  alt="" style="opacity:0.4" >
+                            <img src="{{ asset('images/leftdown.svg') }}"  alt="" style="opacity:0.4" >
                             <i data-lucide="download" style="width: 18px; height: 18px;"></i>
                             <span>{{ __('document.incoming_message') }}</span>
                         </a>
                     </div>
                     <div class="submenu-item">
                         <a href="{{ url('/office/document/create/outgoing') }}">
-                                                       <img src="{{ asset('images/leftdown.svg') }}"  alt="" style="opacity:0.4">
+                            <img src="{{ asset('images/leftdown.svg') }}"  alt="" style="opacity:0.4">
                             <i data-lucide="upload" style="width: 18px; height: 18px;"></i>
                             <span>{{ __('document.outgoing_message') }}</span>
                         </a>
                     </div>
                     <div class="submenu-item">
                         <a href="{{ url('/office/document/create/internal') }}">
-                                                         <img src="{{ asset('images/leftdown.svg') }}"  alt="" style="opacity:0.4">
+                            <img src="{{ asset('images/leftdown.svg') }}"  alt="" style="opacity:0.4">
                             <i data-lucide="file-edit" style="width: 18px; height: 18px;"></i>
                             <span>{{ __('document.internal_docs') }}</span>
                         </a>
@@ -90,7 +91,7 @@
                                     <div class="submenu-item">
                                         <a href="{{ $child->menuList->url_path }}"
                                            class="{{ $childIsActive ? 'active-link' : '' }}">
-                                             <img src="{{ asset('images/leftdown.svg') }}"  alt="" style="opacity:0.4">
+                                            <img src="{{ asset('images/leftdown.svg') }}"  alt="" style="opacity:0.4">
                                             <i data-lucide="{{ $child->menuList->iconClass ? $child->menuList->iconClass->name : 'circle' }}" style="width: 18px; height: 18px;"></i>
                                             <span>{{ \App\Models\Admin\MenuList::lang($child->menuList->id) }}</span>
                                             @if($childCount > 0)
@@ -141,7 +142,7 @@
                                         <div class="submenu-item tree-item">
                                             <a href="{{ route('prt-secretary', $item3->doc_hash) }}"
                                                class="{{ str_contains(url()->current(), $item3->doc_hash) ? 'active-link' : '' }}">
-                                            <img src="{{ asset('images/leftdown.svg') }}"  alt="" style="opacity:0.4">
+                                                <img src="{{ asset('images/leftdown.svg') }}"  alt="" style="opacity:0.4">
                                                 <i data-lucide="file-text" style="width: 18px; height: 18px;"></i>
                                                 <span>{{ $item3->lang($item3->id) }}</span>
                                             </a>
@@ -267,10 +268,10 @@
 
         <div class="theme-tabs">
             <div class="theme-tab active" data-theme="light">
-                <i data-lucide="sun" style="width: 20px; height: 20px;"></i>
+                <i class="dark" data-lucide="sun" style="width: 20px; height: 20px;"></i>
             </div>
             <div class="theme-tab" data-theme="dark">
-                <i data-lucide="moon" style="width: 20px; height: 20px;"></i>
+                <i class="light" data-lucide="moon" style="width: 20px; height: 20px;"></i>
             </div>
         </div>
     </nav>
@@ -498,6 +499,65 @@
         gap: 14px;
     }
 
+    #sidebar.collapsed .menu-header,
+    #sidebar.collapsed .menu-header a,
+    #sidebar.collapsed .submenu-item a,
+    #sidebar.collapsed .logout a,
+    #sidebar.collapsed .theme-tabs {
+        justify-content: center !important;
+        text-align: center !important;
+    }
+
+    #sidebar.collapsed .main-gap,
+    #sidebar.collapsed .menu-header > div[style*="flex"],
+    #sidebar.collapsed .submenu-item a,
+    #sidebar.collapsed .menu-header i:first-child,
+    #sidebar.collapsed .submenu-item a i {
+        justify-content: center !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+    }
+
+    #sidebar.collapsed i[data-lucide] {
+        margin: 0 !important;
+    }
+
+    #sidebar.collapsed i[data-lucide] {
+        width: 26px !important;
+        height: 26px !important;
+    }
+
+    #sidebar.collapsed .menu-text,
+    #sidebar.collapsed .chevron,
+    #sidebar.collapsed .badge-count,
+    #sidebar.collapsed span:not(.icon) {
+        display: none !important;
+    }
+
+#sidebar.collapsed .theme-tabs {
+    flex-direction: column-reverse !important; 
+    transform: rotate(180deg) !important;    
+    gap: 8px !important;
+    margin: 20px auto !important;             
+    width: fit-content !important;
+    padding:10px !important;
+}
+
+#sidebar.collapsed .theme-tab {
+    transform: rotate(180deg) !important;      
+}
+
+
+#sidebar.collapsed i svg,
+#sidebar.collapsed .lucide svg {
+    width: 35px !important;
+    height: 35px !important;
+}
+
+#sidebar.collapsed .theme-tab {
+    width: 34px;
+    transform: rotate(180deg) !important;
+}
 </style>
 
 <script>

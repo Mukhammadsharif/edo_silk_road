@@ -19,7 +19,7 @@
         </div>
 
         <!-- Signature Section -->
-        <div class="signature-section-modern">
+        <div class="">
             <div class="signature-row">
                 <div class="signature-position">
                     <span class="position-label">Lavozim:</span>
