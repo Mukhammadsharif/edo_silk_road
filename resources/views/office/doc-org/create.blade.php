@@ -106,7 +106,7 @@
                             </div>
                         @endif
 
-                        <div class="form-grid">
+                        <div class="form-grid" style="width: 30vw;">
                             <!-- Name UZ -->
                             <div class="form-group-modern full-width">
                                 <label>
