@@ -436,7 +436,6 @@
 .form-group-modern textarea,
 .form-group-modern select {
     width: 100%;
-    padding: 0.75rem 1rem;
     border: 2px solid #e2e8f0;
     border-radius: 10px;
     font-size: 14px;
