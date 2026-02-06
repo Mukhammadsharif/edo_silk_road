@@ -35,21 +35,21 @@
                 <div class="submenu">
                     <div class="submenu-item">
                         <a href="{{ url('/office/document/create/incoming') }}">
-                            <img src="{{ asset('images/leftdown.svg') }}"  alt="" style="opacity:0.4" >
+                            <img src="{{ asset('images/leftdown.svg') }}" alt="" style="opacity:0.4">
                             <i data-lucide="download" style="width: 18px; height: 18px;"></i>
                             <span>{{ __('document.incoming_message') }}</span>
                         </a>
                     </div>
                     <div class="submenu-item">
                         <a href="{{ url('/office/document/create/outgoing') }}">
-                            <img src="{{ asset('images/leftdown.svg') }}"  alt="" style="opacity:0.4">
+                            <img src="{{ asset('images/leftdown.svg') }}" alt="" style="opacity:0.4">
                             <i data-lucide="upload" style="width: 18px; height: 18px;"></i>
                             <span>{{ __('document.outgoing_message') }}</span>
                         </a>
                     </div>
                     <div class="submenu-item">
                         <a href="{{ url('/office/document/create/internal') }}">
-                            <img src="{{ asset('images/leftdown.svg') }}"  alt="" style="opacity:0.4">
+                            <img src="{{ asset('images/leftdown.svg') }}" alt="" style="opacity:0.4">
                             <i data-lucide="file-edit" style="width: 18px; height: 18px;"></i>
                             <span>{{ __('document.internal_docs') }}</span>
                         </a>
@@ -91,8 +91,9 @@
                                     <div class="submenu-item">
                                         <a href="{{ $child->menuList->url_path }}"
                                            class="{{ $childIsActive ? 'active-link' : '' }}">
-                                            <img src="{{ asset('images/leftdown.svg') }}"  alt="" style="opacity:0.4">
-                                            <i data-lucide="{{ $child->menuList->iconClass ? $child->menuList->iconClass->name : 'circle' }}" style="width: 18px; height: 18px;"></i>
+                                            <img src="{{ asset('images/leftdown.svg') }}" alt="" style="opacity:0.4">
+                                            <i data-lucide="{{ $child->menuList->iconClass ? $child->menuList->iconClass->name : 'circle' }}"
+                                               style="width: 18px; height: 18px;"></i>
                                             <span>{{ \App\Models\Admin\MenuList::lang($child->menuList->id) }}</span>
                                             @if($childCount > 0)
                                                 <span class="badge-count">{{ $childCount }}</span>
@@ -112,7 +113,8 @@
                                         <div class="submenu-item tree-item">
                                             <a href="{{ route($route, $item2->doc_hash) }}"
                                                class="{{ str_contains(url()->current(), $item2->doc_hash) ? 'active-link' : '' }}">
-                                                <img src="{{ asset('images/leftdown.svg') }}"  alt="" style="opacity:0.4">
+                                                <img src="{{ asset('images/leftdown.svg') }}" alt=""
+                                                     style="opacity:0.4">
                                                 <i data-lucide="folder" style="width: 18px; height: 18px;"></i>
                                                 <span>{{ $item2->lang($item2->id) }}</span>
                                                 @php
@@ -142,7 +144,8 @@
                                         <div class="submenu-item tree-item">
                                             <a href="{{ route('prt-secretary', $item3->doc_hash) }}"
                                                class="{{ str_contains(url()->current(), $item3->doc_hash) ? 'active-link' : '' }}">
-                                                <img src="{{ asset('images/leftdown.svg') }}"  alt="" style="opacity:0.4">
+                                                <img src="{{ asset('images/leftdown.svg') }}" alt=""
+                                                     style="opacity:0.4">
                                                 <i data-lucide="file-text" style="width: 18px; height: 18px;"></i>
                                                 <span>{{ $item3->lang($item3->id) }}</span>
                                             </a>
@@ -232,37 +235,6 @@
                         data-target="#RequestModal">
                     {{ __('field.leave_request') }}
                 </button>
-
-                <div class="modal fade" id="RequestModal" tabindex="-1">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h4 class="modal-title">
-                                    <i class="fa fa-plus-circle"></i>
-                                    {{ __('field.leave_request') }}
-                                </h4>
-                                <button type="button" class="close" data-dismiss="modal">
-                                    <span>×</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <ul id="request_error_list"></ul>
-                                <div class="form-group">
-                                    <label>{{ __('action.fill_tax_number') }}</label>
-                                    <input type="number" class="form-control tax_number" required>
-                                </div>
-                            </div>
-                            <div class="modal-footer justify-content-between">
-                                <button class="btn btn-light" data-dismiss="modal">
-                                    {{ __('action.cancel') }}
-                                </button>
-                                <button class="btn btn-outline-info send-request-btn">
-                                    {{ __('action.save') }}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         @endif
 
@@ -280,6 +252,41 @@
 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
     @csrf
 </form>
+
+<div class="modal fade" id="RequestModal" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="border-radius: 16px; border: none;">
+            <div class="modal-header"
+                 style="background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%); color: white; border-radius: 16px 16px 0 0;">
+                <h4 class="modal-title">
+                    <i data-lucide="plus-circle"
+                       style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i>
+                    {{ __('field.leave_request') }}
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" style="color: white; opacity: 1;">
+                    <span>×</span>
+                </button>
+            </div>
+            <div class="modal-body" style="padding: 2rem;">
+                <div class="modern-form">
+                    <ul id="request_error_list"></ul>
+                    <div class="form-group-modern">
+                        <label><i data-lucide="hash"></i> {{ __('action.fill_tax_number') }}</label>
+                        <input type="number" class="form-control-modern tax_number" required>
+                    </div>
+                </div>
+            </div>
+            <div class="form-actions" style="border-top: 2px solid #f1f5f9; padding: 1rem 2rem;">
+                <button class="btn-modern btn-light" data-dismiss="modal">
+                    <i data-lucide="circle-x"></i> {{ __('action.cancel') }}
+                </button>
+                <button class="btn-modern btn-primary send-request-btn">
+                    <i data-lucide="save"></i> {{ __('action.save') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
     $(document).on('click', '.send-request-btn', function (e) {
@@ -534,30 +541,30 @@
         display: none !important;
     }
 
-#sidebar.collapsed .theme-tabs {
-    flex-direction: column-reverse !important; 
-    transform: rotate(180deg) !important;    
-    gap: 8px !important;
-    margin: 20px auto !important;             
-    width: fit-content !important;
-    padding:10px !important;
-}
+    #sidebar.collapsed .theme-tabs {
+        flex-direction: column-reverse !important;
+        transform: rotate(180deg) !important;
+        gap: 8px !important;
+        margin: 20px auto !important;
+        width: fit-content !important;
+        padding: 10px !important;
+    }
 
-#sidebar.collapsed .theme-tab {
-    transform: rotate(180deg) !important;      
-}
+    #sidebar.collapsed .theme-tab {
+        transform: rotate(180deg) !important;
+    }
 
 
-#sidebar.collapsed i svg,
-#sidebar.collapsed .lucide svg {
-    width: 35px !important;
-    height: 35px !important;
-}
+    #sidebar.collapsed i svg,
+    #sidebar.collapsed .lucide svg {
+        width: 35px !important;
+        height: 35px !important;
+    }
 
-#sidebar.collapsed .theme-tab {
-    width: 34px;
-    transform: rotate(180deg) !important;
-}
+    #sidebar.collapsed .theme-tab {
+        width: 34px;
+        transform: rotate(180deg) !important;
+    }
 </style>
 
 <script>

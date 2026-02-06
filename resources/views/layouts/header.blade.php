@@ -93,10 +93,10 @@ $request = RequestForOrgs::where('user_id', Auth::id())->first();
         return;
     }
 
-  
+
     let collapsed = localStorage.getItem('sidebar-collapsed') === 'true';
 
-  
+
     if (collapsed) {
         sidebar.classList.add('collapsed');
         document.body.classList.add('sidebar-collapsed');
@@ -114,12 +114,12 @@ $request = RequestForOrgs::where('user_id', Auth::id())->first();
         lucide.createIcons();
     }
 
-   
+
     toggle.addEventListener('click', () => {
         collapsed = !collapsed;
 
         sidebar.classList.toggle('collapsed', collapsed);
-        document.body.classList.toggle('sidebar-collapsed', collapsed); 
+        document.body.classList.toggle('sidebar-collapsed', collapsed);
 
         localStorage.setItem('sidebar-collapsed', collapsed);
         updateIcon();
@@ -241,6 +241,7 @@ $request = RequestForOrgs::where('user_id', Auth::id())->first();
     #sidebar.collapsed .menu-text,
     #sidebar.collapsed .chevron,
     #sidebar.collapsed .badge-count,
+    #sidebar.collapsed .request,
     #sidebar.collapsed span:not(.icon) {
         display: none !important;
     }
@@ -273,7 +274,7 @@ $request = RequestForOrgs::where('user_id', Auth::id())->first();
         display: block;
     }
 
-  
+
     .wrapper .page-wrap .main-content {
         padding: 30px 15px 30px 255px;
         background-color: #f6f7fb;
