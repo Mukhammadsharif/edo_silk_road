@@ -75,7 +75,7 @@ class MenuListController extends Controller
         $store->title = $request->title;
         $store->url_path = $request->url_path;
         $store->code = $request->code;
-        $store->parent_id = $request->parent_id;
+        $store->parent_id = $request->parent_id??0;
         $store->lang_id = $request->lang_id;
         $store->icon_id = $request->icon_id;
         $store->count = $request->count;
@@ -119,7 +119,7 @@ class MenuListController extends Controller
                 'title' => $request->title,
                 'url_path' => $request->url_path,
                 'code' => $request->code,
-                'parent_id' => $request->parent_id,
+                'parent_id' => $request->parent_id??0,
                 'lang_id' => $request->lang_id,
                 'icon_id' => $request->icon_id,
                 'count' => $request->count,
