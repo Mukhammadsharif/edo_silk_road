@@ -312,7 +312,7 @@
                                         {{ __('field.parent_id') }}
                                     </label>
                                     <select class="form-control-modern select2" style="width: 100% !important;" name="parent_id" id="create_parent_id">
-                                        <option value="">{{ __('field.empty') }}</option>
+                                        <option value="0">{{ __('field.empty') }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -430,7 +430,7 @@
                                         {{ __('field.parent_id') }}
                                     </label>
                                     <select class="form-control-modern select2" style="width: 100% !important;" name="parent_id" id="edit_parent_id">
-                                        <option value="">{{ __('field.empty') }}</option>
+                                        <option value="0">{{ __('field.empty') }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -576,7 +576,7 @@
 
                 let role_id = $(this).val();
 
-                $('#create_parent_id option[value!="0"]').remove()
+                // $('#create_parent_id option[value!="0"]').remove()
 
                 $.ajax({
                     url: '/admin/role-menus/user-role/' + role_id,
