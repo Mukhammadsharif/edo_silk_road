@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Office;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\OrganizationUnits;
 use App\Models\Document\DocumentOrganizations;
 use App\Models\Journal\JournalTypes;
 use App\Services\LanguageService;
@@ -17,8 +18,25 @@ class DocOrganizationsController extends Controller
     {
         //
         $org_name = $request->input('org_name');
+        $org_id = $request->input('org_id');
 
-        $search = DocumentOrganizations::where('status', 1);
+        $isSuperUser = $this->isSuperUser();
+
+        $organizations = OrganizationUnits::where('status', 1)->get();
+
+        if ($isSuperUser) {
+            $search = DocumentOrganizations::where('status', 1);
+        } else {
+            $search = DocumentOrganizations::whereHas('docType', function ($query) {
+                $query->where('org_id', $this->organizationId());
+            })->where('status', 1);
+        }
+
+        if ($org_id) {
+            $search->whereHas('docType', function ($query) use ($org_id) {
+                $query->where('org_id', $org_id);
+            });
+        }
 
         if (trim(''.$org_name.'')) {
             $search->where('name_uz', 'LIKE', '%'.$org_name.'%')->orWhere('name_ru', 'LIKE', '%'.$org_name.'%')->orWhere('name_en', 'LIKE', '%'.$org_name.'%');
@@ -29,10 +47,11 @@ class DocOrganizationsController extends Controller
         $models = $search->orderBy('id')->paginate(25);
 
         $models->appends([
-            'org_name' => $org_name
+            'org_name' => $org_name,
+            'org_id' => $org_id,
         ]);
 
-        return view('office.doc-org.index', compact('models', 'org_name', 'journals'));
+        return view('office.doc-org.index', compact('models', 'org_name', 'journals', 'isSuperUser', 'org_id', 'organizations'));
     }
 
     public function create()
@@ -44,11 +63,19 @@ class DocOrganizationsController extends Controller
             $order = $model->org_order+1;
         }
 
+        $isSuperUser = $this->isSuperUser();
+
         $languages = $this->languageService->getList();
 
-        $journals = JournalTypes::where('status', 1)->get();
+        if ($isSuperUser){
+            $journals = null;
+        } else {
+            $journals = JournalTypes::where('org_id', $this->organizationId())->where('status', 1)->orderBy('order_number')->get();
+        }
 
-        return view('office.doc-org.create', compact('order', 'languages', 'journals'));
+        $organizations = OrganizationUnits::where('status', 1)->get();
+
+        return view('office.doc-org.create', compact('order', 'languages', 'journals', 'isSuperUser', 'organizations'));
     }
 
     public function store(Request $request)
@@ -78,9 +105,11 @@ class DocOrganizationsController extends Controller
         //
         $model = DocumentOrganizations::findOrFail($id);
 
+        $org_id = $model->docType->org_id;
+
         $languages = $this->languageService->getList();
 
-        $journals = JournalTypes::where('status', 1)->get();
+        $journals = JournalTypes::where('org_id', $org_id)->where('status', 1)->get();
 
         return view('office.doc-org.edit',compact('model', 'languages', 'journals'));
     }
