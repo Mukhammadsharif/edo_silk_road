@@ -27,7 +27,7 @@
     display: flex;
     flex-direction: column;
     transition: background-color 0.3s;
-    
+
 }
 
 .sidebar::-webkit-scrollbar {
@@ -62,7 +62,7 @@
 /* Create Document Menu - Special Styling */
 .create-doc-menu {
     background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
-    
+
     box-shadow: 0 4px 12px rgba(121, 77, 253, 0.2);
 }
 
@@ -382,4 +382,183 @@
 
 .sidebar.dark .menu-text {
     color: white;
+}
+
+/* ========================================
+   FORM STYLES FOR CREATE/EDIT
+   ======================================== */
+.modern-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.form-group-modern {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group-modern.full-width {
+    grid-column: span 2;
+}
+
+.form-group-modern label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    margin: 0;
+}
+
+.form-group-modern label i {
+    width: 16px;
+    height: 16px;
+    color: #794DFD;
+}
+
+.form-group-modern .text-danger,
+.form-group-modern .text-red {
+    color: #ef4444;
+    margin-left: 0.25rem;
+}
+
+.form-group-modern input[type="text"],
+.form-group-modern input[type="number"],
+.form-group-modern textarea,
+.form-group-modern select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #1e293b;
+    transition: all 0.3s;
+    background: white;
+}
+
+.form-group-modern input[type="text"]:focus,
+.form-group-modern input[type="number"]:focus,
+.form-group-modern textarea:focus,
+.form-group-modern select:focus {
+    outline: none;
+    border-color: #794DFD;
+    box-shadow: 0 0 0 3px rgba(121, 77, 253, 0.1);
+}
+
+.form-group-modern textarea {
+    min-height: 120px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.form-group-modern .border-danger,
+.form-group-modern .form-control-warning {
+    border-color: #ef4444 !important;
+}
+
+.form-group-modern .border-danger:focus,
+.form-group-modern .form-control-warning:focus {
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+.form-group-modern small,
+.form-group-modern .text-danger {
+    font-size: 12px;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.form-group-modern small {
+    color: #64748b;
+}
+
+.form-control-modern {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #1e293b;
+    transition: all 0.3s;
+    background: white;
+}
+
+.form-control-modern:focus {
+    outline: none;
+    border-color: #794DFD;
+    box-shadow: 0 0 0 3px rgba(121, 77, 253, 0.1);
+}
+
+.form-control-modern::placeholder {
+    color: #94a3b8;
+}
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+.btn-modern {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+}
+
+.btn-modern svg {
+    width: 20px;
+    height: 20px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(121, 77, 253, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(121, 77, 253, 0.4);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    background: #e2e8f0;
+    color: #475569;
+}
+
+.btn-secondary:hover {
+    background: #cbd5e1;
+    transform: translateY(-2px);
+}
+
+/* ========================================
+   FORM ACTIONS
+   ======================================== */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding-top: 1rem;
+    border-top: 2px solid #f1f5f9;
 }
