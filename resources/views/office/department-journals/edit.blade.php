@@ -1,72 +1,136 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container-fluid">
-        <div class="page-header">
-            <div class="row align-items-end">
-                <div class="col-md-2">
-                    <div class="page-header-title">
-                        <i class="ik ik-home bg-blue"></i>
-                        <div class="d-inline">
-                            <h5>{{ __('field.department_journals_name') }}</h5>
-                        </div>
+    <link href="{{ asset('css/templates/common-document-styles.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/templates/document-types/document-types-modern.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/templates/select2.css') }}">
+
+    <!-- Modern Document Page Container -->
+    <div class="document-page-modern">
+
+        <!-- Modern Page Header -->
+        <div class="page-header-modern">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="header-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                        <i data-lucide="folder-open"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>{{ __('field.department_journals_name') }}</h1>
+                        <p>{{ __('field.department_journals_name') }} / {{ __('action.edit') }}</p>
                     </div>
                 </div>
-                <div class="col-md-6">
+
+                <div class="header-center">
                     @include('templates.alert')
                 </div>
-                <div class="col-md-4">
-                    <nav class="breadcrumb-container" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('home') }}"><i class="ik ik-home"></i></a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('department-journals.index') }}">{{ __('field.department_journals_name') }}</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">{{ __('action.edit') }}</li>
-                        </ol>
-                    </nav>
-                </div>
 
+                <!-- Breadcrumb Navigation -->
+                <nav class="breadcrumb-modern" style="margin-top: 1.5rem;">
+                    <a href="{{ route('home') }}" class="breadcrumb-item">
+                        <i data-lucide="home"></i>
+                        <span>{{ __('menu.home') }}</span>
+                    </a>
+                    <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                    <a href="{{ route('department-journals.index') }}" class="breadcrumb-item">
+                        <span>{{ __('field.department_journals_name') }}</span>
+                    </a>
+                    <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
+                    <span class="breadcrumb-item active">{{ __('action.edit') }}</span>
+                </nav>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-sm-6 offset-2">
-                <div class="card">
-                    <div class="card-header">
-                        <h3><i class="ik ik-edit"></i> {{ __('action.edit') }}</h3>
+        <!-- Content Wrapper -->
+        <div class="content-wrapper-modern">
+
+            <!-- Edit Form Card -->
+            <div class="table-card-modern" style="max-width: 900px; margin: 0 auto;">
+                <div class="filters-header" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-bottom: 2px solid #10b981;">
+                    <div class="filters-title" style="color: #059669;">
+                        <i data-lucide="edit"></i>
+                        <span>{{ __('action.edit') }} {{ __('field.department_journals_name') }}</span>
                     </div>
-                    <div class="card-body">
-                        <form method="POST" action="{{ route('department-journals.update', $model->id) }}" class="forms-sample">
-                            @csrf
-                            @method('PUT')
-                            <div class="form-group">
-                                <label for="title">{{ __('field.name_uz') }}</label>
-                                <input id="name_uz" type="text" name="name_uz" class="form-control" placeholder="{{ __('field.title') }}"
-                                       value="{{ $model->name_uz }}">
+                </div>
+
+                <div style="padding: 2rem;">
+                    <form method="POST" action="{{ route('department-journals.update', $model->id) }}" class="modern-form">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="form-grid">
+                            <!-- Name UZ -->
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="type"></i>
+                                    {{ __('field.name_uz') }}
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text"
+                                       name="name_uz"
+                                       id="name_uz"
+                                       class="form-control-modern {{ ($errors->first('name_uz') ? 'border-danger' : '') }}"
+                                       placeholder="{{ __('field.title') }}"
+                                       value="{{ $model->name_uz }}"
+                                       required>
+                                {!! $errors->first('name_uz', '<p class="text-danger" style="font-size: 13px; margin-top: 0.5rem;">:message</p>') !!}
                             </div>
-                            <div class="form-group">
-                                <label for="name_ru">{{ __('field.name_ru') }}</label>
-                                <input id="title" type="text" name="name_ru" class="form-control" placeholder="{{ __('field.title') }}"
+
+                            <!-- Name RU -->
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="type"></i>
+                                    {{ __('field.name_ru') }}
+                                </label>
+                                <input type="text"
+                                       name="name_ru"
+                                       id="name_ru"
+                                       class="form-control-modern"
+                                       placeholder="{{ __('field.title') }}"
                                        value="{{ $model->name_ru }}">
                             </div>
-                            <div class="form-group">
-                                <label for="name_en">{{ __('field.name_kr') }}</label>
-                                <input id="title" type="text" name="name_kr" class="form-control" placeholder="{{ __('field.title') }}"
+
+                            <!-- Name KR -->
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="type"></i>
+                                    {{ __('field.name_kr') }}
+                                </label>
+                                <input type="text"
+                                       name="name_kr"
+                                       id="name_kr"
+                                       class="form-control-modern"
+                                       placeholder="{{ __('field.title') }}"
                                        value="{{ $model->name_kr }}">
                             </div>
-                            <div class="form-group">
-                                <label for="name_en">{{ __('field.name_en') }}</label>
-                                <input id="title" type="text" name="name_en" class="form-control" placeholder="{{ __('field.title') }}"
+
+                            <!-- Name EN -->
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="type"></i>
+                                    {{ __('field.name_en') }}
+                                </label>
+                                <input type="text"
+                                       name="name_en"
+                                       id="name_en"
+                                       class="form-control-modern"
+                                       placeholder="{{ __('field.title') }}"
                                        value="{{ $model->name_en }}">
                             </div>
 
-                            <div class="form-group">
-                                <label for="department">{{ __('field.department') }}</label>
-                                <select id="department" class="form-control select2" style="width: 100%" name="department" required>
-                                    <option value=""> {{ __('field.empty') }} </option>
+                            <!-- Department -->
+                            <div class="form-group-modern full-width">
+                                <label>
+                                    <i data-lucide="building"></i>
+                                    {{ __('field.department') }}
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select id="department"
+                                        class="form-control-modern select2"
+                                        style="width: 100%"
+                                        name="department"
+                                        required>
+                                    <option value="">{{ __('field.empty') }}</option>
                                     @foreach($departments as $key => $department)
                                         <option value="{{ $department->id }}" {{ $model->dep_id == $department->id ? 'selected' : '' }}>
                                             {{ $key+1 }}. {{ $department->lang($department->id) }}
@@ -75,44 +139,82 @@
                                 </select>
                             </div>
 
-                            <div class="form-group">
-                                <label for="department">{{ __('field.type') }}</label>
-                                <select id="type" class="form-control select2" style="width: 100%" name="type" required>
+                            <!-- Type -->
+                            <div class="form-group-modern full-width">
+                                <label>
+                                    <i data-lucide="tag"></i>
+                                    {{ __('field.type') }}
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select id="type"
+                                        class="form-control-modern select2"
+                                        style="width: 100%"
+                                        name="type"
+                                        required>
                                     <option value="incoming" {{ $model->type == 'incoming' ? 'selected' : '' }}>1. {{ __('field.incoming') }}</option>
                                     <option value="outgoing" {{ $model->type == 'outgoing' ? 'selected' : '' }}>2. {{ __('field.outgoing') }}</option>
                                 </select>
                             </div>
 
-                            <div class="form-radio">
-                                <label>{{ __('field.status') }}</label>
-                                <div class="radio radio-inline radio-success">
-                                    <label>
-                                        <input type="radio" name="status" value="1" {{ ($model->status == 1) ? 'checked':'' }}>
-                                        <i class="helper"></i>{{ __('status.active') }}
-                                    </label>
-                                </div>
-                                <div class="radio radio-inline radio-danger">
-                                    <label>
-                                        <input type="radio" name="status" value="2" {{ ($model->status == 0) ? 'checked':'' }}>
-                                        <i class="helper"></i>{{ __('status.passive') }}
-                                    </label>
+                            <!-- Status -->
+                            <div class="form-radio-modern full-width">
+                                <label>
+                                    <i data-lucide="power"></i>
+                                    {{ __('field.status') }}
+                                </label>
+                                <div class="radio-group-modern">
+                                    <div class="radio-option-modern success">
+                                        <input type="radio" name="status" id="status1" value="1" {{ ($model->status == 1) ? 'checked':'' }}>
+                                        <label for="status1">{{ __('status.active') }}</label>
+                                    </div>
+                                    <div class="radio-option-modern danger">
+                                        <input type="radio" name="status" id="status2" value="2" {{ ($model->status == 0) ? 'checked':'' }}>
+                                        <label for="status2">{{ __('status.passive') }}</label>
+                                    </div>
                                 </div>
                             </div>
-                            <a href="{{ route('department-journals.index') }}" class="btn btn-light">
-                                <i class="ik ik-x"></i>{{ __('action.cancel') }}
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <a href="{{ route('department-journals.index') }}" class="btn-modern btn-secondary">
+                                <i data-lucide="x"></i>
+                                {{ __('action.cancel') }}
                             </a>
-                            <button type="submit" class="btn btn-primary">
-                                <i data-lucide="save"></i>{{ __('action.save') }}
+                            <button type="submit" class="btn-modern btn-primary" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                                <i data-lucide="save"></i>
+                                {{ __('action.save') }}
                             </button>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
             </div>
+
         </div>
     </div>
+
+    <script src="{{ asset('/ajax/jquery.min.js') }}"></script>
     <script>
-        setTimeout( function() {
-            $('.hideAlert').hide();
-        }, 5000);
+        $(document).ready(function () {
+            $('.select2').select2({
+                placeholder: "{{ __('action.choose') }}",
+                allowClear: true
+            });
+
+            // Hide alert after 5 seconds
+            setTimeout(function() {
+                $('.hideAlert').hide();
+            }, 5000);
+
+            // Initialize Lucide icons
+            if (window.lucide) lucide.createIcons();
+        });
     </script>
+
+    <style>
+        .radio-option-modern label:has(input:checked) {
+            border-color: #794DFD !important;
+            background: #f5f0ff !important;
+        }
+    </style>
 @endsection
