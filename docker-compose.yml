@@ -59,10 +59,27 @@ services:
         networks:
             - edo_network
 
+    ftp:
+        image: fauria/vsftpd
+        container_name: edo_ftp
+        environment:
+            - FTP_USER=user
+            - FTP_PASS=pass
+            - PASV_ENABLE=YES
+            - PASV_MIN_PORT=30000
+            - PASV_MAX_PORT=30010
+            - PASV_ADDRESS=ftp
+        volumes:
+            - ./storage:/home/vsftpd
+        networks:
+            - edo_network
+
 volumes:
     edo_pgdata:
     onlyoffice-data:
     onlyoffice-logs:
+    edo_storage:
+    edo_cache:
 
 networks:
     edo_network:

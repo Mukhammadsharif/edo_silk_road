@@ -1,4 +1,4 @@
-# Use PHP 8.3 FPM as the base image
+# Use PHP 8.4 FPM as the base image
 FROM php:8.4-fpm
 
 # Set working directory
@@ -15,8 +15,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpng-dev \
     libjpeg62-turbo-dev \
     libfreetype6-dev \
+    libssh2-1-dev \
+    libssl-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) pdo pdo_pgsql zip gd \
+    && docker-php-ext-install -j$(nproc) pdo pdo_pgsql zip gd ftp \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
@@ -26,7 +28,7 @@ RUN curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php \
     && composer --version
 
 # Switch to www-data user for better security
-USER www-data
+USER root
 
 # Start PHP-FPM
 CMD ["php-fpm"]
