@@ -312,7 +312,7 @@
                                         </label>
                                         <select class="form-control-modern select2" name="parent_id"
                                                 style="width: 100% !important;">
-                                            <option value="">{{ __('field.empty') }}</option>
+                                            <option value="0">{{ __('field.empty') }}</option>
                                             @foreach($parentMenu as $key => $value)
                                                 <option value="{{ $value->id }}">{{ $key+1 }}
                                                     . {{ $value->title }}</option>
