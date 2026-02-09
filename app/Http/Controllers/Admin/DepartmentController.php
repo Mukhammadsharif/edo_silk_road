@@ -31,12 +31,15 @@ class DepartmentController extends Controller
 
         $search = OrganizationUnits::where('status', 1);
 
-        if (trim(''.$s_text.'')) {
-            $search->where(
-                DB::raw("(name_uz || ' ' || name_kr || ' ' || name_ru || ' ' || name_en)"),
-                'ILIKE',
-                "%{$s_text}%"
-            );
+        if (trim((string) $s_text)) {
+            $search->where(function ($q) use ($s_text) {
+                $q->where(
+                    DB::raw("(name_uz || ' ' || name_kr || ' ' || name_ru || ' ' || name_en)"),
+                    'ILIKE',
+                    "%{$s_text}%"
+                )
+                    ->orWhereRaw('tax_number::text ILIKE ?', ["%{$s_text}%"]);
+            });
         }
 
         $organizations = $search->paginate(25);
