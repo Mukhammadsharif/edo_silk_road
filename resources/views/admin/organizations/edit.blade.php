@@ -46,34 +46,34 @@
         <div class="content-wrapper-modern">
 
             <!-- Main Content Grid -->
-            <div class="user-profile-layout">
+            <div class="user-profile-layout" style="grid-template-columns : 1fr !important;">
 
                 <!-- Organizations Tree Sidebar -->
-                <div class="profile-sidebar">
-                    <div class="profile-card-modern">
-                        <div class="filters-header">
-                            <div class="filters-title">
-                                <i data-lucide="folder-tree"></i>
-                                <span>{{ __('menu.organizations') }} {{ __('field.tree') }}</span>
-                            </div>
-                        </div>
-                        <div style="padding: 1.5rem; max-height: 600px; overflow-y: auto;">
-                            @php $lang_key = session()->get('locale') ?? 'uz'; @endphp
-                            <section class="list-tree">
-                                <ul>
-                                    @foreach($parentOrganizations as $key => $item)
-                                        <li class="{{ $item->id == $model->id ? 'active-organization' : '' }}">
-                                            <strong>{{ $item['name_'.$lang_key] ?? $item['name_uz'] }}</strong>
-                                            @if(count($item->childs))
-                                                @include('admin.organizations.manageChild', ['childs' => $item->childs])
-                                            @endif
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </section>
-                        </div>
-                    </div>
-                </div>
+{{--                <div class="profile-sidebar">--}}
+{{--                    <div class="profile-card-modern">--}}
+{{--                        <div class="filters-header">--}}
+{{--                            <div class="filters-title">--}}
+{{--                                <i data-lucide="folder-tree"></i>--}}
+{{--                                <span>{{ __('menu.organizations') }} {{ __('field.tree') }}</span>--}}
+{{--                            </div>--}}
+{{--                        </div>--}}
+{{--                        <div style="padding: 1.5rem; max-height: 600px; overflow-y: auto;">--}}
+{{--                            @php $lang_key = session()->get('locale') ?? 'uz'; @endphp--}}
+{{--                            <section class="list-tree">--}}
+{{--                                <ul>--}}
+{{--                                    @foreach($parentOrganizations as $key => $item)--}}
+{{--                                        <li class="{{ $item->id == $model->id ? 'active-organization' : '' }}">--}}
+{{--                                            <strong>{{ $item['name_'.$lang_key] ?? $item['name_uz'] }}</strong>--}}
+{{--                                            @if(count($item->childs))--}}
+{{--                                                @include('admin.organizations.manageChild', ['childs' => $item->childs])--}}
+{{--                                            @endif--}}
+{{--                                        </li>--}}
+{{--                                    @endforeach--}}
+{{--                                </ul>--}}
+{{--                            </section>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
 
                 <!-- Edit Form -->
                 <div class="tabs-card-modern">
@@ -91,22 +91,22 @@
 
                             <div class="form-grid">
                                 <!-- Parent Organization -->
-                                <div class="form-group-modern full-width">
-                                    <label>
-                                        <i data-lucide="folder"></i>
-                                        {{ __('field.parent_id') }}
-                                    </label>
-                                    <select name="parent_id" class="form-control-modern select2">
-                                        <option value="0">{{ __('field.not_selected') }} ({{ __('field.root') }})</option>
-                                        @foreach($organizations as $key => $item)
-                                            @if($item->id != $model->id)
-                                                <option value="{{ $item->id }}" {{ ($item->id == $model->parent_id ? "selected":"") }}>
-                                                    {{ $key + 1 }}. {{ $item['name_'.$lang_key] ?? $item['name_uz'] }}
-                                                </option>
-                                            @endif
-                                        @endforeach
-                                    </select>
-                                </div>
+{{--                                <div class="form-group-modern full-width">--}}
+{{--                                    <label>--}}
+{{--                                        <i data-lucide="folder"></i>--}}
+{{--                                        {{ __('field.parent_id') }}--}}
+{{--                                    </label>--}}
+{{--                                    <select name="parent_id" class="form-control-modern select2">--}}
+{{--                                        <option value="0">{{ __('field.not_selected') }} ({{ __('field.root') }})</option>--}}
+{{--                                        @foreach($organizations as $key => $item)--}}
+{{--                                            @if($item->id != $model->id)--}}
+{{--                                                <option value="{{ $item->id }}" {{ ($item->id == $model->parent_id ? "selected":"") }}>--}}
+{{--                                                    {{ $key + 1 }}. {{ $item['name_'.$lang_key] ?? $item['name_uz'] }}--}}
+{{--                                                </option>--}}
+{{--                                            @endif--}}
+{{--                                        @endforeach--}}
+{{--                                    </select>--}}
+{{--                                </div>--}}
 
                                 <!-- Name UZ -->
                                 <div class="form-group-modern">

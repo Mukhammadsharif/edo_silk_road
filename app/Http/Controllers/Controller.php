@@ -22,7 +22,7 @@ use App\Jobs\SendTelegramMessageJob;
 
 #[
     OA\Info(version: "1.0.0", description: "Your API Description", title: "Your API Title"),
-    OA\Server(url: 'http://83.69.136.85:18084', description: "Production server"),
+    OA\Server(url: 'https://edoline.uz', description: "Production server"),
     OA\Server(url: 'http://localhost:8082', description: "Local server"),
 ]
 
