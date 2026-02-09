@@ -24,10 +24,10 @@ class LanguageLineController extends Controller
             ->get();
 
         if (trim(''.$s_text.'')) {
-            $search->where('key', 'like', "%{$s_text}%")
-                ->orWhere('text->en', 'like', "%{$s_text}%")
-                ->orWhere('text->ru', 'like', "%{$s_text}%")
-                ->orWhere('text->uz', 'like', "%{$s_text}%");
+            $search->where('key', 'ILIKE', "%{$s_text}%")
+                ->orWhere('text->en', 'ILIKE', "%{$s_text}%")
+                ->orWhere('text->ru', 'ILIKE', "%{$s_text}%")
+                ->orWhere('text->uz', 'ILIKE', "%{$s_text}%");
         }
 
         if ($s_field){
@@ -190,11 +190,11 @@ class LanguageLineController extends Controller
 
     public function search($query)
     {
-        $models = LanguageLine::where('group', 'like', '%'.$query.'%')
-            ->orWhere('key', 'like', '%'.$query.'%')
-            //->orWhere('text', 'like', '%'.$query.'%')
-            //->orWhere('meta->text', 'LIKE', '%'.$query.'%')
-            //->orWhereJsonContains('text', [['uz' ,'LIKE', '%'.$query.'%']])
+        $models = LanguageLine::where('group', 'ILIKE', '%'.$query.'%')
+            ->orWhere('key', 'ILIKE', '%'.$query.'%')
+            //->orWhere('text', 'ILIKE', '%'.$query.'%')
+            //->orWhere('meta->text', 'ILIKE', '%'.$query.'%')
+            //->orWhereJsonContains('text', [['uz' ,'ILIKE', '%'.$query.'%']])
             ->orderBy('group')
             ->paginate(25);
 

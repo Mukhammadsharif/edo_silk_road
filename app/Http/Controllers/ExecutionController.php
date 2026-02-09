@@ -89,8 +89,8 @@ class ExecutionController extends Controller
 
         if (trim(''.$doc_name.'')) {
             $search->whereHas('doc', function ($query) use ($doc_name) {
-                $query->where('doc_name', 'LIKE', '%'.$doc_name.'%');
-                $query->orWhere('doc_number', 'LIKE', '%'.$doc_name.'%');
+                $query->where('doc_name', 'ILIKE', '%'.$doc_name.'%');
+                $query->orWhere('doc_number', 'ILIKE', '%'.$doc_name.'%');
             });
         }
 
@@ -176,8 +176,8 @@ class ExecutionController extends Controller
 
         if (trim(''.$doc_name.'')) {
             $search->whereHas('doc', function ($query) use ($doc_name) {
-                $query->where('doc_name', 'LIKE', '%'.$doc_name.'%');
-                $query->orWhere('doc_number', 'LIKE', '%'.$doc_name.'%');
+                $query->where('doc_name', 'ILIKE', '%'.$doc_name.'%');
+                $query->orWhere('doc_number', 'ILIKE', '%'.$doc_name.'%');
             });
         }
 
@@ -261,8 +261,8 @@ class ExecutionController extends Controller
 
         if (trim(''.$doc_name.'')) {
             $search->whereHas('doc', function ($query) use ($doc_name) {
-                $query->where('doc_name', 'LIKE', '%'.$doc_name.'%');
-                $query->orWhere('doc_number', 'LIKE', '%'.$doc_name.'%');
+                $query->where('doc_name', 'ILIKE', '%'.$doc_name.'%');
+                $query->orWhere('doc_number', 'ILIKE', '%'.$doc_name.'%');
             });
         }
 
@@ -364,8 +364,8 @@ class ExecutionController extends Controller
 
         if (trim(''.$doc_name.'')) {
             $search->whereHas('doc', function ($query) use ($doc_name) {
-                $query->where('doc_name', 'LIKE', '%'.$doc_name.'%');
-                $query->orWhere('doc_number', 'LIKE', '%'.$doc_name.'%');
+                $query->where('doc_name', 'ILIKE', '%'.$doc_name.'%');
+                $query->orWhere('doc_number', 'ILIKE', '%'.$doc_name.'%');
             });
         }
 
@@ -446,8 +446,8 @@ class ExecutionController extends Controller
 
         if (trim(''.$doc_name.'')) {
             $search->whereHas('doc', function ($query) use ($doc_name) {
-                $query->where('doc_name', 'LIKE', '%'.$doc_name.'%');
-                $query->orWhere('doc_number', 'LIKE', '%'.$doc_name.'%');
+                $query->where('doc_name', 'ILIKE', '%'.$doc_name.'%');
+                $query->orWhere('doc_number', 'ILIKE', '%'.$doc_name.'%');
             });
         }
 
@@ -1440,7 +1440,7 @@ class ExecutionController extends Controller
         if (trim(''.$user_fio.'')) {
             $users = UserWorkHistory::with('personal', 'userPost')
                 ->whereHas('personal', function ($query) use ($user_fio) {
-                    $query->where(DB::raw("CONCAT_WS(' ', l_name, f_name, m_name)"), 'like', '%'.$user_fio.'%');
+                    $query->where(DB::raw("CONCAT_WS(' ', l_name, f_name, m_name)"), 'ILIKE', '%'.$user_fio.'%');
                 })
                 ->where('status', 1)
 //                ->where('id', '!=', $this->authActiveUser()->id)

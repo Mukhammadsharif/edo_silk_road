@@ -84,8 +84,8 @@ class DocController extends Controller
 
         if (trim('' . $doc_name . '')) {
             $search->whereHas('doc', function ($query) use ($doc_name) {
-                $query->where('doc_name', 'LIKE', '%' . $doc_name . '%')
-                    ->orWhere('doc_number', 'LIKE', '%' . $doc_name . '%');
+                $query->where('doc_name', 'ILIKE', '%' . $doc_name . '%')
+                    ->orWhere('doc_number', 'ILIKE', '%' . $doc_name . '%');
             });
         }
 
@@ -358,8 +358,8 @@ class DocController extends Controller
         // Фильтр по тексту (название или номер документа)
         if (trim($s_text)) {
             $search->where(function($query) use ($s_text) {
-                $query->where('doc_name', 'LIKE', '%' . $s_text . '%')
-                    ->orWhere('doc_number', 'LIKE', '%' . $s_text . '%');
+                $query->where('doc_name', 'ILIKE', '%' . $s_text . '%')
+                    ->orWhere('doc_number', 'ILIKE', '%' . $s_text . '%');
             });
         }
 
@@ -582,8 +582,8 @@ class DocController extends Controller
         // Фильтр по тексту (название или номер документа)
         if (trim($s_text)) {
             $search->where(function($query) use ($s_text) {
-                $query->where('doc_name', 'LIKE', '%' . $s_text . '%')
-                    ->orWhere('doc_number', 'LIKE', '%' . $s_text . '%');
+                $query->where('doc_name', 'ILIKE', '%' . $s_text . '%')
+                    ->orWhere('doc_number', 'ILIKE', '%' . $s_text . '%');
             });
         }
 

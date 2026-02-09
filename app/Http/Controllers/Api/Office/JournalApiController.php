@@ -224,8 +224,8 @@ class JournalApiController extends Controller
             // Поиск по названию документа
             if (trim($doc_name)) {
                 $search->whereHas('doc', function ($query) use ($doc_name) {
-                    $query->where('doc_name', 'LIKE', '%' . $doc_name . '%')
-                        ->orWhere('doc_text', 'LIKE', '%' . $doc_name . '%');
+                    $query->where('doc_name', 'ILIKE', '%' . $doc_name . '%')
+                        ->orWhere('doc_text', 'ILIKE', '%' . $doc_name . '%');
                 });
             }
 
@@ -658,8 +658,8 @@ class JournalApiController extends Controller
             // Поиск по названию или номеру документа
             if (trim($doc_name)) {
                 $search->whereHas('doc', function ($query) use ($doc_name) {
-                    $query->where('doc_name', 'LIKE', '%' . $doc_name . '%')
-                        ->orWhere('doc_number', 'LIKE', '%' . $doc_name . '%');
+                    $query->where('doc_name', 'ILIKE', '%' . $doc_name . '%')
+                        ->orWhere('doc_number', 'ILIKE', '%' . $doc_name . '%');
                 });
             }
 
@@ -1084,8 +1084,8 @@ class JournalApiController extends Controller
             // Поиск по названию или тексту документа
             if (trim($doc_name)) {
                 $search->whereHas('doc', function ($query) use ($doc_name) {
-                    $query->where('doc_name', 'LIKE', '%' . $doc_name . '%')
-                        ->orWhere('doc_text', 'LIKE', '%' . $doc_name . '%');
+                    $query->where('doc_name', 'ILIKE', '%' . $doc_name . '%')
+                        ->orWhere('doc_text', 'ILIKE', '%' . $doc_name . '%');
                 });
             }
 

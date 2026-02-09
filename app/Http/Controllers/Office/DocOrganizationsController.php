@@ -39,7 +39,7 @@ class DocOrganizationsController extends Controller
         }
 
         if (trim(''.$org_name.'')) {
-            $search->where('name_uz', 'LIKE', '%'.$org_name.'%')->orWhere('name_ru', 'LIKE', '%'.$org_name.'%')->orWhere('name_en', 'LIKE', '%'.$org_name.'%');
+            $search->where('name_uz', 'ILIKE', '%'.$org_name.'%')->orWhere('name_ru', 'ILIKE', '%'.$org_name.'%')->orWhere('name_en', 'ILIKE', '%'.$org_name.'%');
         }
 
         $journals = JournalTypes::where('status', 1)->get();

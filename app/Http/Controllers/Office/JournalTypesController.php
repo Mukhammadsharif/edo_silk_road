@@ -62,7 +62,7 @@ class JournalTypesController extends Controller
         $search = JournalTypes::where('org_id', $orgId)->where('status', 1);
 
         if (trim(''.$doc_name.'')) {
-            $search->where('title', 'LIKE', '%'.$doc_name.'%')->orWhere('doc_code', 'LIKE', '%'.$doc_name.'%');
+            $search->where('title', 'ILIKE', '%'.$doc_name.'%')->orWhere('doc_code', 'ILIKE', '%'.$doc_name.'%');
         }
 
         $models = $search->orderBy('parent_id')->orderBy('order_number')->paginate(25);
@@ -89,7 +89,7 @@ class JournalTypesController extends Controller
         $search = JournalTypes::where('org_id', $this->organizationId())->where('status', 1);
 
         if (trim(''.$doc_name.'')) {
-            $search->where('title', 'LIKE', '%'.$doc_name.'%')->orWhere('doc_code', 'LIKE', '%'.$doc_name.'%');
+            $search->where('title', 'ILIKE', '%'.$doc_name.'%')->orWhere('doc_code', 'ILIKE', '%'.$doc_name.'%');
         }
 
         $models = $search->orderBy('parent_id')->orderBy('order_number')->paginate(25);
@@ -170,7 +170,7 @@ class JournalTypesController extends Controller
         $random = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'), 0, 4));
 
         if($request->parent_id){
-            $code = JournalTypes::where('parent_id', $request->parent_id)->where('doc_code', 'LIKE', '%'.'APP'.'%')->first();
+            $code = JournalTypes::where('parent_id', $request->parent_id)->where('doc_code', 'ILIKE', '%'.'APP'.'%')->first();
         }
 
         $last_number = JournalTypes::where('parent_id', 0)->orderBy('id', 'desc')->first();
@@ -207,7 +207,7 @@ class JournalTypesController extends Controller
         $journal_type->status = $request->status == 0;
         $journal_type->save();
 
-        $app = JournalTypes::where('parent_id', $parent_id)->where('doc_code', 'LIKE', '%'.'APP'.'%')->first();
+        $app = JournalTypes::where('parent_id', $parent_id)->where('doc_code', 'ILIKE', '%'.'APP'.'%')->first();
 
         if ($app){
             $app_temp = new AppTemps();
@@ -404,7 +404,7 @@ class JournalTypesController extends Controller
         $search = AppTemps::where('status', 1);
 
         if (trim(''.$doc_name.'')) {
-            $search->where('t_name', 'LIKE', '%'.$doc_name.'%');
+            $search->where('t_name', 'ILIKE', '%'.$doc_name.'%');
         }
 
         $models = $search->orderBy('id')->paginate(25);

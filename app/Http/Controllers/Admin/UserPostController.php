@@ -53,7 +53,7 @@ class UserPostController extends Controller
         $search = UserPosition::where('org_id', $orgId)->where('status', 1);
 
         if (trim(''.$s_text.'')) {
-            $search->where(DB::raw("CONCAT(`name_uz`, ' ', `name_kr`, ' ', `name_ru`, ' ', `name_en`)"), 'LIKE', "%".$s_text."%");
+            $search->where(DB::raw("CONCAT(`name_uz`, ' ', `name_kr`, ' ', `name_ru`, ' ', `name_en`)"), 'ILIKE', "%".$s_text."%");
         }
 
         $models = $search->orderBy('order_number')->paginate(25);
@@ -76,7 +76,7 @@ class UserPostController extends Controller
         $search = UserPosition::where('org_id', $this->organizationId())->where('status', 1);
 
         if (trim(''.$s_text.'')) {
-            $search->where(DB::raw("CONCAT(`name_uz`, ' ', `name_kr`, ' ', `name_ru`, ' ', `name_en`)"), 'LIKE', "%".$s_text."%");
+            $search->where(DB::raw("CONCAT(`name_uz`, ' ', `name_kr`, ' ', `name_ru`, ' ', `name_en`)"), 'ILIKE', "%".$s_text."%");
         }
 
         $models = $search->orderBy('order_number')->paginate(25);

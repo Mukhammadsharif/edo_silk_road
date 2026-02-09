@@ -48,10 +48,10 @@ class DepartmentJournalsController extends Controller
         }
 
         if (trim('' . $name . '')) {
-            $search->where('name_uz', 'LIKE', '%' . $name . '%')
-                ->orWhere('name_ru', 'LIKE', '%' . $name . '%')
-                ->orWhere('name_en', 'LIKE', '%' . $name . '%')
-                ->orWhere('name_kr', 'LIKE', '%' . $name . '%');
+            $search->where('name_uz', 'ILIKE', '%' . $name . '%')
+                ->orWhere('name_ru', 'ILIKE', '%' . $name . '%')
+                ->orWhere('name_en', 'ILIKE', '%' . $name . '%')
+                ->orWhere('name_kr', 'ILIKE', '%' . $name . '%');
         }
 
 

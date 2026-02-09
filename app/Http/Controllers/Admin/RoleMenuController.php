@@ -42,7 +42,7 @@ class RoleMenuController extends Controller
 
         if ($text) {
             $search->whereHas('menuList', function($query) use($text){
-                $query->where('title','like', '%'.$text.'%')->orWhere('url_path','like', '%'.$text.'%');
+                $query->where('title','ILIKE', '%'.$text.'%')->orWhere('url_path','ILIKE', '%'.$text.'%');
             });
         }
 

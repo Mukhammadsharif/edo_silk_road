@@ -163,7 +163,7 @@ class DepartmentController extends Controller
         $search = Department::where('org_unit_id', $id)->where('status', 1);
 
         if (trim(''.$s_text.'')) {
-            $search->where(DB::raw("CONCAT(`name_uz`, ' ', `name_kr`, ' ', `name_ru`, ' ', `name_en`)"), 'LIKE', "%".$s_text."%");
+            $search->where(DB::raw("CONCAT(`name_uz`, ' ', `name_kr`, ' ', `name_ru`, ' ', `name_en`)"), 'ILIKE', "%".$s_text."%");
         }
 
         $departments = $search->orderBy('order_number')->paginate(25);
