@@ -97,7 +97,8 @@ class DocumentController extends Controller
     private function getCommonData(int $departmentId): array
     {
         return [
-            'journals' => JournalTypes::where('parent_id', 0)
+            'journals' => JournalTypes::where('org_id', $this->organizationId())
+                ->where('parent_id', 0)
                 ->where('status', 1)
                 ->orderBy('order_number')
                 ->get(),
@@ -120,7 +121,8 @@ class DocumentController extends Controller
             case 'incoming':
             case 'outgoing':
                 $docCode = $type === 'incoming' ? 'BASE_INCOMING' : 'BASE_OUTGOING';
-                $data['journal'] = JournalTypes::where('doc_code', $docCode)
+                $data['journal'] = JournalTypes::where('org_id', $this->organizationId())
+                    ->where('doc_code', $docCode)
                     ->where('status', 1)
                     ->first();
                 $data['organizations'] = DocumentOrganizations::where('for_doc_type', $data['journal']?->id)
@@ -128,10 +130,12 @@ class DocumentController extends Controller
                 break;
 
             case 'internal':
-                $baseJournal = JournalTypes::where('doc_code', 'BASE_INTERNAL')
+                $baseJournal = JournalTypes::where('org_id', $this->organizationId())
+                    ->where('doc_code', 'BASE_INTERNAL')
                     ->where('status', 1)
                     ->first();
-                $data['journals'] = JournalTypes::where('parent_id', $baseJournal->id ?? 0)
+                $data['journals'] = JournalTypes::where('org_id', $this->organizationId())
+                    ->where('parent_id', $baseJournal->id ?? 0)
                     ->where('status', 1)
                     ->orderBy('order_number')
                     ->get();
@@ -309,7 +313,8 @@ class DocumentController extends Controller
         $document = Documents::where('doc_hash', $hash)->firstOrFail();
         $documentFiles = DocumentFiles::where('j_id', $journal->id)->get();
 
-        $journals = JournalTypes::where('parent_id', 0)->where('status', 1)->orderBy('order_number')->get();
+        $journals = JournalTypes::where('org_id', $this->organizationId())
+            ->where('parent_id', 0)->where('status', 1)->orderBy('order_number')->get();
 
         $departments = Department::whereNot('parent_id', 0)->where('status', 1)->get();
 
@@ -330,8 +335,10 @@ class DocumentController extends Controller
         } elseif ($type == 'outgoing') {
 
         } elseif ($type == 'internal') {
-            $baseJournal = JournalTypes::where('doc_code', 'BASE_INTERNAL')->where('status', 1)->first();
-            $journals = JournalTypes::where('parent_id', $baseJournal->id??0)->where('status', 1)->orderBy('order_number')->get();
+            $baseJournal = JournalTypes::where('org_id', $this->organizationId())
+                ->where('doc_code', 'BASE_INTERNAL')->where('status', 1)->first();
+            $journals = JournalTypes::where('org_id', $this->organizationId())
+                ->where('parent_id', $baseJournal->id??0)->where('status', 1)->orderBy('order_number')->get();
 
             if (str_contains($journal->journal->doc_code, 'APP')){
                 $metaData = DocumentTypeTempMetaData::where('doc_id', $document->id)->first();
@@ -364,7 +371,7 @@ class DocumentController extends Controller
     {
         $authUser = $this->authActiveUser();
 
-        $journals = JournalTypes::where('parent_id', 0)->where('status', 1)->get();
+        $journals = JournalTypes::where('org_id', $this->organizationId())->where('parent_id', 0)->where('status', 1)->get();
         $departments = Department::whereNot('parent_id', 0)->where('status', 1)->get();
         $confidences = ConfidentialTypes::where('status', 1)->get();
 
@@ -574,7 +581,7 @@ class DocumentController extends Controller
         $journalTypes = [];
 
         if ($main_journal) {
-            $search = JournalTypes::where('status', 1)->where('parent_id', '!=' ,0);
+            $search = JournalTypes::where('org_id', $this->organizationId())->where('status', 1)->where('parent_id', '!=' ,0);
             if ($main_journal->doc_code == 'MESS') {
                 if (in_array($this->chancellery, $authRoleName)) {
                     $search->where('parent_id', $main_journal->id);

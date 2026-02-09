@@ -311,10 +311,11 @@ class SignLoginController extends Controller
 
     private function isHrOrderType(int $jType): bool
     {
-        $hrOrderType = JournalTypes::where('doc_code', 'HR_ORD')->where('status', 1)->first();
+        $hrOrderType = JournalTypes::where('org_id', $this->organizationId())->where('doc_code', 'HR_ORD')->where('status', 1)->first();
         if (!$hrOrderType) return false;
 
-        return JournalTypes::where('parent_id', $hrOrderType->id)
+        return JournalTypes::where('org_id', $this->organizationId())
+            ->where('parent_id', $hrOrderType->id)
             ->where('status', 1)
             ->pluck('id')
             ->contains($jType);
