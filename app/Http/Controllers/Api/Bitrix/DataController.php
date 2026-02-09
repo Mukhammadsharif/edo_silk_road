@@ -95,7 +95,8 @@ class DataController extends Controller
     public function hrOrders()
     {
         try {
-            $hrOrderType = JournalTypes::where('doc_code', 'HR_ORD')
+            $hrOrderType = JournalTypes::where('org_id', $this->organizationId())
+                ->where('doc_code', 'HR_ORD')
                 ->where('status', 1)
                 ->first();
 
@@ -106,7 +107,8 @@ class DataController extends Controller
             }
 
             // Fetch HR Order Journal Types
-            $hrOrderJournalTypes = JournalTypes::where('parent_id', $hrOrderType->id)
+            $hrOrderJournalTypes = JournalTypes::where('org_id', $this->organizationId())
+                ->where('parent_id', $hrOrderType->id)
                 ->where('status', 1)
                 ->pluck('id')
                 ->toArray();

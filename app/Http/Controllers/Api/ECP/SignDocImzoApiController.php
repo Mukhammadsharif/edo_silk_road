@@ -690,8 +690,8 @@ class SignDocImzoApiController extends Controller
 
     private function isHrOrderType(int $jType): bool
     {
-        $hrOrder = JournalTypes::where('doc_code', 'HR_ORD')->where('status', 1)->first();
-        return $hrOrder && JournalTypes::where('parent_id', $hrOrder->id)->where('status', 1)->pluck('id')->contains($jType);
+        $hrOrder = JournalTypes::where('org_id', $this->organizationId())->where('doc_code', 'HR_ORD')->where('status', 1)->first();
+        return $hrOrder && JournalTypes::where('org_id', $this->organizationId())->where('parent_id', $hrOrder->id)->where('status', 1)->pluck('id')->contains($jType);
     }
 
     private function buildUrls($journal): array
