@@ -34,7 +34,7 @@
     <!-- Info Message -->
     <div class="info-message">
         <i data-lucide="info"></i>
-        <span>Xodimlarning mehnat ta'tili arizalaridan birini tanlang...</span>
+        <span>{{ __('action.choose_one_app_of_labour') }}</span>
     </div>
 
     <!-- Application Selection -->
@@ -57,7 +57,7 @@
     <!-- Info Message -->
     <div class="info-message">
         <i data-lucide="info"></i>
-        <span>Mehnat ta'tili uchun ishlagan yillar boshlanish va tugash sanasini tanlang...</span>
+        <span>{{ __('action.choose_period_of_labour_leave') }}</span>
     </div>
 
     <!-- Date Range -->
@@ -81,7 +81,7 @@
                         type="text"
                         name="from_date"
                         class="date-input form-control-modern {{ $errors->has('from_date') ? 'is-invalid' : '' }}"
-                        placeholder="Sanani tanlang"
+                        placeholder="{{ __('action.choose_date') }}"
                         value="{{ old('from_date', date('Y-m-d')) }}"
                         readonly
                         required
@@ -119,7 +119,7 @@
                         type="text"
                         name="to_date"
                         class="date-input form-control-modern {{ $errors->has('to_date') ? 'is-invalid' : '' }}"
-                        placeholder="Sanani tanlang"
+                        placeholder="{{ __('action.choose_date') }}"
                         value="{{ date('Y-m-d', strtotime('+30 day')) }}"
                         readonly
                         required
@@ -174,7 +174,7 @@
         @if(!Auth::user()->currentSubscription)
             <div class="subscription-warning">
                 <i data-lucide="alert-circle"></i>
-                <span>Hujjat yaratish uchun faol obuna kerak</span>
+                <span>{{ __('field.need_subscription_for_creating_docs') }}</span>
             </div>
         @endif
 

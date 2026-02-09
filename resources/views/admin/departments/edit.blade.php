@@ -229,11 +229,11 @@
                             <!-- Form Actions -->
                             <div class="form-actions">
                                 <a href="{{ route('departments.index', ['id' => $model->org_unit_id]) }}" class="btn-modern btn-secondary">
-                                    <i class="ik ik-x"></i>
+                                    <i data-lucide="x"></i>
                                     {{ __('action.cancel') }}
                                 </a>
                                 <button type="submit" class="btn-modern btn-primary">
-                                    <i class="ik ik-save"></i>
+                                    <i data-lucide="save"></i>
                                     {{ __('action.save') }}
                                 </button>
                             </div>

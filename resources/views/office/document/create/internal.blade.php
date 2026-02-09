@@ -14,7 +14,7 @@
                     </div>
                     <div class="page-info">
                         <h1>{{ __('action.create_document') }}</h1>
-                        <p>Ichki hujjat yaratish</p>
+                        <p>{{ __('action.create_internal_doc') }}</p>
                     </div>
                 </div>
                 <nav class="breadcrumb-modern">
@@ -42,7 +42,7 @@
                     <div class="form-section">
                         <div class="section-header">
                             <i data-lucide="settings"></i>
-                            <h3>Asosiy ma'lumotlar</h3>
+                            <h3>{{ __('field.main_information') }}</h3>
                         </div>
 
                         <!-- Document Type 1 -->
@@ -84,7 +84,7 @@
                     <div class="form-section">
                         <div class="section-header">
                             <i data-lucide="file-text"></i>
-                            <h3>Hujjat tafsilotlari</h3>
+                            <h3>{{ __('field.doc_details') }}</h3>
                         </div>
 
                         <!-- Dynamic Form Body -->
@@ -93,8 +93,8 @@
                                 <div class="empty-icon">
                                     <i data-lucide="inbox"></i>
                                 </div>
-                                <p class="empty-title">Hujjat turini tanlang</p>
-                                <p class="empty-description">Davom etish uchun chap tomondan hujjat turini tanlang</p>
+                                <p class="empty-title">{{ __('validate.j_number_mandatory') }}</p>
+                                <p class="empty-description">{{ __('field.to_continue_left') }}</p>
                             </div>
                         </div>
                     </div>

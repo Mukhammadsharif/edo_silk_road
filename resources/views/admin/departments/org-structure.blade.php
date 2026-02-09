@@ -5,8 +5,8 @@
 
         <!-- Simple Header -->
         <div style="margin-bottom: 1.5rem;">
-            <h1 style="margin: 0 0 0.5rem 0; font-size: 24px; font-weight: 700; color: #1e293b;">Организационная структура</h1>
-            <p style="margin: 0; font-size: 14px; color: #64748b;">Интерактивная схема департаментов и сотрудников</p>
+            <h1 style="margin: 0 0 0.5rem 0; font-size: 24px; font-weight: 700; color: #1e293b;">{{ __('field.org_structure') }}</h1>
+            <p style="margin: 0; font-size: 14px; color: #64748b;">{{ __('field.interactive_schema') }}</p>
         </div>
 
         <!-- Main Card -->
@@ -16,7 +16,7 @@
             <div style="padding: 1.5rem; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-bottom: 2px solid #e2e8f0;">
                 <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 16px; font-weight: 600; color: #1e293b;">
                     <span style="color: #794DFD;">●</span>
-                    Структура компании
+                    {{ __('field.company_structure') }}
                 </div>
             </div>
 
@@ -95,6 +95,12 @@
     <script src="{{ asset('/js/DataInspector.js') }}"></script>
 
     <script>
+        window.trans = {
+            chooseDepartment: @json(__('action.choose_department')),
+            noEmp: @json(__('field.no_emp_in_dep')),
+            department: @json(__('field.department')),
+        };
+
         const light = {
             colors: {
                 background: '#f8fafc',
@@ -223,21 +229,21 @@
             inspector.innerHTML = '';
 
             if (!nodeData) {
-                inspector.innerHTML = '<div class="inspector-empty">Выберите департамент для просмотра сотрудников</div>';
+                inspector.innerHTML = `<div class="inspector-empty">${window?.trans?.chooseDepartment}</div>`;
                 return;
             }
 
             // Title
             const title = document.createElement('h3');
             title.className = 'inspector-title';
-            title.textContent = nodeData.dept || 'Департамент';
+            title.textContent = nodeData.dept || `${window?.trans?.department}`;
             inspector.appendChild(title);
 
             // Users
             const usersHtml = nodeData.usersHtml || '';
 
             if (!usersHtml || usersHtml.trim() === '') {
-                inspector.innerHTML += '<div class="no-users">В департаменте нет сотрудников</div>';
+                inspector.innerHTML += `<div class="no-users">${window?.trans?.noEmp}</div>`;
                 return;
             }
 

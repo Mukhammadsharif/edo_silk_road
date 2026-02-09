@@ -77,7 +77,7 @@
                     <div class="form-section">
                         <div class="section-header">
                             <i data-lucide="file-text"></i>
-                            <h3>Hujjat tafsilotlari</h3>
+                            <h3>{{ __('field.doc_details') }}</h3>
                         </div>
 
                         <div class="modern-form-body">
@@ -115,7 +115,7 @@
                             @if(str_contains($journal->journal->doc_code, 'APP_'))
                                 <div class="info-message">
                                     <i data-lucide="info"></i>
-                                    <span>Mehnat ta'tili boshlanish va tugash sanasini tanlang...</span>
+                                    <span>{{ __('action.choose_begin_end_date') }}</span>
                                 </div>
 
                                 <div class="form-row-modern" id="appDocumentDateContainer">
@@ -178,7 +178,7 @@
                                                         type="text"
                                                         name="to_date"
                                                         class="date-input form-control-modern {{ $errors->has('to_date') ? 'is-invalid' : '' }}"
-                                                        placeholder="Sanani tanlang"
+                                                        placeholder="{{ __('action.choose_date') }}"
                                                         value="{{ $toDate }}"
                                                         readonly
                                                         required
@@ -219,7 +219,7 @@
                                                     type="text"
                                                     name="doc_date"
                                                     class="date-input form-control-modern {{ $errors->has('doc_date') ? 'is-invalid' : '' }}"
-                                                    placeholder="Sanani tanlang"
+                                                    placeholder="{{ __('action.choose_date') }}"
                                                     value="{{ date('Y-m-d', strtotime($document->doc_date)) }}"
                                                     readonly
                                                     required
@@ -317,8 +317,8 @@
                                         <div class="upload-icon">
                                             <i data-lucide="upload-cloud"></i>
                                         </div>
-                                        <h4>Faylni yuklash</h4>
-                                        <p>DOC yoki DOCX faylni bu yerga qo'ying</p>
+                                        <h4>{{ __('action.upload_file') }}</h4>
+                                        <p>{{ __('action.paste_doc_file') }}</p>
                                         <input type="file" accept=".doc, .docx" name="main_file" id="fileInput" style="display: none;">
                                     </div>
 
@@ -328,7 +328,7 @@
                                             <i data-lucide="monitor"></i>
                                         </div>
                                         <h4>Web Word Office</h4>
-                                        <p>Onlayn muharrir orqali yaratish</p>
+                                        <p>{{ __('action.create_via_editor') }}</p>
                                     </div>
                                 </div>
 
