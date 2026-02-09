@@ -139,7 +139,7 @@
                                     <i data-lucide="award"></i>
                                     {{ __('field.current_subscription') }}
                                 </th>
-                                <th>
+                                <th style="text-align: left;">
                                     <i data-lucide="users"></i>
                                     {{ __('field.users') }}
                                 </th>
