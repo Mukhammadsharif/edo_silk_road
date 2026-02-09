@@ -106,7 +106,9 @@ class DocumentController extends Controller
                 ->get(),
             'confidences' => ConfidentialTypes::where('status', 1)
                 ->get(),
-            'departmentJournals' => DepartmentJournals::where('type', 'incoming')->where('status', 1)->get(),
+            'departmentJournals' => DepartmentJournals::whereHas('department', function ($query) {
+                $query->where('org_unit_id', $this->organizationId());
+            })->where('type', 'incoming')->where('status', 1)->get(),
         ];
     }
 
@@ -319,7 +321,9 @@ class DocumentController extends Controller
 
         $organizations = DocumentOrganizations::where('for_doc_type', $journal->journal->id)->get();
 
-        $departmentJournals = DepartmentJournals::where('status', 1)->get();
+        $departmentJournals = DepartmentJournals::whereHas('department', function ($query) {
+            $query->where('org_unit_id', $this->organizationId());
+        })->where('status', 1)->get();
 
         if ($type == 'incoming') {
 
