@@ -41,11 +41,11 @@ class MenuListController extends Controller
         //
         $input = $request->input('input');
 
-        $models = MenuList::where('title', 'like', '%'.$input.'%')
-            ->orWhere('url_path', 'like', '%'.$input.'%')
-            ->orWhere('code', 'like', '%'.$input.'%')
+        $models = MenuList::where('title', 'ILIKE', '%'.$input.'%')
+            ->orWhere('url_path', 'ILIKE', '%'.$input.'%')
+            ->orWhere('code', 'ILIKE', '%'.$input.'%')
             /*->orWhereHas('coreMenu', function($query) use($input){
-                $query->where('title','like', '%'.$input.'%');
+                $query->where('title','ILIKE', '%'.$input.'%');
             })*/
             ->orderBy('created_at', 'DESC')
             ->paginate(25);

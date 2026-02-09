@@ -108,8 +108,8 @@ class ProtocolApiEmpHrOrdersController extends Controller
             // Поиск по тексту
             if (trim($s_text)) {
                 $search->whereHas('document', function ($query) use ($s_text) {
-                    $query->where('doc_name', 'LIKE', '%' . $s_text . '%')
-                        ->orWhere('doc_number', 'LIKE', '%' . $s_text . '%');
+                    $query->where('doc_name', 'ILIKE', '%' . $s_text . '%')
+                        ->orWhere('doc_number', 'ILIKE', '%' . $s_text . '%');
                 });
             }
 

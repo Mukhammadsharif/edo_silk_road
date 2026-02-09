@@ -67,7 +67,7 @@ class UserController extends Controller
                 $s_text1 = $this->latinToCyrillic($s_text);
             }*/
             $search->whereHas('userPersonal', function ($query) use ($s_text) {
-                $query->where(DB::raw("CONCAT_WS(' ', l_name, f_name, m_name)"), 'like', '%'.$s_text.'%');
+                $query->where(DB::raw("CONCAT_WS(' ', l_name, f_name, m_name)"), 'ILIKE', '%'.$s_text.'%');
             });
         }
 

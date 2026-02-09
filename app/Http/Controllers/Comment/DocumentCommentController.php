@@ -69,7 +69,7 @@ class DocumentCommentController extends Controller
         if($keyword != ''){
             $comments = DocumentCommentUser::with(['comment.createdUser.personal', 'userWork.personal'])
                 ->whereHas('comment.createdUser.personal', function ($query) use($keyword) {
-                    $query->where(DB::raw("CONCAT_WS(' ', l_name, f_name, m_name)"), 'like', '%'.$keyword.'%');
+                    $query->where(DB::raw("CONCAT_WS(' ', l_name, f_name, m_name)"), 'ILIKE', '%'.$keyword.'%');
                 })->whereHas('comment', function ($query1) {
                     $query1->where('created_date', '>=', Carbon::now()->subDays(30)->toDateTimeString());
                 })->whereIn('user_id', $this->authActiveUserIds())

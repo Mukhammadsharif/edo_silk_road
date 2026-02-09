@@ -35,7 +35,7 @@ class StatusListController extends Controller
             ->get();
 
         if (trim(''.$s_text.'')) {
-            $search->where('title', 'like', "%{$s_text}%");
+            $search->where('title', 'ILIKE', "%{$s_text}%");
         }
 
         if ($s_type){
@@ -130,8 +130,8 @@ class StatusListController extends Controller
 
     public function search($query)
     {
-        $models = StatusList::where('title', 'like', '%'.$query.'%')
-            ->orWhere('type', 'like', '%'.$query.'%')
+        $models = StatusList::where('title', 'ILIKE', '%'.$query.'%')
+            ->orWhere('type', 'ILIKE', '%'.$query.'%')
             ->orderBy('type')
             ->paginate(25);
 

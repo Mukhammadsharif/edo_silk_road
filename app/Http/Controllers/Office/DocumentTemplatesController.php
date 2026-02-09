@@ -21,7 +21,7 @@ class DocumentTemplatesController extends Controller
 
         if (trim(''.$doc_name.'')) {
             $search->whereHas('document', function ($query) use ($doc_name) {
-                $query->where('title', 'like', '%'.$doc_name.'%');
+                $query->where('title', 'ILIKE', '%'.$doc_name.'%');
             });
         }
 

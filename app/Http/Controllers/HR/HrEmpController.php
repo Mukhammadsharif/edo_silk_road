@@ -47,9 +47,9 @@ class HrEmpController extends Controller
 
         if (trim(''.$s_text.'')) {
             $search->whereHas('userPersonal', function ($query) use ($s_text) {
-                $query->where(DB::raw("CONCAT_WS(' ', l_name, f_name, m_name)"), 'like', '%'.$s_text.'%');
+                $query->where(DB::raw("CONCAT_WS(' ', l_name, f_name, m_name)"), 'ILIKE', '%'.$s_text.'%');
             })->orWhere(function ($query1) use ($s_text) {
-                $query1->where('email', 'LIKE', '%'.$s_text.'%')->orWhere('username', 'LIKE', '%'.$s_text.'%');
+                $query1->where('email', 'ILIKE', '%'.$s_text.'%')->orWhere('username', 'ILIKE', '%'.$s_text.'%');
             });
         }
 
