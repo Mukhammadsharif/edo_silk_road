@@ -243,9 +243,16 @@ class DepartmentController extends Controller
 
         $departments = Department::where('org_unit_id', $model->org_unit_id)->where('status', 1)->orderBy('order_number')->get();
 
-        $organizations = OrganizationUnits::where('status', 1)
-            ->orderBy('level')
-            ->get();
+        if ($this->isSuperUser()) {
+            $organizations = OrganizationUnits::where('status', 1)
+                ->orderBy('level')
+                ->get();
+        } else {
+            $organizations = OrganizationUnits::where('id', $this->organizationId())
+                ->where('status', 1)
+                ->orderBy('level')
+                ->get();
+        }
 
         return view('admin.departments.edit', compact('model', 'departments', 'parentDepartments', 'organizations'));
     }
