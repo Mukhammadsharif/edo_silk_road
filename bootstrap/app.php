@@ -4,7 +4,6 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\Localization;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 use Illuminate\Routing\Middleware\SubstituteBindings;
@@ -30,7 +29,20 @@ return Application::configure(basePath: dirname(__DIR__))
         // Append middleware to the 'web' group
         $middleware->web(append: [
             Localization::class,
-            VerifyCsrfToken::class,
+        ]);
+
+        // Настройка CSRF исключений (вместо VerifyCsrfToken в web group)
+        $middleware->validateCsrfTokens(except: [
+            'telegram/webhook',
+            'callback',
+            '/callback',
+            'api/callback',
+            '/api/callback',
+            'login',
+            'api/*',
+            'e-imzo/*',
+            '/e-imzo/*',
+            'e-imzo/backend-auth',
         ]);
 
         // Define middleware aliases
