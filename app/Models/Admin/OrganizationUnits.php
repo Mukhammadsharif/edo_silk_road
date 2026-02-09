@@ -163,6 +163,11 @@ class OrganizationUnits extends Model
         return $this->hasMany(UserPosition::class, 'org_id', 'id')->where('status', 1);
     }
 
+    public function users()
+    {
+        return $this->hasMany(User::class, 'org_unit_id', 'id')->where('status', 1);
+    }
+
     public function subscriptions()
     {
         return $this->hasMany(Subscriptions::class, 'org_unit_id');

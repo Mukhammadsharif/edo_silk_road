@@ -97,3 +97,21 @@
     box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
     color: white;
 }
+
+.tariff-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 6px;
+    background: linear-gradient(135deg, #f5f0ff 0%, #e9dcff 100%);
+    border: 2px solid #794DFD;
+    border-radius: 8px;
+    font-weight: 700;
+    color: #794DFD;
+    font-size: 13px;
+}
+
+.tariff-badge i {
+    width: 16px;
+    height: 16px;
+}

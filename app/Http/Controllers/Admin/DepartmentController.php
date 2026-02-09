@@ -83,7 +83,7 @@ class DepartmentController extends Controller
             'name_kr' => $request->name_kr,
             'name_ru' => $request->name_ru,
             'name_en' => $request->name_en,
-            'parent_id' => $parent_id,
+            'parent_id' => $parent_id??0,
             'tax_number' => $request->tax_number,
             'owner_user_id' => $request->owner_user_id??1,
             'level' => $level,
@@ -104,7 +104,7 @@ class DepartmentController extends Controller
 
         $organizations = OrganizationUnits::where('status', 1)->where('id', '!=', $id)->get();
 
-        $users = User::where('status', 1)->get();
+        $users = User::where('org_unit_id', $id)->where('status', 1)->get();
 
         return view('admin.organizations.edit', compact('model', 'organizations', 'parentOrganizations', 'users'));
     }
@@ -134,7 +134,7 @@ class DepartmentController extends Controller
                 'name_ru' => $request->name_ru,
                 'name_en' => $request->name_en,
                 'status' => $request->status??1,
-                'parent_id' => $request->parent_id,
+                'parent_id' => $request->parent_id??0,
                 'tax_number' => $request->tax_number,
                 'owner_user_id' => $request->owner_user_id??1,
                 'level' => $level
