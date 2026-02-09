@@ -74,7 +74,7 @@
                     <div class="form-section">
                         <div class="section-header">
                             <i data-lucide="file-text"></i>
-                            <h3>Hujjat tafsilotlari</h3>
+                            <h3>{{ __('field.doc_details') }}</h3>
                         </div>
 
                         <div class="form-row-modern">
@@ -155,7 +155,7 @@
                                 <input type="text" name="doc_name"
                                        class="form-control-modern {{ $errors->has('doc_name') ? 'is-invalid' : '' }}"
                                        value="{{ old('doc_name') }}"
-                                       placeholder="Hujjat nomini kiriting..."
+                                       placeholder="{{ __('field.type_doc_title') }}"
                                        required />
                                 {!! $errors->first('doc_name', '<p class="error-text">:message</p>') !!}
                             </div>
@@ -168,7 +168,7 @@
                                 <input type="text" name="doc_number"
                                        class="form-control-modern"
                                        value="{{ old('doc_number') }}"
-                                       placeholder="Raqam">
+                                       placeholder="{{ __('field.number') }}">
                             </div>
                         </div>
 
@@ -216,8 +216,8 @@
                                     <div class="upload-icon">
                                         <i data-lucide="upload-cloud"></i>
                                     </div>
-                                    <h4>Faylni yuklash</h4>
-                                    <p>DOC yoki DOCX faylni bu yerga qo'ying</p>
+                                    <h4>{{ __('action.upload_file') }}</h4>
+                                    <p>{{ __('action.paste_doc_file') }}</p>
                                     <input type="file" accept=".doc, .docx" name="main_file" id="fileInput" style="display: none;">
                                 </div>
 
@@ -227,7 +227,7 @@
                                         <i data-lucide="monitor"></i>
                                     </div>
                                     <h4>Web Word Office</h4>
-                                    <p>Onlayn muharrir orqali yaratish</p>
+                                    <p>{{ __('action.create_via_editor') }}</p>
                                 </div>
                             </div>
 
@@ -239,7 +239,7 @@
                             @if(!Auth::user()->currentSubscription)
                                 <div class="subscription-warning">
                                     <i data-lucide="alert-circle"></i>
-                                    <span>Hujjat yaratish uchun faol obuna kerak</span>
+                                    <span>{{ __('field.need_subscription_for_creating_docs') }}</span>
                                 </div>
                             @endif
 

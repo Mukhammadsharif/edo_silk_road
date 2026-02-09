@@ -42,7 +42,7 @@
             <input type="text" name="doc_name"
                    class="form-control-modern {{ $errors->has('doc_name') ? 'is-invalid' : '' }}"
                    value="{{ old('doc_name') }}"
-                   placeholder="Hujjat nomini kiriting..."
+                   placeholder="{{ __('field.type_doc_title') }}"
                    required />
             {!! $errors->first('doc_name', '<p class="error-text">:message</p>') !!}
         </div>
@@ -55,7 +55,7 @@
             <input type="text" name="doc_number"
                    class="form-control-modern"
                    value="{{ old('doc_number') }}"
-                   placeholder="Raqam">
+                   placeholder="{{ __('field.number') }}">
         </div>
     </div>
 
@@ -152,7 +152,7 @@
         @if(!Auth::user()->currentSubscription)
             <div class="subscription-warning">
                 <i data-lucide="alert-circle"></i>
-                <span>Hujjat yaratish uchun faol obuna kerak</span>
+                <span>{{ __('field.need_subscription_for_creating_docs') }}</span>
             </div>
         @endif
 

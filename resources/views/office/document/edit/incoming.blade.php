@@ -95,7 +95,7 @@
                     <div class="form-section">
                         <div class="section-header">
                             <i data-lucide="file-text"></i>
-                            <h3>Hujjat tafsilotlari</h3>
+                            <h3>{{ __('field.doc_details') }}</h3>
                         </div>
 
                         <div class="modern-form-body">
@@ -157,7 +157,7 @@
                                                 type="text"
                                                 name="doc_date"
                                                 class="date-input form-control-modern {{ $errors->has('doc_date') ? 'is-invalid' : '' }}"
-                                                placeholder="Sanani tanlang"
+                                                placeholder="{{ __('action.choose_date') }}"
                                                 value="{{ $document->doc_date??'' }}"
                                                 readonly
                                                 required
@@ -186,7 +186,7 @@
                                         <span class="required">*</span>
                                     </label>
                                     <input type="text" name="doc_name" class="form-control-modern {{ $errors->has('doc_name') ? 'is-invalid' : '' }}"
-                                           value="{{ $document->doc_name??'' }}" placeholder="Hujjat nomini kiriting..." required/>
+                                           value="{{ $document->doc_name??'' }}" placeholder="{{ __('field.type_doc_title') }}" required/>
                                     {!! $errors->first('doc_name', '<p class="error-text">:message</p>') !!}
                                 </div>
 

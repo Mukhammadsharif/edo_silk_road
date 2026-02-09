@@ -16,7 +16,7 @@
             <div class="col-md-3 mt-15">
                 <a href="{{ route('office.doc.create', ['document_key' => $document_params['document_key']]) }}"
                    class="btn btn-outline-primary">
-                    Davom ettirish <i class="ik ik-chevrons-right"></i>
+                    {{ __('field.continue') }} <i data-lucide="chevrons-right"></i>
                 </a>
             </div>
         </div>
