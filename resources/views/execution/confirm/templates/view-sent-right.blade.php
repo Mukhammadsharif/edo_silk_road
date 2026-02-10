@@ -79,7 +79,7 @@
                                         </label><br>
                                         <label id="message"></label>
                                         <select name="key" class="form-control form-control-primary select2"
-                                                style="width: 100%"
+                                                style="width: 100% !important;"
                                                 onchange="cbChanged(this)">
                                         </select>
                                     </div>
@@ -89,13 +89,13 @@
                                     </label><br>
                                     @if($signType->doc_sign_type === 2)
                                         <button type="submit"
-                                                class="btn-modern btn-outline-success m-sm-1 confirmBtn modal-bg-class"
+                                                class="btn-modern btn-success m-sm-1 confirmBtn modal-bg-class"
                                                 onclick="signLogin()">
                                             <span class="confirm_type">{{ __('action.to_sign') }}</span> (LOGIN)
                                         </button>
                                     @else
                                         <button type="button"
-                                                class="btn-modern btn-outline-success confirmBtn modal-bg-class"
+                                                class="btn-modern btn-success confirmBtn modal-bg-class"
                                                 onclick="sign()">
                                             <span class="confirm_type">{{ __('action.to_sign') }}</span> (ERI)
                                         </button>

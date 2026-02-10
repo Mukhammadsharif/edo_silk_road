@@ -433,7 +433,7 @@
                                 <label><i data-lucide="key-round"></i> {{ __('action.select_ecp_key') }}
                                 </label><br>
                                 <label id="message"></label>
-                                <select name="key" class="form-control form-control-primary select21" style="width: 100%"
+                                <select name="key" class="form-control form-control-primary select21" style="width: 100% !important;"
                                         onchange="cbChanged(this)"></select>
                             </div>
                             <div class="col-sm-8 mt-5">

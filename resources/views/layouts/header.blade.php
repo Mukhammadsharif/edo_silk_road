@@ -27,7 +27,6 @@ $request = RequestForOrgs::where('user_id', Auth::id())->first();
 
     <div class="top-menu d-flex align-items-center ms-auto">
 
-
         @php $locale = session()->get('locale', 'uz'); @endphp
         <div class="dropdown language-dropdown">
             <a class="language-toggle d-flex align-items-center" href="#" id="menuDropdown" role="button"
@@ -54,12 +53,11 @@ $request = RequestForOrgs::where('user_id', Auth::id())->first();
         </div>
 
 
-
         <div class="dropdown ms-3">
             <a class="dropdown-toggle d-flex align-items-center justify-content-center text-white" href="#"
                 id="userDropdown" role="button" data-toggle="dropdown"
-                style="background: linear-gradient(to right, #ea4c89, #d6336c); width:32px; height:32px; border-radius:50%; font-weight:bold;">
-                SK
+                style="width:32px; height:32px; border-radius:50%; font-weight:bold;">
+                <img src="{{ $user->image() }}" alt="user-img" style="width:32px; height:32px; border-radius:50%;"/>
             </a>
 
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">

@@ -64,6 +64,10 @@
     @include('e-imzo.e-imzo')
 
     <script type="text/javascript">
+        $('.modal').each(function () {
+            $(this).appendTo('body');
+        });
+
         $(document).ready(function () {
             $.ajaxSetup({
                 headers: {
@@ -74,13 +78,13 @@
                 $('.confirmForm').show();
                 let btn_id = $(this).data('id');
                 let confirm_type = $(this).html();
-                let modal_bg_class = "btn-outline-success";
+                let modal_bg_class = "btn-success";
                 if (btn_id === 2) {
                     confirm_type = "{{ __('cancel') }}";
-                    modal_bg_class = "btn-outline-warning";
+                    modal_bg_class = "btn-warning";
                 } else if (btn_id === 3) {
                     confirm_type = "{{ __('re-editing') }}";
-                    modal_bg_class = "btn-outline-warning";
+                    modal_bg_class = "btn-warning";
                 }
                 $('.modal-bg-class').removeClass().addClass(`btn-modern modal-bg-class ${modal_bg_class}`);
                 $('.confirm_type').html(confirm_type);

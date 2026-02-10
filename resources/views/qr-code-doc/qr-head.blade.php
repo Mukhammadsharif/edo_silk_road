@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="{{ asset('/assets/node_modules/ionicons/dist/css/ionicons.min.css') }}">
 
 
-    <link rel="icon" href="{{ $favicon }}" type="image/x-icon"/>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
     <link rel="stylesheet" href="{{ asset('/qr-doc/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('/qr-doc/css/style.min.css') }}">
 </head>
