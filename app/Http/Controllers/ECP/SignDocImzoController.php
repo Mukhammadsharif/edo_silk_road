@@ -761,11 +761,11 @@ class SignDocImzoController extends Controller
         $officeEmpPersonal->user_id = $userId;
         $officeEmpPersonal->is_emp = 2;
         $officeEmpPersonal->doc_pin = $pin;
-        $officeEmpPersonal->doc_number = 'AD1234567';
+        $officeEmpPersonal->doc_number = null;
         $officeEmpPersonal->doc_type = 2;
-        $officeEmpPersonal->birthday = '1991-01-01';
+        $officeEmpPersonal->birthday = null;
         $officeEmpPersonal->gender = 1;
-        $officeEmpPersonal->phone = 971253456;
+        $officeEmpPersonal->phone = null;
         $officeEmpPersonal->l_name = $lastName;
         $officeEmpPersonal->f_name = $firstName;
         $officeEmpPersonal->m_name = $middleName;
@@ -797,6 +797,11 @@ class SignDocImzoController extends Controller
 
         if ($role) {
             $user->assignRole([$role->id]);
+        }
+
+        if($isOrg) {
+            $directorRole = Role::where('name', 'Director')->first();
+            $user->assignRole([$directorRole->id]);
         }
     }
 

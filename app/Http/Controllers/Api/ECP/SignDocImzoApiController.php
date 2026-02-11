@@ -44,8 +44,12 @@ class SignDocImzoApiController extends Controller
         'send_to_ag_out_doc', 'send_sign_out_doc', 'sign_out_doc'
     ];
 
-    private string $eriSrvIpLoc  = 'http://172.16.100.124:8080';
-    private string $eriSrvIpProd = 'http://172.16.100.124:8080';
+    public string $eriSrvIp;
+
+    public function __construct()
+    {
+        $this->eriSrvIp = config('services.e-imzo-server.url');
+    }
 
     /**
      * @OA\Post(
@@ -159,7 +163,7 @@ class SignDocImzoApiController extends Controller
     public function frontChallenge(): JsonResponse
     {
         try {
-            $response = Http::get($this->eriSrvIpLoc.'/frontend/challenge?_uc='.now().'_'.rand());
+            $response = Http::get($this->eriSrvIp.'/frontend/challenge?_uc='.now().'_'.rand());
 
             return response()->json([
                 'success' => true,
@@ -808,9 +812,7 @@ class SignDocImzoApiController extends Controller
 
     private function curlPost(string $path, string $postData): ?string
     {
-        $url = (in_array($_SERVER['HTTP_HOST'] ?? '', ['edo-demo.loc', '172.17.110.44', 'localhost:8000']))
-            ? $this->eriSrvIpLoc . $path
-            : $this->eriSrvIpProd . $path;
+        $url = $this->eriSrvIp . $path;
 
         $ch = curl_init($url);
         curl_setopt_array($ch, [
@@ -818,8 +820,8 @@ class SignDocImzoApiController extends Controller
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => $postData,
             CURLOPT_HTTPHEADER     => [
-                'X-Real-IP: 84.54.116.179',
-                'Host: edo.eai.uz',
+                'X-Real-IP: 185.183.242.32',
+                'Host: edoline.uz',
                 'Content-Type: application/json'
             ],
         ]);
