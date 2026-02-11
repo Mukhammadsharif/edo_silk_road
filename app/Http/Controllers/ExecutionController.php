@@ -674,9 +674,10 @@ class ExecutionController extends Controller
         if ($execution_step) {
             $execution_roles_ids = JournalExecutionStepRoles::where('j_exec_step_id', $execution_step->id)->pluck('role_id')->toArray();
             $user_roles = UserRole::whereIn('role_id', $execution_roles_ids)->pluck('model_id')->toArray();
-            $execution_users = UserWorkHistory::whereIn('user_id', $user_roles)->whereHas('user', function ($query) {
-                $query->where('status', 1);
-            })->where('status', 1)->limit(5)->get();
+            $execution_users = UserWorkHistory::where('org_id', $this->organizationId())
+                ->whereIn('user_id', $user_roles)->whereHas('user', function ($query) {
+                    $query->where('status', 1);
+                })->where('status', 1)->limit(5)->get();
         }
 
         $resolutionExecRoles = ResolutionExecutionRoles::where('status', 1)->orderBy('id')->get();
@@ -824,12 +825,13 @@ class ExecutionController extends Controller
 
         $execution_roles_ids = JournalExecutionStepRoles::where('j_exec_step_id', $execution_step->id)->pluck('role_id')->toArray();
         $user_roles = UserRole::whereIn('role_id', $execution_roles_ids)->pluck('model_id')->toArray();
-        $execution_users = UserWorkHistory::whereIn('user_id', $user_roles)->whereHas('user', function ($query) {
-            $query->where('status', 1);
-        })->where('status', 1)
-          ->whereNotIn('id', $selectedPerformers->pluck('to_user')->toArray())
-          ->whereNotIn('id', $selectedAddPerformers->pluck('to_user')->toArray())
-          ->get();
+        $execution_users = UserWorkHistory::where('org_id', $this->organizationId())
+            ->whereIn('user_id', $user_roles)->whereHas('user', function ($query) {
+                $query->where('status', 1);
+            })->where('status', 1)
+            ->whereNotIn('id', $selectedPerformers->pluck('to_user')->toArray())
+            ->whereNotIn('id', $selectedAddPerformers->pluck('to_user')->toArray())
+            ->get();
 
         $resolutionExecRoles = ResolutionExecutionRoles::where('status', 1)->orderBy('id')->get();
 
@@ -1439,6 +1441,7 @@ class ExecutionController extends Controller
 
         if (trim(''.$user_fio.'')) {
             $users = UserWorkHistory::with('personal', 'userPost')
+                ->where('org_id', $this->organizationId())
                 ->whereHas('personal', function ($query) use ($user_fio) {
                     $query->where(DB::raw("CONCAT_WS(' ', l_name, f_name, m_name)"), 'ILIKE', '%'.$user_fio.'%');
                 })
