@@ -311,28 +311,30 @@
 
 <script>
     // Configuration
-    const API_BASE_URL = '{{ url("/api/v1/ecp/mobile") }}';
-    const AUTH_URL = API_BASE_URL + '/auth';
-    const SIGN_URL = API_BASE_URL + '/sign';
-    const STATUS_URL = API_BASE_URL + '/status';
-    const AUTHENTICATE_URL = API_BASE_URL + '/authenticate';
-    const VERIFY_URL = API_BASE_URL + '/verify';
+    var API_BASE_URL = '{{ url("/api/v1/ecp/mobile") }}';
+    var AUTH_URL = API_BASE_URL + '/auth';
+    var SIGN_URL = API_BASE_URL + '/sign';
+    var STATUS_URL = API_BASE_URL + '/status';
+    var AUTHENTICATE_URL = API_BASE_URL + '/authenticate';
+    var VERIFY_URL = API_BASE_URL + '/verify';
 
-    // CSRF Token
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
+    // Global variables - use var for better compatibility
+    var currentDocumentId = null;
+    var currentSiteId = null;
+    var currentChallenge = null;
+    var currentMode = null;
+    var statusCheckInterval = null;
+    var qrCodeInstance = null;
+    var currentDeeplink = null;
+
+    // CSRF Token setup
+    $(document).ready(function () {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
     });
-
-    // Global variables
-    let currentDocumentId = null;
-    let currentSiteId = null;
-    let currentChallenge = null;
-    let currentMode = null;
-    let statusCheckInterval = null;
-    let qrCodeInstance = null;
-    let currentDeeplink = null;
 
     function isMobileDevice() {
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -442,12 +444,18 @@
     }
 
     function startStatusCheck(documentId, mode) {
+        if (!documentId) {
+            console.error('DocumentID is null or undefined');
+            showResult('Ошибка', 'Не удалось получить DocumentID', true);
+            return;
+        }
+
         stopStatusCheck();
 
-        let checkCount = 0;
-        const maxChecks = 120;
+        var checkCount = 0;
+        var maxChecks = 120;
 
-        statusCheckInterval = setInterval(() => {
+        statusCheckInterval = setInterval(function () {
             checkCount++;
 
             if (checkCount > maxChecks) {
@@ -476,10 +484,10 @@
 
                         hideQRSection();
                     } else if (response.status === 2) {
-                        showStatus(`Ожидание подписи... (${checkCount}с)`);
+                        showStatus('Ожидание подписи... (' + checkCount + 'с)');
                     } else if (response.status < 0) {
                         stopStatusCheck();
-                        showResult('Ошибка', `Код ошибки: ${response.status}\n${response.message || 'Неизвестная ошибка'}`, true);
+                        showResult('Ошибка', 'Код ошибки: ' + response.status + '\n' + (response.message || 'Неизвестная ошибка'), true);
                         hideQRSection();
                     }
                 },
@@ -567,6 +575,7 @@
     }
 
     function startAuth() {
+        console.log('Starting authentication...');
         hideResult();
         hideQRSection();
         hideStatus();
@@ -576,24 +585,35 @@
             url: AUTH_URL,
             type: 'POST',
             success: function (response) {
+                console.log('Auth response:', response);
+
                 if (response.status === 1) {
-                    currentDocumentId = response.documentId;
-                    currentSiteId = response.siteId;
+                    currentDocumentId = response?.documentId;
+                    currentSiteId = response?.siteId;
                     currentChallenge = response.challenge;
                     currentMode = 'auth';
 
+                    console.log('DocumentID:', currentDocumentId);
+                    console.log('SiteID:', currentSiteId);
+
+                    if (!currentDocumentId || !currentSiteId || !currentChallenge) {
+                        hideLoader();
+                        showResult('Ошибка', 'Не получены необходимые данные от сервера', true);
+                        return;
+                    }
+
                     hideLoader();
 
-                    const {qrCode} = generateQRCode(currentDocumentId, currentSiteId, currentChallenge);
+                    var qrData = generateQRCode(currentDocumentId, currentSiteId, currentChallenge);
 
-                    currentDeeplink = createDeeplink('auth', qrCode);
+                    currentDeeplink = createDeeplink('auth', qrData.qrCode);
                     $('#eimzo-deeplinkBtn').attr('href', currentDeeplink);
 
                     $('#eimzo-qrTitle').text('🔑 Сканируйте для авторизации');
                     showQRSection();
 
                     if (isMobileDevice()) {
-                        setTimeout(() => {
+                        setTimeout(function () {
                             openDeeplink();
                         }, 500);
                     }
@@ -606,8 +626,9 @@
                 }
             },
             error: function (error) {
+                console.error('Auth error:', error);
                 hideLoader();
-                showResult('Ошибка', 'Не удалось выполнить запрос: ' + error.responseText, true);
+                showResult('Ошибка', 'Не удалось выполнить запрос: ' + (error.responseText || error.statusText), true);
             }
         });
     }
