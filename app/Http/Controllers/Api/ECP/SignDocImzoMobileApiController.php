@@ -314,10 +314,18 @@ class SignDocImzoMobileApiController extends Controller
                 $pin = $responseJson['subjectCertificateInfo']['subjectName']['1.2.860.3.16.1.2'] ?? null;
                 $userPersonalInfo = UserPersonalInfo::where('doc_pin', $pin)->first();
                 if ($userPersonalInfo) {
-                    $user = User::where('id', $userPersonalInfo->user_id)->first();
-                    $token = $user->createToken('ecp-auth')->plainTextToken;
-
-                    $responseJson['bearer'] = $token;
+                    $user = User::where('id', $userPersonalInfo->user_id)->where('status', 1)->first();
+                    if ($user) {
+                        $token = $user->createToken('ecp-auth')->plainTextToken;
+                        $responseJson['bearer'] = $token;
+                        $responseJson['userStatus'] = true;
+                    } else {
+                        $responseJson['bearer'] = 'Not authenticated';
+                        $responseJson['userStatus'] = false;
+                    }
+                } else {
+                    $responseJson['bearer'] = 'Not authenticated';
+                    $responseJson['userStatus'] = false;
                 }
             }
 
