@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\TariffController;
 use App\Http\Controllers\DocController;
 use App\Http\Controllers\ECP\SignDocImzoController;
 use App\Http\Controllers\ECP\SignLoginController;
+use App\Http\Controllers\EimzoTestController;
 use App\Http\Controllers\ExecutionController;
 use App\Http\Controllers\File\FileController;
 use App\Http\Controllers\MessageController;
@@ -23,6 +24,9 @@ use App\Http\Controllers\ProtocolsController;
 use App\Http\Controllers\QrCodeDocController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TelegramWebhookController;
+use App\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -420,3 +424,45 @@ Route::get('/send-telegram-notification/{user_id}', [TelegramWebhookController::
 Route::get('/proxy-document/{path}', [DocumentProxyController::class, 'show'])
     ->name('document.proxy')
     ->where('path', '[A-Za-z0-9+/=]+');
+
+Route::get('/eimzo-test', [EimzoTestController::class, 'index'])
+    ->name('eimzo.test');
+
+//Route::get('/test-full-conversion', function() {
+//    $filePath = 'ood/2026/2/6/1f7af46d8f43_1770379540.docx';
+//    $encodedPath = base64_encode($filePath);
+//    $documentUrl = url('/proxy-document/' . $encodedPath);
+//
+//    $body = [
+//        'async' => false,
+//        'url' => $documentUrl,
+//        'outputtype' => 'pdf',
+//        'filetype' => 'docx',
+//        'title' => 'test',
+//        'key' => 'test_' . time(),
+//    ];
+//
+//    $jwtSecret = config('only-office.ONLY_OFFICE_JWT_SECRET');
+//    $jwtToken = \Firebase\JWT\JWT::encode($body, $jwtSecret, 'HS256');
+//
+//    try {
+//        $response = \Illuminate\Support\Facades\Http::timeout(120)
+//            ->withToken($jwtToken)
+//            ->withHeaders(['Content-Type' => 'application/json'])
+//            ->post('http://172.16.1.120:8080/converter', $body);
+//
+//        return response()->json([
+//            'status' => $response->status(),
+//            'body' => $response->json(),
+//            'request' => [
+//                'url' => $documentUrl,
+//                'body' => $body,
+//            ],
+//        ]);
+//    } catch (\Exception $e) {
+//        return response()->json([
+//            'error' => $e->getMessage(),
+//            'request_url' => $documentUrl,
+//        ], 500);
+//    }
+//});
