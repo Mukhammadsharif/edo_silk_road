@@ -177,101 +177,106 @@ class SignDocImzoMobileApiController extends Controller
      *     )
      * )
      */
+    public function mobileUpload(Request $request): JsonResponse
+    {
+        try {
+            $data = $request->all();
+            $documentId = $data['document_id'];
+            $pkcs7 = $data['pkcs7_b64'];
+            $serialNumber = $data['serial_number'];
+
+            $path = '/frontend/mobile/upload';
+            $postData = http_build_query([
+                'document_id' => $documentId,
+                'pkcs7_b64' => $pkcs7,
+                'serial_number' => $serialNumber
+            ]);
+
+            sleep(1);
+
+            $this->mobileVerify($data['document_id']);
+
+            $this->curlPostForm($path, $postData);
+
+            return response()->json([
+                'status' => 1,
+                'message' => 'PKCS#7 uploaded successfully'
+            ]);
+
+        } catch (\Throwable $e) {
+            Log::error('Error uploading mobile PKCS7', [
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'status' => 0,
+                'message' => 'Upload failed'
+            ], 500);
+        }
+    }
+
 //    public function mobileUpload(Request $request): JsonResponse
 //    {
 //        try {
-//            $documentId = $request->input('documentId');
-//            $pkcs7 = $request->input('pkcs7');
+//            $documentId   = $request->input('documentId');
+//            $pkcs7        = $request->input('pkcs7');
 //            $serialNumber = $request->input('serialNumber', '');
+//
+//            $data = $request->all();
+//
+//            // ←─────────────────────────────── самое важное ────────────────────────────────
+//            \Log::debug('mobileUpload called', [
+//                'document_id' => $data['document_id'],
+//                'pkcs7_b64' => $data['pkcs7_b64'],
+//                'serial_number' => $data['serial_number'],
+//                'documentId'   => $documentId,
+//                'serialNumber' => $serialNumber,
+//                'pkcs7_length' => strlen($pkcs7),
+//                'pkcs7_preview'=> substr($pkcs7, 0, 100) . (strlen($pkcs7) > 100 ? '...' : ''),
+//                'ip'           => $request->ip(),
+//                'user_agent'   => $request->userAgent(),
+//                'all_input'    => $request->except(['pkcs7']), // pkcs7 слишком большой — не пишем целиком
+//            ]);
+//            // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 //
 //            $path = '/frontend/mobile/upload';
 //            $postData = http_build_query([
-//                'documentId' => $documentId,
-//                'pkcs7' => $pkcs7,
+//                'documentId'   => $documentId,
+//                'pkcs7'        => $pkcs7,
 //                'serialNumber' => $serialNumber
 //            ]);
 //
 //            $this->curlPostForm($path, $postData);
 //
 //            return response()->json([
-//                'status' => 1,
+//                'status'  => 1,
 //                'message' => 'PKCS#7 uploaded successfully'
 //            ]);
 //
 //        } catch (\Throwable $e) {
-//            Log::error('Error uploading mobile PKCS7', [
-//                'error' => $e->getMessage()
+//            \Log::error('mobileUpload failed', [
+//                'message'      => $e->getMessage(),
+//                'file'         => $e->getFile(),
+//                'line'         => $e->getLine(),
+//                'trace'        => $e->getTraceAsString(),
+//                'documentId'   => $documentId   ?? 'not set',
+//                'serialNumber' => $serialNumber ?? 'not set',
+//                'pkcs7_length' => isset($pkcs7) ? strlen($pkcs7) : 'not set',
+//                'request'      => [
+//                    'ip'        => $request->ip(),
+//                    'method'    => $request->method(),
+//                    'url'       => $request->fullUrl(),
+//                    'headers'   => $request->headers->all(),
+//                    'all_input' => $request->except(['pkcs7']),
+//                ]
 //            ]);
 //
 //            return response()->json([
-//                'status' => 0,
+//                'status'  => 0,
 //                'message' => 'Upload failed'
 //            ], 500);
 //        }
 //    }
-
-    public function mobileUpload(Request $request): JsonResponse
-    {
-        try {
-            $documentId   = $request->input('documentId');
-            $pkcs7        = $request->input('pkcs7');
-            $serialNumber = $request->input('serialNumber', '');
-
-            $data = $request->all();
-
-            // ←─────────────────────────────── самое важное ────────────────────────────────
-            \Log::debug('mobileUpload called', [
-                'document_id' => $data['document_id'],
-                'pkcs7_b64' => $data['pkcs7_b64'],
-                'serial_number' => $data['serial_number'],
-                'documentId'   => $documentId,
-                'serialNumber' => $serialNumber,
-                'pkcs7_length' => strlen($pkcs7),
-                'pkcs7_preview'=> substr($pkcs7, 0, 100) . (strlen($pkcs7) > 100 ? '...' : ''),
-                'ip'           => $request->ip(),
-                'user_agent'   => $request->userAgent(),
-                'all_input'    => $request->except(['pkcs7']), // pkcs7 слишком большой — не пишем целиком
-            ]);
-            // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
-
-            $path = '/frontend/mobile/upload';
-            $postData = http_build_query([
-                'documentId'   => $documentId,
-                'pkcs7'        => $pkcs7,
-                'serialNumber' => $serialNumber
-            ]);
-
-            $this->curlPostForm($path, $postData);
-
-            return response()->json([
-                'status'  => 1,
-                'message' => 'PKCS#7 uploaded successfully'
-            ]);
-
-        } catch (\Throwable $e) {
-            \Log::error('mobileUpload failed', [
-                'message'      => $e->getMessage(),
-                'file'         => $e->getFile(),
-                'line'         => $e->getLine(),
-                'trace'        => $e->getTraceAsString(),
-                'documentId'   => $documentId   ?? 'not set',
-                'serialNumber' => $serialNumber ?? 'not set',
-                'pkcs7_length' => isset($pkcs7) ? strlen($pkcs7) : 'not set',
-                'request'      => [
-                    'ip'        => $request->ip(),
-                    'method'    => $request->method(),
-                    'url'       => $request->fullUrl(),
-                    'headers'   => $request->headers->all(),
-                    'all_input' => $request->except(['pkcs7']),
-                ]
-            ]);
-
-            return response()->json([
-                'status'  => 0,
-                'message' => 'Upload failed'
-            ], 500);
-        }
-    }
 
     /**
      * @OA\Get(
@@ -408,20 +413,15 @@ class SignDocImzoMobileApiController extends Controller
      *     )
      * )
      */
-    public function mobileVerify(Request $request): JsonResponse
+    public function mobileVerify(Request $request, $documentId): JsonResponse
     {
         try {
-            $documentId = $request->input('documentId');
-            $document = $request->input('document');
 
             $clientIp = $request->ip();
             $host = $request->getHost();
 
             $path = '/backend/mobile/verify';
-            $postData = http_build_query([
-                'documentId' => $documentId,
-                'document' => $document
-            ]);
+            $postData = 'documentId=' . urlencode($documentId) . '&document=' . urlencode(base64_encode("19001"));
 
             $response = $this->curlPostFormBack($path, $postData, $clientIp, $host);
 
