@@ -43,6 +43,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'e-imzo/*',
             '/e-imzo/*',
             'e-imzo/backend-auth',
+            '/frontend/mobile/upload'
         ]);
 
         // Define middleware aliases
