@@ -324,7 +324,7 @@
                                                 </label><br>
                                                 <label id="message"></label>
                                                 <select name="key" class="form-control form-control-primary select2"
-                                                        style="width: 100%"
+                                                        style="width: 100% !important;"
                                                         onchange="cbChanged(this)"></select>
                                             </div>
                                         @endif
@@ -739,7 +739,7 @@
                                         </label><br>
                                         <label id="message"></label>
                                         <select name="key" class="form-control form-control-primary select2"
-                                                style="width: 100%"
+                                                style="width: 100% !important;"
                                                 onchange="cbChanged(this)"></select>
                                     </div>
                                 @endif

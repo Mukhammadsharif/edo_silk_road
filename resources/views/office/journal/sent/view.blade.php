@@ -338,32 +338,31 @@
                         @endif
 
                         @if($journal->status === (int)1)
-                            <div class="card-body confirmForm bg-light mt-5" style="display: none">
+                            <div class="card-body confirmForm bg-light mt-5" style="display: none; max-width: 100%">
                                 <div id="loading" class="loading-gif" style="display: none"></div>
                                 <form name="testform" id="loginSignForm">
-                                    <div class="form-group row">
+                                    <div class="form-group">
                                         @if($signType->doc_sign_type === 1)
-                                            <div class="col-sm-12">
+                                            <div class="">
                                                 <label><i data-lucide="key-round"></i> {{ __('action.select_ecp_key') }}
                                                 </label><br>
                                                 <label id="message"></label>
-                                                <select name="key" class="form-control form-control-primary select2" style="width: 100%"
+                                                <select name="key" class="form-control form-control-primary select2"
+                                                        style="width: 100% !important;"
                                                         onchange="cbChanged(this)"></select>
                                             </div>
                                         @endif
-                                        <div class="col-sm-12 mt-5">
+                                        <div class="">
                                             <label hidden><i data-lucide="key-round"></i> {{ __('action.to_sign_by_key') }}
                                             </label><br>
                                             @if($signType->doc_sign_type === 2)
                                                 <button type="submit" class="btn-modern btn-success modal-bg-class"
                                                         onclick="signLogin()">
-                                                    <i data-lucide="key" class="icon"></i>
                                                     <span class="confirm_type">{{ __('action.to_sign') }}</span> (LOGIN)
                                                 </button>
                                             @else
                                                 <button type="button" class="btn-modern btn-success modal-bg-class"
                                                         onclick="sign()">
-                                                    <i data-lucide="key" class="icon"></i>
                                                     <span class="confirm_type">{{ __('action.to_sign') }}</span> (ERI)
                                                 </button>
                                             @endif
@@ -439,13 +438,13 @@
                 $('.confirmForm').show();
                 let btn_id = $(this).data('id');
                 let confirm_type = $(this).html();
-                let modal_bg_class = "btn-outline-success";
+                let modal_bg_class = "btn-success";
                 if (btn_id === 2) {
                     confirm_type = "{{ __('cancel') }}";
-                    modal_bg_class = "btn-outline-warning";
+                    modal_bg_class = "btn-warning";
                 } else if (btn_id === 3) {
                     confirm_type = "{{ __('re-editing') }}";
-                    modal_bg_class = "btn-outline-warning";
+                    modal_bg_class = "btn-warning";
                 }
                 $('.modal-bg-class').removeClass().addClass(`btn-modern modal-bg-class ${modal_bg_class}`);
                 $('.confirm_type').html(confirm_type);

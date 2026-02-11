@@ -1,7 +1,7 @@
 <head>
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
 
-    <title>EDOLINE </title>
+    <title>EDOLINE</title>
 </head>
 
 @extends('layouts.app')
@@ -113,7 +113,7 @@
             </div>
         </div>
 
-        @if(Auth::user()->pendingSubscription)
+        @if(Auth::user()->organization->pendingSubscription)
             <div class="pending">
                 <div class="subscription-card">
                     <button class="card-close" onclick="closeSubscriptionCard()">
@@ -139,12 +139,62 @@
                             <span class="spinner"></span>
                             Admin tasdiqlashi
                         </div>
-                        <div class="check-item">Dashboardga kirish va boshlash</div>
+                        <div class="check-item pending-item">
+                            <span class="spinner"></span>
+                            Dashboardga kirish va boshlash
+                        </div>
                     </div>
 
                     <div class="actions">
-                        <a href="{{ route('pricing') }}" class="sub-btn sub-btn-outline" >So‘rov tafsilotlari</a>
-                        <a href="mailto:info@edoline.uz" class="sub-btn sub-btn-primary">Support bilan bog‘lanish</a>
+                        <a href="{{ route('pricing') }}" class="sub-btn sub-btn-outline" >
+                            <i data-lucide="receipt-text"></i> So‘rov tafsilotlari
+                        </a>
+                        <a href="mailto:info@edoline.uz" class="sub-btn sub-btn-primary">
+                            <i data-lucide="headset"></i> Support bilan bog‘lanish
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        @if(!Auth::user()->organization->pendingSubscription && !Auth::user()->organization->currentSubscription)
+            <div class="pending">
+                <div class="subscription-card">
+                    <button class="card-close" onclick="closeSubscriptionCard()">
+                        <i data-lucide="x"></i>
+                    </button>
+                    <div class="icon-wrap">⏳</div>
+
+                    <h1>Sizda faol obuna mavjud emas</h1>
+
+                    <div class="status">
+                        Tariflar bo'limidan o'zingizga mos tarifni tanlang
+                    </div>
+
+                    <p class="pending-text">
+                       Administrator tomonidan tasdiqlangandan so'ng tarif faollashadi.
+                    </p>
+
+                    <div class="checklist">
+                        <div class="check-item done">Ro‘yxatdan o‘tish</div>
+                        <div class="check-item pending-item">
+                            <span class="spinner"></span>
+                            Tarif tanlash
+                        </div>
+                        <div class="check-item pending-item">
+                            <span class="spinner"></span>
+                            Admin tasdiqlashi
+                        </div>
+                        <div class="check-item pending-item">
+                            <span class="spinner"></span>
+                            Dashboardga kirish va boshlash
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <a href="{{ route('pricing') }}" class="sub-btn sub-btn-primary" >
+                            <i data-lucide="award"></i> {{ __('field.tariffs') }}
+                        </a>
                     </div>
                 </div>
             </div>
@@ -152,8 +202,6 @@
     </div>
 
     <script>
-        lucide.createIcons();
-
         const chartData = [
             { value: 35, color: '#7B40F2' },
             { value: 25, color: '#8753F4' },

@@ -69,14 +69,12 @@
                 @endphp
 
                 @if($hasChildren || $isKolOrg || $isPrtDocs)
-                    <div class="menu-item {{ $isActive ? 'active' : '' }}" data-menu-id="{{ $item->id }}">
+                    <div class="menu-item {{ $isActive ? 'active' : '' }} menu-item-{{ $item->id }}" data-menu-id="{{ $item->id }}">
                         <div class="menu-header">
                             <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
                                 <i data-lucide="{{ $icon }}" style="width: 22px; height: 22px;"></i>
                                 <span class="menu-text">{{ $menuList->lang($menuList->id) }}</span>
-                                @if($menuCount > 0)
-                                    <span class="badge-count menu-count-{{ $item->id }}">{{ $menuCount }}</span>
-                                @endif
+                                <span class="badge-count menu-count-{{ $item->id }}" style="display: none">{{ $menuCount }}</span>
                             </div>
                             <i data-lucide="chevron-right" class="chevron"></i>
                         </div>
@@ -220,7 +218,7 @@
             </div>
         </div>
 
-        @if(!$isOwner)
+        @if(!$isOwner && $isOrganizationDemo && !$request)
             <div class="request">
                 <div class="rocket-icon">
                     <i data-lucide="rocket" style="width: 30px; height: 30px;"></i>
@@ -244,6 +242,19 @@
             </div>
             <div class="theme-tab" data-theme="dark">
                 <i class="light" data-lucide="moon" style="width: 20px; height: 20px;"></i>
+            </div>
+        </div>
+
+        <div class="sidebar-user-profile-card">
+            <div class="sidebar-user-avatar">
+                <div class="sidebar-avatar-circle">
+                    <i data-lucide="user" class="text-white"></i>
+                </div>
+                <div class="status-indicator"></div>
+            </div>
+            <div class="sidebar-user-info">
+                <p class="sidebar-user-name">{{ $user->userPersonal->shortName()??'' }}</p>
+                <p class="sidebar-user-role">{{ $user->currentWork->position->lang($user->currentWork->position->id)??'User' }}</p>
             </div>
         </div>
     </nav>
@@ -331,8 +342,6 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        lucide.createIcons();
-
         document.querySelectorAll('.menu-header').forEach(header => {
             header.addEventListener('click', function (e) {
                 if (this.tagName === 'A') return;
@@ -399,23 +408,127 @@
                 })
                     .then(response => response.json())
                     .then(data => {
+                        const badge = menuItem.querySelector('.menu-count-' + menuId);
                         if (data.success === 200) {
-                            const badge = menuItem.querySelector('.menu-count-' + menuId);
                             if (badge) {
                                 badge.textContent = data.count;
                                 badge.style.display = data.count > 0 ? 'inline-block' : 'none';
                             }
+                        } else {
+                            badge.style.display = 'none';
                         }
                     })
                     .catch(error => console.error('Menu count error:', error));
             });
         }
-
+        updateMenuCounts()
         setInterval(updateMenuCounts, 30000);
     });
 </script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+<script src="{{ asset('js/vanilla-tilt.min.js') }}"></script>
+
+<style>
+    .sidebar-user-profile-card {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border-radius: 16px;
+        border: 2px solid #e2e8f0;
+        box-shadow: 0 4px 12px rgba(121, 77, 253, 0.08);
+        transition: all 0.3s ease;
+        margin: 0 16px 16px 16px; /* Добавляем отступы как у других элементов */
+    }
+
+    .sidebar-user-profile-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(121, 77, 253, 0.15);
+        border-color: #794DFD;
+    }
+
+    .sidebar-user-avatar {
+        position: relative;
+    }
+
+    .sidebar-avatar-circle {
+        width: 48px; /* Уменьшил размер для компактности */
+        height: 48px;
+        background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(121, 77, 253, 0.3);
+    }
+
+    .sidebar-avatar-circle i {
+        width: 24px;
+        height: 24px;
+        color: white;
+    }
+
+    .status-indicator {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 12px;
+        height: 12px;
+        background: #10b981;
+        border: 2px solid white;
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar-user-info {
+        flex: 1;
+        min-width: 0; /* Для правильного text-overflow */
+    }
+
+    .sidebar-user-name {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 700;
+        color: #1e293b;
+        letter-spacing: -0.3px;
+        line-height: 1.3;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .sidebar-user-role {
+        margin: 0.25rem 0 0 0;
+        font-size: 12px;
+        color: #64748b;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Для collapsed состояния */
+    #sidebar.collapsed .sidebar-user-profile-card {
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 1rem;
+    }
+
+    #sidebar.collapsed .sidebar-user-info {
+        display: none;
+    }
+
+    #sidebar.collapsed .sidebar-avatar-circle {
+        width: 40px;
+        height: 40px;
+    }
+
+    #sidebar.collapsed .sidebar-avatar-circle i {
+        width: 20px;
+        height: 20px;
+    }
+</style>
 
 <style>
     .request {

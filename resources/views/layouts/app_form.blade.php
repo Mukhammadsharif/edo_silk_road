@@ -9,7 +9,7 @@
     <meta name="keywords" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="icon" href="{{ $favicon }}" type="image/x-icon" />
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
 
     <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,600,700,800" rel="stylesheet">
 

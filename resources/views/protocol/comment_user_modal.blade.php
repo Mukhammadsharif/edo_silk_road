@@ -3,11 +3,11 @@
         <div class="modal-content modal-content-modern">
             <div class="modal-header-modern modal-header-notifications">
                 <div class="header-title-modal">
-                    <i data-lucide="bell"></i>
+                    <i data-lucide="bell" class="text-white"></i>
                     <h5>{{ __('message.notifications') }}</h5>
                 </div>
                 <button type="button" class="close-modern" data-dismiss="modal" aria-label="Close">
-                    <i data-lucide="x"></i>
+                    <i data-lucide="x" class="text-white"></i>
                 </button>
             </div>
 
