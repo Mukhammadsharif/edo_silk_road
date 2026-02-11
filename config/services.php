@@ -42,4 +42,23 @@ return [
     'e-imzo-server' => [
         'url' => env('E_IMZO_SERVER_URL', 'http://10.10.20.14:8080'),
     ],
+
+    'e-imzo-mobile' => [
+        // Your Site ID registered in E-IMZO Mobile system
+        'site_id' => env('E_IMZO_MOBILE_SITE_ID', '0000'),
+
+        // Redis configuration for mobile session storage
+        'redis' => [
+            'host' => env('E_IMZO_REDIS_HOST', '127.0.0.1'),
+            'password' => env('E_IMZO_REDIS_PASSWORD', null),
+            'port' => env('E_IMZO_REDIS_PORT', 6379),
+            'database' => env('E_IMZO_REDIS_DB', 1),
+        ],
+
+        // Document TTL in seconds (how long to keep documentId in Redis)
+        'document_ttl' => env('E_IMZO_DOCUMENT_TTL', 300), // 5 minutes
+
+        // Time window for signature verification (in minutes)
+        'valid_minutes_window' => env('E_IMZO_VALID_MINUTES_WINDOW', 5),
+    ],
 ];
