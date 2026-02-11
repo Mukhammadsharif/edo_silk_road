@@ -426,7 +426,7 @@ Route::get('/proxy-document/{path}', [DocumentProxyController::class, 'show'])
     ->name('document.proxy')
     ->where('path', '[A-Za-z0-9+/=]+');
 
-Route::get('/eimzo-test', [EimzoTestController::class, 'index'])
+Route::get('/eimzo-sign-mobile', [EimzoTestController::class, 'index'])
     ->name('eimzo.test');
 
 Route::post('/frontend/mobile/upload', [SignDocImzoMobileApiController::class, 'mobileUpload']);
