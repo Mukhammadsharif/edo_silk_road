@@ -222,6 +222,7 @@ class DepartmentController extends Controller
 
         Department::create([
             'code' => $this->uniqueCode(),
+            'org_unit_id' => $request->organization_id,
             'name_uz' => $request->name_uz,
             'name_kr' => $request->name_kr,
             'name_ru' => $request->name_ru,
@@ -232,7 +233,7 @@ class DepartmentController extends Controller
             'status' => 1
         ]);
 
-        return redirect()->route('departments.index')
+        return redirect()->route('departments.index', ['id' => $request->organization_id])
             ->with('success', __('message.dep_updated'));
 
     }
