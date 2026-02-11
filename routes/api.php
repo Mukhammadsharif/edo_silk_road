@@ -222,6 +222,7 @@ Route::prefix('v1/login-sign')->middleware('auth:sanctum')->group(function () {
     Route::get('/document/{doc_id}/details', [SignLoginApiController::class, 'getDocumentDetails']);
 });
 
+// ECP Routes - E-IMZO Mobile (ID-Card)
 Route::prefix('v1/ecp/mobile')->group(function () {
 
     // Public routes (no authentication required)
