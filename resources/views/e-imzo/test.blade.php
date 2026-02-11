@@ -305,209 +305,208 @@
     </div>
 @endsection
 
-@push('scripts')
-    <script src="{{ asset('js/qrcode.min.js') }}"></script>
-    <script src="{{ asset('js/pkcs.js') }}"></script>
-    <script src="{{ asset('js/crc32.js') }}"></script>
+<script src="{{ asset('js/qrcode.min.js') }}"></script>
+<script src="{{ asset('js/pkcs.js') }}"></script>
+<script src="{{ asset('js/crc32.js') }}"></script>
 
-    <script>
-        // Configuration
-        const API_BASE_URL = '{{ url("/api/v1/ecp/mobile") }}';
-        const AUTH_URL = API_BASE_URL + '/auth';
-        const SIGN_URL = API_BASE_URL + '/sign';
-        const STATUS_URL = API_BASE_URL + '/status';
-        const AUTHENTICATE_URL = API_BASE_URL + '/authenticate';
-        const VERIFY_URL = API_BASE_URL + '/verify';
+<script>
+    // Configuration
+    const API_BASE_URL = '{{ url("/api/v1/ecp/mobile") }}';
+    const AUTH_URL = API_BASE_URL + '/auth';
+    const SIGN_URL = API_BASE_URL + '/sign';
+    const STATUS_URL = API_BASE_URL + '/status';
+    const AUTHENTICATE_URL = API_BASE_URL + '/authenticate';
+    const VERIFY_URL = API_BASE_URL + '/verify';
 
-        // CSRF Token
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
+    // CSRF Token
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    // Global variables
+    let currentDocumentId = null;
+    let currentSiteId = null;
+    let currentChallenge = null;
+    let currentMode = null;
+    let statusCheckInterval = null;
+    let qrCodeInstance = null;
+    let currentDeeplink = null;
+
+    function isMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+
+    function showLoader() {
+        $('#eimzo-loader').addClass('active');
+    }
+
+    function hideLoader() {
+        $('#eimzo-loader').removeClass('active');
+    }
+
+    function showQRSection() {
+        $('#eimzo-qrSection').addClass('active');
+    }
+
+    function hideQRSection() {
+        $('#eimzo-qrSection').removeClass('active');
+    }
+
+    function showStatus(message) {
+        $('#eimzo-statusText').text(message);
+        $('#eimzo-statusSection').addClass('active');
+    }
+
+    function hideStatus() {
+        $('#eimzo-statusSection').removeClass('active');
+    }
+
+    function showResult(title, content, isError = false) {
+        $('#eimzo-resultTitle').text(title);
+        $('#eimzo-resultContent').text(
+            typeof content === 'object' ? JSON.stringify(content, null, 2) : content
+        );
+
+        if (isError) {
+            $('#eimzo-resultSection').addClass('error');
+        } else {
+            $('#eimzo-resultSection').removeClass('error');
+        }
+
+        $('#eimzo-resultSection').addClass('active');
+        hideLoader();
+        hideStatus();
+    }
+
+    function hideResult() {
+        $('#eimzo-resultSection').removeClass('active');
+    }
+
+    function generateQRCode(documentId, siteId, data) {
+        const qrcodeElement = document.getElementById('eimzo-qrcode');
+        qrcodeElement.innerHTML = '';
+
+        const hasher = new GostHash();
+        const textHash = hasher.gosthash(data.toString());
+
+        const code = siteId + documentId + textHash;
+        const crcer = new CRC32();
+        const crc32 = crcer.calcHex(code);
+        const finalCode = code + crc32;
+
+        qrCodeInstance = new QRCode(qrcodeElement, {
+            text: finalCode,
+            width: 300,
+            height: 300,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
         });
 
-        // Global variables
-        let currentDocumentId = null;
-        let currentSiteId = null;
-        let currentChallenge = null;
-        let currentMode = null;
-        let statusCheckInterval = null;
-        let qrCodeInstance = null;
-        let currentDeeplink = null;
+        displayHash(textHash);
 
-        function isMobileDevice() {
-            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        }
+        return {textHash, qrCode: finalCode};
+    }
 
-        function showLoader() {
-            $('#eimzo-loader').addClass('active');
-        }
+    function displayHash(hash) {
+        const hashDisplay = document.getElementById('eimzo-hashDisplay');
+        const arrayOf16 = hash.match(/.{1,16}/g);
 
-        function hideLoader() {
-            $('#eimzo-loader').removeClass('active');
-        }
-
-        function showQRSection() {
-            $('#eimzo-qrSection').addClass('active');
-        }
-
-        function hideQRSection() {
-            $('#eimzo-qrSection').removeClass('active');
-        }
-
-        function showStatus(message) {
-            $('#eimzo-statusText').text(message);
-            $('#eimzo-statusSection').addClass('active');
-        }
-
-        function hideStatus() {
-            $('#eimzo-statusSection').removeClass('active');
-        }
-
-        function showResult(title, content, isError = false) {
-            $('#eimzo-resultTitle').text(title);
-            $('#eimzo-resultContent').text(
-                typeof content === 'object' ? JSON.stringify(content, null, 2) : content
-            );
-
-            if (isError) {
-                $('#eimzo-resultSection').addClass('error');
-            } else {
-                $('#eimzo-resultSection').removeClass('error');
-            }
-
-            $('#eimzo-resultSection').addClass('active');
-            hideLoader();
-            hideStatus();
-        }
-
-        function hideResult() {
-            $('#eimzo-resultSection').removeClass('active');
-        }
-
-        function generateQRCode(documentId, siteId, data) {
-            const qrcodeElement = document.getElementById('eimzo-qrcode');
-            qrcodeElement.innerHTML = '';
-
-            const hasher = new GostHash();
-            const textHash = hasher.gosthash(data.toString());
-
-            const code = siteId + documentId + textHash;
-            const crcer = new CRC32();
-            const crc32 = crcer.calcHex(code);
-            const finalCode = code + crc32;
-
-            qrCodeInstance = new QRCode(qrcodeElement, {
-                text: finalCode,
-                width: 300,
-                height: 300,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
-
-            displayHash(textHash);
-
-            return {textHash, qrCode: finalCode};
-        }
-
-        function displayHash(hash) {
-            const hashDisplay = document.getElementById('eimzo-hashDisplay');
-            const arrayOf16 = hash.match(/.{1,16}/g);
-
-            let htmlContent = '';
-            arrayOf16.forEach(chunk => {
-                const chars = chunk.split('');
-                let line = '';
-                chars.forEach(char => {
-                    if (/^\d+$/.test(char)) {
-                        line += `<span class="digit">${char}</span>`;
-                    } else {
-                        line += char;
-                    }
-                });
-                htmlContent += line + '\n';
-            });
-
-            hashDisplay.innerHTML = htmlContent;
-        }
-
-        function createDeeplink(mode, qrCode) {
-            return `eimzo://${mode}?qc=${qrCode}`;
-        }
-
-        function openDeeplink() {
-            if (currentDeeplink) {
-                window.location.href = currentDeeplink;
-            }
-        }
-
-        function startStatusCheck(documentId, mode) {
-            stopStatusCheck();
-
-            let checkCount = 0;
-            const maxChecks = 120;
-
-            statusCheckInterval = setInterval(() => {
-                checkCount++;
-
-                if (checkCount > maxChecks) {
-                    stopStatusCheck();
-                    showResult('Ошибка', 'Время ожидания истекло. Попробуйте снова.', true);
-                    hideQRSection();
-                    return;
+        let htmlContent = '';
+        arrayOf16.forEach(chunk => {
+            const chars = chunk.split('');
+            let line = '';
+            chars.forEach(char => {
+                if (/^\d+$/.test(char)) {
+                    line += `<span class="digit">${char}</span>`;
+                } else {
+                    line += char;
                 }
+            });
+            htmlContent += line + '\n';
+        });
 
-                $.ajax({
-                    url: STATUS_URL,
-                    type: 'POST',
-                    data: {documentId: documentId},
-                    success: function (response) {
-                        console.log('Status check:', response);
+        hashDisplay.innerHTML = htmlContent;
+    }
 
-                        if (response.status === 1) {
-                            stopStatusCheck();
-                            showStatus('Получена подпись! Проверка данных...');
+    function createDeeplink(mode, qrCode) {
+        return `eimzo://${mode}?qc=${qrCode}`;
+    }
 
-                            if (mode === 'auth') {
-                                authenticateUser(documentId);
-                            } else if (mode === 'sign') {
-                                verifySignature(documentId);
-                            }
-
-                            hideQRSection();
-                        } else if (response.status === 2) {
-                            showStatus(`Ожидание подписи... (${checkCount}с)`);
-                        } else if (response.status < 0) {
-                            stopStatusCheck();
-                            showResult('Ошибка', `Код ошибки: ${response.status}\n${response.message || 'Неизвестная ошибка'}`, true);
-                            hideQRSection();
-                        }
-                    },
-                    error: function (error) {
-                        console.error('Status check error:', error);
-                    }
-                });
-            }, 1000);
+    function openDeeplink() {
+        if (currentDeeplink) {
+            window.location.href = currentDeeplink;
         }
+    }
 
-        function stopStatusCheck() {
-            if (statusCheckInterval) {
-                clearInterval(statusCheckInterval);
-                statusCheckInterval = null;
+    function startStatusCheck(documentId, mode) {
+        stopStatusCheck();
+
+        let checkCount = 0;
+        const maxChecks = 120;
+
+        statusCheckInterval = setInterval(() => {
+            checkCount++;
+
+            if (checkCount > maxChecks) {
+                stopStatusCheck();
+                showResult('Ошибка', 'Время ожидания истекло. Попробуйте снова.', true);
+                hideQRSection();
+                return;
             }
-        }
-
-        function authenticateUser(documentId) {
-            showLoader();
 
             $.ajax({
-                url: AUTHENTICATE_URL + '/' + documentId,
-                type: 'GET',
+                url: STATUS_URL,
+                type: 'POST',
+                data: {documentId: documentId},
                 success: function (response) {
-                    if (response.status === 1 && response.subjectCertificateInfo) {
-                        const userInfo = response.subjectCertificateInfo;
-                        const displayInfo = `
+                    console.log('Status check:', response);
+
+                    if (response.status === 1) {
+                        stopStatusCheck();
+                        showStatus('Получена подпись! Проверка данных...');
+
+                        if (mode === 'auth') {
+                            authenticateUser(documentId);
+                        } else if (mode === 'sign') {
+                            verifySignature(documentId);
+                        }
+
+                        hideQRSection();
+                    } else if (response.status === 2) {
+                        showStatus(`Ожидание подписи... (${checkCount}с)`);
+                    } else if (response.status < 0) {
+                        stopStatusCheck();
+                        showResult('Ошибка', `Код ошибки: ${response.status}\n${response.message || 'Неизвестная ошибка'}`, true);
+                        hideQRSection();
+                    }
+                },
+                error: function (error) {
+                    console.error('Status check error:', error);
+                }
+            });
+        }, 1000);
+    }
+
+    function stopStatusCheck() {
+        if (statusCheckInterval) {
+            clearInterval(statusCheckInterval);
+            statusCheckInterval = null;
+        }
+    }
+
+    function authenticateUser(documentId) {
+        showLoader();
+
+        $.ajax({
+            url: AUTHENTICATE_URL + '/' + documentId,
+            type: 'GET',
+            success: function (response) {
+                if (response.status === 1 && response.subjectCertificateInfo) {
+                    const userInfo = response.subjectCertificateInfo;
+                    const displayInfo = `
 ФИО: ${userInfo.subjectName?.CN || 'N/A'}
 Имя: ${userInfo.subjectName?.Name || 'N/A'}
 Фамилия: ${userInfo.subjectName?.SURNAME || 'N/A'}
@@ -516,35 +515,35 @@
 Действителен с: ${userInfo.validFrom || 'N/A'}
 Действителен до: ${userInfo.validTo || 'N/A'}
                     `;
-                        showResult('✅ Авторизация успешна!', displayInfo);
-                    } else {
-                        showResult('Ошибка авторизации', response.message || 'Не удалось получить данные пользователя', true);
-                    }
-                },
-                error: function (error) {
-                    showResult('Ошибка', 'Не удалось выполнить авторизацию: ' + error.responseText, true);
+                    showResult('✅ Авторизация успешна!', displayInfo);
+                } else {
+                    showResult('Ошибка авторизации', response.message || 'Не удалось получить данные пользователя', true);
                 }
-            });
-        }
+            },
+            error: function (error) {
+                showResult('Ошибка', 'Не удалось выполнить авторизацию: ' + error.responseText, true);
+            }
+        });
+    }
 
-        function verifySignature(documentId) {
-            showLoader();
+    function verifySignature(documentId) {
+        showLoader();
 
-            const sampleDocument = btoa('Это тестовый документ для подписания через E-IMZO Mobile');
+        const sampleDocument = btoa('Это тестовый документ для подписания через E-IMZO Mobile');
 
-            $.ajax({
-                url: VERIFY_URL,
-                type: 'POST',
-                data: {
-                    documentId: documentId,
-                    document: sampleDocument
-                },
-                success: function (response) {
-                    if (response.status === 1 && response.subjectCertificateInfo) {
-                        const userInfo = response.subjectCertificateInfo;
-                        const verifyInfo = response.verificationInfo;
+        $.ajax({
+            url: VERIFY_URL,
+            type: 'POST',
+            data: {
+                documentId: documentId,
+                document: sampleDocument
+            },
+            success: function (response) {
+                if (response.status === 1 && response.subjectCertificateInfo) {
+                    const userInfo = response.subjectCertificateInfo;
+                    const verifyInfo = response.verificationInfo;
 
-                        const displayInfo = `
+                    const displayInfo = `
 Подписант:
 ФИО: ${userInfo.subjectName?.CN || 'N/A'}
 ПИНФЛ: ${userInfo.subjectName?.UID || 'N/A'}
@@ -556,111 +555,110 @@
 
 Подпись действительна!
                     `;
-                        showResult('✅ Документ успешно подписан!', displayInfo);
-                    } else {
-                        showResult('Ошибка подписи', response.message || 'Подпись недействительна', true);
-                    }
-                },
-                error: function (error) {
-                    showResult('Ошибка', 'Не удалось проверить подпись: ' + error.responseText, true);
+                    showResult('✅ Документ успешно подписан!', displayInfo);
+                } else {
+                    showResult('Ошибка подписи', response.message || 'Подпись недействительна', true);
                 }
-            });
-        }
-
-        function startAuth() {
-            hideResult();
-            hideQRSection();
-            hideStatus();
-            showLoader();
-
-            $.ajax({
-                url: AUTH_URL,
-                type: 'POST',
-                success: function (response) {
-                    if (response.status === 1) {
-                        currentDocumentId = response.documentId;
-                        currentSiteId = response.siteId;
-                        currentChallenge = response.challenge;
-                        currentMode = 'auth';
-
-                        hideLoader();
-
-                        const {qrCode} = generateQRCode(currentDocumentId, currentSiteId, currentChallenge);
-
-                        currentDeeplink = createDeeplink('auth', qrCode);
-                        $('#eimzo-deeplinkBtn').attr('href', currentDeeplink);
-
-                        $('#eimzo-qrTitle').text('🔑 Сканируйте для авторизации');
-                        showQRSection();
-
-                        if (isMobileDevice()) {
-                            setTimeout(() => {
-                                openDeeplink();
-                            }, 500);
-                        }
-
-                        startStatusCheck(currentDocumentId, 'auth');
-                        showStatus('Отсканируйте QR-код или используйте deeplink...');
-                    } else {
-                        hideLoader();
-                        showResult('Ошибка', response.message || 'Не удалось создать запрос на авторизацию', true);
-                    }
-                },
-                error: function (error) {
-                    hideLoader();
-                    showResult('Ошибка', 'Не удалось выполнить запрос: ' + error.responseText, true);
-                }
-            });
-        }
-
-        function startSign() {
-            hideResult();
-            hideQRSection();
-            hideStatus();
-            showLoader();
-
-            $.ajax({
-                url: SIGN_URL,
-                type: 'POST',
-                success: function (response) {
-                    if (response.status === 1) {
-                        currentDocumentId = response.documentId;
-                        currentSiteId = response.siteId;
-                        currentMode = 'sign';
-
-                        hideLoader();
-
-                        const sampleDocument = 'Это тестовый документ для подписания через E-IMZO Mobile';
-                        const {qrCode} = generateQRCode(currentDocumentId, currentSiteId, sampleDocument);
-
-                        currentDeeplink = createDeeplink('sign', qrCode);
-                        $('#eimzo-deeplinkBtn').attr('href', currentDeeplink);
-
-                        $('#eimzo-qrTitle').text('✍️ Сканируйте для подписания');
-                        showQRSection();
-
-                        if (isMobileDevice()) {
-                            setTimeout(() => {
-                                openDeeplink();
-                            }, 500);
-                        }
-
-                        startStatusCheck(currentDocumentId, 'sign');
-                        showStatus('Отсканируйте QR-код или используйте deeplink...');
-                    } else {
-                        hideLoader();
-                        showResult('Ошибка', response.message || 'Не удалось создать запрос на подписание', true);
-                    }
-                },
-                error: function (error) {
-                    hideLoader();
-                    showResult('Ошибка', 'Не удалось выполнить запрос: ' + error.responseText, true);
-                }
-            });
-        }
-
-        $(window).on('beforeunload', function () {
-            stopStatusCheck();
+            },
+            error: function (error) {
+                showResult('Ошибка', 'Не удалось проверить подпись: ' + error.responseText, true);
+            }
         });
-    </script>
-@endpush
+    }
+
+    function startAuth() {
+        hideResult();
+        hideQRSection();
+        hideStatus();
+        showLoader();
+
+        $.ajax({
+            url: AUTH_URL,
+            type: 'POST',
+            success: function (response) {
+                if (response.status === 1) {
+                    currentDocumentId = response.documentId;
+                    currentSiteId = response.siteId;
+                    currentChallenge = response.challenge;
+                    currentMode = 'auth';
+
+                    hideLoader();
+
+                    const {qrCode} = generateQRCode(currentDocumentId, currentSiteId, currentChallenge);
+
+                    currentDeeplink = createDeeplink('auth', qrCode);
+                    $('#eimzo-deeplinkBtn').attr('href', currentDeeplink);
+
+                    $('#eimzo-qrTitle').text('🔑 Сканируйте для авторизации');
+                    showQRSection();
+
+                    if (isMobileDevice()) {
+                        setTimeout(() => {
+                            openDeeplink();
+                        }, 500);
+                    }
+
+                    startStatusCheck(currentDocumentId, 'auth');
+                    showStatus('Отсканируйте QR-код или используйте deeplink...');
+                } else {
+                    hideLoader();
+                    showResult('Ошибка', response.message || 'Не удалось создать запрос на авторизацию', true);
+                }
+            },
+            error: function (error) {
+                hideLoader();
+                showResult('Ошибка', 'Не удалось выполнить запрос: ' + error.responseText, true);
+            }
+        });
+    }
+
+    function startSign() {
+        hideResult();
+        hideQRSection();
+        hideStatus();
+        showLoader();
+
+        $.ajax({
+            url: SIGN_URL,
+            type: 'POST',
+            success: function (response) {
+                if (response.status === 1) {
+                    currentDocumentId = response.documentId;
+                    currentSiteId = response.siteId;
+                    currentMode = 'sign';
+
+                    hideLoader();
+
+                    const sampleDocument = 'Это тестовый документ для подписания через E-IMZO Mobile';
+                    const {qrCode} = generateQRCode(currentDocumentId, currentSiteId, sampleDocument);
+
+                    currentDeeplink = createDeeplink('sign', qrCode);
+                    $('#eimzo-deeplinkBtn').attr('href', currentDeeplink);
+
+                    $('#eimzo-qrTitle').text('✍️ Сканируйте для подписания');
+                    showQRSection();
+
+                    if (isMobileDevice()) {
+                        setTimeout(() => {
+                            openDeeplink();
+                        }, 500);
+                    }
+
+                    startStatusCheck(currentDocumentId, 'sign');
+                    showStatus('Отсканируйте QR-код или используйте deeplink...');
+                } else {
+                    hideLoader();
+                    showResult('Ошибка', response.message || 'Не удалось создать запрос на подписание', true);
+                }
+            },
+            error: function (error) {
+                hideLoader();
+                showResult('Ошибка', 'Не удалось выполнить запрос: ' + error.responseText, true);
+            }
+        });
+    }
+
+    $(window).on('beforeunload', function () {
+        stopStatusCheck();
+    });
+</script>
