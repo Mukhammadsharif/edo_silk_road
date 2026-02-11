@@ -171,10 +171,10 @@
     color: white !important;
     font-size: 10px !important;
     font-weight: 600 !important;
-    padding: 2px 4px !important;
+    padding: 2px 6px !important;
     border-radius: 10px !important;
     position: absolute;
-    top:10%;
+    top:30%;
     right:25px;
 
 }
