@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\DocLogsController;
 use App\Http\Controllers\Admin\PricingController;
 use App\Http\Controllers\Admin\SubscriptionRequestController;
 use App\Http\Controllers\Admin\TariffController;
+use App\Http\Controllers\Api\ECP\SignDocImzoMobileApiController;
 use App\Http\Controllers\DocController;
 use App\Http\Controllers\ECP\SignDocImzoController;
 use App\Http\Controllers\ECP\SignLoginController;
@@ -427,6 +428,8 @@ Route::get('/proxy-document/{path}', [DocumentProxyController::class, 'show'])
 
 Route::get('/eimzo-test', [EimzoTestController::class, 'index'])
     ->name('eimzo.test');
+
+Route::post('/frontend/mobile/upload', [SignDocImzoMobileApiController::class, 'mobileUpload']);
 
 //Route::get('/test-full-conversion', function() {
 //    $filePath = 'ood/2026/2/6/1f7af46d8f43_1770379540.docx';
