@@ -415,7 +415,9 @@
                                 badge.style.display = data.count > 0 ? 'inline-block' : 'none';
                             }
                         } else {
-                            badge.style.display = 'none';
+                            if(badge) {
+                                badge.style.display = 'none';
+                            }
                         }
                     })
                     .catch(error => console.error('Menu count error:', error));
