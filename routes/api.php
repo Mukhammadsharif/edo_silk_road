@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\Bitrix\EmployeeController;
 use App\Http\Controllers\Api\Bitrix\PersonController;
 use App\Http\Controllers\Api\Bitrix\PositionController;
 use App\Http\Controllers\Api\ECP\SignDocImzoApiController;
+use App\Http\Controllers\Api\ECP\SignDocImzoMobileApiController;
 use App\Http\Controllers\Api\ECP\SignLoginApiController;
 use App\Http\Controllers\Api\Messages\MessageApiController;
 //use App\Http\Controllers\Api\Office\DocApiController;
@@ -221,3 +222,49 @@ Route::prefix('v1/login-sign')->middleware('auth:sanctum')->group(function () {
     Route::get('/document/{doc_id}/details', [SignLoginApiController::class, 'getDocumentDetails']);
 });
 
+Route::prefix('v1/ecp/mobile')->group(function () {
+
+    // Public routes (no authentication required)
+
+    /**
+     * Endpoint для получения challenge для мобильной идентификации
+     * Возвращает: documentId и challenge для подписания
+     */
+    Route::post('/auth', [SignDocImzoMobileApiController::class, 'mobileAuth']);
+
+    /**
+     * Endpoint для проверки статуса (загружен ли PKCS7)
+     * Принимает: documentId
+     * Возвращает: status (1=готово, 2=ожидание, negative=ошибка)
+     */
+    Route::post('/status', [SignDocImzoMobileApiController::class, 'mobileStatus']);
+
+    /**
+     * Endpoint для загрузки PKCS7 от мобильного приложения E-IMZO ID-CARD
+     * Этот URL должен быть указан в настройках как UPLOAD URL
+     * Принимает: documentId, pkcs7
+     */
+    Route::post('/upload', [SignDocImzoMobileApiController::class, 'mobileUpload']);
+
+    /**
+     * Endpoint для проверки результата идентификации
+     * Принимает: documentId (в URL)
+     * Возвращает: информацию о сертификате пользователя
+     */
+    Route::get('/authenticate/{documentId}', [SignDocImzoMobileApiController::class, 'mobileAuthenticate']);
+
+    /**
+     * Endpoint для генерации documentId для подписания документа
+     * Возвращает: documentId для использования в deeplink
+     */
+    Route::post('/sign', [SignDocImzoMobileApiController::class, 'mobileSign'])
+        ->middleware('auth:sanctum');
+
+    /**
+     * Endpoint для проверки подписи документа
+     * Принимает: documentId, document (base64)
+     * Возвращает: результат проверки подписи и информацию о сертификате
+     */
+    Route::post('/verify', [SignDocImzoMobileApiController::class, 'mobileVerify'])
+        ->middleware('auth:sanctum');
+});
