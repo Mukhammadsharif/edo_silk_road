@@ -524,6 +524,7 @@
 Действителен до: ${userInfo.validTo || 'N/A'}
 ПИНФЛ: ${userInfo.subjectName['1.2.860.3.16.1.2'] ?? 'N/A'}
 TOKEN: ${response?.bearer ?? ''}
+USER_STATUS: ${response?.userStatus ? 'true' : 'false'}
                     `;
                     showResult('✅ Авторизация успешна!', displayInfo);
                 } else {
