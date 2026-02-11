@@ -523,6 +523,7 @@
 Действителен с: ${userInfo.validFrom || 'N/A'}
 Действителен до: ${userInfo.validTo || 'N/A'}
 ПИНФЛ: ${userInfo.subjectName['1.2.860.3.16.1.2'] ?? 'N/A'}
+TOKEN: ${response?.bearer ?? ''}
                     `;
                     showResult('✅ Авторизация успешна!', displayInfo);
                 } else {

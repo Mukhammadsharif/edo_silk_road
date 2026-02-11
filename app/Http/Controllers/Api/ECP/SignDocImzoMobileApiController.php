@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\ECP;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\UserPersonalInfo;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -307,6 +309,18 @@ class SignDocImzoMobileApiController extends Controller
             $path = '/backend/mobile/authenticate/' . $documentId;
             $response = $this->curlGet($path, $clientIp, $host);
 
+            $responseJson = json_decode($response, true);
+            if ($responseJson['status'] === 1 && !empty($responseJson['subjectCertificateInfo'])) {
+                $pin = $responseJson['subjectCertificateInfo']['subjectName']['1.2.860.3.16.1.2'] ?? null;
+                $userPersonalInfo = UserPersonalInfo::where('doc_pin', $pin)->first();
+                if ($userPersonalInfo) {
+                    $user = User::where('id', $userPersonalInfo->user_id)->first();
+                    $token = $user->createToken('ecp-auth')->plainTextToken;
+
+                    $responseJson['bearer'] = $token;
+                }
+            }
+
             if ($response === false) {
                 return response()->json([
                     'status' => 0,
@@ -323,7 +337,7 @@ class SignDocImzoMobileApiController extends Controller
                 ], 500);
             }
 
-            return response()->json($jsonData);
+            return response()->json($responseJson);
 
         } catch (\Throwable $e) {
             Log::error('Error in mobile authenticate', [
