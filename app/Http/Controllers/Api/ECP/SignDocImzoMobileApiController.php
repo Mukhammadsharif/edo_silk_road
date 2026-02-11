@@ -194,7 +194,7 @@ class SignDocImzoMobileApiController extends Controller
 
             sleep(1);
 
-            $this->mobileVerify($data['document_id']);
+            $this->mobileVerify($request, $data['document_id']);
 
             $this->curlPostForm($path, $postData);
 
