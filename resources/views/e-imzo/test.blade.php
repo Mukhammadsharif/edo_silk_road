@@ -540,7 +540,11 @@ USER_STATUS: ${response?.userStatus ? 'true' : 'false'}
     function verifySignature(documentId) {
         showLoader();
 
-        const sampleDocument = btoa('Это тестовый документ для подписания через E-IMZO Mobile');
+        const text = 'Это тестовый документ для подписания через E-IMZO Mobile';
+
+        const sampleDocument = btoa(
+            String.fromCharCode(...new TextEncoder().encode(text))
+        );
 
         $.ajax({
             url: VERIFY_URL,
