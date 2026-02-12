@@ -3,11 +3,30 @@
 namespace App\Http\Controllers\Api\ECP;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\GenerateHrOrderPdfJob;
+use App\Models\Admin\Role;
 use App\Models\Admin\UserPersonalInfo;
+use App\Models\Admin\UserWorkHistory;
+use App\Models\Document\DocumentExecutionSteps;
+use App\Models\Document\DocumentJournals;
+use App\Models\Document\DocumentReplyComments;
+use App\Models\Document\DocumentResolutions;
+use App\Models\ECP\SignatureDocuments;
+use App\Models\ECP\SignatureDocumentType;
+use App\Models\ECP\UserSignatureKey;
+use App\Models\Journal\JournalTypeControls;
+use App\Models\Journal\JournalTypes;
+use App\Models\Protocol\ProtocolDocConfigs;
+use App\Models\Protocol\ProtocolDocMember;
+use App\Models\Protocol\ProtocolDocReplyComment;
+use App\Models\Protocol\ProtocolDocument;
+use App\Models\Resolution\ReplyCommentTypes;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Ramsey\Uuid\Uuid;
 
 class SignDocImzoMobileApiController extends Controller
 {
@@ -196,7 +215,7 @@ class SignDocImzoMobileApiController extends Controller
 
             sleep(1);
 
-            $this->mobileVerify($request, $data['document_id']);
+//            $this->mobileVerify($request, $data['document_id']);
 
             $this->curlPostForm($path, $postData);
 
@@ -216,69 +235,6 @@ class SignDocImzoMobileApiController extends Controller
             ], 500);
         }
     }
-
-//    public function mobileUpload(Request $request): JsonResponse
-//    {
-//        try {
-//            $documentId   = $request->input('documentId');
-//            $pkcs7        = $request->input('pkcs7');
-//            $serialNumber = $request->input('serialNumber', '');
-//
-//            $data = $request->all();
-//
-//            // ←─────────────────────────────── самое важное ────────────────────────────────
-//            \Log::debug('mobileUpload called', [
-//                'document_id' => $data['document_id'],
-//                'pkcs7_b64' => $data['pkcs7_b64'],
-//                'serial_number' => $data['serial_number'],
-//                'documentId'   => $documentId,
-//                'serialNumber' => $serialNumber,
-//                'pkcs7_length' => strlen($pkcs7),
-//                'pkcs7_preview'=> substr($pkcs7, 0, 100) . (strlen($pkcs7) > 100 ? '...' : ''),
-//                'ip'           => $request->ip(),
-//                'user_agent'   => $request->userAgent(),
-//                'all_input'    => $request->except(['pkcs7']), // pkcs7 слишком большой — не пишем целиком
-//            ]);
-//            // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
-//
-//            $path = '/frontend/mobile/upload';
-//            $postData = http_build_query([
-//                'documentId'   => $documentId,
-//                'pkcs7'        => $pkcs7,
-//                'serialNumber' => $serialNumber
-//            ]);
-//
-//            $this->curlPostForm($path, $postData);
-//
-//            return response()->json([
-//                'status'  => 1,
-//                'message' => 'PKCS#7 uploaded successfully'
-//            ]);
-//
-//        } catch (\Throwable $e) {
-//            \Log::error('mobileUpload failed', [
-//                'message'      => $e->getMessage(),
-//                'file'         => $e->getFile(),
-//                'line'         => $e->getLine(),
-//                'trace'        => $e->getTraceAsString(),
-//                'documentId'   => $documentId   ?? 'not set',
-//                'serialNumber' => $serialNumber ?? 'not set',
-//                'pkcs7_length' => isset($pkcs7) ? strlen($pkcs7) : 'not set',
-//                'request'      => [
-//                    'ip'        => $request->ip(),
-//                    'method'    => $request->method(),
-//                    'url'       => $request->fullUrl(),
-//                    'headers'   => $request->headers->all(),
-//                    'all_input' => $request->except(['pkcs7']),
-//                ]
-//            ]);
-//
-//            return response()->json([
-//                'status'  => 0,
-//                'message' => 'Upload failed'
-//            ], 500);
-//        }
-//    }
 
     /**
      * @OA\Get(
@@ -336,7 +292,7 @@ class SignDocImzoMobileApiController extends Controller
                 ], 500);
             }
 
-            $jsonData = json_decode($response, true);
+//            $jsonData = json_decode($response, true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
                 return response()->json([
@@ -435,15 +391,21 @@ class SignDocImzoMobileApiController extends Controller
      *     )
      * )
      */
-    public function mobileVerify(Request $request, $documentId): JsonResponse
+    public function mobileVerify(Request $request): JsonResponse
     {
         try {
+            $documentId = $request->documentId;
+            $document = $request->document;
+            $docType = $request->type ?? '';
+            $docId = $request->doc_id ?? 0;
+            $confirmId  = $request->ecp_confirm_id ?? null;
+            $resText    = $request->ecp_r_text;
 
             $clientIp = $request->ip();
             $host = $request->getHost();
 
             $path = '/backend/mobile/verify';
-            $postData = 'documentId=' . urlencode($documentId) . '&document=' . urlencode(base64_encode("19001"));
+            $postData = 'documentId=' . urlencode($documentId) . '&document=' . urlencode(base64_encode($document));
 
             $response = $this->curlPostFormBack($path, $postData, $clientIp, $host);
 
@@ -466,7 +428,25 @@ class SignDocImzoMobileApiController extends Controller
 
             Log::info('Mobile verify response', ['jsonData' => $jsonData]);
 
-            return response()->json($jsonData);
+//            return response()->json($jsonData);
+
+            $ecpData = $this->prepareEcpData($jsonData, false);
+
+            $result = match ($docType) {
+                'protocol_document' => $this->handleProtocolDocument($docId, $confirmId, $resText),
+                'pr_emp_hr_order'   => $this->handleHrEmployeeOrder($docId, $confirmId, $resText),
+                default => in_array($docType, $this->workingDocTypes)
+                    ? $this->handleInternalDocument($docId, $docType, $resText)
+                    : $this->errorResponse(__('message.document_deleted_system'))
+            };
+
+            if ($result instanceof JsonResponse) {
+                return $result;
+            }
+
+            $this->saveSignatureData($docId, $docType, $ecpData);
+
+            return $this->successResponse();
 
         } catch (\Throwable $e) {
             Log::error('Error in mobile verify', [
@@ -611,5 +591,419 @@ class SignDocImzoMobileApiController extends Controller
         curl_close($ch);
 
         return $response ?: null;
+    }
+
+
+    // Private helper methods from original controller
+    private array $workingDocTypes = [
+        'send_to_create_res', 'send_to_agreement', 'send_to_sign',
+        'from_signer_to_ag', 'from_signer_to_c_res', 'from_ag_to_res',
+        'sign_resolution', 'close_exec_doc',
+        'send_to_ag_out_doc', 'send_sign_out_doc', 'sign_out_doc'
+    ];
+    private function handleInternalDocument(int $docId, string $docType, ?string $resText): ?JsonResponse
+    {
+        $journal = DocumentJournals::where('doc_id', $docId)->firstOrFail();
+
+        $steps = [
+            'sign'       => $this->getStep($journal, 'SIGN'),
+            'agreement'  => $this->getSteps($journal, 'AGREE'),
+            'resolution' => $this->getStep($journal, 'RESOL'),
+            'execution'  => $this->getSteps($journal, 'EXEC'),
+        ];
+
+        $currentAgreement = DocumentExecutionSteps::where('j_id', $journal->id)
+            ->where('exec_role', $this->getAgreementRole()->id)
+            ->whereIn('to_user', $this->authActiveUserIds())
+            ->first();
+
+        $signedAgreements = $steps['agreement']->where('status', 5);
+
+        $urls = $this->buildUrls($journal);
+        $meta = [
+            'journalType' => $journal->journal->title ?? '',
+            'docName'     => $journal->doc->doc_name ?? '',
+            'fromUser'    => $journal->fromUser->personal->fullName() ?? '-',
+        ];
+
+        $hasControl   = JournalTypeControls::where('journal_type_id', $journal->j_type)->where('status', 1)->exists();
+        $controllers  = $this->getControllers();
+        $isInfDoc     = ($journal->journal->doc_code ?? '') === 'INF_DOC';
+
+        switch ($docType) {
+            case 'send_to_sign':
+                $journal->update(['status' => 5]);
+                $this->updateStepStatus($steps['sign'], 2);
+                $this->sendNotifications([$steps['sign']->to_user], $urls['sign'], $meta);
+                $this->logAction($docId, 5, $meta);
+                break;
+
+            case 'send_to_agreement':
+            case 'send_to_ag_out_doc':
+                $journal->update(['status' => 6]);
+                $this->activateSteps($steps['agreement'], 2, $urls['agreement'], $meta);
+                $this->logAction($docId, 4, $meta);
+                break;
+
+            case 'send_to_create_res':
+            case 'send_sign_out_doc':
+                $this->handleSendToResolution($journal, $steps['resolution'], $hasControl, $controllers, $urls, $meta);
+                $this->logAction($docId, 28, $meta);
+                break;
+
+            case 'from_signer_to_ag':
+                $this->updateStepStatus($steps['sign'], 5);
+                $journal->update(['status' => 6]);
+                $this->activateSteps($steps['agreement'], 2, $urls['agreement'], $meta);
+                $this->createReplyComment($steps['sign'], $resText, 'DOC_SIGNED');
+                $this->logAction($docId, 4, $meta);
+                break;
+
+            case 'from_signer_to_c_res':
+                $this->updateStepStatus($steps['sign'], 5);
+                if ($steps['agreement']->isEmpty() && $isInfDoc) {
+                    $journal->update(['status' => 10]);
+                }
+                $this->handleSendToResolution($journal, $steps['resolution'], $hasControl, $controllers, $urls, $meta);
+                $this->createReplyComment($steps['sign'], $resText, 'DOC_SIGNED');
+                $this->logAction($docId, 28, $meta);
+                break;
+
+            case 'from_ag_to_res':
+                $this->updateStepStatus($currentAgreement, 5);
+                $this->createReplyComment($currentAgreement, $resText, 'DOC_SIGNED');
+
+                if ($steps['agreement']->count() - $signedAgreements->count() === 1) {
+                    if ($isInfDoc) $journal->update(['status' => 10]);
+                    $this->handleSendToResolution($journal, $steps['resolution'], $hasControl, $controllers, $urls, $meta);
+                    $this->logAction($docId, 28, $meta);
+                } else {
+                    $this->logAction($docId, 6, $meta);
+                }
+                break;
+
+            case 'sign_resolution':
+                $journal->update(['status' => 9]);
+                $this->updateStepStatus($steps['resolution'], 5);
+
+                if ($resText) {
+                    DocumentResolutions::where('j_id', $journal->id)->first()?->update(['res_text' => $resText]);
+                }
+
+                $this->activateSteps($steps['execution'], 2, $urls['execution'], $meta);
+
+                if ($this->isHrOrderType($journal->j_type)) {
+                    GenerateHrOrderPdfJob::dispatch($journal->id)->onQueue('pdf');
+                }
+
+                $this->logAction($docId, 10, $meta);
+                break;
+
+            case 'close_exec_doc':
+                $journal->update(['status' => 10]);
+                $this->updateStepsStatus($steps['execution'], 5);
+                $this->updateStepStatus($steps['resolution'], 5);
+                DocumentResolutions::where('j_id', $journal->id)->first()?->update(['status' => 5]);
+
+                $logId = $steps['resolution']->to_user === $this->authActiveUser()->id ? 15 : 19;
+                $this->logAction($docId, $logId, $meta);
+                break;
+
+            case 'sign_out_doc':
+                $journal->update(['status' => 10]);
+                $this->updateStepStatus($steps['resolution'], 5);
+                $this->logAction($docId, 10, $meta);
+                break;
+        }
+
+        return null;
+    }
+
+    private function handleProtocolDocument(int $docId, ?int $confirmId, ?string $resText): ?JsonResponse
+    {
+        $document = ProtocolDocument::findOrFail($docId);
+        $member   = ProtocolDocMember::where('doc_id', $docId)
+            ->whereIn('user_id', $this->authActiveUserIds())
+            ->where('status', 2)
+            ->firstOrFail();
+
+        if (in_array($confirmId, [4, 5, 7]) && empty(trim($resText ?? ''))) {
+            return $this->errorResponse(__('message.comment_on_document'));
+        }
+
+        $member->update(['status' => $confirmId]);
+
+        $this->processProtocolSigning($document, $member, $confirmId);
+
+        ProtocolDocReplyComment::create([
+            'doc_id'        => $docId,
+            'doc_member_id' => $member->id,
+            'user_id'       => $this->authActiveUser()->id,
+            'doc_text'      => $resText ?? '',
+            'status'        => $confirmId,
+        ]);
+
+        $this->logAction($docId, 20, $document->docType->title ?? 'Protocol Document', $document->doc_name ?? $docId);
+
+        return null;
+    }
+
+    private function handleHrEmployeeOrder(int $docId, ?int $confirmId, ?string $resText): ?JsonResponse
+    {
+        $document = ProtocolDocument::findOrFail($docId);
+        $member   = ProtocolDocMember::where('role_id', 4)
+            ->where('doc_id', $docId)
+            ->whereIn('user_id', $this->authActiveUserIds())
+            ->where('status', 2)
+            ->firstOrFail();
+
+        if (in_array($confirmId, [4, 5, 7]) && empty(trim($resText ?? ''))) {
+            return $this->errorResponse(__('comment_on_document'));
+        }
+
+        $member->update(['status' => $confirmId]);
+
+        if (ProtocolDocMember::where('role_id', 4)->where('doc_id', $docId)->whereNotIn('status', [3, 5, 7])->count() === 0) {
+            $document->update(['status' => 3]);
+        }
+
+        if (in_array($confirmId, [4, 5, 7])) {
+            $document->update(['status' => $confirmId]);
+        }
+
+        ProtocolDocReplyComment::create([
+            'doc_id'        => $docId,
+            'doc_member_id' => $member->id,
+            'user_id'       => $this->authActiveUser()->id,
+            'doc_text'      => $resText ?? '',
+            'status'        => $confirmId,
+        ]);
+
+        $this->logAction($docId, 20, $document->docType->title ?? 'Protocol Hr Emp order', $document->doc_name ?? $docId);
+
+        return null;
+    }
+
+    private function processProtocolSigning($document, $member, $confirmId): void
+    {
+        $configs     = ProtocolDocConfigs::where('protocol_type_id', $document->docType->id)->orderBy('order')->get();
+        $signerRoles = $configs->pluck('role_id')->toArray();
+
+        if ($document->docType->sign_type == 1) {
+            $pending = ProtocolDocMember::where('doc_id', $document->id)
+                ->whereIn('role_id', $signerRoles)
+                ->whereNotIn('status', [3, 5, 7])
+                ->count();
+
+            if (!$pending) {
+                $document->update(['status' => 3]);
+            }
+        } else {
+            $unfinished = ProtocolDocMember::where('doc_id', $document->id)
+                ->where('role_id', $member->role_id)
+                ->whereNotIn('status', [3, 5, 7])
+                ->count();
+
+            if (!$unfinished) {
+                $currentConfig = $configs->where('role_id', $member->role_id)->first();
+                if ($currentConfig) {
+                    $this->activateNextRole($document, $document->docType, $currentConfig->order);
+                }
+            }
+        }
+    }
+
+    private function saveSignatureData(int $docId, string $docType, array $ecpData): void
+    {
+        $userKey = UserSignatureKey::where('user_id', auth()->id())
+            ->where('serial_number', $ecpData['serialNumber'])
+            ->firstOrNew(['user_id' => auth()->id(), 'serial_number' => $ecpData['serialNumber']]);
+
+        $userKey->json_data = json_encode($ecpData);
+        $userKey->save();
+
+        $docTypeModel = SignatureDocumentType::where('doc_code', $docType)->firstOrNew(['doc_code' => $docType], ['id' => 1]);
+
+        SignatureDocuments::create([
+            'doc_id'        => $docId,
+            'doc_type'      => $docTypeModel->id,
+            'user_id'       => $this->authActiveUser()->id,
+            'key_id'        => $userKey->id,
+            'signing_time'  => $ecpData['signingTime'] ?? now(),
+        ]);
+    }
+
+    private function prepareEcpData(array $eriSign, bool $isDemo): array
+    {
+        if ($isDemo) {
+            return [
+                'success'             => 1,
+                'signingTime'         => Carbon::now()->format('Y-m-d H:i:s'),
+                'signature'           => Uuid::uuid4()->toString(),
+                'digest'              => Uuid::uuid4()->toString(),
+                'serialNumber'        => Uuid::uuid4()->toString(),
+                'subjectName'         => Uuid::uuid4()->toString(),
+                'verified'            => true,
+                'certificateVerified' => 0,
+            ];
+        }
+
+        return [
+            'success'             => $eriSign['status'],
+            'signingTime'         => $eriSign['verificationInfo']['signingTime'],
+            'signature'           => "",
+            'digest'              => "",
+            'serialNumber'        => $eriSign['subjectCertificateInfo']['serialNumber'],
+            'subjectName'         => $eriSign['subjectCertificateInfo']['subjectName'],
+            'verified'            => "",
+            'certificateVerified' => "",
+        ];
+    }
+
+    private function getStep($journal, string $code): ?DocumentExecutionSteps
+    {
+        return DocumentExecutionSteps::where('j_id', $journal->id)
+            ->whereHas('role', fn($q) => $q->where('doc_code', $code)->where('status', 1))
+            ->first();
+    }
+
+    private function getSteps($journal, string $code)
+    {
+        return DocumentExecutionSteps::where('j_id', $journal->id)
+            ->whereHas('role', fn($q) => $q->where('doc_code', $code)->where('status', 1))
+            ->get();
+    }
+
+    private function updateStepStatus(?DocumentExecutionSteps $step, int $status): void
+    {
+        $step?->update(['status' => $status]);
+    }
+
+    private function updateStepsStatus($steps, int $status): void
+    {
+        $steps->each(fn($s) => $s->update(['status' => $status]));
+    }
+
+    private function activateSteps($steps, int $status, string $url, array $meta): void
+    {
+        $steps->each(fn($step) => $this->createMailCron($step->to_user, $meta['journalType'], $meta['fromUser'], $url, $meta['docName']));
+        $this->updateStepsStatus($steps, $status);
+    }
+
+    private function sendNotifications(array $userIds, string $url, array $meta): void
+    {
+        foreach ($userIds as $id) {
+            $this->createMailCron($id, $meta['journalType'], $meta['fromUser'], $url, $meta['docName']);
+        }
+    }
+
+    private function handleSendToResolution($journal, $resolutionStep, bool $hasControl, $controllers, array $urls, array $meta): void
+    {
+        if ($hasControl) {
+            $journal->update(['status' => 7]);
+            $this->updateStepStatus($resolutionStep, 1);
+            $this->sendNotifications($controllers->pluck('id')->toArray(), $urls['control'], $meta);
+        } else {
+            $journal->update(['status' => 8]);
+            $this->updateStepStatus($resolutionStep, 2);
+            $this->createMailCron($resolutionStep?->to_user, $meta['journalType'], $meta['fromUser'], $urls['resolution'], $meta['docName']);
+        }
+    }
+
+    private function createReplyComment($step, ?string $text, string $code): void
+    {
+        $type = ReplyCommentTypes::where('doc_code', $code)->firstOrFail();
+
+        DocumentReplyComments::create([
+            'doc_exec_step_id'   => $step?->id,
+            'j_id'               => $step?->j_id,
+            'from_dep'           => $this->authActiveUser()->dep_id,
+            'from_user'          => $this->authActiveUser()->id,
+            'reply_comment_type' => $type->id,
+            'res_text'           => $text ?? '',
+            'status'             => 5,
+        ]);
+    }
+
+    private function getControllers(): \Illuminate\Support\Collection
+    {
+        $role = Role::whereIn('name', ['Ijro nazorati', 'Control_Emp'])->first();
+        return $role
+            ? UserWorkHistory::whereHas('user.userRoles', fn($q) => $q->where('role_id', $role->id))->get()
+            : collect();
+    }
+
+    private function isHrOrderType(int $jType): bool
+    {
+        $hrOrder = JournalTypes::where('org_id', $this->organizationId())->where('doc_code', 'HR_ORD')->where('status', 1)->first();
+        return $hrOrder && JournalTypes::where('org_id', $this->organizationId())->where('parent_id', $hrOrder->id)->where('status', 1)->pluck('id')->contains($jType);
+    }
+
+    private function buildUrls($journal): array
+    {
+        $base = "{$journal->id}/{$journal->doc->doc_hash}";
+        return [
+            'sign'       => "documents/view-sign-document/{$base}",
+            'agreement'  => "documents/view-approval-document/{$base}",
+            'resolution' => "documents/view-confirm-document/{$base}",
+            'execution'  => "documents/view-exec-document/{$base}",
+            'control'    => "documents/view-control-document/{$base}",
+        ];
+    }
+
+    private function logAction(int $docId, int $actionId, array|string $logType, ?string $docName = null): void
+    {
+        $type = is_array($logType) ? ($logType['journalType'] ?? '') : $logType;
+        $name = $docName ?? (is_array($logType) ? ($logType['docName'] ?? '') : '');
+
+        parent::createLog($docId, $actionId, $type, $name);
+    }
+
+    private function successResponse(): JsonResponse
+    {
+        return response()->json([
+            'success' => 200,
+            'title'   => __('message.success_message'),
+            'message' => __('message.task_completed_successfully'),
+        ]);
+    }
+
+    private function errorResponse(string $message, int $code = 201): JsonResponse
+    {
+        return response()->json([
+            'success' => $code,
+            'title'   => __('message.error_message'),
+            'message' => $message,
+        ], $code === 500 ? 500 : 200);
+    }
+
+    private function activateNextRole($document, $protocolType, int $current_order): void
+    {
+        $configs = ProtocolDocConfigs::where('protocol_type_id', $protocolType->id)->orderBy('order')->get();
+
+        $next = $configs->where('order', '>', $current_order)->sortBy('order')->first();
+
+        while ($next) {
+            if (ProtocolDocMember::where('doc_id', $document->id)->where('role_id', $next->role_id)->exists()) {
+                ProtocolDocMember::where('doc_id', $document->id)->where('role_id', $next->role_id)->update(['status' => 2]);
+
+                $members = ProtocolDocMember::where('doc_id', $document->id)->where('role_id', $next->role_id)->get();
+                $url = "protocol/{$protocolType->doc_code}/{$document->id}/{$document->doc_hash}";
+                $fromUser = $document->created_user
+                    ? UserPersonalInfo::where('user_id', $document->created_user)->first()?->fullName() ?? '-'
+                    : '-';
+
+                foreach ($members as $m) {
+                    $this->createMailCron($m->user_id, $document->docType->title ?? '', $fromUser, $url, $document->doc_name ?? '');
+                }
+
+                return;
+            }
+
+            $current_order = $next->order;
+            $next = $configs->where('order', '>', $current_order)->sortBy('order')->first();
+        }
+
+        $document->update(['status' => 3]);
     }
 }

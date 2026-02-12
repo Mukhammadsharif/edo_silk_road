@@ -547,8 +547,13 @@ USER_STATUS: ${response?.userStatus ? 'true' : 'false'}
             type: 'POST',
             data: {
                 documentId: documentId,
-                document: sampleDocument
+                document: sampleDocument,
+                ecp_sign_type: "from_signer_to_ag",
+                ecp_doc_id: 14,
+                ecp_confirm_id : 1,
+                ecp_r_text: "ok!",
             },
+
             success: function (response) {
                 if (response.status === 1 && response.subjectCertificateInfo) {
                     const userInfo = response.subjectCertificateInfo;
