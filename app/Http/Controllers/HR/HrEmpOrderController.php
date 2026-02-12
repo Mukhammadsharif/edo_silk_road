@@ -99,6 +99,7 @@ class HrEmpOrderController extends Controller
             $createWork->from_date = date('Y-m-d', strtotime($request->from_date));
             $createWork->to_date = $nextYear;
             $createWork->status = 1;
+            $createWork->org_id = $this->organizationId();
             $createWork->save();
 
             $userDepartment = Department::find($request->dep_id);
@@ -135,7 +136,7 @@ class HrEmpOrderController extends Controller
 
         $ordTypes = StatusList::where('type', 'hr_emp_status')->whereNotIn('code', [8])->orderBy('code')->get();
 
-        $departments = Department::where('status', 1)->where('parent_id', 0)->get();
+        $departments = Department::where('org_unit_id', $this->organizationId())->where('status', 1)->where('parent_id', 0)->get();
 
         return view('hr.admin.emp-order.create', compact('user', 'id', 'ordTypes', 'departments'));
     }
@@ -149,7 +150,7 @@ class HrEmpOrderController extends Controller
 
         $ordTypes = StatusList::where('type', 'hr_emp_status')->orderBy('code')->get();
 
-        $departments = Department::where('status', 1)->where('parent_id', 0)->get();
+        $departments = Department::where('org_unit_id', $this->organizationId())->where('status', 1)->where('parent_id', 0)->get();
 
         return view('hr.admin.emp-order.edit',compact('model', 'user', 'ordTypes', 'departments'));
     }

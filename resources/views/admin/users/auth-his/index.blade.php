@@ -60,7 +60,7 @@
                                         </td>
                                         <td>
                                             <a href="#" class="btn btn-outline-info">
-                                                <i class="fa fa-eye"></i> {{ __('view') }}
+                                                <i data-lucide="eye"></i> {{ __('view') }}
                                             </a>
                                         </td>
                                         <td>

@@ -70,7 +70,7 @@
                                 {{ __('action.search') }} ({{ $models->total() }})
                             </button>
                             <a href="{{ route('messages.list', ['type' => $type]) }}" class="btn btn-light mb-2">
-                                <i class="ik ik-refresh-cw"></i> {{ __('action.clear') }}
+                                <i data-lucide="rotate-ccw"></i> {{ __('action.clear') }}
                             </a>
                         </form>
                     </div>
