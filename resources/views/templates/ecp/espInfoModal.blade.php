@@ -45,7 +45,7 @@
                         <div class="info-value-ecp" id="signingTime"></div>
                     </div>
 
-                    <div class="info-card-ecp full-width">
+                    <div class="info-card-ecp full-width" hidden>
                         <div class="info-label-ecp">
                             <i data-lucide="fingerprint"></i>
                             <span>{{ __('field.digest') ?? 'Хеш' }}</span>

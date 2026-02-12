@@ -25,6 +25,10 @@
 @include('templates.ecp.espInfoModal')
 
 <script>
+    $('.modal').each(function () {
+        $(this).appendTo('body');
+    });
+
     function showEspInfo(id) {
         let time = document.querySelector(`#time${id}`).value
         let subjectName = document.querySelector(`#subjectName${id}`).value
