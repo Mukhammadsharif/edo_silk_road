@@ -44,26 +44,14 @@
         $('#infoModel').modal('show');
     }
 
-    function getValue(subject, field) {
-        // Объект → сразу поле
-        if (subject && typeof subject === 'object' && field in subject) {
-            const val = subject[field];
-            return val != null ? String(val).trim() : "-";
+    function getValue(s, f) {
+        var res = s.split(',');
+        for (var i in res) {
+            var n = res[i].search(f + "=");
+            if (n !== -1) {
+                return res[i].slice(n + f.length + 1);
+            }
         }
-
-        // Строка в формате DN
-        if (typeof subject === 'string') {
-            // Более надёжное регулярное выражение
-            const regex = new RegExp(`(?:^|,)\\s*${escapeRegExp(field)}\\s*=\\s*([^,]+)`, 'i');
-            const match = subject.match(regex);
-            return match ? match[1].trim() : "-";
-        }
-
         return "-";
-    }
-
-    // Вспомогательная функция для экранирования спецсимволов в regex
-    function escapeRegExp(string) {
-        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 </script>
