@@ -504,7 +504,7 @@ class UserController extends Controller
 
         $last_level = Department::orderBy('level_number', 'DESC')->first();
 
-        $positions = UserPosition::select('id', $dep_name)->where('status', 1)->orderBy('order_number')->get();
+        $positions = UserPosition::select('id', $dep_name)->where('org_id', $this->organizationId())->where('status', 1)->orderBy('order_number')->get();
 
         return response()->json([
             'current_dep' => $current_dep,

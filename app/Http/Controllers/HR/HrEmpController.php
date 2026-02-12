@@ -43,7 +43,7 @@ class HrEmpController extends Controller
 
         $s_role = $request->input('s_role');
 
-        $search = User::orderBy('id', 'DESC');
+        $search = User::where('org_unit_id', $this->organizationId())->orderBy('id', 'DESC');
 
         if (trim(''.$s_text.'')) {
             $search->whereHas('userPersonal', function ($query) use ($s_text) {
@@ -82,7 +82,7 @@ class HrEmpController extends Controller
     public function create()
     {
         //
-        $departments = Department::where('status', 1)->where('parent_id', 0)->get();
+        $departments = Department::where('org_unit_id', $this->organizationId())->where('status', 1)->where('parent_id', 0)->get();
 
         return view('hr.admin.emp.create', compact('departments'));
     }
@@ -112,6 +112,7 @@ class HrEmpController extends Controller
         $createUser->user_hash = $this->uniqueId();
         $createUser->password = Hash::make('123456');
         $createUser->status = 1;
+        $createUser->org_unit_id = $this->organizationId();
         $createUser->save();
 
         $itAdminRole = Role::where('name', 'Dep_Emp')->first();
@@ -125,6 +126,7 @@ class HrEmpController extends Controller
             $createPersonal->l_name = $request->l_name_uz;
             $createPersonal->f_name = $request->f_name_uz;
             $createPersonal->m_name = $request->m_name_uz;
+            $createPersonal->phone = $request->phone;
             $createPersonal->save();
 
             $personalName = new UserPersonalNames();
@@ -149,6 +151,7 @@ class HrEmpController extends Controller
             $createWork->from_date = Carbon::now();
             $createWork->to_date = $nextYear;
             $createWork->status = 1;
+            $createWork->org_id = $this->organizationId();
             $createWork->save();
 
             // Xodim buyruqlari
@@ -199,7 +202,7 @@ class HrEmpController extends Controller
 
         $hrEmpOrders = HrEmpOrder::where('user_id', $user->id)->where('isActive', 'A')->orderBy('from_date')->get();
 
-        $departments = Department::where('parent_id', 0)->where('status', 1)->get();
+        $departments = Department::where('org_unit_id', $this->organizationId())->where('parent_id', 0)->where('status', 1)->get();
 
         $activeRoles = UserRole::where('model_id', $user->currentWork->id??0)->get();
 
