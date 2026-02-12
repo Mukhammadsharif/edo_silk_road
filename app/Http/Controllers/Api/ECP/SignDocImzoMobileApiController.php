@@ -465,7 +465,7 @@ class SignDocImzoMobileApiController extends Controller
      *         )
      *     ),
      *     @OA\Response(
-     *         response=200,
+     *         response=400,
      *         description="Ошибка бизнес-логики (например, не введён комментарий)",
      *         @OA\JsonContent(
      *             @OA\Property(property="success", type="integer", example=201),
