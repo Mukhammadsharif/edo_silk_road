@@ -855,7 +855,7 @@ class SignDocImzoMobileApiController extends Controller
             'digest'              => "",
             'serialNumber'        => $eriSign['subjectCertificateInfo']['serialNumber'],
             'subjectName'         => $eriSign['subjectCertificateInfo']['subjectName'],
-            'verified'            => "",
+            'verified'            => true,
             'certificateVerified' => "",
         ];
     }
@@ -962,6 +962,7 @@ class SignDocImzoMobileApiController extends Controller
     private function successResponse(): JsonResponse
     {
         return response()->json([
+            'status'  => 1,
             'success' => 200,
             'title'   => __('message.success_message'),
             'message' => __('message.task_completed_successfully'),

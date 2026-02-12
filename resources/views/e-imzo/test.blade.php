@@ -559,21 +559,9 @@ USER_STATUS: ${response?.userStatus ? 'true' : 'false'}
             },
 
             success: function (response) {
-                if (response.status === 1 && response.subjectCertificateInfo) {
-                    const userInfo = response.subjectCertificateInfo;
-                    const verifyInfo = response.verificationInfo;
-
+                if (response.status === 1) {
                     const displayInfo = `
-Подписант:
-ФИО: ${userInfo.subjectName?.CN || 'N/A'}
-ПИНФЛ: ${userInfo.subjectName?.UID || 'N/A'}
-Серийный номер: ${userInfo.serialNumber || 'N/A'}
-
-Информация о подписи:
-Время подписания: ${verifyInfo?.signingTime || 'N/A'}
-Время метки: ${verifyInfo?.timestampedTime || 'N/A'}
-
-Подпись действительна!
+                        Подпись действительна!
                     `;
                     showResult('✅ Документ успешно подписан!', displayInfo);
                 } else {
