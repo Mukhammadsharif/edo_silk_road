@@ -854,10 +854,31 @@ class SignDocImzoMobileApiController extends Controller
             'signature'           => "",
             'digest'              => "",
             'serialNumber'        => $eriSign['subjectCertificateInfo']['serialNumber'],
-            'subjectName'         => $eriSign['subjectCertificateInfo']['subjectName'],
+            'subjectName'         => self::rdnToString($eriSign['subjectCertificateInfo']['subjectName']),
             'verified'            => true,
             'certificateVerified' => "",
         ];
+    }
+
+    private static function rdnToString($rdn): string
+    {
+        if (is_string($rdn)) {
+            return $rdn; // уже строка — ничего не делаем
+        }
+
+        if (!is_array($rdn) && !is_object($rdn)) {
+            return '';
+        }
+
+        $parts = [];
+
+        foreach ((array) $rdn as $key => $value) {
+            // экранируем запятые и обратные слеши, если они есть в значении
+            $escaped = str_replace(['\\', ','], ['\\\\', '\\,'], $value);
+            $parts[] = "$key=$escaped";
+        }
+
+        return implode(',', $parts);
     }
 
     private function getStep($journal, string $code): ?DocumentExecutionSteps
