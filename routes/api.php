@@ -224,9 +224,6 @@ Route::prefix('v1/login-sign')->middleware('auth:sanctum')->group(function () {
 
 // ECP Routes - E-IMZO Mobile (ID-Card)
 Route::prefix('v1/ecp/mobile')->group(function () {
-
-    // Public routes (no authentication required)
-
     /**
      * Endpoint для получения challenge для мобильной идентификации
      * Возвращает: documentId и challenge для подписания

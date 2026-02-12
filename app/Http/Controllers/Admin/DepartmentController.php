@@ -306,6 +306,7 @@ class DepartmentController extends Controller
             }
 
             if ($request->status == 2) {
+                $model->update(['status' => $request->status]);
                 Department::where('parent_id', $id)->update(['status' => $request->status]);
             }
         }

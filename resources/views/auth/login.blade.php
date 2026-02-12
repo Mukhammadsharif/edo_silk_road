@@ -13,9 +13,9 @@
 
     <video class="auth-sidebar__video" playsinline autoplay loop muted
             src="{{ asset('images/back1.mp4') }}"></video>
-        
 
-         
+
+
         <div class="containers">
             <div class="tabs">
                 <div class="tab active" data-tab="password" onclick="showTab('login')">
@@ -47,10 +47,10 @@
                         </div>
 
                         <div class="remember-forgot">
-                            <label class="remember-me">
-                                <input type="checkbox">
-                                {{ __('field.remember_me') }}
-                            </label>
+{{--                            <label class="remember-me">--}}
+{{--                                <input type="checkbox">--}}
+{{--                                {{ __('field.remember_me') }}--}}
+{{--                            </label>--}}
                             <div class="forgot"></div>
                         </div>
 
