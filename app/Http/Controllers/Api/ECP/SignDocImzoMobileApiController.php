@@ -41,7 +41,7 @@ class SignDocImzoMobileApiController extends Controller
      * @OA\Post(
      *     path="/api/v1/ecp/mobile/auth",
      *     summary="Генерация challenge для идентификации через ID-Card",
-     *     description="Создает случайное значение challenge для подписания пользователем",
+     *     description="Создаёт случайное значение challenge для подписания пользователем. Возвращает siteId, documentId и challenge.",
      *     tags={"ECP - E-IMZO Mobile"},
      *
      *     @OA\Response(
@@ -52,7 +52,15 @@ class SignDocImzoMobileApiController extends Controller
      *             @OA\Property(property="siteId", type="string", example="0000"),
      *             @OA\Property(property="documentId", type="string", example="2944F1F2"),
      *             @OA\Property(property="challenge", type="string", example="F8D2181DC6C02EA819B88FF3EF49BE0C"),
-     *             @OA\Property(property="message", type="string", nullable=true)
+     *             @OA\Property(property="message", type="string", nullable=true, example=null)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Ошибка соединения с сервером E-IMZO",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=0),
+     *             @OA\Property(property="message", type="string", example="Server communication error")
      *         )
      *     )
      * )
@@ -101,8 +109,8 @@ class SignDocImzoMobileApiController extends Controller
     /**
      * @OA\Post(
      *     path="/api/v1/ecp/mobile/status",
-     *     summary="Проверка статуса подписания",
-     *     description="Проверяет загружен ли PKCS#7 документ",
+     *     summary="Проверка статуса загрузки PKCS#7",
+     *     description="Проверяет, был ли загружен PKCS#7 документ мобильным приложением. Статус: 1 — готово, 2 — ожидание, отрицательное — ошибка.",
      *     tags={"ECP - E-IMZO Mobile"},
      *
      *     @OA\RequestBody(
@@ -115,10 +123,26 @@ class SignDocImzoMobileApiController extends Controller
      *
      *     @OA\Response(
      *         response=200,
-     *         description="Статус получен",
+     *         description="Статус успешно получен",
      *         @OA\JsonContent(
-     *             @OA\Property(property="status", type="integer"),
-     *             @OA\Property(property="message", type="string", nullable=true)
+     *             @OA\Property(property="status", type="integer", example=1, description="1=готово, 2=ожидание, <0=ошибка"),
+     *             @OA\Property(property="message", type="string", nullable=true, example="Status retrieved")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="documentId не передан",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=0),
+     *             @OA\Property(property="message", type="string", example="Document ID is required")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Ошибка соединения с сервером E-IMZO",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=0),
+     *             @OA\Property(property="message", type="string", example="Server communication error")
      *         )
      *     )
      * )
@@ -178,23 +202,35 @@ class SignDocImzoMobileApiController extends Controller
     /**
      * @OA\Post(
      *     path="/api/v1/ecp/mobile/upload",
-     *     summary="Endpoint для загрузки PKCS#7 от мобильного приложения",
-     *     description="Принимает PKCS#7 документ от E-IMZO ID-CARD приложения",
+     *     summary="Загрузка PKCS#7 от мобильного приложения E-IMZO ID-CARD",
+     *     description="Принимает PKCS#7 документ от мобильного приложения и проксирует его на E-IMZO сервер. URL этого endpoint должен быть указан в настройках как UPLOAD URL.",
      *     tags={"ECP - E-IMZO Mobile"},
      *
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"documentId", "pkcs7"},
-     *             @OA\Property(property="documentId", type="string"),
-     *             @OA\Property(property="pkcs7", type="string"),
-     *             @OA\Property(property="serialNumber", type="string", nullable=true)
+     *             required={"document_id", "pkcs7_b64", "serial_number"},
+     *             @OA\Property(property="document_id", type="string", example="BBF3E8C3"),
+     *             @OA\Property(property="pkcs7_b64", type="string", description="PKCS#7 в формате Base64"),
+     *             @OA\Property(property="serial_number", type="string", nullable=true, example="1234567890ABCDEF")
      *         )
      *     ),
      *
      *     @OA\Response(
      *         response=200,
-     *         description="PKCS#7 загружен"
+     *         description="PKCS#7 успешно загружен",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=1),
+     *             @OA\Property(property="message", type="string", example="PKCS#7 uploaded successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Ошибка при загрузке",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=0),
+     *             @OA\Property(property="message", type="string", example="Upload failed")
+     *         )
      *     )
      * )
      */
@@ -239,20 +275,35 @@ class SignDocImzoMobileApiController extends Controller
     /**
      * @OA\Get(
      *     path="/api/v1/ecp/mobile/authenticate/{documentId}",
-     *     summary="Проверка результата идентификации",
-     *     description="Возвращает информацию о сертификате после идентификации",
+     *     summary="Проверка результата идентификации по ID-Card",
+     *     description="Возвращает информацию о сертификате пользователя после идентификации. Если пользователь найден в системе и активен — возвращает Bearer токен.",
      *     tags={"ECP - E-IMZO Mobile"},
      *
      *     @OA\Parameter(
      *         name="documentId",
      *         in="path",
      *         required=true,
-     *         @OA\Schema(type="string")
+     *         description="documentId, полученный из /auth",
+     *         @OA\Schema(type="string", example="2944F1F2")
      *     ),
      *
      *     @OA\Response(
      *         response=200,
-     *         description="Информация о сертификате"
+     *         description="Результат идентификации",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=1),
+     *             @OA\Property(property="subjectCertificateInfo", type="object", nullable=true),
+     *             @OA\Property(property="bearer", type="string", example="1|abcdef...", description="Bearer токен или 'Not authenticated'"),
+     *             @OA\Property(property="userStatus", type="boolean", example=true, description="true — пользователь найден и активен")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Ошибка соединения или некорректный ответ сервера",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=0),
+     *             @OA\Property(property="message", type="string", example="Authentication failed")
+     *         )
      *     )
      * )
      */
@@ -319,14 +370,28 @@ class SignDocImzoMobileApiController extends Controller
     /**
      * @OA\Post(
      *     path="/api/v1/ecp/mobile/sign",
-     *     summary="Генерация документа для подписания",
-     *     description="Создает DocumentID для подписания",
+     *     summary="Генерация documentId для подписания документа",
+     *     description="Создаёт новый documentId для использования в deeplink при подписании документа через мобильное приложение E-IMZO.",
      *     tags={"ECP - E-IMZO Mobile"},
      *     security={{"sanctum":{}}},
      *
      *     @OA\Response(
      *         response=200,
-     *         description="DocumentID создан"
+     *         description="documentId успешно создан",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=1),
+     *             @OA\Property(property="siteId", type="string", example="0000"),
+     *             @OA\Property(property="documentId", type="string", example="A1B2C3D4"),
+     *             @OA\Property(property="message", type="string", nullable=true, example=null)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Ошибка генерации documentId",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=0),
+     *             @OA\Property(property="message", type="string", example="Failed to generate document ID")
+     *         )
      *     )
      * )
      */
@@ -371,8 +436,8 @@ class SignDocImzoMobileApiController extends Controller
     /**
      * @OA\Post(
      *     path="/api/v1/ecp/mobile/verify",
-     *     summary="Проверка подписи документа",
-     *     description="Проверяет подпись документа",
+     *     summary="Проверка подписи и обработка подписанного документа",
+     *     description="Верифицирует PKCS#7 подпись через E-IMZO backend, затем обрабатывает документ согласно его типу (внутренний документ, протокол, HR-приказ). Сохраняет данные подписи пользователя.",
      *     tags={"ECP - E-IMZO Mobile"},
      *     security={{"sanctum":{}}},
      *
@@ -380,14 +445,41 @@ class SignDocImzoMobileApiController extends Controller
      *         required=true,
      *         @OA\JsonContent(
      *             required={"documentId", "document"},
-     *             @OA\Property(property="documentId", type="string"),
-     *             @OA\Property(property="document", type="string", description="Base64 encoded document")
+     *             @OA\Property(property="documentId", type="string", example="A1B2C3D4", description="documentId, полученный из /sign"),
+     *             @OA\Property(property="document", type="string", description="Содержимое документа (будет закодировано в Base64 перед отправкой)"),
+     *             @OA\Property(property="ecp_sign_type", type="string", example="send_to_sign", description="Тип операции подписания"),
+     *             @OA\Property(property="ecp_doc_id", type="integer", example=123, description="ID документа в системе"),
+     *             @OA\Property(property="ecp_confirm_id", type="integer", nullable=true, example=3, description="ID подтверждения (для протоколов)"),
+     *             @OA\Property(property="ecp_r_text", type="string", nullable=true, example="Согласовано", description="Текст резолюции или комментарий")
      *         )
      *     ),
      *
      *     @OA\Response(
      *         response=200,
-     *         description="Результат проверки подписи"
+     *         description="Документ успешно подписан и обработан",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=1),
+     *             @OA\Property(property="success", type="integer", example=200),
+     *             @OA\Property(property="title", type="string", example="Успешно"),
+     *             @OA\Property(property="message", type="string", example="Задача выполнена успешно")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Ошибка бизнес-логики (например, не введён комментарий)",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="integer", example=201),
+     *             @OA\Property(property="title", type="string", example="Ошибка"),
+     *             @OA\Property(property="message", type="string", example="Необходимо добавить комментарий к документу")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Ошибка верификации или серверная ошибка",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=0),
+     *             @OA\Property(property="message", type="string", example="Verification failed")
+     *         )
      *     )
      * )
      */
