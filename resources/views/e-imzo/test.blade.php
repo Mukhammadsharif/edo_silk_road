@@ -662,7 +662,10 @@ USER_STATUS: ${response?.userStatus ? 'true' : 'false'}
 
                     hideLoader();
 
-                    const sampleDocument = 'Это тестовый документ для подписания через E-IMZO Mobile';
+                    const text = 'Это тестовый документ для подписания через E-IMZO Mobile';
+                    const sampleDocument = btoa(
+                        String.fromCharCode(...new TextEncoder().encode(text))
+                    );
                     const {qrCode} = generateQRCode(currentDocumentId, currentSiteId, sampleDocument);
 
                     currentDeeplink = createDeeplink('sign', qrCode);
