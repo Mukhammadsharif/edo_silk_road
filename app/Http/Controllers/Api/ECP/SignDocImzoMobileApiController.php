@@ -396,8 +396,8 @@ class SignDocImzoMobileApiController extends Controller
         try {
             $documentId = $request->documentId;
             $document = $request->document;
-            $docType = $request->type ?? '';
-            $docId = $request->doc_id ?? 0;
+            $docType = $request->ecp_sign_type ?? '';
+            $docId = $request->ecp_doc_id ?? 0;
             $confirmId  = $request->ecp_confirm_id ?? null;
             $resText    = $request->ecp_r_text;
 
