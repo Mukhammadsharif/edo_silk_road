@@ -44,7 +44,7 @@
                 <div class="subscription-status-card active-subscription">
                     <div class="subscription-header">
                         <div class="subscription-icon">
-                            <i data-lucide="check-circle"></i>
+                            <i data-lucide="check-circle" class="text-white"></i>
                         </div>
                         <h3>{{ __('field.your_current_subscription') }}</h3>
                     </div>
@@ -58,17 +58,17 @@
                                 {{ \Carbon\Carbon::parse($currentSubscription->ends_at)->format('d.m.Y') }}
                             </span>
                             </div>
-                            <div class="period-item">
-                                <span class="period-label">{{ __('field.until_end') }}</span>
-                                <span class="period-value">{{ \Carbon\Carbon::parse($currentSubscription->ends_at)->diffForHumans() }}</span>
-                            </div>
+{{--                            <div class="period-item">--}}
+{{--                                <span class="period-label">{{ __('field.until_end') }}</span>--}}
+{{--                                <span class="period-value">{{ \Carbon\Carbon::parse($currentSubscription->ends_at)->diffForHumans() }}</span>--}}
+{{--                            </div>--}}
                         </div>
-                        @if($currentSubscription->ends_at < now()->addDays(30))
-                            <div class="subscription-badge warning">
-                                <i data-lucide="clock"></i>
-                                {{ __('field.expires_soon') }}
-                            </div>
-                        @endif
+{{--                        @if($currentSubscription->ends_at < now()->addDays(30))--}}
+{{--                            <div class="subscription-badge warning">--}}
+{{--                                <i data-lucide="clock"></i>--}}
+{{--                                {{ __('field.expires_soon') }}--}}
+{{--                            </div>--}}
+{{--                        @endif--}}
                     </div>
                 </div>
             @elseif($pendingSubscription)
