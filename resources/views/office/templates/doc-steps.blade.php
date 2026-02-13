@@ -161,7 +161,7 @@
                         <div class="step-item {{ $journal->status > 9 ? 'completed' : 'pending' }}">
                             <div class="step-indicator">
                                 <div class="step-icon {{ $journal->status > 9 ? 'bg-success' : 'bg-warning' }}">
-                                    <i data-lucide="file-text"></i>
+                                    <i data-lucide="file-text" class="text-white"></i>
                                 </div>
                                 <div class="step-line"></div>
                             </div>
