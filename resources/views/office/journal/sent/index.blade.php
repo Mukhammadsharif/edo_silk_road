@@ -208,7 +208,7 @@
                                 <td class="td-date">{{ date('d.m.Y', strtotime($model->doc->doc_date??now())) }}</td>
                                 <td class="td-status">
                                     <span class="badge-status {{ $model->statusOut->badgeClass??'' }}">
-                                        <i data-lucide="circle"></i>
+                                        <i data-lucide="{{ $model->statusOut->iconClass->name?? 'circle' }}"></i>
                                         {{ $model->statusOut->lang($model->statusOut->id)??'unk' }}
                                     </span>
                                 </td>
