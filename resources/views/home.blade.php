@@ -1,3 +1,8 @@
+@php
+    use App\Models\Admin\OrganizationUnits;
+@endphp
+
+@php $isOwner = in_array(Auth::id(), OrganizationUnits::where('status', 1)->pluck('owner_user_id')->toArray()); @endphp
 <head>
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
 
@@ -53,7 +58,8 @@
                     <div class="stat-overlay"></div>
                     <div class="stat-overlay2"></div>
                     <div class="access">
-                        <a href="{{ route('documents.for-confirm.index') }}"><i data-lucide="arrow-right" class="text-white"></i></a>
+                        <a href="{{ route('documents.for-confirm.index') }}"><i data-lucide="arrow-right"
+                                                                                class="text-white"></i></a>
                     </div>
                 </div>
             </div>
@@ -71,7 +77,8 @@
                     <div class="stat-overlay"></div>
                     <div class="stat-overlay2"></div>
                     <div class="access">
-                        <a href="{{ route('documents.for-sign.index') }}"><i data-lucide="arrow-right" class="text-white"></i></a>
+                        <a href="{{ route('documents.for-sign.index') }}"><i data-lucide="arrow-right"
+                                                                             class="text-white"></i></a>
                     </div>
                 </div>
             </div>
@@ -89,7 +96,8 @@
                     <div class="stat-overlay"></div>
                     <div class="stat-overlay2"></div>
                     <div class="access">
-                        <a href="{{ route('documents.for-approval.index') }}"><i data-lucide="arrow-right" class="text-white"></i></a>
+                        <a href="{{ route('documents.for-approval.index') }}"><i data-lucide="arrow-right"
+                                                                                 class="text-white"></i></a>
                     </div>
                 </div>
             </div>
@@ -107,13 +115,14 @@
                     <div class="stat-overlay"></div>
                     <div class="stat-overlay2"></div>
                     <div class="access">
-                        <a href="{{ route('office.work-docs') }}"><i data-lucide="arrow-right" class="text-white"></i></a>
+                        <a href="{{ route('office.work-docs') }}"><i data-lucide="arrow-right"
+                                                                     class="text-white"></i></a>
                     </div>
                 </div>
             </div>
         </div>
 
-        @if(Auth::user()->organization->pendingSubscription)
+        @if(Auth::user()->organization->pendingSubscription && $isOwner)
             <div class="pending">
                 <div class="subscription-card">
                     <button class="card-close" onclick="closeSubscriptionCard()">
@@ -146,7 +155,7 @@
                     </div>
 
                     <div class="actions">
-                        <a href="{{ route('pricing') }}" class="sub-btn sub-btn-outline" >
+                        <a href="{{ route('pricing') }}" class="sub-btn sub-btn-outline">
                             <i data-lucide="receipt-text"></i> So‘rov tafsilotlari
                         </a>
                         <a href="mailto:info@edoline.uz" class="sub-btn sub-btn-primary">
@@ -157,7 +166,7 @@
             </div>
         @endif
 
-        @if(!Auth::user()->organization->pendingSubscription && !Auth::user()->organization->currentSubscription)
+        @if(!Auth::user()->organization->pendingSubscription && !Auth::user()->organization->currentSubscription && $isOwner)
             <div class="pending">
                 <div class="subscription-card">
                     <button class="card-close" onclick="closeSubscriptionCard()">
@@ -172,7 +181,7 @@
                     </div>
 
                     <p class="pending-text">
-                       Administrator tomonidan tasdiqlangandan so'ng tarif faollashadi.
+                        Administrator tomonidan tasdiqlangandan so'ng tarif faollashadi.
                     </p>
 
                     <div class="checklist">
@@ -192,7 +201,7 @@
                     </div>
 
                     <div class="actions">
-                        <a href="{{ route('pricing') }}" class="sub-btn sub-btn-primary" >
+                        <a href="{{ route('pricing') }}" class="sub-btn sub-btn-primary">
                             <i data-lucide="award"></i> {{ __('field.tariffs') }}
                         </a>
                     </div>
@@ -203,11 +212,11 @@
 
     <script>
         const chartData = [
-            { value: 35, color: '#7B40F2' },
-            { value: 25, color: '#8753F4' },
-            { value: 20, color: '#9467F6' },
-            { value: 15, color: '#A07AF7' },
-            { value: 5,  color: '#AE8EF9' }
+            {value: 35, color: '#7B40F2'},
+            {value: 25, color: '#8753F4'},
+            {value: 20, color: '#9467F6'},
+            {value: 15, color: '#A07AF7'},
+            {value: 5, color: '#AE8EF9'}
         ];
 
         function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
