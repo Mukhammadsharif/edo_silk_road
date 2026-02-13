@@ -137,7 +137,7 @@
                                             {{ __('field.choose_department') }} <span class="text-red">*</span>
                                         </label>
                                         <div class="form-group">
-                                            <select class="form-control-modern parent_dep" name="dep_id">
+                                            <select class="form-control-modern parent_dep select2" name="dep_id">
                                                 <option value="" selected="true">{{ __('action.choose') }}</option>
                                                 @if(isset($departments))
                                                     @foreach($departments as $key => $item)
@@ -161,7 +161,7 @@
                                         </svg>
                                         {{ __('field.choose_position') }} <span class="text-red">*</span>
                                     </label>
-                                    <select name="post_id" id="user_position_select" class="form-control-modern">
+                                    <select name="post_id" id="user_position_select" class="form-control-modern select2" style="width: 100% !important;">
                                     </select>
                                 </div>
                             </div>
@@ -328,7 +328,7 @@
                         }
                         if (departments.length) {
                             let childSelectOption = '<div class="form-group level'+level_number+' child_select_div">';
-                            childSelectOption+= '<select class="form-control-modern child_select" name="dep_id">';
+                            childSelectOption+= '<select class="form-control-modern child_select select2" name="dep_id" style="width: 100% !important;">';
                             childSelectOption+='<option value="'+dep_id+'">'+select_sub_dep+'</option>';
                             $.each(response.departments, function(key, value){
                                 childSelectOption+='<option value='+value.id+'>'+value.name+'</option>';
