@@ -200,7 +200,7 @@
                                         <button type="button"
                                                 class="btn-modern btn-icon btn-danger deleteItem"
                                                 data-id="{{ $doc->id }}">
-                                            <i data-lucide="trash-2"></i>
+                                            <i data-lucide="trash-2" class="text-white"></i>
                                         </button>
                                     </div>
                                 @endif
