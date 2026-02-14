@@ -301,7 +301,7 @@
                                             <br><br>
 
                                             <small class="float-left removeItem">
-                                                <select class="form-control" name="user_role[]">
+                                                <select class="form-control-modern select2" name="user_role[]">
                                                     @foreach($resolutionExecRoles as $r_key => $role)
                                                         <option
                                                             value="{{ $role->id }}" {{ ($r_key == 1 ? "selected":"") }}>
