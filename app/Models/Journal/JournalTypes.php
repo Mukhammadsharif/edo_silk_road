@@ -3,8 +3,10 @@
 namespace App\Models\Journal;
 
 use App\Models\Admin\AppTemps;
+use App\Models\Admin\OrganizationUnits;
 use App\Models\Admin\StatusList;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\TranslationLoader\LanguageLine;
 
 class JournalTypes extends Model
@@ -86,6 +88,11 @@ class JournalTypes extends Model
         }
 
         return $lang_name;
+    }
+
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(OrganizationUnits::class, 'org_id');
     }
 
 }

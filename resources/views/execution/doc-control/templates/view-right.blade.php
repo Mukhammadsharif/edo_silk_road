@@ -84,7 +84,7 @@
                                                                     <br><br>
 
                                                                     <small class="float-left removeItem">
-                                                                        <select class="form-control-modern select2" style="width: 100%" name="user_role[]">
+                                                                        <select class="form-control-modern select2" name="user_role[]">
                                                                             @foreach($resolutionExecRoles as $r_key => $role)
                                                                                 <option
                                                                                     value="{{ $role->id }}" {{ ($r_key == 1 ? "selected":"") }}>
@@ -120,7 +120,9 @@
                                         </div>
                                         <div class="col-sm-6">
                                             <label>{{ __('field.perf_term') }}</label>
-                                            <input type="date" name="perf_term" class="form-control-modern" value="" required/>
+                                            <input type="date" name="perf_term" class="form-control-modern"
+                                                   value="{{ \Carbon\Carbon::now()->addMonth()->format('Y-m-d') }}"
+                                                   required/>
                                         </div>
                                     </div>
 
@@ -441,7 +443,7 @@
                 </div>
                 <div class="card-body">
                     @if($journal->status != 10)
-                        <button class="btn btn-outline-success m-sm-1 openConfirmForm">
+                        <button class="btn btn-success m-sm-1 openConfirmForm">
                             <i class="ik ik-archive"></i> {{ __('action.close_execution_document') }}
                         </button>
                     @endif
@@ -458,7 +460,7 @@
     @endif
 
     @endif
-        <div class="card table-card confirmForm" style="display: none">
+        <div class="card table-card confirmForm" style="display: none; overflow: hidden">
             <div class="card-body mt-5">
                 <div id="loading" class="loading-gif" style="display: none"></div>
                 <form name="testform" id="loginSignForm">
@@ -477,13 +479,13 @@
                             </label><br>
                             @if($signType->doc_sign_type === 2)
                                 <button type="submit"
-                                        class="btn btn-outline-success m-sm-1 confirmBtn modal-bg-class"
+                                        class="btn btn-success m-sm-1 confirmBtn modal-bg-class"
                                         onclick="signLogin()">
                                     <span class="confirm_type">{{ __('action.to_sign') }}</span> (LOGIN)
                                 </button>
                             @else
                                 <button type="button"
-                                        class="btn btn-outline-success confirmBtn modal-bg-class"
+                                        class="btn btn-success confirmBtn modal-bg-class"
                                         onclick="sign()">
                                     <span class="confirm_type">{{ __('action.to_sign') }}</span> (ERI)
                                 </button>

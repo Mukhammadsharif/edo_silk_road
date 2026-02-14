@@ -92,7 +92,7 @@
             $('.confirmForm').show();
             let btn_id = $(this).data('id');
             let confirm_type = $(this).html();
-            let modal_bg_class = "btn-outline-success";
+            let modal_bg_class = "btn-success";
             let viaLogin = $('#viaLogin')
             let viaEsp = $('#viaEsp')
             let ecpContainer = $('#ecpContainer')

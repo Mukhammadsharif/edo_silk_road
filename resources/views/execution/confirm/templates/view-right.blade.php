@@ -728,7 +728,7 @@
             @endif
 
             @if($journal->status === 11)
-                <div class="card table-card confirmForm" style="display: none">
+                <div class="card table-card confirmForm" style="display: none; overflow: hidden">
                     <div class="card-body mt-5">
                         <div id="loading" class="loading-gif" style="display: none"></div>
                         <form name="testform" id="loginSignForm">
@@ -747,11 +747,11 @@
                                     <label hidden><i data-lucide="key-round"></i> {{ __('action.to_sign_by_key') }}
                                     </label><br>
                                     @if($signType->doc_sign_type === 2)
-                                        <button type="submit" class="btn btn-outline-success modal-bg-class">
+                                        <button type="submit" class="btn btn-success modal-bg-class">
                                             <span class="confirm_type">{{ __('action.to_sign') }}</span> (LOGIN)
                                         </button>
                                     @else
-                                        <button type="button" class="btn btn-outline-success modal-bg-class"
+                                        <button type="button" class="btn btn-success modal-bg-class"
                                                 onclick="sign()">
                                             <span class="confirm_type">{{ __('action.to_sign') }}</span> (ERI)
                                         </button>

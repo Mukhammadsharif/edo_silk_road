@@ -338,7 +338,7 @@
                         @endif
 
                         @if($journal->status === (int)1)
-                            <div class="card-body confirmForm bg-light mt-5" style="display: none; max-width: 100%">
+                            <div class="card-body confirmForm bg-light mt-5" style="display: none; max-width: 100%; overflow: hidden">
                                 <div id="loading" class="loading-gif" style="display: none"></div>
                                 <form name="testform" id="loginSignForm">
                                     <div class="form-group">

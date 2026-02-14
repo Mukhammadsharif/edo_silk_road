@@ -88,6 +88,10 @@
 <script src="{{ asset('/ajax/jquery.min.js') }}"></script>
 
 <script type="text/javascript">
+    window.translations = {
+        user_not_found: "{{ __('field.user_not_found') }}"
+    };
+
     $(document).ready(function () {
 
         $.ajaxSetup({
@@ -129,7 +133,7 @@
                <tr class="feed-item unselect-user listItem">
                   <td>
                     <div class="d-inline-block align-middle">
-                        <div class="d-inline-block">{{ __('field.user_not_found') }}</div>
+                        <div class="d-inline-block">${window.translations.user_not_found}</div>
                     </div>
                   </td>
                </tr>`;
@@ -267,7 +271,7 @@
         $('.openConfirmForm').on('click', function () {
             $('.confirmForm').show();
             let confirm_type = $(this).html();
-            let modal_bg_class = "btn-outline-success";
+            let modal_bg_class = "btn-success";
             $('.modal-bg-class').removeClass().addClass(`btn-modern modal-bg-class ${modal_bg_class}`);
             $('.confirm_type').html(confirm_type);
             $('#ecp_confirm_id').val();

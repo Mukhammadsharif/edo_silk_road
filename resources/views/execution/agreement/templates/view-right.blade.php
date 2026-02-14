@@ -123,7 +123,7 @@
                 </button>
             </div>
 
-            <div class="card-body confirmForm bg-light" style="display: none">
+            <div class="card-body confirmForm bg-light" style="display: none; overflow: hidden">
                 <div id="loading" class="loading-gif" style="display: none"></div>
                 @csrf
                 @method("POST")
@@ -148,11 +148,11 @@
                             <label hidden><i data-lucide="key-round"></i> {{ __('action.to_sign_by_key') }}
                             </label><br>
                             @if($signType->doc_sign_type === 2)
-                                <button type="submit" class="btn btn-outline-success modal-bg-class">
+                                <button type="submit" class="btn btn-success modal-bg-class">
                                     <span class="confirm_type">{{ __('action.to_sign') }}</span> (LOGIN)
                                 </button>
                             @else
-                                <button type="button" class="btn btn-outline-success modal-bg-class"
+                                <button type="button" class="btn btn-success modal-bg-class"
                                         onclick="sign()">
                                     <span class="confirm_type">{{ __('action.to_sign') }}</span> (ERI)
                                 </button>
