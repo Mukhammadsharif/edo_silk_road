@@ -379,12 +379,12 @@
                                     @if($model->statusWork)
                                         <span
                                             class="doc-status-badge-modern {{ strtolower($model->statusWork->lang_code ?? 'draft') }}">
-                                            <i data-lucide="circle"></i>
+                                            <i data-lucide="{{ $model->statusWork->iconClass->name?? 'circle' }}"></i>
                                             {{ $model->statusWork->lang($model->statusWork->id) ?? '' }}
                                         </span>
                                     @else
                                         <span class="doc-status-badge-modern draft">
-                                            <i data-lucide="circle"></i>
+                                            <i data-lucide="{{ $default_status->name?? 'circle' }}"></i>
                                             {{ __($default_status->lang_code ?? 'unk') }}
                                         </span>
                                     @endif

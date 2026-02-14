@@ -202,7 +202,7 @@
                                     <td class="td-date">{{ date('d.m.Y', strtotime($model->doc->doc_date??now())) }}</td>
                                     <td class="td-status">
                                         <span class="status-badge-modern {{ $model->statusWork->badgeClass??'' }}">
-                                            <i class="text-white" data-lucide="{{ $model->statusWork->iconClass->name?? 'circle' }}"></i>
+                                            <i data-lucide="{{ $model->statusWork->iconClass->name?? 'circle' }}"></i>
                                             {{ $model->statusWork->lang($model->statusWork->id)??'' }}
                                         </span>
                                     </td>

@@ -194,12 +194,12 @@
                                     <td class="td-status">
                                         @if($model->statusWork)
                                             <span class="status-badge-modern {{ $model->statusWork->badgeClass??'' }}">
-                                                <i class="text-white" data-lucide="{{ $model->statusWork->iconClass->name?? 'circle' }}"></i>
+                                                <i data-lucide="{{ $model->statusWork->iconClass->name?? 'circle' }}"></i>
                                                 {{ $model->statusWork->lang($model->statusWork->id)??'' }}
                                             </span>
                                         @else
                                             <span class="status-badge-modern {{ $default_status->bg_class??'' }}">
-                                                <i class="text-white" data-lucide="{{ $model->statusWork->iconClass->name?? 'circle' }}"></i>
+                                                <i data-lucide="{{ $model->statusWork->iconClass->name?? 'circle' }}"></i>
                                                 {{ __($default_status->lang_code??'unk') }}
                                             </span>
                                         @endif
