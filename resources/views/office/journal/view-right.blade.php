@@ -328,20 +328,18 @@
             @endif
 
             @if($journal->status === (int)1)
-                <div class="card-body1 confirmForm mt-2" style="display: none">
+                <div class="confirmForm mt-2" style="display: none; overflow: hidden;">
                     <div id="loading" class="loading-gif" style="display: none"></div>
                     <form name="testform" id="loginSignForm">
                         @csrf
-                        <div class="form-group row">
+                        <div class="form-group-modern">
                             @if($signType->doc_sign_type === 1)
-                                <div class="col-sm-12">
-                                    <label><i data-lucide="key-round"></i> {{ __('action.select_ecp_key') }}
-                                    </label>
-                                    <label id="message"></label>
-                                    <select name="key" class="form-control form-control-primary select2"
-                                            style="width: 100% !important;"
-                                            onchange="cbChanged(this)"></select>
-                                </div>
+                                <label><i data-lucide="key-round"></i> {{ __('action.select_ecp_key') }}
+                                </label>
+                                <label id="message"></label>
+                                <select name="key" class="form-control form-control-primary select2"
+                                        style="width: 100% !important; max-width: 100% !important;"
+                                        onchange="cbChanged(this)"></select>
                             @endif
                             <div class="col-sm-12 mt-2">
                                 <label hidden><i data-lucide="key-round"></i> {{ __('action.to_sign_by_key') }}
@@ -354,7 +352,6 @@
                                 @else
                                     <button type="button" class="btn-modern btn-success modal-bg-class"
                                             onclick="sign()">
-                                        <i data-lucide="key"></i>
                                         <span class="confirm_type">{{ __('action.to_sign') }}</span> (ERI)
                                     </button>
                                 @endif

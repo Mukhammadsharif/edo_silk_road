@@ -400,19 +400,19 @@
             @if($isAgUserCount > 0)
                 @if($journal->status === (int) 1 && $signer->count())
                     <button type="button"
-                            class="btn btn-outline-success btn-rounded openConfirmForm">
+                            class="btn btn-success btn-rounded openConfirmForm">
                         <i class="ik ik-send"></i> {{ __('action.send_for_signature') }}
                     </button>
                 @else
                     <button type="button"
-                            class="btn btn-outline-success btn-rounded openConfirmForm">
+                            class="btn btn-success btn-rounded openConfirmForm">
                         <i class="ik ik-send"></i> {{ __('action.send_to_ag') }}
                     </button>
                 @endif
             @else
                 @if($journal->status === (int)1)
                     <button type="button"
-                            class="btn btn-outline-success btn-rounded openConfirmForm">
+                            class="btn btn-success btn-rounded openConfirmForm">
                         <i class="ik ik-send"></i> {{ __('action.send_for_signature') }}
                     </button>
                 @endif
@@ -439,11 +439,11 @@
                             <div class="col-sm-8 mt-5">
                                 <label hidden><i data-lucide="key-round"></i> {{ __('type.to_sign_by_key') }}
                                 </label><br>
-                                <button type="button" class="btn btn-outline-success modal-bg-class"
+                                <button type="button" class="btn btn-success modal-bg-class"
                                         onclick="signLogin()" hidden>
                                     <span class="confirm_type">{{ __('type.to_sign') }}</span> (LOGIN)
                                 </button>
-                                <button type="button" class="btn btn-outline-success modal-bg-class"
+                                <button type="button" class="btn btn-success modal-bg-class"
                                         onclick="sign()">
                                     <span class="confirm_type">{{ __('type.to_sign') }}</span> (ERI)
                                 </button>

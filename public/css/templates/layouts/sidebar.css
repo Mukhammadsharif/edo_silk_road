@@ -368,7 +368,7 @@
 }
 
 .sidebar.dark .submenu-item a.active-link {
-    background-color: white;
+    /*background-color: white;*/
     color: var(--primary);
 }
 

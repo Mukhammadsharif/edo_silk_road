@@ -130,6 +130,12 @@
                                 <i data-lucide="type"></i>
                                 {{ __('field.title') }}
                             </th>
+                            @if($isSuperUser)
+                                <th style="text-align: left;">
+                                    <i data-lucide="building"></i>
+                                    {{ __('field.organization') }}
+                                </th>
+                            @endif
                             <th>
                                 <i data-lucide="book-open"></i>
                                 {{ __('field.doc_type') }}
@@ -157,6 +163,12 @@
                                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                                         <i data-lucide="building-2" style="width: 16px; height: 16px; color: #794DFD;"></i>
                                         <strong>{{ $model->lang($model->id) }}</strong>
+                                    </div>
+                                </td>
+                                <td class="td-doc-name">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <i data-lucide="building" style="width: 16px; height: 16px; color: #794DFD;"></i>
+                                        <strong>{{ $model->docType->organization->name_uz??'' }}</strong>
                                     </div>
                                 </td>
                                 <td>

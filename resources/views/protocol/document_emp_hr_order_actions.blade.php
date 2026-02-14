@@ -16,7 +16,7 @@
                 {{ __('action.neutral') }}
             </button>
 
-            <button type="button" class="btn btn-outline-success m-sm-1 openConfirmForm" data-id="3">
+            <button type="button" class="btn btn-success m-sm-1 openConfirmForm" data-id="3">
                 {{ __('action.to_sign_pr') }}
             </button>
         </div>
@@ -44,12 +44,12 @@
                         <label hidden><i data-lucide="key-round"></i> {{ __('action.to_sign_by_key') }}
                         </label><br>
                         @if($signType->doc_sign_type === 2)
-                            <button type="submit" class="btn btn-outline-success modal-bg-class"
+                            <button type="submit" class="btn btn-success modal-bg-class"
                                     id="viaLogin">
                                 <span class="confirm_type">{{ __('action.to_sign') }}</span>
                             </button>
                         @else
-                            <button type="button" class="btn btn-outline-success modal-bg-class"
+                            <button type="button" class="btn btn-success modal-bg-class"
                                     onclick="sign()" id="viaEsp">
                                 <span class="confirm_type">{{ __('action.to_sign') }}</span> ({{ __('field.ecp') }})
                             </button>
@@ -94,7 +94,7 @@
             $('.confirmForm').show();
             let btn_id = $(this).data('id');
             let confirm_type = $(this).html();
-            let modal_bg_class = "btn-outline-success";
+            let modal_bg_class = "btn-success";
             let viaLogin = $('#viaLogin')
             let viaEsp = $('#viaEsp')
             let ecpContainer = $('#ecpContainer')
