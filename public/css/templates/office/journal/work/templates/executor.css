@@ -10,4 +10,4 @@
 .qr-cell { width: 25%; text-align: center; }
 .qr-wrapper { display: inline-block; padding: 0.5rem; background: white; border: 1px solid #e2e8f0; border-radius: 6px; }
 .empty-cell { width: 25%; }
-@media print { .executor-section-modern { background: white; border-left: 2px solid #000; } }
+@media print { .executor-section-modern { background: white; } }

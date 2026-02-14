@@ -8,4 +8,4 @@
 .qr-wrapper { display: inline-block; padding: 0.75rem; background: white; border: 2px solid #e2e8f0; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); }
 .name-cell { width: 35%; text-align: right; }
 .name-value { display: block; font-size: 16px; color: #1e293b; font-weight: 700; padding-bottom: 0.5rem; border-bottom: 2px solid #1e293b; }
-@media print { .hr-signer-modern { background: white; border: 1px solid #000; } }
+@media print { .hr-signer-modern { background: white; } }
