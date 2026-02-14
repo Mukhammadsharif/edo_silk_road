@@ -7,7 +7,7 @@
     },
     "servers": [
         {
-            "url": "http://83.69.136.85:18084",
+            "url": "https://edoline.uz",
             "description": "Production server"
         },
         {
@@ -721,6 +721,522 @@
                         "description": "Ошибка авторизации"
                     }
                 }
+            }
+        },
+        "/api/v1/ecp/mobile/auth": {
+            "post": {
+                "tags": [
+                    "ECP - E-IMZO Mobile"
+                ],
+                "summary": "Генерация challenge для идентификации через ID-Card",
+                "description": "Создаёт случайное значение challenge для подписания пользователем. Возвращает siteId, documentId и challenge.",
+                "operationId": "019940b290b04ade7d92a1e723829d85",
+                "responses": {
+                    "200": {
+                        "description": "Challenge успешно создан",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "siteId": {
+                                            "type": "string",
+                                            "example": "0000"
+                                        },
+                                        "documentId": {
+                                            "type": "string",
+                                            "example": "2944F1F2"
+                                        },
+                                        "challenge": {
+                                            "type": "string",
+                                            "example": "F8D2181DC6C02EA819B88FF3EF49BE0C"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": null,
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка соединения с сервером E-IMZO",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Server communication error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/ecp/mobile/status": {
+            "post": {
+                "tags": [
+                    "ECP - E-IMZO Mobile"
+                ],
+                "summary": "Проверка статуса загрузки PKCS#7",
+                "description": "Проверяет, был ли загружен PKCS#7 документ мобильным приложением. Статус: 1 — готово, 2 — ожидание, отрицательное — ошибка.",
+                "operationId": "61f89ba7921916c84db5513657e852e3",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "documentId"
+                                ],
+                                "properties": {
+                                    "documentId": {
+                                        "type": "string",
+                                        "example": "BBF3E8C3"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Статус успешно получен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "1=готово, 2=ожидание, <0=ошибка",
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Status retrieved",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "documentId не передан",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Document ID is required"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка соединения с сервером E-IMZO",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Server communication error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/ecp/mobile/upload": {
+            "post": {
+                "tags": [
+                    "ECP - E-IMZO Mobile"
+                ],
+                "summary": "Загрузка PKCS#7 от мобильного приложения E-IMZO ID-CARD",
+                "description": "Принимает PKCS#7 документ от мобильного приложения и проксирует его на E-IMZO сервер. URL этого endpoint должен быть указан в настройках как UPLOAD URL.",
+                "operationId": "3071d1ebfdfabf0eec9f0cc425a1ffc8",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "document_id",
+                                    "pkcs7_b64",
+                                    "serial_number"
+                                ],
+                                "properties": {
+                                    "document_id": {
+                                        "type": "string",
+                                        "example": "BBF3E8C3"
+                                    },
+                                    "pkcs7_b64": {
+                                        "description": "PKCS#7 в формате Base64",
+                                        "type": "string"
+                                    },
+                                    "serial_number": {
+                                        "type": "string",
+                                        "example": "1234567890ABCDEF",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "PKCS#7 успешно загружен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "PKCS#7 uploaded successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка при загрузке",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Upload failed"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/ecp/mobile/authenticate/{documentId}": {
+            "get": {
+                "tags": [
+                    "ECP - E-IMZO Mobile"
+                ],
+                "summary": "Проверка результата идентификации по ID-Card",
+                "description": "Возвращает информацию о сертификате пользователя после идентификации. Если пользователь найден в системе и активен — возвращает Bearer токен.",
+                "operationId": "bb72c9b51c0c55147b050b2407e8741b",
+                "parameters": [
+                    {
+                        "name": "documentId",
+                        "in": "path",
+                        "description": "documentId, полученный из /auth",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "2944F1F2"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Результат идентификации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "subjectCertificateInfo": {
+                                            "type": "object",
+                                            "nullable": true
+                                        },
+                                        "bearer": {
+                                            "description": "Bearer токен или 'Not authenticated'",
+                                            "type": "string",
+                                            "example": "1|abcdef..."
+                                        },
+                                        "userStatus": {
+                                            "description": "true — пользователь найден и активен",
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка соединения или некорректный ответ сервера",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Authentication failed"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/ecp/mobile/sign": {
+            "post": {
+                "tags": [
+                    "ECP - E-IMZO Mobile"
+                ],
+                "summary": "Генерация documentId для подписания документа",
+                "description": "Создаёт новый documentId для использования в deeplink при подписании документа через мобильное приложение E-IMZO.",
+                "operationId": "4c1aa8aadda97d60a8c1647370c15f32",
+                "responses": {
+                    "200": {
+                        "description": "documentId успешно создан",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "siteId": {
+                                            "type": "string",
+                                            "example": "0000"
+                                        },
+                                        "documentId": {
+                                            "type": "string",
+                                            "example": "A1B2C3D4"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": null,
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка генерации documentId",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to generate document ID"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/ecp/mobile/verify": {
+            "post": {
+                "tags": [
+                    "ECP - E-IMZO Mobile"
+                ],
+                "summary": "Проверка подписи и обработка подписанного документа",
+                "description": "Верифицирует PKCS#7 подпись через E-IMZO backend, затем обрабатывает документ согласно его типу (внутренний документ, протокол, HR-приказ). Сохраняет данные подписи пользователя.",
+                "operationId": "ef21bcd48f91bbba32418a53f58aa324",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "documentId",
+                                    "document"
+                                ],
+                                "properties": {
+                                    "documentId": {
+                                        "description": "documentId, полученный из /sign",
+                                        "type": "string",
+                                        "example": "A1B2C3D4"
+                                    },
+                                    "document": {
+                                        "description": "Содержимое документа (будет закодировано в Base64 перед отправкой)",
+                                        "type": "string"
+                                    },
+                                    "ecp_sign_type": {
+                                        "description": "Тип операции подписания",
+                                        "type": "string",
+                                        "example": "send_to_sign"
+                                    },
+                                    "ecp_doc_id": {
+                                        "description": "ID документа в системе",
+                                        "type": "integer",
+                                        "example": 123
+                                    },
+                                    "ecp_confirm_id": {
+                                        "description": "ID подтверждения (для протоколов)",
+                                        "type": "integer",
+                                        "example": 3,
+                                        "nullable": true
+                                    },
+                                    "ecp_r_text": {
+                                        "description": "Текст резолюции или комментарий",
+                                        "type": "string",
+                                        "example": "Согласовано",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Документ успешно подписан и обработан",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "success": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "example": "Успешно"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Задача выполнена успешно"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка бизнес-логики (например, не введён комментарий)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "integer",
+                                            "example": 201
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "example": "Ошибка"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Необходимо добавить комментарий к документу"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка верификации или серверная ошибка",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Verification failed"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/api/v1/login-sign/sign-documents": {
@@ -5325,6 +5841,10 @@
         {
             "name": "ECP - E-IMZO",
             "description": "ECP - E-IMZO"
+        },
+        {
+            "name": "ECP - E-IMZO Mobile",
+            "description": "ECP - E-IMZO Mobile"
         },
         {
             "name": "ECP - Login Sign",
