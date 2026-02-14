@@ -254,15 +254,17 @@
 <link rel="stylesheet" href="{{ asset('css/templates/select2.css') }}">
 
 <script>
+    // editor1 - он на странице, инициализируем сразу
     let editor1cfg = {}
     editor1cfg.toolbar = "mytoolbar";
     editor1cfg.toolbar_mytoolbar = "{bold,italic,justifyleft,justifycenter,justifyright,fontsize,forecolor,backcolor}";
     let editor1 = new RichTextEditor("#div_editor1", editor1cfg);
 
+    // editor2 - НЕ инициализируем здесь, он внутри modal
+    let editor2 = null;
     let editor2cfg = {}
     editor2cfg.toolbar = "mytoolbar";
     editor2cfg.toolbar_mytoolbar = "{bold,italic,justifyleft,justifycenter,justifyright,fontsize,forecolor,backcolor}";
-    let editor2 = new RichTextEditor("#div_editor2", editor2cfg);
 </script>
 
 <script src="{{ asset('/ajax/jquery.min.js') }}"></script>
@@ -276,7 +278,23 @@
             }
         });
 
-        // For Users
+        // Инициализация editor2 при открытии modal
+        $('#openCancelReturnModal').on('shown.bs.modal', function () {
+            if (editor2 !== null) {
+                editor2.destroy();
+                editor2 = null;
+            }
+            editor2 = new RichTextEditor("#div_editor2", editor2cfg);
+        });
+
+        // Уничтожаем при закрытии
+        $('#openCancelReturnModal').on('hidden.bs.modal', function () {
+            if (editor2 !== null) {
+                editor2.destroy();
+                editor2 = null;
+            }
+        });
+
         $('#depHeadSignDocForm').hide();
 
         $('#depHeadSignDocBtn').on('click', function () {
@@ -298,13 +316,15 @@
         });
 
         $('#confirmForm').on('submit', function(e){
-
             e.preventDefault();
+
+            // Получаем текст из editor2 перед отправкой
+            let editorContent = editor2 !== null ? editor2.getHTMLCode() : '';
 
             $.ajax({
                 url: "{{ route('confirm-reject-doc', $journal->id) }}",
                 method: 'PUT',
-                data: $(this).serialize(),
+                data: $(this).serialize() + '&r_text=' + encodeURIComponent(editorContent),
                 beforeSend: function(){
                     $('#openCancelReturnModal').modal('toggle');
                 },
@@ -331,11 +351,9 @@
                         window.location.reload();
                     }, 2000);
                 }
-
             }).error(function(err){
                 console.log(err)
-            })
-
+            });
         });
     });
 </script>

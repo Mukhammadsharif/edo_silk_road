@@ -136,87 +136,87 @@ $request = RequestForOrgs::where('user_id', Auth::id())->first();
             }
         });
 
-        $(document).on('click', '.modal_btn', function (e) {
-
-            e.preventDefault();
-
-            var data = {
-                'tax_number': $('.tax_number').val(),
-            }
-
-            let modal = $('#RequestModal')
-            let save_msgList = $('#save_msgList')
-            let success_message = $('#success_message')
-
-            $.ajax({
-                url: '/admin/organizations/send-request',
-                method: 'POST',
-                data: data,
-                beforeSend: function () {
-
-                },
-                success: function (response) {
-                    if (response.status === 400) {
-                        save_msgList.html("");
-                        save_msgList.addClass('alert alert-danger');
-                        $.each(response.errors, function (key, err_value) {
-                            $('#save_msgList').append('<li>' + err_value + '</li>');
-                        });
-                        $('.create_btn').text('Save');
-                    } else {
-                        save_msgList.html("");
-                        success_message.addClass('alert alert-success');
-                        success_message.text(response.message);
-                        modal.find('input').val('');
-                        $('.modal_btn').text('Save');
-                        modal.modal('hide');
-                        setTimeout(() => window.location.reload(), 500)
-                    }
-                },
-            }).error(function (err) {
-                console.log(err)
-            })
-        })
-
-        $(document).on('click', '.cancel-request-btn', function (e) {
-            e.preventDefault();
-
-            let modal = $('#CancelModal');
-            let save_msgList = $('#save_msgList');
-
-            $.ajax({
-                url: '/admin/organizations/cancel-request',
-                method: 'POST',
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr('content')
-                },
-                beforeSend: function () {
-                    $('.cancel-request-btn').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Bekor qilinmoqda...');
-                },
-                success: function (response) {
-                    if (response.status === 200) {
-                        modal.modal('hide');
-
-                        setTimeout(() => window.location.reload(), 500);
-                    }
-                },
-                error: function (xhr) {
-                    let errors = xhr.responseJSON?.errors || {error: ['Xatolik yuz berdi. Qayta urinib ko\'ring.']};
-                    save_msgList.html("");
-                    save_msgList.addClass('alert alert-danger').show();
-                    $.each(errors, function (key, err_value) {
-                        if (Array.isArray(err_value)) {
-                            err_value.forEach(msg => $('#save_msgList').append('<li>' + msg + '</li>'));
-                        } else {
-                            $('#save_msgList').append('<li>' + err_value + '</li>');
-                        }
-                    });
-                },
-                complete: function () {
-                    $('.cancel-request-btn').prop('disabled', false).html('<i class="ik ik-trash-2"></i> Bekor qilish');
-                }
-            });
-        });
+        // $(document).on('click', '.modal_btn', function (e) {
+        //
+        //     e.preventDefault();
+        //
+        //     var data = {
+        //         'tax_number': $('.tax_number').val(),
+        //     }
+        //
+        //     let modal = $('#RequestModal')
+        //     let save_msgList = $('#save_msgList')
+        //     let success_message = $('#success_message')
+        //
+        //     $.ajax({
+        //         url: '/admin/organizations/send-request',
+        //         method: 'POST',
+        //         data: data,
+        //         beforeSend: function () {
+        //
+        //         },
+        //         success: function (response) {
+        //             if (response.status === 400) {
+        //                 save_msgList.html("");
+        //                 save_msgList.addClass('alert alert-danger');
+        //                 $.each(response.errors, function (key, err_value) {
+        //                     $('#save_msgList').append('<li>' + err_value + '</li>');
+        //                 });
+        //                 $('.create_btn').text('Save');
+        //             } else {
+        //                 save_msgList.html("");
+        //                 success_message.addClass('alert alert-success');
+        //                 success_message.text(response.message);
+        //                 modal.find('input').val('');
+        //                 $('.modal_btn').text('Save');
+        //                 modal.modal('hide');
+        //                 setTimeout(() => window.location.reload(), 500)
+        //             }
+        //         },
+        //     }).error(function (err) {
+        //         console.log(err)
+        //     })
+        // })
+        //
+        // $(document).on('click', '.cancel-request-btn', function (e) {
+        //     e.preventDefault();
+        //
+        //     let modal = $('#CancelModal');
+        //     let save_msgList = $('#save_msgList');
+        //
+        //     $.ajax({
+        //         url: '/admin/organizations/cancel-request',
+        //         method: 'POST',
+        //         data: {
+        //             _token: $('meta[name="csrf-token"]').attr('content')
+        //         },
+        //         beforeSend: function () {
+        //             $('.cancel-request-btn').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Bekor qilinmoqda...');
+        //         },
+        //         success: function (response) {
+        //             if (response.status === 200) {
+        //                 modal.modal('hide');
+        //
+        //                 setTimeout(() => window.location.reload(), 500);
+        //             }
+        //         },
+        //         error: function (xhr) {
+        //             let errors = xhr.responseJSON?.errors || {error: ['Xatolik yuz berdi. Qayta urinib ko\'ring.']};
+        //             save_msgList.html("");
+        //             save_msgList.addClass('alert alert-danger').show();
+        //             $.each(errors, function (key, err_value) {
+        //                 if (Array.isArray(err_value)) {
+        //                     err_value.forEach(msg => $('#save_msgList').append('<li>' + msg + '</li>'));
+        //                 } else {
+        //                     $('#save_msgList').append('<li>' + err_value + '</li>');
+        //                 }
+        //             });
+        //         },
+        //         complete: function () {
+        //             $('.cancel-request-btn').prop('disabled', false).html('<i class="ik ik-trash-2"></i> Bekor qilish');
+        //         }
+        //     });
+        // });
     })
 </script>
 
