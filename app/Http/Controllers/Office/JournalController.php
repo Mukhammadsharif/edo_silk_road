@@ -111,7 +111,8 @@ class JournalController extends Controller
         ]);
         $models->withQueryString();
 
-        $journal_types = JournalTypes::whereDoesntHave('childs')
+        $journal_types = JournalTypes::where('org_id', $this->organizationId())
+            ->whereDoesntHave('childs')
             ->where('status', 1)
             ->whereNotIn('doc_code', ['BASE_INCOMING', 'BASE_OUTGOING'])
             ->orderBy('order_number')->get();
@@ -192,7 +193,7 @@ class JournalController extends Controller
 
         $default_status = StatusList::where('type', 'work_document')->orderBy('code')->first();
 
-        $journal = JournalTypes::where('doc_code', 'BASE_INCOMING')->first();
+        $journal = JournalTypes::where('org_id', $this->organizationId())->where('doc_code', 'BASE_INCOMING')->first();
 
         $doc_organizations = DocumentOrganizations::where('for_doc_type', $journal->id)->where('status', 1)->get();
 
@@ -273,7 +274,7 @@ class JournalController extends Controller
 
         $default_status = StatusList::where('type', 'out_document')->orderBy('code')->first();
 
-        $journal = JournalTypes::where('doc_code', 'BASE_OUTGOING')->first();
+        $journal = JournalTypes::where('org_id', $this->organizationId())->where('doc_code', 'BASE_OUTGOING')->first();
 
         $doc_organizations = DocumentOrganizations::where('for_doc_type', $journal->id)->where('status', 1)->get();
 

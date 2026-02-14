@@ -375,8 +375,8 @@
 
         $('.openCancelEditModal').on('click', function () {
             let btn_id = $(this).data('id');
-            let modal_title = "{{ __('action.action.cancel_doc') }}";
-            let modal_btn = "{{ __('action.action.cancel') }}";
+            let modal_title = "{{ __('action.cancel_doc') }}";
+            let modal_btn = "{{ __('action.cancel') }}";
             if (btn_id === 3) {
                 modal_title = "{{ __('action.action.back_edit_doc') }}";
                 modal_btn = "{{ __('action.send') }}";
