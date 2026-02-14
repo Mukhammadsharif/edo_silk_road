@@ -13,4 +13,4 @@
 .name-cell { width: 40%; text-align: right; }
 .name-value { display: block; font-size: 14px; color: #1e293b; font-weight: 700; margin-bottom: 0.375rem; }
 .status-badge-print { display: inline-block; padding: 0.25rem 0.625rem; border-radius: 4px; font-size: 10px; font-weight: 600; }
-@media print { .agreement-section-modern { background: white; border: 1px solid #000; } .signature-table tr.row-alt { background: #f9f9f9; } }
+@media print { .agreement-section-modern { background: white; }}
