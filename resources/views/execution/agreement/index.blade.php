@@ -212,7 +212,7 @@
                                 <td class="td-date">{{ date('d.m.Y', strtotime($model->doc->doc_date??now())) }}</td>
                                 <td class="td-status">
                                         <span class="status-badge-modern {{ $model->step->statusSign->badgeClass??'' }}">
-                                            <i data-lucide="circle"></i>
+                                            <i data-lucide="{{ $model->step->statusSign->iconClass->name?? 'circle' }}"></i>
                                             {{ $model->step->statusSign->lang($model->step->statusSign->id)??'unk' }}
                                         </span>
                                 </td>
