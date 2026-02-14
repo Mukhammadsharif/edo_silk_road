@@ -56,6 +56,10 @@
     @include('e-imzo.e-imzo')
 
     <script type="text/javascript">
+        $('.modal').each(function () {
+            $(this).appendTo('body');
+        });
+
         $(document).ready(function () {
             $.ajaxSetup({
                 headers: {
