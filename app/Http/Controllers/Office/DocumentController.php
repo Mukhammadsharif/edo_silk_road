@@ -258,24 +258,52 @@ class DocumentController extends Controller
 
     public function saveFiles($document_id, $journal_id, $request)
     {
-        if ($request->hasFile('doc_files')) {
-            $docFiles = $request->file('doc_files');
-            foreach ($docFiles as $file) {
-                $today = Carbon::today(); $year = $today->year; $month = $today->month; $day = $today->day;
-                $path = 'doc/' . $year . '/' . $month . '/' . $day . '/';
+        $today = Carbon::today();
+        $path  = 'doc/' . $today->year . '/' . $today->month . '/' . $today->day . '/';
 
+        // Вариант 1: обычная загрузка
+        if ($request->hasFile('doc_files')) {
+            foreach ($request->file('doc_files') as $file) {
                 $documentFile = new DocumentFiles();
-                $documentFile->j_id = $journal_id;
-                $documentFile->doc_id  = $document_id;
+                $documentFile->j_id      = $journal_id;
+                $documentFile->doc_id    = $document_id;
                 $documentFile->from_user = $this->authActiveUser()->id;
-                $documentFile->file_name = $file->getClientOriginalName();;
+                $documentFile->file_name = $file->getClientOriginalName();
                 $documentFile->file_hash = $this->uniqueHash(16) . '.' . $file->getClientOriginalExtension();
                 $documentFile->file_path = $path;
-                $documentFile->file_ext = $file->getClientOriginalExtension();
+                $documentFile->file_ext  = $file->getClientOriginalExtension();
                 $documentFile->file_size = $file->getSize();
                 Storage::disk('ftp_13')->put($path . $documentFile->file_hash, file_get_contents($file->getRealPath()));
                 $documentFile->save();
             }
+            return;
+        }
+
+        // Вариант 2: файлы пришли через OnlyOffice (JSON строка)
+        $filesJson = $request->input('doc_files_json');
+        if (!$filesJson) return;
+
+        $savedFiles = json_decode($filesJson, true);
+        if (empty($savedFiles)) return;
+
+        foreach ($savedFiles as $fileData) {
+            $tempPath = storage_path('app/' . $fileData['path']);
+            if (!file_exists($tempPath)) continue;
+
+            $documentFile = new DocumentFiles();
+            $documentFile->j_id      = $journal_id;
+            $documentFile->doc_id    = $document_id;
+            $documentFile->from_user = $this->authActiveUser()->id;
+            $documentFile->file_name = $fileData['original'];
+            $documentFile->file_hash = $this->uniqueHash(16) . '.' . $fileData['ext'];
+            $documentFile->file_path = $path;
+            $documentFile->file_ext  = $fileData['ext'];
+            $documentFile->file_size = $fileData['size'];
+            Storage::disk('ftp_13')->put($path . $documentFile->file_hash, file_get_contents($tempPath));
+            $documentFile->save();
+
+            // Удаляем временный файл
+            Storage::disk('local')->delete($fileData['path']);
         }
     }
 
@@ -523,25 +551,7 @@ class DocumentController extends Controller
 
         if ($signatory_user) $this->extracted($j_id, $signatory_user, $signer_role->id);
 
-        if ($request->hasFile('doc_files')) {
-            $docFiles = $request->file('doc_files');
-            foreach ($docFiles as $file) {
-                $today = Carbon::today(); $year = $today->year; $month = $today->month; $day = $today->day;
-                $path = 'doc/' . $year . '/' . $month . '/' . $day . '/';
-
-                $documentFile = new DocumentFiles();
-                $documentFile->j_id = $journal->id;
-                $documentFile->doc_id  = $document->id;
-                $documentFile->from_user = $this->authActiveUser()->id;
-                $documentFile->file_name = $file->getClientOriginalName();;
-                $documentFile->file_hash = $this->uniqueHash(16) . '.' . $file->getClientOriginalExtension();
-                $documentFile->file_path = $path;
-                $documentFile->file_ext = $file->getClientOriginalExtension();
-                $documentFile->file_size = $file->getSize();
-                Storage::disk('ftp_13')->put($path . $documentFile->file_hash, file_get_contents($file->getRealPath()));
-                $documentFile->save();
-            }
-        }
+        $this->saveFiles($document->id, $j_id, $request);
 
         if ($journal->journal->doc_code === 'ORDER_F' && $to_dep) {
             $doc_to_dep = DocToDeps::where('j_id', $journal->id)->first();

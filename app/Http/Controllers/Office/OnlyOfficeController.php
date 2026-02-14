@@ -21,13 +21,31 @@ class OnlyOfficeController extends Controller
      */
     public function create(Request $request): View
     {
+        $savedFilePaths = [];
+
+        if ($request->hasFile('doc_files')) {
+            foreach ($request->file('doc_files') as $file) {
+                $storedPath = $file->store('temp_uploads', 'local');
+                $savedFilePaths[] = [
+                    'path'     => $storedPath,
+                    'original' => $file->getClientOriginalName(),
+                    'ext'      => $file->getClientOriginalExtension(),
+                    'size'     => $file->getSize(),
+                ];
+            }
+        }
+
+        $data = array_merge($request->except('doc_files'), [
+            'doc_files_json' => json_encode($savedFilePaths), // одна строка вместо массива
+        ]);
+
         $service = $this->onlyOfficeService->openWordEditor();
 
         return view('office.document.create-only', [
             'document_params' => $service['document_params'],
             'token' => $service['token'],
             'onlyOfficeJsUrl' => $service['document_params']['only_office_js_url'],
-            'data' => $request->all()
+            'data' => $data
         ]);
     }
 
@@ -36,6 +54,24 @@ class OnlyOfficeController extends Controller
      */
     public function edit(Request $request, int $jId, string $docHash): View
     {
+        $savedFilePaths = [];
+
+        if ($request->hasFile('doc_files')) {
+            foreach ($request->file('doc_files') as $file) {
+                $storedPath = $file->store('temp_uploads', 'local');
+                $savedFilePaths[] = [
+                    'path'     => $storedPath,
+                    'original' => $file->getClientOriginalName(),
+                    'ext'      => $file->getClientOriginalExtension(),
+                    'size'     => $file->getSize(),
+                ];
+            }
+        }
+
+        $data = array_merge($request->except('doc_files'), [
+            'doc_files_json' => json_encode($savedFilePaths), // одна строка вместо массива
+        ]);
+
         $service = $this->onlyOfficeService->editWordEditor($jId, 'DOC');
 
         return view('office.document.edit-only', [
@@ -44,7 +80,7 @@ class OnlyOfficeController extends Controller
             'j_id' => $jId,
             'doc_hash' => $docHash,
             'onlyOfficeJsUrl' => $service['document_params']['only_office_js_url'],
-            'data' => $request->all()
+            'data' => $data
         ]);
     }
 
