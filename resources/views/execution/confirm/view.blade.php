@@ -68,6 +68,10 @@
             $(this).appendTo('body');
         });
 
+        $('.modal').each(function () {
+            $(this).appendTo('body');
+        });
+
         $(document).ready(function () {
             $.ajaxSetup({
                 headers: {
