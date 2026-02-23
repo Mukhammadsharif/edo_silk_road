@@ -256,6 +256,7 @@
     @include('templates.filter-calendar.modern-calendar-css')
     @include('templates.filter-calendar.modern-calendar-script')
 
+    <script src="{{ asset('js/table-sort.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof lucide !== 'undefined') {

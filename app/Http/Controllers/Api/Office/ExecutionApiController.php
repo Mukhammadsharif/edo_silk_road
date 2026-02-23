@@ -994,7 +994,7 @@ class ExecutionApiController extends Controller
                     $q->where('doc_code', 'EXEC');
                 })
                 ->where('from_user', $directorDocument->to_user ?? 0)
-                ->with(['toUserWork.personal', 'toUserWork.department'])
+                ->with(['toUser.personal', 'toUser.department'])
                 ->get();
 
             $selectedAddPerformers = DocumentExecutionSteps::where('j_id', $journal->id)
@@ -1002,7 +1002,7 @@ class ExecutionApiController extends Controller
                     $q->where('doc_code', 'EXEC');
                 })
                 ->where('from_user', '!=', $directorDocument->to_user ?? 0)
-                ->with(['toUserWork.personal', 'toUserWork.department'])
+                ->with(['toUser.personal', 'toUser.department'])
                 ->get();
 
             $current_execution = DocumentExecutionSteps::where('j_id', $journal->id)
@@ -1016,14 +1016,14 @@ class ExecutionApiController extends Controller
                 ->whereHas('role', function ($q) {
                     $q->where('doc_code', 'SIGN');
                 })
-                ->with(['toUserWork.personal'])
+                ->with(['toUser.personal'])
                 ->first();
 
             $agreement_users = DocumentExecutionSteps::where('j_id', $journal->id)
                 ->whereHas('role', function ($q) {
                     $q->where('doc_code', 'AGREE');
                 })
-                ->with(['toUserWork.personal'])
+                ->with(['toUser.personal'])
                 ->get();
 
             $replyDocuments = DocumentReplyComments::where('j_id', $journal->id)
@@ -1144,7 +1144,7 @@ class ExecutionApiController extends Controller
                     $q->where('doc_code', 'EXEC');
                 })
                 ->where('from_user', $directorDocument->to_user ?? 0)
-                ->with(['toUserWork.personal'])
+                ->with(['toUser.personal'])
                 ->get();
 
             $selectedAddPerformers = DocumentExecutionSteps::where('j_id', $journal->id)
@@ -1152,7 +1152,7 @@ class ExecutionApiController extends Controller
                     $q->where('doc_code', 'EXEC');
                 })
                 ->where('from_user', '!=', $directorDocument->to_user ?? 0)
-                ->with(['toUserWork.personal'])
+                ->with(['toUser.personal'])
                 ->get();
 
             $signer = DocumentExecutionSteps::where('j_id', $journal->id)
@@ -1166,7 +1166,7 @@ class ExecutionApiController extends Controller
                 ->whereHas('role', function ($q) {
                     $q->where('doc_code', 'AGREE');
                 })
-                ->with(['toUserWork.personal'])
+                ->with(['toUser.personal'])
                 ->get();
 
             $replyDocuments = DocumentReplyComments::where('j_id', $journal->id)
@@ -1275,7 +1275,7 @@ class ExecutionApiController extends Controller
                     $q->where('doc_code', 'EXEC');
                 })
                 ->where('from_user', $directorDocument->to_user ?? 0)
-                ->with(['toUserWork.personal'])
+                ->with(['toUser.personal'])
                 ->get();
 
             $selectedAddPerformers = DocumentExecutionSteps::where('j_id', $journal->id)
@@ -1283,21 +1283,21 @@ class ExecutionApiController extends Controller
                     $q->where('doc_code', 'EXEC');
                 })
                 ->where('from_user', '!=', $directorDocument->to_user ?? 0)
-                ->with(['toUserWork.personal'])
+                ->with(['toUser.personal'])
                 ->get();
 
             $signer = DocumentExecutionSteps::where('j_id', $journal->id)
                 ->whereHas('role', function ($q) {
                     $q->where('doc_code', 'SIGN');
                 })
-                ->with(['toUserWork.personal'])
+                ->with(['toUser.personal'])
                 ->first();
 
             $agreement_users = DocumentExecutionSteps::where('j_id', $journal->id)
                 ->whereHas('role', function ($q) {
                     $q->where('doc_code', 'AGREE');
                 })
-                ->with(['toUserWork.personal'])
+                ->with(['toUser.personal'])
                 ->get();
 
             $current_agreement = DocumentExecutionSteps::where('j_id', $journal->id)
@@ -1414,7 +1414,7 @@ class ExecutionApiController extends Controller
                     $q->where('doc_code', 'EXEC');
                 })
                 ->where('from_user', $directorDocument->to_user ?? 0)
-                ->with(['toUserWork.personal'])
+                ->with(['toUser.personal'])
                 ->get();
 
             $selectedAddPerformers = DocumentExecutionSteps::where('j_id', $journal->id)
@@ -1422,21 +1422,21 @@ class ExecutionApiController extends Controller
                     $q->where('doc_code', 'EXEC');
                 })
                 ->where('from_user', '!=', $directorDocument->to_user ?? 0)
-                ->with(['toUserWork.personal'])
+                ->with(['toUser.personal'])
                 ->get();
 
             $signer = DocumentExecutionSteps::where('j_id', $journal->id)
                 ->whereHas('role', function ($q) {
                     $q->where('doc_code', 'SIGN');
                 })
-                ->with(['toUserWork.personal'])
+                ->with(['toUser.personal'])
                 ->first();
 
             $agreement_users = DocumentExecutionSteps::where('j_id', $journal->id)
                 ->whereHas('role', function ($q) {
                     $q->where('doc_code', 'AGREE');
                 })
-                ->with(['toUserWork.personal'])
+                ->with(['toUser.personal'])
                 ->get();
 
             $replyDocuments = DocumentReplyComments::where('j_id', $journal->id)
@@ -1527,7 +1527,7 @@ class ExecutionApiController extends Controller
                     $q->where('doc_code', 'EXEC');
                 })
                 ->where('from_user', $directorDocument->to_user ?? 0)
-                ->with(['toUserWork.personal'])
+                ->with(['toUser.personal'])
                 ->get();
 
             $selectedAddPerformers = DocumentExecutionSteps::where('j_id', $journal->id)
@@ -1535,21 +1535,21 @@ class ExecutionApiController extends Controller
                     $q->where('doc_code', 'EXEC');
                 })
                 ->where('from_user', '!=', $directorDocument->to_user ?? 0)
-                ->with(['toUserWork.personal'])
+                ->with(['toUser.personal'])
                 ->get();
 
             $signer = DocumentExecutionSteps::where('j_id', $journal->id)
                 ->whereHas('role', function ($q) {
                     $q->where('doc_code', 'SIGN');
                 })
-                ->with(['toUserWork.personal'])
+                ->with(['toUser.personal'])
                 ->first();
 
             $agreement_users = DocumentExecutionSteps::where('j_id', $journal->id)
                 ->whereHas('role', function ($q) {
                     $q->where('doc_code', 'AGREE');
                 })
-                ->with(['toUserWork.personal'])
+                ->with(['toUser.personal'])
                 ->get();
 
             $replyDocuments = DocumentReplyComments::where('j_id', $journal->id)
