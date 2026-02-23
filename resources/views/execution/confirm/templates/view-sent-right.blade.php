@@ -346,11 +346,10 @@
 </div>
 
 <script>
+    let editor2 = null;
     let editor2cfg = {}
     editor2cfg.toolbar = "mytoolbar";
     editor2cfg.toolbar_mytoolbar = "{bold,italic,justifyleft,justifycenter,justifyright,fontsize,forecolor,backcolor}";
-    let second = document.querySelector('#div_editor2');
-    if(second) new RichTextEditor("#div_editor2", editor2cfg);
 </script>
 <style>
     .keyboard-selected {
@@ -366,10 +365,26 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        // Инициализация editor2 при открытии modal
+        $('#openCancelReturnModal').on('shown.bs.modal', function () {
+            if (editor2 !== null) {
+                editor2.destroy();
+                editor2 = null;
+            }
+            editor2 = new RichTextEditor("#div_editor2", editor2cfg);
+        });
+
+        // Уничтожаем при закрытии
+        $('#openCancelReturnModal').on('hidden.bs.modal', function () {
+            if (editor2 !== null) {
+                editor2.destroy();
+                editor2 = null;
             }
         });
 
@@ -378,7 +393,7 @@
             let modal_title = "{{ __('action.cancel_doc') }}";
             let modal_btn = "{{ __('action.cancel') }}";
             if (btn_id === 3) {
-                modal_title = "{{ __('action.action.back_edit_doc') }}";
+                modal_title = "{{ __('action.back_edit_doc') }}";
                 modal_btn = "{{ __('action.send') }}";
             }
             $('.modal_title').html(modal_title);
