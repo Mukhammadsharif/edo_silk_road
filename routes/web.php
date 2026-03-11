@@ -428,44 +428,7 @@ Route::get('/proxy-document/{path}', [DocumentProxyController::class, 'show'])
 
 Route::get('/eimzo-sign-mobile', [EimzoTestController::class, 'index'])
     ->name('eimzo.test');
+Route::get('/privacy-policy', [EimzoTestController::class, 'privacy'])
+    ->name('eimzo.privacy');
 
 Route::post('/frontend/mobile/upload', [SignDocImzoMobileApiController::class, 'mobileUpload']);
-
-//Route::get('/test-full-conversion', function() {
-//    $filePath = 'ood/2026/2/6/1f7af46d8f43_1770379540.docx';
-//    $encodedPath = base64_encode($filePath);
-//    $documentUrl = url('/proxy-document/' . $encodedPath);
-//
-//    $body = [
-//        'async' => false,
-//        'url' => $documentUrl,
-//        'outputtype' => 'pdf',
-//        'filetype' => 'docx',
-//        'title' => 'test',
-//        'key' => 'test_' . time(),
-//    ];
-//
-//    $jwtSecret = config('only-office.ONLY_OFFICE_JWT_SECRET');
-//    $jwtToken = \Firebase\JWT\JWT::encode($body, $jwtSecret, 'HS256');
-//
-//    try {
-//        $response = \Illuminate\Support\Facades\Http::timeout(120)
-//            ->withToken($jwtToken)
-//            ->withHeaders(['Content-Type' => 'application/json'])
-//            ->post('http://172.16.1.120:8080/converter', $body);
-//
-//        return response()->json([
-//            'status' => $response->status(),
-//            'body' => $response->json(),
-//            'request' => [
-//                'url' => $documentUrl,
-//                'body' => $body,
-//            ],
-//        ]);
-//    } catch (\Exception $e) {
-//        return response()->json([
-//            'error' => $e->getMessage(),
-//            'request_url' => $documentUrl,
-//        ], 500);
-//    }
-//});
