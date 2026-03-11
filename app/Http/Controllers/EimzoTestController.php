@@ -15,4 +15,9 @@ class EimzoTestController extends Controller
     {
         return view('e-imzo.test');
     }
+
+    public function privacy()
+    {
+        return view('e-imzo.privacy');
+    }
 }
