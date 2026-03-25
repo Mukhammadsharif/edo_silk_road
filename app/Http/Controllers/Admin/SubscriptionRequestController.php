@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Subscriptions;
+use App\Models\Admin\Tariffs;
 use Illuminate\Http\Request;
 
 class SubscriptionRequestController extends Controller
@@ -38,9 +39,11 @@ class SubscriptionRequestController extends Controller
         $expiredCount = Subscriptions::where('status', 1)->where('ends_at', '<', now())->count();
         $rejectedCount = Subscriptions::where('status', 0)->count();
 
+        $tariffs = Tariffs::orderBy('name')->get();
+
         return view('admin.subscriptions.requests', compact(
             'pending', 'active', 'expired', 'rejected',
-            'pendingCount', 'activeCount', 'expiredCount', 'rejectedCount'
+            'pendingCount', 'activeCount', 'expiredCount', 'rejectedCount', 'tariffs'
         ));
     }
 

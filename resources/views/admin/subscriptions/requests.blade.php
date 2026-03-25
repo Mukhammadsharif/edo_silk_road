@@ -116,7 +116,7 @@
         </div>
     </div>
 
-    @include('admin.subscriptions.partials.modals')
+    @include('admin.subscriptions.partials.modals', ['tariffs' => $tariffs])
 
     <style>
         /* ========================================
