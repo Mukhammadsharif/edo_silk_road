@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\OrganizationUnits;
 use App\Models\Admin\Subscriptions;
+use App\Models\Admin\Tariffs;
 use Illuminate\Http\Request;
 
 class SubscriptionRequestController extends Controller
 {
-    //
     public function index()
     {
         $pending = Subscriptions::with(['organization', 'tariff'])
@@ -33,14 +34,18 @@ class SubscriptionRequestController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
-        $pendingCount = Subscriptions::where('status', 2)->count();
-        $activeCount = Subscriptions::where('status', 1)->where('ends_at', '>=', now())->count();
-        $expiredCount = Subscriptions::where('status', 1)->where('ends_at', '<', now())->count();
+        $pendingCount  = Subscriptions::where('status', 2)->count();
+        $activeCount   = Subscriptions::where('status', 1)->where('ends_at', '>=', now())->count();
+        $expiredCount  = Subscriptions::where('status', 1)->where('ends_at', '<', now())->count();
         $rejectedCount = Subscriptions::where('status', 0)->count();
+
+        $tariffs       = Tariffs::orderBy('name')->get();
+        $organizations = OrganizationUnits::where('status', 1)->orderBy('name_uz')->get();
 
         return view('admin.subscriptions.requests', compact(
             'pending', 'active', 'expired', 'rejected',
-            'pendingCount', 'activeCount', 'expiredCount', 'rejectedCount'
+            'pendingCount', 'activeCount', 'expiredCount', 'rejectedCount',
+            'tariffs', 'organizations'
         ));
     }
 
@@ -101,20 +106,74 @@ class SubscriptionRequestController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'tariff_id'  => 'required|exists:tariffs,id',
-            'status'     => 'required|in:0,1,2',
-            'starts_at'  => 'nullable|date',
-            'ends_at'    => 'nullable|date|after_or_equal:starts_at',
+            'tariff_id' => 'required|exists:tariffs,id',
+            'status'    => 'required|in:0,1,2',
+            'starts_at' => 'nullable|date',
+            'ends_at'   => 'nullable|date|after_or_equal:starts_at',
         ]);
 
         $subscription = Subscriptions::findOrFail($id);
 
-        $subscription->tariff_id  = $request->tariff_id;
-        $subscription->status     = $request->status;
-        $subscription->starts_at  = $request->starts_at ?: null;
-        $subscription->ends_at    = $request->ends_at ?: null;
+        $subscription->tariff_id = $request->tariff_id;
+        $subscription->status    = $request->status;
+        $subscription->starts_at = $request->starts_at ?: null;
+        $subscription->ends_at   = $request->ends_at ?: null;
         $subscription->save();
 
         return redirect()->back()->with('success', __('field.subscription_updated_successfully'));
+    }
+
+    /**
+     * Admin creates a new subscription manually (directly active or pending)
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'org_unit_id' => 'required|exists:organization_units,id',
+            'tariff_id'   => 'required|exists:tariffs,id',
+            'status'      => 'required|in:0,1,2',
+            'starts_at'   => 'required|date',
+            'ends_at'     => 'required|date|after:starts_at',
+        ]);
+
+        // If activating directly — deactivate old active subscriptions for that org
+        if ($request->status == 1) {
+            Subscriptions::where('org_unit_id', $request->org_unit_id)
+                ->where('status', 1)
+                ->where('ends_at', '>=', now())
+                ->update(['status' => 0]);
+        }
+
+        Subscriptions::create([
+            'org_unit_id' => $request->org_unit_id,
+            'tariff_id'   => $request->tariff_id,
+            'status'      => $request->status,
+            'starts_at'   => $request->starts_at,
+            'ends_at'     => $request->ends_at,
+        ]);
+
+        return redirect()->back()->with('success', __('field.subscription_created_successfully'));
+    }
+
+    /**
+     * Search organizations for Select2 (returns JSON)
+     */
+    public function searchOrganizations(Request $request)
+    {
+        $query = $request->get('q', '');
+
+        $orgs = OrganizationUnits::where('status', 1)
+            ->where(function ($q) use ($query) {
+                $q->where('name_uz', 'like', "%{$query}%")
+                    ->orWhere('name_ru', 'like', "%{$query}%")
+                    ->orWhere('tax_number', 'like', "%{$query}%");
+            })
+            ->limit(30)
+            ->get(['id', 'name_uz', 'tax_number']);
+
+        return response()->json($orgs->map(fn($o) => [
+            'id'   => $o->id,
+            'text' => $o->name_uz . ($o->tax_number ? ' — ' . $o->tax_number : ''),
+        ]));
     }
 }

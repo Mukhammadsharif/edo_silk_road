@@ -16,6 +16,14 @@
                         <p>{{ __('field.active_pending_rejected_expired') }}</p>
                     </div>
                 </div>
+
+                {{-- ✅ NEW: Create button --}}
+                <div class="header-right">
+                    <button type="button" class="btn-create-subscription" data-toggle="modal" data-target="#createModal">
+                        <i data-lucide="plus-circle"></i>
+                        <span>Yangi obuna yaratish</span>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -116,7 +124,7 @@
         </div>
     </div>
 
-    @include('admin.subscriptions.partials.modals')
+    @include('admin.subscriptions.partials.modals', ['tariffs' => $tariffs])
 
     <style>
         /* ========================================
@@ -429,6 +437,52 @@
 
             .tabs-content-modern {
                 padding: 1rem;
+            }
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-create-subscription {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.625rem;
+            padding: 0.875rem 1.75rem;
+            background: linear-gradient(135deg, #794DFD 0%, #5b35d5 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 14px rgba(121, 77, 253, 0.35);
+            white-space: nowrap;
+        }
+
+        .btn-create-subscription i {
+            width: 20px;
+            height: 20px;
+        }
+
+        .btn-create-subscription:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(121, 77, 253, 0.45);
+        }
+
+        .btn-create-subscription:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .btn-create-subscription span {
+                display: none;
+            }
+            .btn-create-subscription {
+                padding: 0.875rem;
+                border-radius: 12px;
             }
         }
     </style>

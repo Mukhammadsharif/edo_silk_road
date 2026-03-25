@@ -407,6 +407,8 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/pricing', [PricingController::class, 'index'])->name('pricing');
     Route::post('/pricing/subscribe/{tariff}', [PricingController::class, 'subscribe'])->name('pricing.subscribe');
 
+    Route::get('/subscription-requests/search-organizations', [SubscriptionRequestController::class, 'searchOrganizations'])
+        ->name('admin.subscription-requests.search-organizations');
     Route::get('/subscription-requests', [SubscriptionRequestController::class, 'index'])
         ->name('admin.subscription-requests');
     Route::post('/subscription-requests/{id}/approve', [SubscriptionRequestController::class, 'approve'])
