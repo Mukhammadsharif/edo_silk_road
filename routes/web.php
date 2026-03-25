@@ -409,12 +409,19 @@ Route::group(['middleware' => ['auth']], function() {
 
     Route::get('/subscription-requests/search-organizations', [SubscriptionRequestController::class, 'searchOrganizations'])
         ->name('admin.subscription-requests.search-organizations');
+
     Route::get('/subscription-requests', [SubscriptionRequestController::class, 'index'])
         ->name('admin.subscription-requests');
+
+    Route::post('/subscription-requests', [SubscriptionRequestController::class, 'store'])
+        ->name('admin.subscription-requests.store');
+
     Route::post('/subscription-requests/{id}/approve', [SubscriptionRequestController::class, 'approve'])
         ->name('admin.subscription-requests.approve');
+
     Route::post('/subscription-requests/{id}/reject', [SubscriptionRequestController::class, 'reject'])
         ->name('admin.subscription-requests.reject');
+
     Route::get('/subscription-requests/{id}/edit', [SubscriptionRequestController::class, 'edit'])
         ->name('admin.subscription-requests.edit');
 
