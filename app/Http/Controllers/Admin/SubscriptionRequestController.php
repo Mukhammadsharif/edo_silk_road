@@ -76,4 +76,45 @@ class SubscriptionRequestController extends Controller
 
         return redirect()->back()->with('success', __('field.subscription_rejected'));
     }
+
+    /**
+     * Return subscription data as JSON for the edit modal
+     */
+    public function edit($id)
+    {
+        $subscription = Subscriptions::with(['organization', 'tariff'])->findOrFail($id);
+
+        return response()->json([
+            'id'          => $subscription->id,
+            'org_name'    => $subscription->organization->name_uz ?? 'Noma\'lum',
+            'tariff_id'   => $subscription->tariff_id,
+            'tariff_name' => $subscription->tariff->name ?? '',
+            'status'      => $subscription->status,
+            'starts_at'   => $subscription->starts_at?->format('Y-m-d'),
+            'ends_at'     => $subscription->ends_at?->format('Y-m-d'),
+        ]);
+    }
+
+    /**
+     * Update subscription fields
+     */
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'tariff_id'  => 'required|exists:tariffs,id',
+            'status'     => 'required|in:0,1,2',
+            'starts_at'  => 'nullable|date',
+            'ends_at'    => 'nullable|date|after_or_equal:starts_at',
+        ]);
+
+        $subscription = Subscriptions::findOrFail($id);
+
+        $subscription->tariff_id  = $request->tariff_id;
+        $subscription->status     = $request->status;
+        $subscription->starts_at  = $request->starts_at ?: null;
+        $subscription->ends_at    = $request->ends_at ?: null;
+        $subscription->save();
+
+        return redirect()->back()->with('success', __('field.subscription_updated_successfully'));
+    }
 }

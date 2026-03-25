@@ -413,6 +413,11 @@ Route::group(['middleware' => ['auth']], function() {
         ->name('admin.subscription-requests.approve');
     Route::post('/subscription-requests/{id}/reject', [SubscriptionRequestController::class, 'reject'])
         ->name('admin.subscription-requests.reject');
+    Route::get('/subscription-requests/{id}/edit', [SubscriptionRequestController::class, 'edit'])
+        ->name('admin.subscription-requests.edit');
+
+    Route::put('/subscription-requests/{id}', [SubscriptionRequestController::class, 'update'])
+        ->name('admin.subscription-requests.update');
 });
 
 Route::get('p/{doc_code}', [QrCodeDocController::class, 'viewProtocolDocument']);

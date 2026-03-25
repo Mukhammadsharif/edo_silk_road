@@ -131,8 +131,8 @@
                         <!-- Actions -->
                         @if($showActions ?? true)
                             <td class="cell-actions">
-                                @if($req->status == 2)
-                                    <div class="action-group">
+                                <div class="action-group">
+                                    @if($req->status == 2)
                                         <button type="button"
                                                 class="action-btn btn-approve approve-btn"
                                                 data-id="{{ $req->id }}"
@@ -150,10 +150,16 @@
                                             <i data-lucide="x"></i>
                                             <span>Rad etish</span>
                                         </button>
-                                    </div>
-                                @else
-                                    <span class="no-action">—</span>
-                                @endif
+                                    @endif
+
+                                    <!-- Edit button — always visible -->
+                                    <button type="button"
+                                            class="action-btn btn-edit edit-btn"
+                                            data-id="{{ $req->id }}">
+                                        <i data-lucide="pencil"></i>
+                                        <span>Tahrirlash</span>
+                                    </button>
+                                </div>
                             </td>
                         @endif
                     </tr>
@@ -248,7 +254,7 @@
     .col-date { min-width: 120px; }
     .col-status { min-width: 140px; }
     .col-created { min-width: 140px; }
-    .col-actions { min-width: 240px; text-align: center; }
+    .col-actions { min-width: 280px; text-align: center; }
 
     /* ========================================
        TABLE BODY
@@ -264,44 +270,38 @@
 
     .subscriptions-table-modern tbody tr:hover {
         background: linear-gradient(90deg, #faf8ff 0%, #ffffff 100%);
-        box-shadow: 0 2px 8px rgba(121, 77, 253, 0.08);
     }
 
     .subscriptions-table-modern tbody td {
-        padding: 16px 20px;
-        color: #1e293b;
+        padding: 14px 20px;
         vertical-align: middle;
-        border: none;
+        color: #374151;
     }
-
-    /* ========================================
-       CELL STYLES
-       ======================================== */
 
     /* Number Cell */
     .cell-number {
         text-align: center;
         font-weight: 700;
-        font-size: 16px;
-        color: #794DFD;
+        color: #94a3b8;
+        font-size: 13px;
     }
 
-    /* Organization Cell */
+    /* Org Cell */
     .org-info {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
     }
 
     .org-info i {
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
         color: #794DFD;
         flex-shrink: 0;
     }
 
     .org-info span {
-        font-weight: 500;
+        font-weight: 600;
         color: #1e293b;
     }
 
@@ -309,12 +309,10 @@
     .tariff-badge {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        padding: 6px 14px;
-        background: linear-gradient(135deg, #f5f0ff 0%, #e9dcff 100%);
-        border: 2px solid #794DFD;
-        border-radius: 8px;
-        font-weight: 700;
+        gap: 6px;
+        padding: 6px 12px;
+        background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+        border-radius: 20px;
         color: #794DFD;
         font-size: 13px;
     }
@@ -437,6 +435,7 @@
         gap: 8px;
         justify-content: center;
         align-items: center;
+        flex-wrap: wrap;
     }
 
     .action-btn {
@@ -478,6 +477,18 @@
     .btn-reject:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+    }
+
+    /* Edit button */
+    .btn-edit {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-edit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
     }
 
     .no-action {
@@ -570,14 +581,6 @@
         // Initialize Lucide icons
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
-        }
-
-        const tableContainer = document.querySelector('.subscriptions-table-container');
-        if (tableContainer) {
-            observer.observe(tableContainer, {
-                childList: true,
-                subtree: true
-            });
         }
     });
 </script>
