@@ -89,6 +89,18 @@
             color: #94a3b8;
             font-size: 14px;
         }
+
+        #myDiagramDiv::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 180px;
+            height: 80px;
+            background: #f8fafc; /* yoki container bg rangi */
+            z-index: 999;
+            pointer-events: none;
+        }
     </style>
 
     <script src="{{ asset('/js/go.js') }}"></script>

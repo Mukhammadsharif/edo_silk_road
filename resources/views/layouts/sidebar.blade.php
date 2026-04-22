@@ -35,21 +35,21 @@
                 <div class="submenu">
                     <div class="submenu-item">
                         <a href="{{ url('/office/document/create/incoming') }}">
-                            <img src="{{ asset('images/leftdown.svg') }}" alt="" style="opacity:0.4">
+{{--                            <img src="{{ asset('images/leftdown.svg') }}" alt="" style="opacity:0.4">--}}
                             <i data-lucide="download" style="width: 18px; height: 18px;"></i>
                             <span>{{ __('document.incoming_message') }}</span>
                         </a>
                     </div>
                     <div class="submenu-item">
                         <a href="{{ url('/office/document/create/outgoing') }}">
-                            <img src="{{ asset('images/leftdown.svg') }}" alt="" style="opacity:0.4">
+{{--                            <img src="{{ asset('images/leftdown.svg') }}" alt="" style="opacity:0.4">--}}
                             <i data-lucide="upload" style="width: 18px; height: 18px;"></i>
                             <span>{{ __('document.outgoing_message') }}</span>
                         </a>
                     </div>
                     <div class="submenu-item">
                         <a href="{{ url('/office/document/create/internal') }}">
-                            <img src="{{ asset('images/leftdown.svg') }}" alt="" style="opacity:0.4">
+{{--                            <img src="{{ asset('images/leftdown.svg') }}" alt="" style="opacity:0.4">--}}
                             <i data-lucide="file-edit" style="width: 18px; height: 18px;"></i>
                             <span>{{ __('document.internal_docs') }}</span>
                         </a>
@@ -71,12 +71,10 @@
                 @if($hasChildren || $isKolOrg || $isPrtDocs)
                     <div class="menu-item {{ $isActive ? 'active' : '' }} menu-item-{{ $item->id }}" data-menu-id="{{ $item->id }}">
                         <div class="menu-header">
-                            <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
-                                <i data-lucide="{{ $icon }}" style="width: 22px; height: 22px;"></i>
-                                <span class="menu-text">{{ $menuList->lang($menuList->id) }}</span>
-                                <span class="badge-count menu-count-{{ $item->id }}" style="display: none">{{ $menuCount }}</span>
-                            </div>
-                            <i data-lucide="chevron-right" class="chevron"></i>
+                            <i data-lucide="{{ $icon }}" style="width: 22px; height: 22px; flex-shrink:0;"></i>
+                            <span class="menu-text">{{ $menuList->lang($menuList->id) }}</span>
+                            <span class="badge-count menu-count-{{ $item->id }}" style="display:none!important">0</span>
+                            <i data-lucide="chevron-right" class="chevron" style="flex-shrink:0; margin-left:4px;"></i>
                         </div>
 
                         <div class="submenu">
@@ -89,7 +87,7 @@
                                     <div class="submenu-item">
                                         <a href="{{ $child->menuList->url_path }}"
                                            class="{{ $childIsActive ? 'active-link' : '' }}">
-                                            <img src="{{ asset('images/leftdown.svg') }}" alt="" style="opacity:0.4">
+{{--                                            <img src="{{ asset('images/leftdown.svg') }}" alt="" style="opacity:0.4">--}}
                                             <i data-lucide="{{ $child->menuList->iconClass ? $child->menuList->iconClass->name : 'circle' }}"
                                                style="width: 18px; height: 18px;"></i>
                                             <span>{{ \App\Models\Admin\MenuList::lang($child->menuList->id) }}</span>
@@ -111,7 +109,7 @@
                                         <div class="submenu-item tree-item">
                                             <a href="{{ route($route, $item2->doc_hash) }}"
                                                class="{{ str_contains(url()->current(), $item2->doc_hash) ? 'active-link' : '' }}">
-                                                <img src="{{ asset('images/leftdown.svg') }}" alt=""
+{{--                                                <img src="{{ asset('images/leftdown.svg') }}" alt=""--}}
                                                      style="opacity:0.4">
                                                 <i data-lucide="folder" style="width: 18px; height: 18px;"></i>
                                                 <span>{{ $item2->lang($item2->id) }}</span>
@@ -142,7 +140,7 @@
                                         <div class="submenu-item tree-item">
                                             <a href="{{ route('prt-secretary', $item3->doc_hash) }}"
                                                class="{{ str_contains(url()->current(), $item3->doc_hash) ? 'active-link' : '' }}">
-                                                <img src="{{ asset('images/leftdown.svg') }}" alt=""
+{{--                                                <img src="{{ asset('images/leftdown.svg') }}" alt=""--}}
                                                      style="opacity:0.4">
                                                 <i data-lucide="file-text" style="width: 18px; height: 18px;"></i>
                                                 <span>{{ $item3->lang($item3->id) }}</span>
@@ -416,7 +414,7 @@
                             }
                         } else {
                             if(badge) {
-                                badge.style.display = 'none';
+                                badge.style.display = 'none !important';
                             }
                         }
                     })

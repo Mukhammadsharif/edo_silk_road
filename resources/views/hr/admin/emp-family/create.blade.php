@@ -18,7 +18,7 @@
                     </div>
                     <div class="header-text">
                         <h1>{{ __('title.emp') }}</h1>
-                        <p>{{ __('action.add') }} {{ __('field.family_member') }}</p>
+                        <p>{{ __('action.add_family_member') }}</p>
                     </div>
                 </div>
 
@@ -87,7 +87,7 @@
                                         </label>
                                         <select name="fam_code" class="form-control-modern select2">
                                             @foreach($familyList as $key => $item)
-                                                <option value="{{ $item->code }}">{{ $key+1 }}. {{ $item->title }}</option>
+                                                <option value="{{ $item->code }}">{{ $key+1 }}. {{ $item->lang($item->id) }}</option>
                                             @endforeach
                                         </select>
                                     </div>

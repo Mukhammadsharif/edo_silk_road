@@ -72,7 +72,8 @@
                                 <i data-lucide="briefcase"></i>
                                 <span>{{ __('field.department') }}</span>
                             </div>
-                            <div class="info-value">{{ $user->currentWork->department->name_uz??'-' }}</div>
+                            <div class="info-value">{{ $user->currentWork->department ?
+                                        $user->currentWork->department->lang($user->currentWork->department->id) :'-' }}</div>
                         </div>
 
                         <div class="info-item">
@@ -80,7 +81,8 @@
                                 <i data-lucide="user-check"></i>
                                 <span>{{ __('field.user_posts') }}</span>
                             </div>
-                            <div class="info-value">{{ $user->currentWork->position->name_uz??'-' }}</div>
+                            <div class="info-value">{{ $user->currentWork->position ?
+                                $user->currentWork->position->lang($user->currentWork->position->id) : '-' }}</div>
                         </div>
 
                         <div class="info-item">
@@ -90,7 +92,7 @@
                             </div>
                             <div class="info-value">
                                 @php($user_position_from_date = $user->currentWork->from_date??now())
-                                {{ date('d.m.Y', strtotime($user->fromPositionDate($user_position_from_date))) }}
+                                {{ $user->fromPositionDate($user_position_from_date) }}
                             </div>
                         </div>
                     </div>

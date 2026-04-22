@@ -4,7 +4,7 @@
 
 @php $isOwner = in_array(Auth::id(), OrganizationUnits::where('status', 1)->pluck('owner_user_id')->toArray()); @endphp
 <head>
-    <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo_new.svg') }}">
 
     <title>EDOLINE</title>
 </head>

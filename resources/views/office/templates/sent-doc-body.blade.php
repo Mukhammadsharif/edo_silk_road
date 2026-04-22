@@ -2,9 +2,9 @@
     <div id="printPage" class="printPage">
         <!-- Document Header with Logo/Banner -->
         <div class="document-header-modern">
-            <div class="header-banner">
-                <img src="{{ $sentDocImage }}" alt="Organization Banner" class="banner-image">
-            </div>
+{{--            <div class="header-banner">--}}
+{{--                <img src="{{ $sentDocImage }}" alt="Organization Banner" class="banner-image">--}}
+{{--            </div>--}}
             <div class="document-meta">
                 <div class="doc-number">№ {{ $document->doc_number }}</div>
                 <div class="doc-date">{{ date('d.m.Y', strtotime($document->doc_date)) }}</div>

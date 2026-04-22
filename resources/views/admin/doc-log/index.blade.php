@@ -191,7 +191,7 @@
                                 </td>
                                 <td>
                                     @php
-                                        $actType = $model->actType->title ?? '-';
+                                        $actType = $model->actType ? $model->actType->lang($model->actType->id) : '-';
                                         $badgeClass = 'viewed';
                                         $icon = 'eye';
 

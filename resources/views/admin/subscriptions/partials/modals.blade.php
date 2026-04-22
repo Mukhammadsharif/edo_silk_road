@@ -127,7 +127,7 @@
                                     <i data-lucide="box"></i>
                                     {{ __('field.tariff') }}
                                 </label>
-                                <select name="tariff_id" id="editTariffId" class="edit-select">
+                                <select name="tariff_id" id="editTariffId" class="edit-select select2" style="width: 100%">
                                     @foreach($tariffs as $tariff)
                                         <option value="{{ $tariff->id }}">{{ $tariff->name }}</option>
                                     @endforeach
@@ -138,7 +138,7 @@
                                     <i data-lucide="activity"></i>
                                     {{ __('field.status') }}
                                 </label>
-                                <select name="status" id="editStatus" class="edit-select">
+                                <select name="status" id="editStatus" class="edit-select select2" style="width: 100%">
                                     <option value="2">⏳ {{ __('field.pending') }}</option>
                                     <option value="1">✅ {{ __('field.active') }}</option>
                                     <option value="0">❌ {{ __('field.rejected') }}</option>
@@ -216,7 +216,7 @@
                                 <i data-lucide="building-2"></i>
                                 Tashkilot
                             </label>
-                            <select name="org_unit_id" id="createOrgSelect" class="edit-select" style="width:100%;">
+                            <select name="org_unit_id" id="createOrgSelect" class="edit-select select2" style="width:100%;">
                                 <option value="">— Tashkilotni tanlang —</option>
                                 @foreach($organizations as $org)
                                     <option value="{{ $org->id }}">
@@ -232,7 +232,7 @@
                                 <i data-lucide="box"></i>
                                 Tarif
                             </label>
-                            <select name="tariff_id" id="createTariffId" class="edit-select">
+                            <select name="tariff_id" id="createTariffId" class="edit-select select2" style="width: 100%">
                                 <option value="">— Tarifni tanlang —</option>
                                 @foreach($tariffs as $tariff)
                                     <option value="{{ $tariff->id }}"
@@ -266,7 +266,7 @@
                                 <i data-lucide="activity"></i>
                                 Status
                             </label>
-                            <select name="status" id="createStatus" class="edit-select">
+                            <select name="status" id="createStatus" class="edit-select select2" style="width: 100%">
                                 <option value="1">✅ Darhol faollashtirish</option>
                                 <option value="2">⏳ Kutilmoqda (pending)</option>
                                 <option value="0">❌ Rad etilgan</option>
@@ -319,6 +319,8 @@
         </div>
     </div>
 </div>
+
+<link rel="stylesheet" href="{{ asset('css/templates/select2.css') }}">
 
 <style>
     /* ========================================
@@ -544,6 +546,25 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+
+        $(document).ready(function () {
+            $('.select2').select2({
+                placeholder: "{{ __('action.choose') }}",
+                allowClear: true
+            });
+        });
+
+        $('#createModal').on('shown.bs.modal', function () {
+            $('.select2').select2({
+                dropdownParent: $('#createModal')
+            });
+        });
+
+        $('#editModal').on('shown.bs.modal', function () {
+            $('.select2').select2({
+                dropdownParent: $('#editModal')
+            });
+        });
 
         // Re-init Lucide on any modal open
         $('#approveModal, #rejectModal, #editModal, #createModal').on('shown.bs.modal', function () {

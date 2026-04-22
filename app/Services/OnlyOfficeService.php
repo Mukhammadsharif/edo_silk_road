@@ -108,7 +108,7 @@ class OnlyOfficeService
             'only_office_url' => $this->onlyOfficeInternalUrl,
             'only_office_js_url' => url($this->onlyOfficeExternalUrl . '/web-apps/apps/api/documents/api.js'),
             'id' => Auth::id(),
-            'name' => Auth::user()->username,
+            'name' => Auth::user()->userPersonal->shortName(),
             'permissions' => ['edit' => true],
         ];
 

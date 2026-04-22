@@ -198,9 +198,9 @@
                                 @if($doc->from_user === $authUser->id && !in_array($journal->status, [10, 11]) && $current_execution->id === $doc->doc_exec_step_id)
                                     <div class="mt-10">
                                         <button type="button"
-                                                class="btn-modern btn-icon btn-danger deleteItem"
+                                                class="btn-modern btn-danger deleteItem"
                                                 data-id="{{ $doc->id }}">
-                                            <i data-lucide="trash-2" class="text-white"></i>
+                                            <i data-lucide="trash-2"></i>
                                         </button>
                                     </div>
                                 @endif
