@@ -12,6 +12,7 @@ use App\Http\Controllers\EimzoTestController;
 use App\Http\Controllers\ExecutionController;
 use App\Http\Controllers\File\FileController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\Mobile\MobileSignController;
 use App\Http\Controllers\Office\DepartmentJournalsController;
 use App\Http\Controllers\Office\DocOrganizationsController;
 use App\Http\Controllers\Office\DocumentController;
@@ -446,3 +447,14 @@ Route::get('/privacy-policy', [EimzoTestController::class, 'privacy'])
     ->name('eimzo.privacy');
 
 Route::post('/frontend/mobile/upload', [SignDocImzoMobileApiController::class, 'mobileUpload']);
+
+Route::prefix('mobile')->group(function () {
+    Route::get('/sign/{token}', [MobileSignController::class, 'show'])->name('mobile.sign');
+    Route::post('/sign/{token}/complete', [MobileSignController::class, 'complete'])->name('mobile.sign.complete');
+});
+
+Route::get('/mobile/redirect', function(\Illuminate\Http\Request $request) {
+    $url = $request->query('url', '');
+    if (!str_starts_with($url, 'eimzo://')) abort(400);
+    return view('mobile.redirect', ['url' => $url]);
+})->name('mobile.redirect');

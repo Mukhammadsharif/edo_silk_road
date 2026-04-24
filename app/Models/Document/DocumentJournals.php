@@ -94,4 +94,9 @@ class DocumentJournals extends Model
     {
         return $this->belongsTo(DocumentResolutions::class,  'id', 'j_id')->orderBy('id', 'DESC');
     }
+
+    public function files()
+    {
+        return $this->hasMany(DocumentFiles::class, 'j_id', 'id');
+    }
 }

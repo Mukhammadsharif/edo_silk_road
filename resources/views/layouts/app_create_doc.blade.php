@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="{{ asset('/assets/node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.css') }}">
     <link rel="stylesheet" href="{{ asset('/assets/dist/css/theme.min.css') }}">
     <link rel="stylesheet" href="{{ asset('/assets/dist/css/main.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/dark-theme.css') }}">
 
     <link rel="stylesheet" href="{{ asset('fontawesome-web/css/all.min.css') }}">
 

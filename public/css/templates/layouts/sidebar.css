@@ -14,13 +14,13 @@
 /* Sidebar */
 .sidebar {
     position: fixed;
-    border-top: 1px solid #eeebeb;
+    /*border-top: 1px solid #eeebeb;*/
     top: 62px;
     left: 0;
     width: var(--sidebar-width);
     height: 100vh;
     background-color: #ffffff;
-    border-right: 1px solid var(--border);
+    /*border-right: 1px solid var(--border);*/
     padding: 10px 0 1.5rem 0;
     overflow-y: auto;
     z-index: 30000;

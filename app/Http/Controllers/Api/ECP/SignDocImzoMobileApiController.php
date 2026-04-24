@@ -518,9 +518,13 @@ class SignDocImzoMobileApiController extends Controller
                 ], 500);
             }
 
-            Log::info('Mobile verify response', ['jsonData' => $jsonData]);
-
-//            return response()->json($jsonData);
+            Log::info('[TG] mobileVerify input', [
+                'docId'      => $docId,
+                'docType'    => $docType,
+                'documentId' => $documentId,
+                'ecp_status' => $jsonData['status'] ?? 'unknown',
+                'in_working_types' => in_array($docType, $this->workingDocTypes),
+            ]);
 
             $ecpData = $this->prepareEcpData($jsonData, false);
 
@@ -532,7 +536,12 @@ class SignDocImzoMobileApiController extends Controller
                     : $this->errorResponse(__('message.document_deleted_system'))
             };
 
+            Log::info('[TG] after handleInternalDocument', [
+                'result' => $result ? get_class($result) : 'null',
+            ]);
+
             if ($result instanceof JsonResponse) {
+                Log::warning('[TG] early return from handle', ['body' => $result->getContent()]);
                 return $result;
             }
 
@@ -695,7 +704,15 @@ class SignDocImzoMobileApiController extends Controller
     ];
     private function handleInternalDocument(int $docId, string $docType, ?string $resText): ?JsonResponse
     {
+        Log::info('[TG] handleInternal called', ['docId' => $docId, 'docType' => $docType]);
+
         $journal = DocumentJournals::where('doc_id', $docId)->firstOrFail();
+
+        Log::info('[TG] journal found', [
+            'j_id'     => $journal->id,
+            'j_status' => $journal->status,
+            'doc_id'   => $journal->doc_id,
+        ]);
 
         $steps = [
             'sign'       => $this->getStep($journal, 'SIGN'),
@@ -703,6 +720,12 @@ class SignDocImzoMobileApiController extends Controller
             'resolution' => $this->getStep($journal, 'RESOL'),
             'execution'  => $this->getSteps($journal, 'EXEC'),
         ];
+
+        Log::info('[TG] steps', [
+            'sign'       => $steps['sign'] ? ['id'=>$steps['sign']->id,'status'=>$steps['sign']->status,'to_user'=>$steps['sign']->to_user] : null,
+            'resolution' => $steps['resolution'] ? ['id'=>$steps['resolution']->id,'status'=>$steps['resolution']->status] : null,
+            'agree_cnt'  => $steps['agreement']->count(),
+        ]);
 
         $currentAgreement = DocumentExecutionSteps::where('j_id', $journal->id)
             ->where('exec_role', $this->getAgreementRole()->id)
@@ -724,10 +747,12 @@ class SignDocImzoMobileApiController extends Controller
 
         switch ($docType) {
             case 'send_to_sign':
+                Log::warning('[TG] send_to_sign: sets journal=5, step=2(waiting) — this SENDS doc to sign, not marks as signed!');
                 $journal->update(['status' => 5]);
                 $this->updateStepStatus($steps['sign'], 2);
                 $this->sendNotifications([$steps['sign']->to_user], $urls['sign'], $meta);
                 $this->logAction($docId, 5, $meta);
+                Log::info('[TG] send_to_sign done → j_status=5, step_status=2');
                 break;
 
             case 'send_to_agreement':
@@ -775,6 +800,7 @@ class SignDocImzoMobileApiController extends Controller
                 break;
 
             case 'sign_resolution':
+                Log::info('[TG] sign_resolution: sets j=9, resol_step=5');
                 $journal->update(['status' => 9]);
                 $this->updateStepStatus($steps['resolution'], 5);
 

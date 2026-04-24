@@ -1,0 +1,111 @@
+<?php
+
+namespace App\Http\Controllers\Api\Telegram;
+
+use App\Http\Controllers\Controller;
+use App\Models\TelegramMiniAppToken;
+use App\Models\TelegramUser;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+
+class TelegramMiniAppAuthController extends Controller
+{
+    /**
+     * Авторизация через Telegram WebApp initData
+     * POST /api/telegram/auth
+     *
+     * Telegram передаёт initData — HMAC-подписанные данные пользователя.
+     * Проверяем подпись, находим привязанного пользователя, выдаём Bearer token.
+     */
+    public function auth(Request $request): JsonResponse
+    {
+        $request->validate([
+            'init_data' => 'required|string',
+        ]);
+
+        $initData = $request->input('init_data');
+        $botToken  = config('services.telegram-bot-api.token');
+
+        // Верификация HMAC подписи Telegram
+        if (!$this->verifyTelegramInitData($initData, $botToken)) {
+            return response()->json(['error' => 'Invalid Telegram signature'], 401);
+        }
+
+        // Парсим initData (URL-encoded)
+        parse_str($initData, $params);
+        $userJson = $params['user'] ?? null;
+
+        if (!$userJson) {
+            return response()->json(['error' => 'User data not found in initData'], 400);
+        }
+
+        $telegramUser = json_decode($userJson, true);
+        $telegramId   = (string) ($telegramUser['id'] ?? null);
+
+        if (!$telegramId) {
+            return response()->json(['error' => 'Telegram user ID not found'], 400);
+        }
+
+        // Ищем привязанного пользователя
+        $linkedUser = TelegramUser::where('telegram_user_id', $telegramId)
+            ->where('status', 'linked')
+            ->whereNotNull('user_identifier')
+            ->first();
+
+        if (!$linkedUser) {
+            return response()->json([
+                'error'   => 'not_linked',
+                'message' => 'Telegram аккаунт не привязан. Отправьте /start боту для привязки.',
+            ], 403);
+        }
+
+        $user = User::where('email', $linkedUser->user_identifier)->first();
+
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        // Создаём auth token
+        $tokenRecord = TelegramMiniAppToken::createAuthToken($user->id, $telegramId);
+
+        Log::info('Telegram Mini App auth', [
+            'telegram_id' => $telegramId,
+            'user_id'     => $user->id,
+        ]);
+
+        return response()->json([
+            'token'      => $tokenRecord->auth_token,
+            'expires_at' => $tokenRecord->auth_token_expires_at->toIso8601String(),
+            'user'       => [
+                'name'  => $user->name,
+                'email' => $user->email,
+            ],
+        ]);
+    }
+
+    /**
+     * Верификация HMAC подписи Telegram WebApp
+     * https://core.telegram.org/bots/webapps#validating-data-received-via-the-mini-app
+     */
+    private function verifyTelegramInitData(string $initData, string $botToken): bool
+    {
+        parse_str($initData, $params);
+        $hash = $params['hash'] ?? '';
+        unset($params['hash']);
+
+        // Сортируем и формируем data-check-string
+        ksort($params);
+        $dataCheckString = implode("\n", array_map(
+            fn($k, $v) => "$k=$v",
+            array_keys($params),
+            array_values($params)
+        ));
+
+        $secretKey = hash_hmac('sha256', $botToken, 'WebAppData', true);
+        $expected   = hash_hmac('sha256', $dataCheckString, $secretKey);
+
+        return hash_equals($expected, $hash);
+    }
+}

@@ -58,6 +58,13 @@ class SignDocImzoController extends Controller
         $docType    = $request->ecp_doc_type;
         $confirmId  = $request->ecp_confirm_id ?? null;
         $resText    = $request->ecp_r_text;
+        $pin      = $request->pinfl;
+
+        $userPin = Auth::user()->userPersonal->doc_pin;
+
+        if($userPin != $pin) {
+            return $this->errorResponse(__('error.ecp_key_is_not_belong_to_user'));
+        }
 
         $eriSign = $isDemo ? ['status' => 1] : $this->backendAuth($pkData);
 

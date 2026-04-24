@@ -224,7 +224,16 @@
                 <div class="dots">
                     <i data-lucide="ellipsis-vertical" style="width: 18px; height: 18px;"></i>
                 </div>
-                <p>Tashkilot xodimi <br> bo'lish uchun so'rov <br> qoldiring</p>
+                @php $locale = session()->get('locale', 'uz'); @endphp
+                @if($locale == 'uz')
+                    <p>Tashkilot xodimi <br> bo'lish uchun so'rov <br> qoldiring</p>
+                @elseif($locale == 'kr')
+                    <p>Ташкилот ходими <br> бўлиш учун сўров <br> қолдиринг</p>
+                @elseif($locale == 'en')
+                    <p>Request to become <br> an employee of <br> an organization</p>
+                @elseif($locale == 'ru')
+                    <p>Подайте заявку, <br> чтобы стать сотрудником <br> организации</p>
+                @endif
 
                 <button class="btn btn-success-custom open-request-modal"
                         data-toggle="modal"
@@ -372,9 +381,11 @@
                 const theme = this.getAttribute('data-theme');
                 if (theme === 'dark') {
                     sidebar.classList.add('dark');
+                    document.body.classList.add('theme-dark');
                     localStorage.setItem('sidebar-theme', 'dark');
                 } else {
                     sidebar.classList.remove('dark');
+                    document.body.classList.remove('theme-dark');
                     localStorage.setItem('sidebar-theme', 'light');
                 }
             });
@@ -383,6 +394,7 @@
         const savedTheme = localStorage.getItem('sidebar-theme');
         if (savedTheme === 'dark') {
             sidebar.classList.add('dark');
+            document.body.classList.add('theme-dark');
             themeTabs.forEach(tab => {
                 if (tab.getAttribute('data-theme') === 'dark') tab.classList.add('active');
                 else tab.classList.remove('active');

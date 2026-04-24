@@ -13,7 +13,7 @@ class SetTelegramWebhook extends Command
     public function handle()
     {
         $botToken = config('services.telegram-bot-api.token');
-        $webhookUrl = env('TELEGRAM_WEBHOOK_URL');
+        $webhookUrl = config('services.telegram-bot-api.webhook_url');
 
         if (!$webhookUrl) {
             $this->error('Ошибка: TELEGRAM_WEBHOOK_URL не указан в .env');
@@ -21,6 +21,7 @@ class SetTelegramWebhook extends Command
         }
 
         $this->info('Установка Telegram webhook: ' . $webhookUrl);
+        $this->info('Установка Telegram botToken: ' . $botToken);
 
         try {
             $response = Http::post("https://api.telegram.org/bot{$botToken}/setWebhook", [
