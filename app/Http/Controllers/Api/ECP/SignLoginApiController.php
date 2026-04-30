@@ -20,6 +20,7 @@ use App\Models\Protocol\ProtocolDocument;
 use App\Models\Resolution\ReplyCommentTypes;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class SignLoginApiController extends Controller
@@ -180,10 +181,12 @@ class SignLoginApiController extends Controller
     {
         try {
             $type = $request->query('type');
-            $userId = auth()->id();
+            // ВАЖНО: to_user в document_execution_steps — это work_history_id,
+            // а не user_id. Используем authActiveUserIds().
+            $workIds = $this->authActiveUserIds();
 
             // Get documents pending signature
-            $pendingDocs = DocumentExecutionSteps::where('to_user', $userId)
+            $pendingDocs = DocumentExecutionSteps::whereIn('to_user', $workIds)
                 ->where('status', 2) // Status 2 = waiting for action
                 ->with(['journal.doc', 'journal.fromUser.personal'])
                 ->paginate(50);
@@ -255,11 +258,26 @@ class SignLoginApiController extends Controller
     public function getDocumentDetails(int $doc_id, Request $request): JsonResponse
     {
         try {
-            $docType = $request->query('doc_type');
+            $docType   = $request->query('doc_type');
+            $user      = Auth::user();
+            $workIds   = $this->authActiveUserIds();
+            $orgUnitId = $user->org_unit_id;
 
             if ($docType === 'protocol_document') {
                 $document = ProtocolDocument::with(['docType', 'members.user.personal'])
                     ->findOrFail($doc_id);
+
+                // Доступ только для участника протокола
+                $isMember = ProtocolDocMember::where('doc_id', $document->id)
+                    ->whereIn('user_id', $workIds)
+                    ->exists();
+
+                if (!$isMember) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Access denied to this document'
+                    ], 403);
+                }
 
                 return response()->json([
                     'success' => true,
@@ -274,6 +292,27 @@ class SignLoginApiController extends Controller
                     'executionSteps.role',
                     'executionSteps.toUser.personal'
                 ])->where('doc_id', $doc_id)->firstOrFail();
+
+                // Доступ: создатель документа или назначенный исполнитель,
+                // и обязательно своя организация
+                if ((int) $journal->org_unit_id !== (int) $orgUnitId) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Access denied to this document'
+                    ], 403);
+                }
+
+                $isCreator = in_array($journal->created_user, $workIds, true);
+                $hasStep   = DocumentExecutionSteps::where('j_id', $journal->id)
+                    ->whereIn('to_user', $workIds)
+                    ->exists();
+
+                if (!$isCreator && !$hasStep) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Access denied to this document'
+                    ], 403);
+                }
 
                 return response()->json([
                     'success' => true,

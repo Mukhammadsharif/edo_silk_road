@@ -204,17 +204,6 @@ class TelegramDocumentController extends Controller
             ->whereHas('role', fn($r) => $r->where('doc_code', 'RESOL')->where('status', 1))
             ->exists();
 
-        \Illuminate\Support\Facades\Log::info('[TG] getSignType', [
-            'role'     => $role,
-            'docCode'  => $docCode,
-            'isOutDoc' => $isOutDoc,
-            'isHrDoc'  => $isHrDoc,
-            'hasAgree' => $hasAgree,
-            'hasResol' => $hasResol,
-            'j_id'     => $journal->id,
-            'j_status' => $journal->status,
-        ]);
-
         return match($role) {
 
             // ── SIGN ──────────────────────────────────────────────────────────────

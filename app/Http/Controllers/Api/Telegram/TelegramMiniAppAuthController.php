@@ -61,7 +61,11 @@ class TelegramMiniAppAuthController extends Controller
             ], 403);
         }
 
-        $user = User::where('email', $linkedUser->user_identifier)->first();
+        // Поиск по username (новый формат привязки), с fallback на email
+        // для обратной совместимости со старыми записями TelegramUser.
+        $user = User::where('username', $linkedUser->user_identifier)
+            ->orWhere('email', $linkedUser->user_identifier)
+            ->first();
 
         if (!$user) {
             return response()->json(['error' => 'User not found'], 404);
@@ -79,7 +83,7 @@ class TelegramMiniAppAuthController extends Controller
             'token'      => $tokenRecord->auth_token,
             'expires_at' => $tokenRecord->auth_token_expires_at->toIso8601String(),
             'user'       => [
-                'name'  => $user->name,
+                'name'  => $user->username,
                 'email' => $user->email,
             ],
         ]);

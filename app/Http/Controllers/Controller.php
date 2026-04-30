@@ -241,11 +241,12 @@ class Controller extends BaseController
         $message = "EDO tizimidan ".$doc_name." hujjati yuborildi.";
         $workUser   = UserWorkHistory::find($to_user);
         $user       = User::find($workUser->user_id);
-        $userEmail  = $user->email;
+        // user_identifier теперь хранит username (логин), а не email.
+        $userIdentifier = $user->username ?? $user->email;
         $appUrl     = env('APP_URL', 'https://demoedo.uztest.uz');
         $documentLink = $appUrl . '/' . $document_link;
 
-        SendTelegramMessageJob::dispatch($userEmail, $message, $documentLink)->onQueue('send_telegram');
+        SendTelegramMessageJob::dispatch($userIdentifier, $message, $documentLink)->onQueue('send_telegram');
         return true;
     }
 

@@ -631,6 +631,7 @@ class JournalApiController extends Controller
             ]);
 
             $user = Auth::user();
+            $orgUnitId = $user->org_unit_id;
 
             $doc_name = $validated['doc_name'] ?? null;
             $doc_org = $validated['doc_org'] ?? null;
@@ -639,9 +640,10 @@ class JournalApiController extends Controller
             $date_till = $validated['date_till'] ?? null;
             $per_page = $validated['per_page'] ?? 25;
 
-            $search = DocumentJournals::whereHas('journal', function ($query) {
-                $query->where('doc_code', 'BASE_INCOMING');
-            });
+            $search = DocumentJournals::whereHas('journal', function ($query) use ($orgUnitId) {
+                $query->where('doc_code', 'BASE_INCOMING')
+                    ->where('org_id', $orgUnitId);
+            })->where('org_unit_id', $orgUnitId);
 
             // Фильтр по статусу
             if ($status) {
@@ -795,6 +797,7 @@ class JournalApiController extends Controller
     {
         try {
             $user = Auth::user();
+            $orgUnitId = $user->org_unit_id;
 
             $journal = DocumentJournals::findOrFail($id);
             $document = Documents::where('id', $journal->doc_id)
@@ -807,6 +810,21 @@ class JournalApiController extends Controller
                     'success' => false,
                     'message' => 'This is not an inbox document'
                 ], 400);
+            }
+
+            // Проверка принадлежности документа к организации пользователя
+            if ((int) $journal->org_unit_id !== (int) $orgUnitId) {
+                Log::warning('Access denied to inbox document (org mismatch)', [
+                    'user_id'        => Auth::id(),
+                    'user_org'       => $orgUnitId,
+                    'document_org'   => $journal->org_unit_id,
+                    'journal_id'     => $id,
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Access denied to this document'
+                ], 403);
             }
 
             $documentFiles = DocumentFiles::where('j_id', $journal->id)->get();
