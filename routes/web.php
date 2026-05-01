@@ -33,6 +33,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\OrganizationSwitchController;
 use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\UserPostController;
 use App\Http\Controllers\Admin\RoleController;
@@ -74,6 +75,11 @@ Route::post('e-imzo/backend-auth',  [SignDocImzoController::class, 'backendAuthL
 Route::group(['middleware' => ['auth']], function() {
 
     Route::get('/edo', [HomeController::class, 'index'])->name('home');
+
+    // Переключение между организациями (мульти-org membership)
+    Route::post('/switch-organization/{org_id}', [OrganizationSwitchController::class, 'switch'])
+        ->whereNumber('org_id')
+        ->name('organization.switch');
 
     Route::get('charts/documents', [HomeController::class, 'chartDocuments'])->name('charts.documents');
     Route::post('get-menu-count', [HomeController::class, 'getMenuCount'])->name('get-menu-count');

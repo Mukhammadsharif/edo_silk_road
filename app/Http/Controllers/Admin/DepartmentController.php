@@ -338,26 +338,58 @@ class DepartmentController extends Controller
 
             $organization = OrganizationUnits::where('tax_number', $tax_number)->first();
 
-            if ($organization) {
-                RequestForOrgs::where('user_id', Auth::id())->delete();
-
-                RequestForOrgs::create([
-                    'user_id' => Auth::id(),
-                    'org_unit_id' => $organization->id,
-                    'tax_number' => $tax_number,
-                    'status' => 1
-                ]);
-
-                return response()->json([
-                    'status' => 200,
-                    'message' => 'Request Sent Successfully.'
-                ]);
-            } else {
+            if (!$organization) {
                 return response()->json([
                     'status' => 400,
                     'errors' => ['value' => __('field.org_with_tin_was_not_registered')]
                 ]);
             }
+
+            $userId = Auth::id();
+
+            // Уже есть pending заявка в эту же организацию?
+            $existingPending = RequestForOrgs::where('user_id', $userId)
+                ->where('org_unit_id', $organization->id)
+                ->where('status', 1)
+                ->first();
+
+            if ($existingPending) {
+                return response()->json([
+                    'status' => 400,
+                    'errors' => ['value' => __('field.subscription_request_already_pending') ?? 'Заявка в эту организацию уже подана']
+                ]);
+            }
+
+            // Юзер уже является активным членом этой организации?
+            $alreadyMember = \App\Models\Admin\UserWorkHistory::where('user_id', $userId)
+                ->where('org_id', $organization->id)
+                ->where('status', 1)
+                ->exists();
+
+            if ($alreadyMember) {
+                return response()->json([
+                    'status' => 400,
+                    'errors' => ['value' => __('field.already_member_of_this_org') ?? 'Вы уже являетесь сотрудником этой организации']
+                ]);
+            }
+
+            // Удаляем старую rejected/accepted заявку в эту же org (если есть),
+            // чтобы не плодить дубликаты. Заявки в ДРУГИЕ org не трогаем.
+            RequestForOrgs::where('user_id', $userId)
+                ->where('org_unit_id', $organization->id)
+                ->delete();
+
+            RequestForOrgs::create([
+                'user_id'     => $userId,
+                'org_unit_id' => $organization->id,
+                'tax_number'  => $tax_number,
+                'status'      => 1
+            ]);
+
+            return response()->json([
+                'status'  => 200,
+                'message' => 'Request Sent Successfully.'
+            ]);
         }
     }
 

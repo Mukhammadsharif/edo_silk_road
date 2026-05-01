@@ -6,8 +6,10 @@
 
 @php $user = App\Models\User::where('id', Auth::id())->first(); @endphp
 @php $isOrganizationDemo = $user->org_unit_id === 1; @endphp
-@php $request = RequestForOrgs::where('user_id', Auth::id())->first(); @endphp
+@php $request = RequestForOrgs::where('user_id', Auth::id())->where('status', 1)->first(); @endphp
 @php $isOwner = in_array(Auth::id(), OrganizationUnits::where('status', 1)->pluck('owner_user_id')->toArray()); @endphp
+@php $userOrganizations = $user->accessibleOrganizations(); @endphp
+@php $activeOrganization = $userOrganizations->firstWhere('id', $user->org_unit_id); @endphp
 
 <link rel="stylesheet" href="{{ asset('css/templates/layouts/sidebar.css') }}">
 
@@ -23,6 +25,61 @@
                 </a>
             </div>
 
+            {{-- ═══════════════════════════════════════════════════════════════
+                 ORG SWITCHER — над «Создать документ»
+                 Показывается только для юзеров не в demo (id=1) и
+                 только если у них есть хотя бы одна активная организация
+                 ═══════════════════════════════════════════════════════════════ --}}
+            @if(!$isOrganizationDemo && $userOrganizations->count() > 0)
+                <div class="org-switcher" id="orgSwitcher">
+                    <button type="button" class="org-switcher-trigger" id="orgSwitcherTrigger">
+                        <div class="org-switcher-left">
+                            <div class="org-switcher-icon">
+                                <i data-lucide="building-2" style="width: 18px; height: 18px;"></i>
+                            </div>
+                            <div class="org-switcher-info">
+                                <span class="org-switcher-label">{{ __('field.organization') ?? 'Tashkilot' }}</span>
+                                <span class="org-switcher-name">{{ $activeOrganization->name_uz ?? '—' }}</span>
+                            </div>
+                        </div>
+                        <i data-lucide="chevron-down" class="org-switcher-chevron" style="width: 16px; height: 16px;"></i>
+                    </button>
+
+                    <div class="org-switcher-menu" id="orgSwitcherMenu">
+                        <div class="org-switcher-menu-header">
+                            {{ __('field.choose_organization') ?? 'Tashkilotni tanlang' }}
+                        </div>
+                        @foreach($userOrganizations as $org)
+                            <button type="button"
+                                    class="org-switcher-item {{ $org->id === $user->org_unit_id ? 'active' : '' }}"
+                                    data-org-id="{{ $org->id }}"
+                                {{ $org->id === $user->org_unit_id ? 'disabled' : '' }}>
+                                <div class="org-switcher-item-icon">
+                                    <i data-lucide="{{ $org->id === $user->org_unit_id ? 'check' : 'building' }}"
+                                       style="width: 16px; height: 16px;"></i>
+                                </div>
+                                <span class="org-switcher-item-name">{{ $org->name_uz }}</span>
+                                @if($org->tax_number)
+                                    <span class="org-switcher-item-tin">{{ $org->tax_number }}</span>
+                                @endif
+                            </button>
+                        @endforeach
+
+                        <div class="org-switcher-divider"></div>
+
+                        <button type="button" class="org-switcher-item org-switcher-add"
+                                data-toggle="modal" data-target="#RequestModal">
+                            <div class="org-switcher-item-icon">
+                                <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+                            </div>
+                            <span class="org-switcher-item-name">
+                                {{ __('field.add_organization') ?? 'Yana tashkilot qo\'shish' }}
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            @endif
+
             <div class="menu-item ">
                 <div class="menu-header">
                     <div style="display: flex; align-items: center; gap:15px; flex: 1;">
@@ -35,21 +92,21 @@
                 <div class="submenu">
                     <div class="submenu-item">
                         <a href="{{ url('/office/document/create/incoming') }}">
-{{--                            <img src="{{ asset('images/leftdown.svg') }}" alt="" style="opacity:0.4">--}}
+                            {{--                            <img src="{{ asset('images/leftdown.svg') }}" alt="" style="opacity:0.4">--}}
                             <i data-lucide="download" style="width: 18px; height: 18px;"></i>
                             <span>{{ __('document.incoming_message') }}</span>
                         </a>
                     </div>
                     <div class="submenu-item">
                         <a href="{{ url('/office/document/create/outgoing') }}">
-{{--                            <img src="{{ asset('images/leftdown.svg') }}" alt="" style="opacity:0.4">--}}
+                            {{--                            <img src="{{ asset('images/leftdown.svg') }}" alt="" style="opacity:0.4">--}}
                             <i data-lucide="upload" style="width: 18px; height: 18px;"></i>
                             <span>{{ __('document.outgoing_message') }}</span>
                         </a>
                     </div>
                     <div class="submenu-item">
                         <a href="{{ url('/office/document/create/internal') }}">
-{{--                            <img src="{{ asset('images/leftdown.svg') }}" alt="" style="opacity:0.4">--}}
+                            {{--                            <img src="{{ asset('images/leftdown.svg') }}" alt="" style="opacity:0.4">--}}
                             <i data-lucide="file-edit" style="width: 18px; height: 18px;"></i>
                             <span>{{ __('document.internal_docs') }}</span>
                         </a>
@@ -87,7 +144,7 @@
                                     <div class="submenu-item">
                                         <a href="{{ $child->menuList->url_path }}"
                                            class="{{ $childIsActive ? 'active-link' : '' }}">
-{{--                                            <img src="{{ asset('images/leftdown.svg') }}" alt="" style="opacity:0.4">--}}
+                                            {{--                                            <img src="{{ asset('images/leftdown.svg') }}" alt="" style="opacity:0.4">--}}
                                             <i data-lucide="{{ $child->menuList->iconClass ? $child->menuList->iconClass->name : 'circle' }}"
                                                style="width: 18px; height: 18px;"></i>
                                             <span>{{ \App\Models\Admin\MenuList::lang($child->menuList->id) }}</span>
@@ -109,8 +166,8 @@
                                         <div class="submenu-item tree-item">
                                             <a href="{{ route($route, $item2->doc_hash) }}"
                                                class="{{ str_contains(url()->current(), $item2->doc_hash) ? 'active-link' : '' }}">
-{{--                                                <img src="{{ asset('images/leftdown.svg') }}" alt=""--}}
-                                                     style="opacity:0.4">
+                                                {{--                                                <img src="{{ asset('images/leftdown.svg') }}" alt=""--}}
+                                                style="opacity:0.4">
                                                 <i data-lucide="folder" style="width: 18px; height: 18px;"></i>
                                                 <span>{{ $item2->lang($item2->id) }}</span>
                                                 @php
@@ -140,8 +197,8 @@
                                         <div class="submenu-item tree-item">
                                             <a href="{{ route('prt-secretary', $item3->doc_hash) }}"
                                                class="{{ str_contains(url()->current(), $item3->doc_hash) ? 'active-link' : '' }}">
-{{--                                                <img src="{{ asset('images/leftdown.svg') }}" alt=""--}}
-                                                     style="opacity:0.4">
+                                                {{--                                                <img src="{{ asset('images/leftdown.svg') }}" alt=""--}}
+                                                style="opacity:0.4">
                                                 <i data-lucide="file-text" style="width: 18px; height: 18px;"></i>
                                                 <span>{{ $item3->lang($item3->id) }}</span>
                                             </a>
@@ -216,7 +273,8 @@
             </div>
         </div>
 
-        @if(!$isOwner && $isOrganizationDemo && !$request)
+{{--        @if(!$isOwner && $isOrganizationDemo && !$request)--}}
+        @if(!$isOwner && $isOrganizationDemo)
             <div class="request">
                 <div class="rocket-icon">
                     <i data-lucide="rocket" style="width: 30px; height: 30px;"></i>
@@ -692,6 +750,244 @@
     }
 </style>
 
+{{-- ═══════════════════════════════════════════════════════════════
+     ORG SWITCHER — стили
+     ═══════════════════════════════════════════════════════════════ --}}
+<style>
+    .org-switcher {
+        position: relative;
+        margin: 12px 16px 0;
+    }
+
+    .org-switcher-trigger {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 10px 12px;
+        border: 1px solid rgba(121, 77, 253, 0.15);
+        background: linear-gradient(135deg, rgba(121, 77, 253, 0.04), rgba(157, 111, 255, 0.06));
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        font-family: inherit;
+    }
+
+    .org-switcher-trigger:hover {
+        background: linear-gradient(135deg, rgba(121, 77, 253, 0.08), rgba(157, 111, 255, 0.12));
+        border-color: rgba(121, 77, 253, 0.30);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px -2px rgba(121, 77, 253, 0.18);
+    }
+
+    .org-switcher-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .org-switcher-icon {
+        width: 32px; height: 32px;
+        flex-shrink: 0;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
+        color: #fff;
+        box-shadow: 0 4px 12px -3px rgba(121, 77, 253, 0.45);
+    }
+
+    .org-switcher-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        flex: 1;
+        min-width: 0;
+        text-align: left;
+    }
+
+    .org-switcher-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-muted, #94a3b8);
+        font-weight: 600;
+    }
+
+    .org-switcher-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text, #1e293b);
+        line-height: 1.3;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+
+    .org-switcher-chevron {
+        flex-shrink: 0;
+        color: var(--text-muted, #94a3b8);
+        transition: transform 0.2s ease;
+    }
+
+    .org-switcher.open .org-switcher-chevron {
+        transform: rotate(180deg);
+    }
+
+    .org-switcher-menu {
+        display: none;
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0; right: 0;
+        z-index: 1500;
+        background: #fff;
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        border-radius: 12px;
+        box-shadow: 0 12px 32px -8px rgba(15, 23, 42, 0.2),
+        0 4px 8px -2px rgba(15, 23, 42, 0.06);
+        padding: 6px;
+        max-height: 360px;
+        overflow-y: auto;
+        animation: orgMenuSlide 0.18s ease;
+    }
+
+    .org-switcher.open .org-switcher-menu {
+        display: block;
+    }
+
+    @keyframes orgMenuSlide {
+        from { opacity: 0; transform: translateY(-6px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .org-switcher-menu-header {
+        padding: 8px 10px 6px;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-muted, #94a3b8);
+        font-weight: 700;
+    }
+
+    .org-switcher-item {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 10px;
+        background: transparent;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        text-align: left;
+        font-family: inherit;
+        font-size: 13px;
+        color: var(--text, #1e293b);
+        transition: background 0.15s ease;
+    }
+
+    .org-switcher-item:hover:not(:disabled) {
+        background: rgba(121, 77, 253, 0.06);
+    }
+
+    .org-switcher-item:disabled,
+    .org-switcher-item.active {
+        background: rgba(121, 77, 253, 0.10);
+        cursor: default;
+    }
+
+    .org-switcher-item-icon {
+        width: 28px; height: 28px;
+        flex-shrink: 0;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(121, 77, 253, 0.08);
+        color: #794DFD;
+    }
+
+    .org-switcher-item.active .org-switcher-item-icon {
+        background: linear-gradient(135deg, #794DFD, #9d6fff);
+        color: #fff;
+    }
+
+    .org-switcher-item-name {
+        flex: 1;
+        font-weight: 500;
+        line-height: 1.3;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .org-switcher-item-tin {
+        font-size: 11px;
+        color: var(--text-muted, #94a3b8);
+        flex-shrink: 0;
+    }
+
+    .org-switcher-divider {
+        height: 1px;
+        background: rgba(15, 23, 42, 0.08);
+        margin: 6px 4px;
+    }
+
+    .org-switcher-add {
+        color: #794DFD;
+        font-weight: 600;
+    }
+
+    .org-switcher-add .org-switcher-item-icon {
+        background: linear-gradient(135deg, rgba(121, 77, 253, 0.10), rgba(157, 111, 255, 0.15));
+    }
+
+    /* Collapsed sidebar — hide org switcher labels, only icon visible */
+    #sidebar.collapsed .org-switcher {
+        margin: 12px 8px 0;
+    }
+
+    #sidebar.collapsed .org-switcher-info,
+    #sidebar.collapsed .org-switcher-chevron {
+        display: none !important;
+    }
+
+    #sidebar.collapsed .org-switcher-trigger {
+        justify-content: center;
+        padding: 10px;
+    }
+
+    #sidebar.collapsed .org-switcher-menu {
+        left: calc(100% + 8px);
+        right: auto;
+        top: 0;
+        min-width: 240px;
+    }
+
+    /* Dark theme adjustments */
+    [data-theme="dark"] .org-switcher-menu {
+        background: #1e293b;
+        border-color: rgba(255, 255, 255, 0.08);
+    }
+    [data-theme="dark"] .org-switcher-name {
+        color: #f1f5f9;
+    }
+    [data-theme="dark"] .org-switcher-item {
+        color: #cbd5e1;
+    }
+    [data-theme="dark"] .org-switcher-item:hover:not(:disabled) {
+        background: rgba(121, 77, 253, 0.18);
+    }
+    [data-theme="dark"] .org-switcher-divider {
+        background: rgba(255, 255, 255, 0.08);
+    }
+</style>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof VanillaTilt !== 'undefined') {
@@ -707,6 +1003,82 @@
             });
         } else {
             console.warn("VanillaTilt kutubxonasi yuklanmagan!");
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // ORG SWITCHER — открытие/закрытие меню + AJAX переключение
+        // ═══════════════════════════════════════════════════════════════
+        const orgSwitcher = document.getElementById('orgSwitcher');
+        if (orgSwitcher) {
+            const trigger = document.getElementById('orgSwitcherTrigger');
+            const menu = document.getElementById('orgSwitcherMenu');
+
+            // Toggle меню
+            trigger.addEventListener('click', function (e) {
+                e.stopPropagation();
+                orgSwitcher.classList.toggle('open');
+            });
+
+            // Закрыть при клике вне
+            document.addEventListener('click', function (e) {
+                if (!orgSwitcher.contains(e.target)) {
+                    orgSwitcher.classList.remove('open');
+                }
+            });
+
+            // Esc — закрыть
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    orgSwitcher.classList.remove('open');
+                }
+            });
+
+            // Клик по организации — переключение
+            orgSwitcher.querySelectorAll('.org-switcher-item[data-org-id]').forEach(function (btn) {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    if (btn.disabled || btn.classList.contains('active')) return;
+
+                    const orgId = btn.dataset.orgId;
+                    if (!orgId) return;
+
+                    // Дизейблим все пункты на время запроса
+                    orgSwitcher.querySelectorAll('.org-switcher-item').forEach(b => b.disabled = true);
+                    btn.classList.add('switching');
+
+                    fetch('/switch-organization/' + encodeURIComponent(orgId), {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        },
+                        credentials: 'same-origin'
+                    })
+                        .then(r => r.json().then(data => ({ ok: r.ok, status: r.status, data })))
+                        .then(({ ok, status, data }) => {
+                            if (ok && data.status === 200) {
+                                // Перезагружаем — все данные на странице зависят от org_unit_id
+                                window.location.href = '/edo';
+                            } else {
+                                alert(data.message || 'Xatolik');
+                                orgSwitcher.querySelectorAll('.org-switcher-item').forEach(b => {
+                                    if (!b.classList.contains('active')) b.disabled = false;
+                                });
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Switch org error:', err);
+                            alert('Tarmoq xatosi');
+                            orgSwitcher.querySelectorAll('.org-switcher-item').forEach(b => {
+                                if (!b.classList.contains('active')) b.disabled = false;
+                            });
+                        });
+                });
+            });
         }
     });
 </script>

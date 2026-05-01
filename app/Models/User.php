@@ -63,7 +63,41 @@ class User extends Authenticatable
 
     public function userWorkIDs()
     {
-        return UserWorkHistory::where('user_id', Auth::id())->pluck('id')->toArray();
+        // return array — work_history IDs только в ТЕКУЩЕЙ выбранной организации.
+        // См. комментарий в Controller.php::authActiveUserIds() о причине.
+        $user = Auth::user();
+        if (!$user) return [];
+
+        return UserWorkHistory::where('user_id', $user->id)
+            ->where('org_id', $user->org_unit_id)
+            ->where('status', 1)
+            ->pluck('id')
+            ->toArray();
+    }
+
+    /**
+     * Список организаций, к которым у пользователя есть доступ
+     * (одобренный work_history со status=1).
+     *
+     * Используется для дропдауна в сайдбаре.
+     *
+     * @return \Illuminate\Support\Collection of OrganizationUnits
+     */
+    public function accessibleOrganizations()
+    {
+        $orgIds = UserWorkHistory::where('user_id', $this->id)
+            ->where('status', 1)
+            ->pluck('org_id')
+            ->unique()
+            ->values()
+            ->toArray();
+
+        if (empty($orgIds)) return collect();
+
+        return OrganizationUnits::whereIn('id', $orgIds)
+            ->where('status', 1)
+            ->orderBy('name_uz')
+            ->get();
     }
 
     public function userRoles(): \Illuminate\Database\Eloquent\Relations\HasMany
@@ -71,21 +105,21 @@ class User extends Authenticatable
         return $this->hasMany(UserRole::class,'model_id','id');
     }
 
-/*    public function getSidebarMenu()
-    {
-        //
-        $activeRoles = Role::where('status', 1)->pluck('id')->toArray();
-        $roleID = [];
-        $userRolesToArray = UserRole::where('model_id', Auth::id())->whereIn('role_id', $activeRoles)
-            ->pluck('role_id')->toArray();
+    /*    public function getSidebarMenu()
+        {
+            //
+            $activeRoles = Role::where('status', 1)->pluck('id')->toArray();
+            $roleID = [];
+            $userRolesToArray = UserRole::where('model_id', Auth::id())->whereIn('role_id', $activeRoles)
+                ->pluck('role_id')->toArray();
 
-        if (count($userRolesToArray)) {
-            $roleID = $userRolesToArray;
-        }
+            if (count($userRolesToArray)) {
+                $roleID = $userRolesToArray;
+            }
 
-        return RoleMenu::where('parent_id', 0)->where('status', 1)->whereIn('role_id', $roleID)
-            ->orderBy('order_number')->get();
-    }*/
+            return RoleMenu::where('parent_id', 0)->where('status', 1)->whereIn('role_id', $roleID)
+                ->orderBy('order_number')->get();
+        }*/
 
     public function sidebarMenus()
     {
