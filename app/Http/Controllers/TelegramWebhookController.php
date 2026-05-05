@@ -7,17 +7,25 @@ use App\Models\User;
 use App\Notifications\TelegramNotification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 
 class TelegramWebhookController extends Controller
 {
-    // Состояния FSM привязки аккаунта
+    // Состояния FSM
+    private const STATE_CHOOSING_METHOD  = 'choosing_method';
     private const STATE_WAITING_USERNAME = 'waiting_for_username';
     private const STATE_WAITING_PASSWORD = 'waiting_for_password';
+    private const STATE_WAITING_EIMZO    = 'waiting_for_eimzo';
     private const STATE_LINKED           = 'linked';
+
+    // Callback data для inline-keyboard
+    private const CB_METHOD_PASSWORD = 'auth:method:password';
+    private const CB_METHOD_EIMZO    = 'auth:method:eimzo';
 
     /**
      * Telegram webhook entry point.
@@ -26,6 +34,11 @@ class TelegramWebhookController extends Controller
     {
         try {
             $update = $request->all();
+
+            // Кнопка inline-keyboard нажата — это callback_query
+            if (isset($update['callback_query'])) {
+                return $this->handleCallbackQuery($update['callback_query']);
+            }
 
             // chat_id и Telegram-username (handle вида @user)
             $chatId   = $update['message']['chat']['id']
@@ -36,11 +49,11 @@ class TelegramWebhookController extends Controller
                 ?? null;
 
             if (!$chatId) {
-                Log::warning('Telegram webhook: no chat_id', ['update' => $update]);
+                Log::warning('Telegram webhook: no chat_id', ['type' => array_keys($update)]);
                 return response()->json(['status' => 'no_chat_id'], 200);
             }
 
-            // ВАЖНО: не пишем в логи весь payload — иначе пароль попадёт в файл логов.
+            // ВАЖНО: не пишем в логи весь payload — пароль попадёт в логи.
             Log::info('Telegram webhook', [
                 'chat_id' => $chatId,
                 'type'    => isset($update['my_chat_member']) ? 'my_chat_member' : 'message',
@@ -81,11 +94,25 @@ class TelegramWebhookController extends Controller
             }
 
             switch ($telegramUser->status) {
+                case self::STATE_CHOOSING_METHOD:
+                    // Текст вместо нажатия кнопки — напоминаем пользователю
+                    $this->sendChooseMethodKeyboard($chatId);
+                    return response()->json(['status' => 'still_choosing'], 200);
+
                 case self::STATE_WAITING_USERNAME:
                     return $this->handleUsernameInput($telegramUser, $text);
 
                 case self::STATE_WAITING_PASSWORD:
                     return $this->handlePasswordInput($telegramUser, $text, $chatId, $messageId);
+
+                case self::STATE_WAITING_EIMZO:
+                    // Юзер уже на этапе E-IMZO — никакого текстового ввода не ожидаем,
+                    // только результат веб-flow. Подсказываем нажать кнопку.
+                    $this->sendTelegramMessage(
+                        $chatId,
+                        'Откройте E-IMZO авторизацию через кнопку выше или отправьте /cancel.'
+                    );
+                    return response()->json(['status' => 'awaiting_eimzo'], 200);
 
                 case self::STATE_LINKED:
                     $this->sendTelegramMessage(
@@ -107,7 +134,7 @@ class TelegramWebhookController extends Controller
     }
 
     // ==========================================================
-    //  Обработчики команд
+    //  Команды бота
     // ==========================================================
 
     private function handleStart(string|int $chatId, ?string $tgHandle): JsonResponse
@@ -116,16 +143,12 @@ class TelegramWebhookController extends Controller
             ['telegram_user_id' => $chatId],
             [
                 'telegram_username' => $tgHandle,
-                'status'            => self::STATE_WAITING_USERNAME,
+                'status'            => self::STATE_CHOOSING_METHOD,
                 'user_identifier'   => null,
             ]
         );
 
-        $this->sendTelegramMessage(
-            $chatId,
-            "Добро пожаловать!\n\n"
-            . "Для привязки аккаунта отправьте ваш логин (username), который вы используете для входа в систему."
-        );
+        $this->sendChooseMethodKeyboard($chatId);
         return response()->json(['status' => 'started'], 200);
     }
 
@@ -148,6 +171,9 @@ class TelegramWebhookController extends Controller
             $tgUser->delete();
         }
 
+        // Чистим возможный link_token из кеша
+        Cache::forget("tg_eimzo_link:{$chatId}");
+
         $this->sendTelegramMessage($chatId, 'Операция отменена. Для начала привязки отправьте /start.');
         return response()->json(['status' => 'cancelled'], 200);
     }
@@ -155,8 +181,131 @@ class TelegramWebhookController extends Controller
     private function handleUnlink(string|int $chatId): JsonResponse
     {
         TelegramUser::where('telegram_user_id', $chatId)->delete();
+        Cache::forget("tg_eimzo_link:{$chatId}");
         $this->sendTelegramMessage($chatId, 'Аккаунт отвязан. Для повторной привязки отправьте /start.');
         return response()->json(['status' => 'unlinked'], 200);
+    }
+
+    // ==========================================================
+    //  Inline keyboard — выбор метода авторизации
+    // ==========================================================
+
+    private function sendChooseMethodKeyboard(string|int $chatId): void
+    {
+        $keyboard = [
+            'inline_keyboard' => [
+                [['text' => '🔑 Логин и пароль',     'callback_data' => self::CB_METHOD_PASSWORD]],
+                [['text' => '🆔 E-IMZO ID-Card',     'callback_data' => self::CB_METHOD_EIMZO]],
+            ],
+        ];
+
+        $this->sendTelegramMessage(
+            $chatId,
+            "Добро пожаловать!\n\n"
+            . "Выберите способ авторизации:\n\n"
+            . "🔑 Логин и пароль — введите свои учётные данные\n"
+            . "🆔 E-IMZO ID-Card — авторизация через ID-карту E-IMZO",
+            $keyboard
+        );
+    }
+
+    private function handleCallbackQuery(array $callback): JsonResponse
+    {
+        $callbackId = $callback['id']               ?? null;
+        $chatId     = $callback['message']['chat']['id'] ?? null;
+        $messageId  = $callback['message']['message_id'] ?? null;
+        $data       = $callback['data']             ?? '';
+
+        if (!$chatId || !$callbackId) {
+            return response()->json(['status' => 'bad_callback'], 200);
+        }
+
+        // Подтверждаем callback (убирает loading-индикатор у кнопки)
+        $this->answerCallbackQuery($callbackId);
+
+        $telegramUser = TelegramUser::where('telegram_user_id', $chatId)->first();
+
+        if (!$telegramUser || $telegramUser->status !== self::STATE_CHOOSING_METHOD) {
+            $this->sendTelegramMessage($chatId, 'Этот выбор уже устарел. Отправьте /start заново.');
+            return response()->json(['status' => 'stale_callback'], 200);
+        }
+
+        if ($data === self::CB_METHOD_PASSWORD) {
+            $telegramUser->update(['status' => self::STATE_WAITING_USERNAME]);
+
+            // Убираем кнопки из исходного сообщения
+            if ($messageId) {
+                $this->editMessageReplyMarkup($chatId, $messageId, null);
+            }
+
+            $this->sendTelegramMessage(
+                $chatId,
+                "🔑 Способ выбран: Логин и пароль\n\n"
+                . "Отправьте ваш логин (username), который вы используете для входа в систему."
+            );
+            return response()->json(['status' => 'method_password'], 200);
+        }
+
+        if ($data === self::CB_METHOD_EIMZO) {
+            return $this->startEimzoLink($telegramUser, $chatId, $messageId);
+        }
+
+        $this->sendTelegramMessage($chatId, 'Неизвестный выбор. Отправьте /start.');
+        return response()->json(['status' => 'unknown_callback'], 200);
+    }
+
+    // ==========================================================
+    //  E-IMZO link flow — кнопка с веб-страницей привязки
+    // ==========================================================
+
+    private function startEimzoLink(TelegramUser $telegramUser, string|int $chatId, ?int $messageId): JsonResponse
+    {
+        // Генерируем одноразовый short-lived link_token (5 минут).
+        // Веб-страница использует его для идентификации chat_id при возврате PKCS#7.
+        $linkToken = Str::random(64);
+
+        Cache::put(
+            "tg_eimzo_link:{$linkToken}",
+            ['chat_id' => (string) $chatId],
+            now()->addMinutes(5)
+        );
+
+        // Также сохраняем обратную ссылку chat_id → token, чтобы /cancel мог её зачистить.
+        Cache::put(
+            "tg_eimzo_link:{$chatId}",
+            $linkToken,
+            now()->addMinutes(5)
+        );
+
+        $telegramUser->update(['status' => self::STATE_WAITING_EIMZO]);
+
+        // Убираем старую клавиатуру с выбором метода
+        if ($messageId) {
+            $this->editMessageReplyMarkup($chatId, $messageId, null);
+        }
+
+        // BASE_URL для Mini App
+        $baseUrl = rtrim(config('app.url') ?: 'https://edoline.uz', '/');
+        $webUrl  = $baseUrl . '/telegram-link/eimzo?token=' . urlencode($linkToken);
+
+        // Inline keyboard с web_app кнопкой
+        $keyboard = [
+            'inline_keyboard' => [
+                [['text' => '🆔 Открыть E-IMZO авторизацию', 'web_app' => ['url' => $webUrl]]],
+                [['text' => '↩️ Назад к выбору',           'callback_data' => 'auth:back']],
+            ],
+        ];
+
+        $this->sendTelegramMessage(
+            $chatId,
+            "🆔 Способ выбран: E-IMZO ID-Card\n\n"
+            . "Нажмите кнопку ниже, чтобы открыть страницу авторизации.\n\n"
+            . "Вам потребуется мобильное приложение E-IMZO ID-Card.\n\n"
+            . "⏱ Ссылка действительна 5 минут.",
+            $keyboard
+        );
+
+        return response()->json(['status' => 'eimzo_started'], 200);
     }
 
     // ==========================================================
@@ -195,8 +344,6 @@ class TelegramWebhookController extends Controller
             return response()->json(['status' => 'user_inactive'], 200);
         }
 
-        // Временно сохраняем username в user_identifier и переходим к запросу пароля.
-        // После успешной проверки пароля поле останется тем же.
         $telegramUser->update([
             'user_identifier' => $user->username,
             'status'          => self::STATE_WAITING_PASSWORD,
@@ -216,7 +363,7 @@ class TelegramWebhookController extends Controller
         string|int $chatId,
         ?int $messageId
     ): JsonResponse {
-        // Сразу удаляем сообщение с паролем из чата (Telegram deleteMessage API).
+        // Сразу удаляем сообщение с паролем из чата
         if ($messageId) {
             $this->deleteTelegramMessage($chatId, $messageId);
         }
@@ -229,7 +376,6 @@ class TelegramWebhookController extends Controller
             return response()->json(['status' => 'session_lost'], 200);
         }
 
-        // Поиск по username, с fallback на email для обратной совместимости
         $user = User::where('username', $username)
             ->orWhere('email', $username)
             ->first();
@@ -248,13 +394,13 @@ class TelegramWebhookController extends Controller
             return response()->json(['status' => 'wrong_password'], 200);
         }
 
-        // Успешная привязка. Гарантированно сохраняем именно username.
+        // Успешная привязка
         $telegramUser->update([
             'user_identifier' => $user->username,
             'status'          => self::STATE_LINKED,
         ]);
 
-        Log::info('Telegram account linked', [
+        Log::info('Telegram account linked via password', [
             'telegram_user_id' => $chatId,
             'user_id'          => $user->id,
             'username'         => $user->username,
@@ -268,7 +414,7 @@ class TelegramWebhookController extends Controller
     }
 
     // ==========================================================
-    //  Обновления статуса бота в чате
+    //  Обновления статуса бота
     // ==========================================================
 
     private function handleChatMemberUpdate(array $data, string|int $chatId): JsonResponse
@@ -277,6 +423,7 @@ class TelegramWebhookController extends Controller
 
         if ($newStatus === 'kicked') {
             TelegramUser::where('telegram_user_id', $chatId)->delete();
+            Cache::forget("tg_eimzo_link:{$chatId}");
             Log::info('Telegram bot kicked, link removed', ['chat_id' => $chatId]);
         }
 
@@ -287,7 +434,7 @@ class TelegramWebhookController extends Controller
     //  Telegram Bot API helpers
     // ==========================================================
 
-    private function sendTelegramMessage(string|int $chatId, string $message): void
+    private function sendTelegramMessage(string|int $chatId, string $message, ?array $keyboard = null): void
     {
         try {
             $botToken = config('services.telegram-bot-api.token');
@@ -298,15 +445,25 @@ class TelegramWebhookController extends Controller
 
             $url = "https://api.telegram.org/bot{$botToken}/sendMessage";
 
-            $response = Http::timeout(10)->post($url, [
+            $payload = [
                 'chat_id' => $chatId,
                 'text'    => $message,
-            ]);
+            ];
+            // ВАЖНО: при JSON body (Laravel Http::post по умолчанию) reply_markup
+            // должен быть ОБЪЕКТОМ, а не json_encode-строкой. Иначе Telegram
+            // молча проигнорирует разметку и пришлёт просто текст без кнопок.
+            if ($keyboard !== null) {
+                $payload['reply_markup'] = $keyboard;
+            }
+
+            $response = Http::timeout(10)->acceptJson()->post($url, $payload);
 
             if (!$response->successful()) {
                 Log::error('Failed to send Telegram message', [
-                    'chat_id' => $chatId,
-                    'body'    => $response->body(),
+                    'chat_id'       => $chatId,
+                    'has_keyboard'  => $keyboard !== null,
+                    'http_status'   => $response->status(),
+                    'response_body' => $response->body(),
                 ]);
             }
         } catch (\Throwable $e) {
@@ -329,9 +486,78 @@ class TelegramWebhookController extends Controller
                 'message_id' => $messageId,
             ]);
         } catch (\Throwable $e) {
-            // Если удалить не получилось (старое сообщение, нет прав) — просто логируем.
             Log::warning('Failed to delete Telegram message: ' . $e->getMessage());
         }
+    }
+
+    private function answerCallbackQuery(string $callbackQueryId, ?string $text = null): void
+    {
+        try {
+            $botToken = config('services.telegram-bot-api.token');
+            if (!$botToken) {
+                return;
+            }
+
+            $url = "https://api.telegram.org/bot{$botToken}/answerCallbackQuery";
+
+            $payload = ['callback_query_id' => $callbackQueryId];
+            if ($text) {
+                $payload['text'] = $text;
+            }
+
+            Http::timeout(5)->post($url, $payload);
+        } catch (\Throwable $e) {
+            Log::warning('Failed to answer callback query: ' . $e->getMessage());
+        }
+    }
+
+    private function editMessageReplyMarkup(string|int $chatId, int $messageId, ?array $keyboard): void
+    {
+        try {
+            $botToken = config('services.telegram-bot-api.token');
+            if (!$botToken) {
+                return;
+            }
+
+            $url = "https://api.telegram.org/bot{$botToken}/editMessageReplyMarkup";
+
+            // То же что и в sendTelegramMessage — reply_markup как объект, не строка.
+            $payload = [
+                'chat_id'      => $chatId,
+                'message_id'   => $messageId,
+                'reply_markup' => $keyboard ?? ['inline_keyboard' => []],
+            ];
+
+            $response = Http::timeout(5)->acceptJson()->post($url, $payload);
+
+            if (!$response->successful()) {
+                Log::warning('editMessageReplyMarkup failed', [
+                    'chat_id'       => $chatId,
+                    'message_id'    => $messageId,
+                    'response_body' => $response->body(),
+                ]);
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Failed to edit message reply markup: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Публичный метод — вызывается из E-IMZO link complete-эндпоинта,
+     * чтобы уведомить юзера в Telegram об успехе/ошибке привязки.
+     */
+    public function notifyEimzoLinkResult(string|int $chatId, bool $success, ?string $username = null, ?string $errorMessage = null): void
+    {
+        if ($success) {
+            $msg = "✅ Аккаунт успешно привязан через E-IMZO!\n\n"
+                . "Пользователь: {$username}\n"
+                . "Теперь вы будете получать уведомления о документах в этом чате.";
+        } else {
+            $msg = "❌ Не удалось привязать аккаунт через E-IMZO.\n\n"
+                . ($errorMessage ?: 'Попробуйте /start заново или используйте логин/пароль.');
+        }
+
+        $this->sendTelegramMessage($chatId, $msg);
     }
 
     // ==========================================================
@@ -345,8 +571,6 @@ class TelegramWebhookController extends Controller
             return 'Пользователь не найден.';
         }
 
-        // Поиск привязок: сначала по username (новый формат),
-        // затем по email (старые записи — обратная совместимость).
         $telegramUsers = TelegramUser::where('status', self::STATE_LINKED)
             ->whereNotNull('telegram_user_id')
             ->where(function ($q) use ($user) {

@@ -369,6 +369,47 @@ class UserController extends Controller
         $user = User::where('id', $id)->where('user_hash', $hash)->first();
         if ($user) {
 
+            // ════════════════════════════════════════════════════════════════
+            // ЗАЩИТА ОТ ADMIN LOCKOUT:
+            // В каждой организации должен оставаться хотя бы один активный
+            // IT_Admin. Если эта операция оставит организацию без IT_Admin —
+            // блокируем сохранение и просим сначала назначить роль другому
+            // сотруднику.
+            // ════════════════════════════════════════════════════════════════
+            $itAdminRole = Role::where('name', 'IT_Admin')->first();
+            $newRoleIds  = array_map('intval', $request->role_ids ?? []);
+
+            if ($itAdminRole) {
+                $wasItAdmin    = UserRole::where('model_id', $id)
+                    ->where('role_id', $itAdminRole->id)
+                    ->exists();
+                $willBeItAdmin = in_array($itAdminRole->id, $newRoleIds, true);
+
+                // Снимают IT_Admin (был, теперь не будет)
+                if ($wasItAdmin && !$willBeItAdmin) {
+                    $userOrgId = $user->org_unit_id;
+
+                    // Считаем других активных юзеров с IT_Admin в этой же org
+                    $orgUserIds = User::where('org_unit_id', $userOrgId)
+                        ->where('status', 1)
+                        ->where('id', '!=', $user->id)
+                        ->pluck('id')
+                        ->toArray();
+
+                    $otherItAdminsExist = !empty($orgUserIds) && UserRole::where('role_id', $itAdminRole->id)
+                            ->whereIn('model_id', $orgUserIds)
+                            ->exists();
+
+                    if (!$otherItAdminsExist) {
+                        return back()->with(
+                            'error',
+                            __('field.cannot_remove_last_it_admin')
+                            ?? 'Нельзя снять роль IT_Admin: в организации должен остаться хотя бы один сотрудник с этой ролью. Сначала назначьте её другому пользователю.'
+                        );
+                    }
+                }
+            }
+
             UserRole::where('model_id', $id)->delete();
 
             if ($request->role_ids) {

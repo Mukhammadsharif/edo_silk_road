@@ -464,3 +464,23 @@ Route::get('/mobile/redirect', function(\Illuminate\Http\Request $request) {
     if (!str_starts_with($url, 'eimzo://')) abort(400);
     return view('mobile.redirect', ['url' => $url]);
 })->name('mobile.redirect');
+
+Route::get('/telegram-link/eimzo', function(\Illuminate\Http\Request $request) {
+    $token = $request->query('token', '');
+    if (!is_string($token) || $token === '' || strlen($token) > 128) {
+        abort(400, 'Invalid token');
+    }
+
+    $payload = \Illuminate\Support\Facades\Cache::get("tg_eimzo_link:{$token}");
+    if (!$payload || empty($payload['chat_id'])) {
+        return view('mobile.eimzo-link', [
+            'link_token' => null,
+            'expired'    => true,
+        ]);
+    }
+
+    return view('mobile.eimzo-link', [
+        'link_token' => $token,
+        'expired'    => false,
+    ]);
+})->name('telegram.link.eimzo');
