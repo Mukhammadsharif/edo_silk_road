@@ -174,8 +174,8 @@ class DataController extends Controller
                     'created_date' => $document->created_at?->toDateTimeString() ?? 'N/A',
                     'sign_date' => $directorDocument?->updated_at?->toDateTimeString() ?? 'N/A',
                     'document_id' => $document->doc->doc_code ?? 'N/A',
-                    'document_url' => env('APP_URL', 'https://demoedo.uztest.uz').'/'. ($document->doc->doc_code ?? ''),
-                    'pdf_url' => env('APP_URL', 'https://demoedo.uztest.uz').$pdfUrl,
+                    'document_url' => env('APP_URL', 'https://edoline.uz').'/'. ($document->doc->doc_code ?? ''),
+                    'pdf_url' => env('APP_URL', 'https://edoline.uz').$pdfUrl,
                     'pdf_status' => $pdfStatus,
                     'emp_name' => $createdUserFullName,
                     'emp_id' => $createdUserBitrixId?->hash ?? ($appDocumentJournal->created_user ?? 'N/A')

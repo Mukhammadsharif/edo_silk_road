@@ -217,6 +217,14 @@ class UserController extends Controller
             ]);
         }
 
+        $demo = UserWorkHistory::where('user_id', $user->id)
+            ->where('org_id', 1)
+            ->first();
+
+        if ($demo) {
+            $demo->update(['status'    => 2]);
+        }
+
         $requestOrg->status = 2;
         $requestOrg->save();
 

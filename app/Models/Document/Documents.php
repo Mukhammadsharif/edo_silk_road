@@ -37,7 +37,7 @@ class Documents extends Model
         $journal = DocumentJournals::where('doc_id', $doc_id)->first();
         $user = $journal->fromUser;
         if ($edoDocument && $user) {
-            $domainName = env('APP_URL', 'https://demoedo.uztest.uz');
+            $domainName = env('APP_URL', 'https://edoline.uz');
             return QrCode::size(60)
                 ->generate($domainName.'/qr-document/'.$edoDocument->doc_hash.'/'.$edoDocument->doc_code);
         }
@@ -51,7 +51,7 @@ class Documents extends Model
         $journal = DocumentJournals::where('doc_id', $doc_id)->first();
         $user = $journal->fromUser;
         if ($edoDocument && $user && $journal->status > 4) {
-            $domainName = env('APP_URL', 'https://demoedo.uztest.uz');
+            $domainName = env('APP_URL', 'https://edoline.uz');
             return QrCode::size(60)
                 ->generate($domainName.'/d/'.$edoDocument->doc_code);
         }

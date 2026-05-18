@@ -259,7 +259,7 @@ class Controller extends BaseController
         $workUser   = UserWorkHistory::find($to_user);
         $user       = User::find($workUser->user_id);
         $userEmail  = $user->email;
-        $appUrl     = env('APP_URL', 'https://demoedo.uztest.uz');
+        $appUrl     = env('APP_URL', 'https://edoline.uz');
         $documentLink = $appUrl . '/' . $document_link;
 
         SendTelegramMessageJob::dispatch($userEmail, $message, $documentLink)->onQueue('send_telegram');

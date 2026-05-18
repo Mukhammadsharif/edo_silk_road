@@ -99,7 +99,7 @@ class ProtocolDocMember extends Model
         $protocol = ProtocolDocument::find($doc_id);
         $user = ProtocolDocMember::where('doc_id', $doc_id)->where('user_id', $user_id)->first();
         if ($protocol && $user && $user->status == 3) {
-            $domainName = env('APP_URL', 'https://demoedo.uztest.uz');
+            $domainName = env('APP_URL', 'https://edoline.uz');
             return QrCode::size(60)
                 ->generate($domainName.'/p/'.$protocol->doc_code);
         }

@@ -1068,7 +1068,7 @@ class SignDocImzoMobileApiController extends Controller
     {
         $role = Role::whereIn('name', ['Ijro nazorati', 'Control_Emp'])->first();
         return $role
-            ? UserWorkHistory::whereHas('user.userRoles', fn($q) => $q->where('role_id', $role->id))->get()
+            ? UserWorkHistory::where('org_id', $this->organizationId())->whereHas('user.userRoles', fn($q) => $q->where('role_id', $role->id))->get()
             : collect();
     }
 
