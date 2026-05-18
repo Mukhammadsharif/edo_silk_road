@@ -302,7 +302,8 @@
             </div>
         </div>
 
-        @if(!$isOwner && $isOrganizationDemo && !$request)
+{{--        @if(!$isOwner && $isOrganizationDemo && !$request)--}}
+        @if(!$isOwner && $isOrganizationDemo)
             <div class="request">
                 <div class="rocket-icon">
                     <i data-lucide="rocket" style="width: 30px; height: 30px;"></i>
