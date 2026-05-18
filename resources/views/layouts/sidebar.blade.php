@@ -114,6 +114,35 @@
                 </div>
             </div>
 
+            {{-- ═══════════════════════════════════════════════════════════════
+                 ХРАНИЛИЩЕ ОРГАНИЗАЦИИ
+                 Read для всех активных сотрудников org, write для управленцев
+                 ═══════════════════════════════════════════════════════════════ --}}
+            @php
+                // Виден всем сотрудникам которые числятся в текущей org или Super_Admin
+                $userRoleIds   = \App\Models\Admin\UserRole::where('model_id', Auth::id())->pluck('role_id')->toArray();
+                $userRoleNames = \App\Models\Admin\Role::whereIn('id', $userRoleIds)->pluck('name')->toArray();
+
+                $isSuperAdmin     = in_array('Super_Admin', $userRoleNames, true);
+                $hasActiveWorkInOrg = !$isSuperAdmin && \App\Models\Admin\UserWorkHistory::where('user_id', Auth::id())
+                    ->where('org_id', Auth::user()->org_unit_id)
+                    ->where('status', 1)
+                    ->exists();
+
+                $canSeeStorage = $isSuperAdmin || $hasActiveWorkInOrg;
+            @endphp
+
+            @if($canSeeStorage)
+                <div class="menu-item {{ str_contains(url()->current(), '/org-storage') ? 'active' : '' }}">
+                    <a href="{{ route('storage.index') }}" class="menu-header">
+                        <div style="display: flex; align-items: center; gap:15px; flex: 1;">
+                            <i data-lucide="folder-archive" style="width: 22px; height: 22px;"></i>
+                            <span class="menu-text">{{ __('menu.org_storage') ?? 'Хранилище организации' }}</span>
+                        </div>
+                    </a>
+                </div>
+            @endif
+
             @foreach($sidebarMenus as $key => $item)
                 @php
                     $menuList     = $item->menuList;
@@ -273,8 +302,7 @@
             </div>
         </div>
 
-{{--        @if(!$isOwner && $isOrganizationDemo && !$request)--}}
-        @if(!$isOwner && $isOrganizationDemo)
+        @if(!$isOwner && $isOrganizationDemo && !$request)
             <div class="request">
                 <div class="rocket-icon">
                     <i data-lucide="rocket" style="width: 30px; height: 30px;"></i>

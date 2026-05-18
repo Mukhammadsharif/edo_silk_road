@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\TelegramUser;
+use App\Models\User;
 use App\Notifications\TelegramNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -37,9 +38,30 @@ class SendTelegramMessageJob implements ShouldQueue
     {
         $this->onQueue('send_telegram');
 
+        // 1) Прямой поиск — если совпадает как есть (email или username).
         $telegramUsers = TelegramUser::where('user_identifier', $this->userIdentifier)
             ->whereNotNull('telegram_user_id')
             ->get();
+
+        // 2) Не нашли — пробуем резолвить через users (email <-> username).
+        if ($telegramUsers->isEmpty()) {
+            $user = User::where('email', $this->userIdentifier)
+                ->orWhere('username', $this->userIdentifier)
+                ->first();
+
+            if ($user) {
+                $candidates = array_values(array_filter(array_unique([
+                    $user->username ?? null,
+                    $user->email ?? null,
+                ])));
+
+                if (!empty($candidates)) {
+                    $telegramUsers = TelegramUser::whereIn('user_identifier', $candidates)
+                        ->whereNotNull('telegram_user_id')
+                        ->get();
+                }
+            }
+        }
 
         if ($telegramUsers->isEmpty()) {
             Log::info("No Telegram account linked for identifier: {$this->userIdentifier}");

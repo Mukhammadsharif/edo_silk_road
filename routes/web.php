@@ -25,6 +25,7 @@ use App\Http\Controllers\PdfGenerateController;
 use App\Http\Controllers\ProtocolsController;
 use App\Http\Controllers\QrCodeDocController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\Storage\OrgStorageController;
 use App\Http\Controllers\TelegramWebhookController;
 use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -80,6 +81,30 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('/switch-organization/{org_id}', [OrganizationSwitchController::class, 'switch'])
         ->whereNumber('org_id')
         ->name('organization.switch');
+
+    // ════════════════════════════════════════════════════════════════════
+    // Хранилище организации (CRUD: Director / IT_Admin / Super_Admin)
+    // ════════════════════════════════════════════════════════════════════
+    Route::prefix('org-storage')->name('storage.')->group(function () {
+        Route::get('/',                       [OrgStorageController::class, 'index'])->name('index');
+        Route::get('/folder/{id}',            [OrgStorageController::class, 'showFolder'])->whereNumber('id')->name('folder.show');
+
+        Route::post('/folder',                [OrgStorageController::class, 'createFolder'])->name('folder.create');
+        Route::patch('/folder/{id}',          [OrgStorageController::class, 'renameFolder'])->whereNumber('id')->name('folder.rename');
+        Route::delete('/folder/{id}',         [OrgStorageController::class, 'deleteFolder'])->whereNumber('id')->name('folder.delete');
+
+        Route::post('/file',                  [OrgStorageController::class, 'uploadFile'])->name('file.upload');
+        Route::patch('/file/{id}',            [OrgStorageController::class, 'renameFile'])->whereNumber('id')->name('file.rename');
+        Route::delete('/file/{id}',           [OrgStorageController::class, 'deleteFile'])->whereNumber('id')->name('file.delete');
+        Route::get('/file/{id}/download',     [OrgStorageController::class, 'downloadFile'])->whereNumber('id')->name('file.download');
+        Route::get('/file/{id}/preview',      [OrgStorageController::class, 'previewFile'])->whereNumber('id')->name('file.preview');
+
+        Route::get('/trash',                  [OrgStorageController::class, 'trash'])->name('trash');
+        Route::post('/trash/folder/{id}/restore', [OrgStorageController::class, 'restoreFolder'])->whereNumber('id')->name('trash.folder.restore');
+        Route::delete('/trash/folder/{id}',   [OrgStorageController::class, 'purgeFolder'])->whereNumber('id')->name('trash.folder.purge');
+        Route::post('/trash/file/{id}/restore',   [OrgStorageController::class, 'restoreFile'])->whereNumber('id')->name('trash.file.restore');
+        Route::delete('/trash/file/{id}',     [OrgStorageController::class, 'purgeFile'])->whereNumber('id')->name('trash.file.purge');
+    });
 
     Route::get('charts/documents', [HomeController::class, 'chartDocuments'])->name('charts.documents');
     Route::post('get-menu-count', [HomeController::class, 'getMenuCount'])->name('get-menu-count');

@@ -175,7 +175,7 @@ class RoleMenu extends Model
                     ->where('status', 2)->count(),
                 'PRT_HR_EMP' => ProtocolDocMember::where('role_id', 4)->whereIn('user_id', $workIds)
                     ->where('status', 2)->count(),
-                'DOC_CONTROL' => DocumentJournals::whereIn('status', [7, 11])->whereIn('j_type', $controls)->count(),
+                'DOC_CONTROL' => DocumentJournals::where('org_unit_id', self::authActiveUser()->user->org_unit_id)->whereIn('status', [7, 11])->whereIn('j_type', $controls)->count(),
                 'MESS' => DB::table('messages')
                     ->leftJoin('message_users', 'messages.id', '=', 'message_users.message_id')
                     ->leftJoin('message_forwards', 'messages.id', '=', 'message_forwards.message_id')
@@ -219,6 +219,19 @@ class RoleMenu extends Model
         }
 
         return $lang_name;
+    }
+
+    public static function authActiveUser()
+    {
+        // return object — UserWorkHistory для ТЕКУЩЕЙ выбранной организации
+        $user = Auth::user();
+        if (!$user) return null;
+
+        return UserWorkHistory::where('user_id', $user->id)
+            ->where('org_id', $user->org_unit_id)
+            ->where('status', 1)
+            ->orderBy('id', 'DESC')
+            ->first();
     }
 
 }
