@@ -93,6 +93,11 @@ Route::group(['middleware' => ['auth']], function() {
         Route::patch('/folder/{id}',          [OrgStorageController::class, 'renameFolder'])->whereNumber('id')->name('folder.rename');
         Route::delete('/folder/{id}',         [OrgStorageController::class, 'deleteFolder'])->whereNumber('id')->name('folder.delete');
 
+        // Per-folder permissions management
+        Route::get('/folder/{id}/permissions',                  [OrgStorageController::class, 'showPermissions'])->whereNumber('id')->name('folder.permissions.show');
+        Route::post('/folder/{id}/permissions',                 [OrgStorageController::class, 'grantPermission'])->whereNumber('id')->name('folder.permissions.grant');
+        Route::delete('/folder/{id}/permissions/{permId}',      [OrgStorageController::class, 'revokePermission'])->whereNumber('id')->whereNumber('permId')->name('folder.permissions.revoke');
+
         Route::post('/file',                  [OrgStorageController::class, 'uploadFile'])->name('file.upload');
         Route::patch('/file/{id}',            [OrgStorageController::class, 'renameFile'])->whereNumber('id')->name('file.rename');
         Route::delete('/file/{id}',           [OrgStorageController::class, 'deleteFile'])->whereNumber('id')->name('file.delete');

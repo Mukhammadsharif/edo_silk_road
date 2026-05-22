@@ -499,11 +499,23 @@
                                         <i data-lucide="folder"></i>
                                     </div>
                                     <div style="min-width:0; flex:1;">
-                                        <div class="content-row-name">{{ $sub->name }}</div>
+                                        <div class="content-row-name">
+                                            {{ $sub->name }}
+                                            @if(isset($passthroughMap[$sub->id]))
+                                                <span title="{{ __('storage.passthrough_hint') ?? 'Папка показана для навигации — у вас есть доступ только к подпапкам' }}"
+                                                      style="font-size:10px; padding:1px 6px; background:rgba(245,158,11,0.12); color:#d97706; border-radius:4px; margin-left:6px; font-weight:600;">
+                                                    {{ __('storage.passthrough') ?? 'Проход' }}
+                                                </span>
+                                            @endif
+                                        </div>
                                     </div>
                                 </a>
                                 @if($canWrite)
                                     <div class="content-row-actions">
+                                        <a href="{{ route('storage.folder.permissions.show', $sub->id) }}"
+                                           class="row-action" title="{{ __('storage.permissions') ?? 'Права доступа' }}">
+                                            <i data-lucide="shield"></i>
+                                        </a>
                                         <button class="row-action" title="{{ __('storage.rename') ?? 'Переименовать' }}"
                                                 onclick="openRenameFolderModal({{ $sub->id }}, '{{ addslashes($sub->name) }}')">
                                             <i data-lucide="edit-2"></i>
@@ -678,11 +690,12 @@
         @php
             // Подготовка данных для JS (вынесено из @json чтобы Blade не запутался
             // со скобками в стрелочной функции).
-            $treeDataForJs = $allFolders->map(function ($f) {
+            $treeDataForJs = $visibleFolders->map(function ($f) use ($directMap, $passthroughMap) {
                 return [
-                    'id'        => $f->id,
-                    'parent_id' => $f->parent_id,
-                    'name'      => $f->name,
+                    'id'          => $f->id,
+                    'parent_id'   => $f->parent_id,
+                    'name'        => $f->name,
+                    'passthrough' => isset($passthroughMap[$f->id]),
                 ];
             })->values();
 
@@ -722,14 +735,16 @@
                 var hasChildren = (byParent[String(node.id)] || []).length > 0;
                 var isActive    = ACTIVE_FOLDER_ID === node.id;
                 var isExpanded  = EXPANDED_ON_LOAD.indexOf(node.id) !== -1 || isActive;
+                var ptClass     = node.passthrough ? 'passthrough' : '';
+                var nameStyle   = node.passthrough ? 'cursor:pointer;flex:1;opacity:0.65;font-style:italic;' : 'cursor:pointer;flex:1;';
 
                 html += '<li class="tree-node">'
-                    + '<div class="tree-row ' + (isActive ? 'active' : '') + '" data-folder-id="' + node.id + '" data-name="' + escapeHtml(node.name.toLowerCase()) + '">'
+                    + '<div class="tree-row ' + (isActive ? 'active' : '') + ' ' + ptClass + '" data-folder-id="' + node.id + '" data-name="' + escapeHtml(node.name.toLowerCase()) + '">'
                     + '<span class="tree-toggle ' + (hasChildren ? '' : 'empty') + ' ' + (isExpanded ? 'expanded' : '') + '" onclick="toggleNode(event, ' + node.id + ')">'
                     + (hasChildren ? '<i data-lucide="chevron-right"></i>' : '')
                     + '</span>'
                     + '<span class="tree-row-icon" onclick="navigateFolder(' + node.id + ')"><i data-lucide="' + (isExpanded ? 'folder-open' : 'folder') + '"></i></span>'
-                    + '<span class="tree-row-name" onclick="navigateFolder(' + node.id + ')" style="cursor:pointer;flex:1;">' + escapeHtml(node.name) + '</span>'
+                    + '<span class="tree-row-name" onclick="navigateFolder(' + node.id + ')" style="' + nameStyle + '">' + escapeHtml(node.name) + '</span>'
                     + '</div>';
 
                 if (hasChildren) {
