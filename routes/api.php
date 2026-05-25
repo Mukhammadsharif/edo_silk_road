@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\Protocol\ProtocolsApiController;
 use App\Http\Controllers\Api\Telegram\TelegramDocumentController;
 use App\Http\Controllers\Api\Telegram\TelegramEimzoLinkController;
 use App\Http\Controllers\Api\Telegram\TelegramMiniAppAuthController;
+use App\Http\Controllers\Api\Telegram\TelegramProfileController;
 use App\Http\Controllers\Api\User\ProfileApiController;
 use App\Http\Controllers\Api\User\UserApiController;
 use App\Http\Controllers\Auth\AuthController;
@@ -289,6 +290,9 @@ Route::prefix('telegram')->group(function () {
     Route::get('/documents', [TelegramDocumentController::class, 'forSign']);
     Route::get('/documents/{j_id}', [TelegramDocumentController::class, 'show']);
     Route::post('/documents/{j_id}/sign-token', [TelegramDocumentController::class, 'createSignToken']);
+
+    // Карточка сотрудника
+    Route::get('/profile', [TelegramProfileController::class, 'show']);
 
     // E-IMZO ID-Card привязка аккаунта (без auth middleware — используем link_token)
     Route::post('/eimzo-link/auth-init',  [TelegramEimzoLinkController::class, 'authInit']);
