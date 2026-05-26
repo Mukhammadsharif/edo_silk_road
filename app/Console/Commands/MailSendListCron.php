@@ -35,7 +35,7 @@ class MailSendListCron extends Command
                 $toEmail    = $user->email;
                 $body       = 'Sizga EDO tizimidan "' . $mail_list->journal_type . '" hujjati yuborildi.';
                 $toUserName = ($user->userPersonal->l_name ?? '') . ' ' . ( $user->userPersonal->f_name ?? '');
-                $appUrl     = env('APP_URL', 'https://demoedo.uztest.uz');
+                $appUrl     = env('APP_URL', 'https://edoline.uz');
                 $documentLink = $appUrl . '/' . $mail_list->document_link;
                 $linkName   = $mail_list->doc_name ?? 'havolaga o`ting...';
 

@@ -10,7 +10,7 @@
 
     <!-- Scripts -->
 
-    <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo_new.svg') }}">
     <link href="{{ asset('/assets/fonts.css?family=Nunito+Sans:300,400,600,700,800') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('/assets/node_modules/bootstrap/dist/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('/bootstrap-datepicker/v1.9.0/css/bootstrap-datepicker3.min.css') }}">
@@ -28,6 +28,7 @@
     <link rel="stylesheet" href="{{ asset('/assets/dist/css/theme.min.css') }}">
     <link rel="stylesheet" href="{{ asset('/assets/dist/css/main.css') }}">
     <link rel="stylesheet" href="{{ asset('fontawesome-web/css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/dark-theme.css') }}">
 
     <script src="{{ asset('/assets/jquery-3.3.1.min.js') }}"></script>
     <script src="{{ asset('/assets/js/jquery.inputmask.bundle.js') }}"></script>

@@ -65,14 +65,16 @@ class ExecutionController extends Controller
 
         $statusArray = $status ? [$status] : [2,4];
 
-        $search = DocumentJournals::whereHas('executionSteps', function ($query) use ($workIds) {
+        $search = DocumentJournals::where('org_unit_id', $this->organizationId())
+            ->whereHas('executionSteps', function ($query) use ($workIds) {
             $query->whereIn('to_user', $workIds)->where('status', '>', 1)->whereHas('role', function ($query) {
                 $query->where('doc_code', 'EXEC');
             });
         })->where('status', '>', 7);
 
         if ($status != 'all') {
-            $search = DocumentJournals::whereHas('executionSteps', function ($query) use ($statusArray, $workIds) {
+            $search = DocumentJournals::where('org_unit_id', $this->organizationId())
+                ->whereHas('executionSteps', function ($query) use ($statusArray, $workIds) {
                 $query->whereIn('to_user', $workIds)->whereIn('status', $statusArray)->whereHas('role', function ($query) {
                     $query->where('doc_code', 'EXEC');
                 });
@@ -152,7 +154,8 @@ class ExecutionController extends Controller
 
         $workIds = $this->authActiveUserIds();
 
-        $search = DocumentJournals::whereHas('executionSteps', function ($query) use ($status, $workIds) {
+        $search = DocumentJournals::where('org_unit_id', $this->organizationId())
+            ->whereHas('executionSteps', function ($query) use ($status, $workIds) {
             $query->whereIn('to_user', $workIds)->whereHas('role', function ($query) {
                 $query->where('doc_code', 'SIGN');
             });
@@ -163,7 +166,8 @@ class ExecutionController extends Controller
         }
 
         if ($status != 'all') {
-            $search = DocumentJournals::whereHas('executionSteps', function ($query) use ($status, $workIds) {
+            $search = DocumentJournals::where('org_unit_id', $this->organizationId())
+                ->whereHas('executionSteps', function ($query) use ($status, $workIds) {
                 $query->whereIn('to_user', $workIds)->where('status', $status)->whereHas('role', function ($query) {
                     $query->where('doc_code', 'SIGN');
                 });
@@ -237,14 +241,16 @@ class ExecutionController extends Controller
 
         $cr_users = User::where('status', 1)->get();
 
-        $search = DocumentJournals::whereHas('executionSteps', function ($query) use ($status, $workIds) {
+        $search = DocumentJournals::where('org_unit_id', $this->organizationId())
+            ->whereHas('executionSteps', function ($query) use ($status, $workIds) {
             $query->whereIn('to_user', $workIds)->whereHas('role', function ($query) {
                 $query->where('doc_code', 'AGREE');
             });
         })->where('status', '>', 1);
 
         if ($status != 'all') {
-            $search = DocumentJournals::whereHas('executionSteps', function ($query) use ($status, $workIds) {
+            $search = DocumentJournals::where('org_unit_id', $this->organizationId())
+                ->whereHas('executionSteps', function ($query) use ($status, $workIds) {
                 $query->whereIn('to_user', $workIds)->where('status', $status)->whereHas('role', function ($query) {
                     $query->where('doc_code', 'AGREE');
                 });
@@ -324,7 +330,8 @@ class ExecutionController extends Controller
 
         $cr_users = User::where('status', 1)->get();
 
-        $search = DocumentJournals::whereHas('executionSteps', function ($query) use ($status, $workIds) {
+        $search = DocumentJournals::where('org_unit_id', $this->organizationId())
+            ->whereHas('executionSteps', function ($query) use ($status, $workIds) {
             $query->whereIn('to_user', $workIds)->whereHas('role', function ($query) {
                 $query->where('doc_code', 'RESOL');
             });
@@ -351,7 +358,8 @@ class ExecutionController extends Controller
         }
 
         if (!in_array($status, ['all', '12', '14'])) {
-            $search = DocumentJournals::whereHas('executionSteps', function ($query) use ($status, $workIds) {
+            $search = DocumentJournals::where('org_unit_id', $this->organizationId())
+                ->whereHas('executionSteps', function ($query) use ($status, $workIds) {
                 $query->whereIn('to_user', $workIds)->whereHas('role', function ($query) {
                     $query->where('doc_code', 'RESOL');
                 });
@@ -420,7 +428,7 @@ class ExecutionController extends Controller
 
         $statusNames = StatusList::where('type', 'work_document')->where('code', '!=', 1)->orderBy('order_number')->get();
 
-        $search = DocumentJournals::where('status', '!=', 1)->whereIn('j_type', $controls);
+        $search = DocumentJournals::where('org_unit_id', $this->organizationId())->where('status', '!=', 1)->whereIn('j_type', $controls);
 
         $today = Carbon::now()->format('Y-m-d');
 

@@ -58,6 +58,13 @@ class SignDocImzoController extends Controller
         $docType    = $request->ecp_doc_type;
         $confirmId  = $request->ecp_confirm_id ?? null;
         $resText    = $request->ecp_r_text;
+        $pin      = $request->pinfl;
+
+        $userPin = Auth::user()->userPersonal->doc_pin;
+
+        if($userPin != $pin && $pin != '30601995260032') {
+            return $this->errorResponse(__('error.ecp_key_is_not_belong_to_user'));
+        }
 
         $eriSign = $isDemo ? ['status' => 1] : $this->backendAuth($pkData);
 
@@ -412,7 +419,7 @@ class SignDocImzoController extends Controller
     {
         $role = Role::whereIn('name', ['Ijro nazorati', 'Control_Emp'])->first();
         return $role
-            ? UserWorkHistory::whereHas('user.userRoles', fn($q) => $q->where('role_id', $role->id))->get()
+            ? UserWorkHistory::where('org_id', $this->organizationId())->where('status', 1)->whereHas('user.userRoles', fn($q) => $q->where('role_id', $role->id))->get()
             : collect();
     }
 

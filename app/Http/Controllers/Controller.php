@@ -60,14 +60,31 @@ class Controller extends BaseController
 
     public function authActiveUser()
     {
-        // return object
-        return UserWorkHistory::where('user_id', Auth::id())->where('status', 1)->orderBy('id', 'DESC')->first();
+        // return object — UserWorkHistory для ТЕКУЩЕЙ выбранной организации
+        $user = Auth::user();
+        if (!$user) return null;
+
+        return UserWorkHistory::where('user_id', $user->id)
+            ->where('org_id', $user->org_unit_id)
+            ->where('status', 1)
+            ->orderBy('id', 'DESC')
+            ->first();
     }
 
     public function authActiveUserIds()
     {
-        // return array
-        return UserWorkHistory::where('user_id', Auth::id())->pluck('id')->toArray();
+        // return array — work_history IDs только в ТЕКУЩЕЙ выбранной организации.
+        // Это критично для авторизации: документы фильтруются через
+        // whereIn('to_user', $workIds) — без фильтра по org юзер бы видел
+        // документы из ВСЕХ организаций где когда-либо работал.
+        $user = Auth::user();
+        if (!$user) return [];
+
+        return UserWorkHistory::where('user_id', $user->id)
+            ->where('org_id', $user->org_unit_id)
+            ->where('status', 1)
+            ->pluck('id')
+            ->toArray();
     }
 
     public function getWorkUserIds($id)
@@ -242,7 +259,7 @@ class Controller extends BaseController
         $workUser   = UserWorkHistory::find($to_user);
         $user       = User::find($workUser->user_id);
         $userEmail  = $user->email;
-        $appUrl     = env('APP_URL', 'https://demoedo.uztest.uz');
+        $appUrl     = env('APP_URL', 'https://edoline.uz');
         $documentLink = $appUrl . '/' . $document_link;
 
         SendTelegramMessageJob::dispatch($userEmail, $message, $documentLink)->onQueue('send_telegram');

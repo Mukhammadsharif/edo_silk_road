@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0e1a">
+    <title>EdoLine</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        // Fallback for opening directly in a browser (testing/dev)
+        if (!window.Telegram) {
+            window.Telegram = {
+                WebApp: {
+                    ready: function(){}, expand: function(){}, close: function(){},
+                    initData: '', openLink: function(url){ window.open(url,'_blank'); },
+                    HapticFeedback: { impactOccurred: function(){}, notificationOccurred: function(){} }
+                }
+            };
+        }
+    </script>
+    <style>
+        /* ════════════════════════════════════════════════════════════════════
+           Design tokens — identical system to sign.blade.php
+           ════════════════════════════════════════════════════════════════════ */
+        :root {
+            --surface-0:   var(--tg-theme-bg-color, #f5f7fb);
+            --surface-1:   rgba(255, 255, 255, 0.72);
+            --surface-2:   var(--tg-theme-secondary-bg-color, #ffffff);
+            --surface-blur: 24px;
+
+            --text:        var(--tg-theme-text-color, #0a0e1a);
+            --text-muted:  var(--tg-theme-hint-color, #64748b);
+            --text-subtle: rgba(10, 14, 26, 0.55);
+
+            --brand-1:     #3b82f6;
+            --brand-2:     #8b5cf6;
+            --brand-3:     #ec4899;
+            --success:     #10b981;
+            --success-2:   #059669;
+            --warning:     #f59e0b;
+            --danger:      #ef4444;
+
+            --border:      rgba(15, 23, 42, 0.06);
+            --border-glass: rgba(255, 255, 255, 0.45);
+            --shadow-1:    0 0 0 1px rgba(15, 23, 42, 0.04), 0 2px 4px rgba(15, 23, 42, 0.04);
+            --shadow-2:    0 0 0 1px rgba(15, 23, 42, 0.04), 0 4px 12px -2px rgba(15, 23, 42, 0.08), 0 24px 40px -16px rgba(15, 23, 42, 0.18);
+
+            --r-sm: 12px;
+            --r-md: 18px;
+            --r-lg: 24px;
+
+            --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --smooth: cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --surface-0:   var(--tg-theme-bg-color, #0f1629);
+                --surface-1:   rgba(30, 41, 59, 0.72);
+                --surface-2:   var(--tg-theme-secondary-bg-color, #1e293b);
+                --text:        var(--tg-theme-text-color, #f1f5f9);
+                --text-muted:  var(--tg-theme-hint-color, #94a3b8);
+                --text-subtle: rgba(241, 245, 249, 0.55);
+                --border:      rgba(255, 255, 255, 0.08);
+                --border-glass: rgba(255, 255, 255, 0.10);
+                --shadow-1:    0 0 0 1px rgba(255, 255, 255, 0.05), 0 2px 4px rgba(0, 0, 0, 0.3);
+                --shadow-2:    0 0 0 1px rgba(255, 255, 255, 0.05), 0 4px 12px rgba(0, 0, 0, 0.4), 0 24px 40px -16px rgba(0, 0, 0, 0.6);
+            }
+        }
+
+        /* ════════════════════════════════════════════════════════════════════
+           Reset & base
+           ════════════════════════════════════════════════════════════════════ */
+        *, *::before, *::after {
+            box-sizing: border-box; margin: 0; padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html, body {
+            background: var(--surface-0);
+            color: var(--text);
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
+            'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            position: relative;
+            overflow-x: hidden;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        /* ════════════════════════════════════════════════════════════════════
+           Background blobs
+           ════════════════════════════════════════════════════════════════════ */
+        .bg-blobs { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+        .blob {
+            position: absolute; border-radius: 50%;
+            filter: blur(60px); opacity: 0.55; will-change: transform;
+        }
+        .blob-1 {
+            width: 360px; height: 360px; top: -120px; right: -80px;
+            background: radial-gradient(circle, var(--brand-1), transparent 70%);
+            animation: float-1 18s ease-in-out infinite;
+        }
+        .blob-2 {
+            width: 320px; height: 320px; top: 40%; left: -80px;
+            background: radial-gradient(circle, var(--brand-2), transparent 70%);
+            animation: float-2 22s ease-in-out infinite;
+        }
+        .blob-3 {
+            width: 280px; height: 280px; bottom: -80px; right: 30%;
+            background: radial-gradient(circle, var(--brand-3), transparent 70%);
+            animation: float-3 26s ease-in-out infinite;
+            opacity: 0.35;
+        }
+        @media (prefers-color-scheme: dark) {
+            .blob { opacity: 0.30; }
+            .blob-3 { opacity: 0.18; }
+        }
+        @keyframes float-1 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-30px, 40px) scale(1.1); } }
+        @keyframes float-2 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(40px, -30px) scale(0.9); } }
+        @keyframes float-3 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-40px, -50px) scale(1.15); } }
+
+        /* ════════════════════════════════════════════════════════════════════
+           Header — frosted glass
+           ════════════════════════════════════════════════════════════════════ */
+        .header {
+            position: sticky; top: 0; z-index: 50;
+            padding: 14px 16px 14px;
+            padding-top: max(14px, env(safe-area-inset-top));
+            background: linear-gradient(180deg,
+            rgba(255, 255, 255, 0.85) 0%,
+            rgba(255, 255, 255, 0.60) 100%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--border);
+        }
+        @media (prefers-color-scheme: dark) {
+            .header {
+                background: linear-gradient(180deg,
+                rgba(15, 22, 41, 0.85) 0%,
+                rgba(15, 22, 41, 0.60) 100%);
+            }
+        }
+        .header-row {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 4px;
+        }
+        .header-logo {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 16px; font-weight: 700;
+            letter-spacing: -0.01em;
+            color: var(--text);
+        }
+        .logo-icon {
+            width: 32px; height: 32px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+            color: #fff;
+            box-shadow: 0 6px 16px -4px rgba(59, 130, 246, 0.5);
+        }
+        .logo-icon svg { width: 16px; height: 16px; }
+
+        .badge-count {
+            display: none;
+            padding: 4px 11px;
+            border-radius: 999px;
+            font-size: 12px; font-weight: 700;
+            letter-spacing: -0.01em;
+            color: #fff;
+            background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+            box-shadow: 0 4px 12px -2px rgba(59, 130, 246, 0.45);
+            animation: badge-pop 0.5s var(--spring);
+        }
+        @keyframes badge-pop {
+            from { transform: scale(0); opacity: 0; }
+            to   { transform: scale(1); opacity: 1; }
+        }
+        .header-sub {
+            font-size: 12px; color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* ════════════════════════════════════════════════════════════════════
+           States machinery — smooth transitions
+           ════════════════════════════════════════════════════════════════════ */
+        .state {
+            display: none;
+            opacity: 0;
+            transform: translateY(8px);
+        }
+        .state.active {
+            display: block;
+            animation: state-in 0.45s var(--smooth) forwards;
+        }
+        @keyframes state-in {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ════════════════════════════════════════════════════════════════════
+           Loader
+           ════════════════════════════════════════════════════════════════════ */
+        .loader {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-muted);
+        }
+        .spinner-wrap {
+            position: relative;
+            width: 56px; height: 56px;
+            margin: 0 auto 18px;
+        }
+        .spinner-wrap::before {
+            content: "";
+            position: absolute; inset: -10px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, var(--brand-1), var(--brand-2), var(--brand-3), var(--brand-1));
+            filter: blur(14px); opacity: 0.45;
+            animation: spin 3s linear infinite;
+        }
+        .spinner {
+            position: relative;
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, transparent 0%, var(--brand-1) 50%, var(--brand-2) 100%);
+            mask: radial-gradient(circle at center, transparent 60%, black 62%);
+            -webkit-mask: radial-gradient(circle at center, transparent 60%, black 62%);
+            animation: spin 0.9s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loader-text { font-size: 14px; font-weight: 500; letter-spacing: -0.01em; }
+
+        /* Loading skeleton cards */
+        .skeleton-list { padding: 14px 14px 14px; }
+        .skeleton-card {
+            background: var(--surface-1);
+            -webkit-backdrop-filter: blur(var(--surface-blur)) saturate(180%);
+            backdrop-filter: blur(var(--surface-blur)) saturate(180%);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--r-md);
+            padding: 16px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-1);
+        }
+        .skel-line {
+            height: 12px;
+            border-radius: 6px;
+            background: linear-gradient(90deg,
+            rgba(15, 23, 42, 0.06) 25%,
+            rgba(15, 23, 42, 0.10) 50%,
+            rgba(15, 23, 42, 0.06) 75%);
+            background-size: 200% 100%;
+            animation: skel-shimmer 1.4s linear infinite;
+        }
+        @media (prefers-color-scheme: dark) {
+            .skel-line {
+                background: linear-gradient(90deg,
+                rgba(255, 255, 255, 0.06) 25%,
+                rgba(255, 255, 255, 0.12) 50%,
+                rgba(255, 255, 255, 0.06) 75%);
+            }
+        }
+        @keyframes skel-shimmer {
+            from { background-position: 200% 0; }
+            to   { background-position: -200% 0; }
+        }
+        .skel-w-70 { width: 70%; }
+        .skel-w-50 { width: 50%; }
+        .skel-w-30 { width: 30%; }
+
+        /* ════════════════════════════════════════════════════════════════════
+           Empty / Not linked states
+           ════════════════════════════════════════════════════════════════════ */
+        .empty {
+            text-align: center;
+            padding: 80px 28px;
+        }
+        .empty-icon-wrap {
+            width: 96px; height: 96px;
+            margin: 0 auto 22px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            position: relative;
+            animation: empty-pop 0.6s var(--spring) forwards;
+        }
+        .empty-icon-wrap::before {
+            content: "";
+            position: absolute; inset: -10px;
+            border-radius: 50%;
+            filter: blur(20px); opacity: 0.45;
+        }
+        .empty-icon-wrap.success {
+            background: linear-gradient(135deg, var(--success), var(--success-2));
+            box-shadow: 0 16px 40px -12px rgba(16, 185, 129, 0.55);
+        }
+        .empty-icon-wrap.success::before {
+            background: linear-gradient(135deg, var(--success), var(--success-2));
+        }
+        .empty-icon-wrap.brand {
+            background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+            box-shadow: 0 16px 40px -12px rgba(59, 130, 246, 0.55);
+        }
+        .empty-icon-wrap.brand::before {
+            background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+        }
+        @keyframes empty-pop {
+            0% { transform: scale(0); opacity: 0; }
+            60% { transform: scale(1.12); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .empty-icon-wrap svg {
+            width: 48px; height: 48px;
+            stroke: #fff; stroke-width: 2.4; fill: none;
+            stroke-linecap: round; stroke-linejoin: round;
+            position: relative;
+            z-index: 1;
+        }
+        .empty-text {
+            font-size: 18px; font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+            color: var(--text);
+            opacity: 0;
+            animation: fade-up 0.4s 0.3s var(--smooth) forwards;
+        }
+        .empty-sub {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.55;
+            max-width: 320px;
+            margin: 0 auto;
+            opacity: 0;
+            animation: fade-up 0.4s 0.4s var(--smooth) forwards;
+        }
+        @keyframes fade-up {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ════════════════════════════════════════════════════════════════════
+           Document list & cards
+           ════════════════════════════════════════════════════════════════════ */
+        .doc-list { padding: 14px 14px 100px; }
+
+        .doc-card {
+            background: var(--surface-1);
+            -webkit-backdrop-filter: blur(var(--surface-blur)) saturate(180%);
+            backdrop-filter: blur(var(--surface-blur)) saturate(180%);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--r-md);
+            padding: 16px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.15s var(--smooth), box-shadow 0.25s var(--smooth);
+
+            opacity: 0;
+            transform: translateY(12px) scale(0.98);
+            animation: card-in 0.5s var(--spring) forwards;
+        }
+        .doc-card:nth-child(1) { animation-delay: 0.04s; }
+        .doc-card:nth-child(2) { animation-delay: 0.08s; }
+        .doc-card:nth-child(3) { animation-delay: 0.12s; }
+        .doc-card:nth-child(4) { animation-delay: 0.16s; }
+        .doc-card:nth-child(5) { animation-delay: 0.20s; }
+        .doc-card:nth-child(6) { animation-delay: 0.24s; }
+        .doc-card:nth-child(7) { animation-delay: 0.28s; }
+        .doc-card:nth-child(8) { animation-delay: 0.32s; }
+        .doc-card:nth-child(n+9) { animation-delay: 0.36s; }
+        @keyframes card-in {
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .doc-card:active { transform: scale(0.97); }
+
+        /* Left accent stripe by role */
+        .doc-card::before {
+            content: "";
+            position: absolute;
+            left: 0; top: 14px; bottom: 14px;
+            width: 3px;
+            border-radius: 0 3px 3px 0;
+        }
+        .doc-card.accent-SIGN::before  { background: linear-gradient(180deg, #3b82f6, #2563eb); }
+        .doc-card.accent-RESOL::before { background: linear-gradient(180deg, #8b5cf6, #7c3aed); }
+        .doc-card.accent-AGREE::before { background: linear-gradient(180deg, #10b981, #059669); }
+
+        .doc-card-top {
+            display: flex; align-items: flex-start; gap: 10px;
+            margin-bottom: 10px;
+        }
+        .doc-name {
+            flex: 1;
+            font-size: 15px; font-weight: 600;
+            color: var(--text);
+            line-height: 1.4;
+            letter-spacing: -0.01em;
+        }
+        .doc-arrow {
+            color: var(--text-muted);
+            opacity: 0.6;
+            display: flex; align-items: center;
+            margin-top: 2px;
+        }
+        .doc-arrow svg { width: 16px; height: 16px; }
+
+        .doc-meta {
+            display: flex; align-items: center; gap: 6px;
+            flex-wrap: wrap;
+        }
+        .meta-tag {
+            font-size: 11px; font-weight: 500;
+            color: var(--text-muted);
+            background: rgba(15, 23, 42, 0.05);
+            border-radius: 6px;
+            padding: 4px 8px;
+            letter-spacing: -0.005em;
+        }
+        @media (prefers-color-scheme: dark) {
+            .meta-tag { background: rgba(255, 255, 255, 0.06); }
+        }
+
+        /* ════════════════════════════════════════════════════════════════════
+           Role badges
+           ════════════════════════════════════════════════════════════════════ */
+        .role-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 11px; font-weight: 700;
+            letter-spacing: -0.005em;
+            border: 1px solid transparent;
+        }
+        .role-SIGN  { background: rgba(59, 130, 246, 0.10);  color: #2563eb; border-color: rgba(59, 130, 246, 0.20); }
+        .role-RESOL { background: rgba(139, 92, 246, 0.10);  color: #7c3aed; border-color: rgba(139, 92, 246, 0.20); }
+        .role-AGREE { background: rgba(16, 185, 129, 0.10);  color: #059669; border-color: rgba(16, 185, 129, 0.20); }
+        @media (prefers-color-scheme: dark) {
+            .role-SIGN  { color: #60a5fa; }
+            .role-RESOL { color: #a78bfa; }
+            .role-AGREE { color: #34d399; }
+        }
+
+        /* ════════════════════════════════════════════════════════════════════
+           Detail view
+           ════════════════════════════════════════════════════════════════════ */
+        .detail-top {
+            background: var(--surface-1);
+            -webkit-backdrop-filter: blur(var(--surface-blur)) saturate(180%);
+            backdrop-filter: blur(var(--surface-blur)) saturate(180%);
+            border: 1px solid var(--border-glass);
+            border-bottom: 1px solid var(--border-glass);
+            padding: 14px 18px 18px;
+            margin: 14px 14px 0;
+            border-radius: var(--r-lg);
+            box-shadow: var(--shadow-2);
+        }
+
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 12px 8px 8px;
+            margin: -4px 0 14px -4px;
+            color: var(--brand-1);
+            font-size: 13px; font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .back-btn:active {
+            background: rgba(59, 130, 246, 0.10);
+            transform: scale(0.97);
+        }
+        .back-btn svg { width: 14px; height: 14px; }
+
+        .detail-title {
+            font-size: 18px; font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            line-height: 1.35;
+            margin-bottom: 6px;
+        }
+        .detail-number {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .detail-section {
+            background: var(--surface-1);
+            -webkit-backdrop-filter: blur(var(--surface-blur)) saturate(180%);
+            backdrop-filter: blur(var(--surface-blur)) saturate(180%);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--r-md);
+            padding: 16px 18px;
+            margin: 12px 14px 0;
+            box-shadow: var(--shadow-1);
+        }
+        .detail-section-title {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 10px; font-weight: 700;
+            color: var(--text-subtle);
+            text-transform: uppercase; letter-spacing: 0.08em;
+            margin-bottom: 12px;
+        }
+        .detail-section-title svg { width: 12px; height: 12px; opacity: 0.7; }
+
+        .doc-body-content {
+            font-size: 13px; line-height: 1.7;
+            color: var(--text);
+            max-height: 280px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            mask-image: linear-gradient(to bottom, black 0, black calc(100% - 24px), transparent 100%);
+        }
+        .doc-body-content::-webkit-scrollbar { width: 4px; }
+        .doc-body-content::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 4px; opacity: 0.3; }
+        .doc-body-content img { max-width: 100%; border-radius: 8px; }
+
+        .detail-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-row-label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .detail-row-value {
+            font-weight: 600;
+            text-align: right;
+            max-width: 60%;
+            color: var(--text);
+        }
+
+        /* Files */
+        .file-row {
+            display: flex; gap: 12px; align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+        .file-row:last-child { border-bottom: none; }
+        .file-icon {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(139, 92, 246, 0.12));
+            color: var(--brand-1);
+            flex-shrink: 0;
+            border: 1px solid rgba(59, 130, 246, 0.15);
+        }
+        .file-icon svg { width: 14px; height: 14px; }
+        .file-name {
+            flex: 1;
+            color: var(--text);
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* ════════════════════════════════════════════════════════════════════
+           Sign button (sticky bottom)
+           ════════════════════════════════════════════════════════════════════ */
+        .sign-btn-wrap {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            padding: 12px 14px;
+            padding-bottom: max(14px, env(safe-area-inset-bottom));
+            background: linear-gradient(to top,
+            var(--surface-0) 60%,
+            rgba(245, 247, 251, 0) 100%);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            z-index: 30;
+        }
+        @media (prefers-color-scheme: dark) {
+            .sign-btn-wrap {
+                background: linear-gradient(to top,
+                var(--surface-0) 60%,
+                rgba(15, 22, 41, 0) 100%);
+            }
+        }
+        .btn-sign {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%;
+            padding: 16px 18px;
+            border: none;
+            border-radius: var(--r-md);
+            background: linear-gradient(135deg, var(--brand-1) 0%, var(--brand-2) 100%);
+            color: #fff;
+            font-size: 15px; font-weight: 700;
+            letter-spacing: -0.01em;
+            cursor: pointer;
+            font-family: inherit;
+            position: relative;
+            overflow: hidden;
+            box-shadow:
+                0 1px 0 rgba(255, 255, 255, 0.18) inset,
+                0 12px 32px -8px rgba(59, 130, 246, 0.55),
+                0 4px 8px -2px rgba(139, 92, 246, 0.35);
+            transition: transform 0.15s var(--smooth), box-shadow 0.25s var(--smooth);
+        }
+        .btn-sign:active { transform: scale(0.97); }
+        .btn-sign:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+        .btn-sign svg { width: 18px; height: 18px; }
+        .btn-sign::before {
+            content: "";
+            position: absolute; inset: 0;
+            background: linear-gradient(120deg,
+            transparent 30%,
+            rgba(255, 255, 255, 0.22) 50%,
+            transparent 70%);
+            transform: translateX(-100%);
+            animation: btn-shimmer 3.5s ease-in-out infinite;
+        }
+        @keyframes btn-shimmer {
+            0%, 60%, 100% { transform: translateX(-100%); }
+            70%, 90%      { transform: translateX(100%); }
+        }
+        .btn-sign:disabled::before { display: none; }
+
+        /* ════════════════════════════════════════════════════════════════════
+           Error
+           ════════════════════════════════════════════════════════════════════ */
+        .error-card {
+            background: var(--surface-1);
+            -webkit-backdrop-filter: blur(var(--surface-blur)) saturate(180%);
+            backdrop-filter: blur(var(--surface-blur)) saturate(180%);
+            border: 1px solid rgba(239, 68, 68, 0.20);
+            border-radius: var(--r-lg);
+            padding: 28px 24px;
+            margin: 24px 14px;
+            text-align: center;
+            box-shadow: var(--shadow-2);
+            animation: state-in 0.45s var(--smooth);
+        }
+        .error-icon-wrap {
+            width: 72px; height: 72px;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--warning), var(--danger));
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 16px 40px -12px rgba(239, 68, 68, 0.45);
+            animation: empty-pop 0.5s var(--spring);
+        }
+        .error-icon-wrap svg {
+            width: 36px; height: 36px;
+            stroke: #fff; stroke-width: 2.4; fill: none;
+            stroke-linecap: round; stroke-linejoin: round;
+        }
+        .error-text {
+            font-size: 15px; font-weight: 600;
+            color: var(--text);
+            margin-bottom: 16px;
+            letter-spacing: -0.01em;
+            line-height: 1.5;
+        }
+        .btn-retry {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 13px; font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            letter-spacing: -0.01em;
+            box-shadow: 0 8px 20px -6px rgba(59, 130, 246, 0.5);
+            transition: transform 0.15s var(--smooth);
+        }
+        .btn-retry:active { transform: scale(0.96); }
+        .btn-retry svg { width: 14px; height: 14px; }
+
+        /* ════════════════════════════════════════════════════════════════════
+           Profile card — employee
+           ════════════════════════════════════════════════════════════════════ */
+        body.with-bottom-nav { padding-bottom: 76px; }
+
+        .profile-card {
+            background: var(--surface-1);
+            -webkit-backdrop-filter: blur(var(--surface-blur)) saturate(180%);
+            backdrop-filter: blur(var(--surface-blur)) saturate(180%);
+            border: 1px solid var(--border-glass, rgba(255,255,255,0.45));
+            border-radius: 22px;
+            padding: 24px 20px 20px;
+            box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.04),
+            0 4px 12px -2px rgba(15, 23, 42, 0.08),
+            0 24px 40px -16px rgba(15, 23, 42, 0.18);
+            margin-bottom: 14px;
+        }
+
+        .profile-avatar-wrap {
+            width: 96px; height: 96px;
+            margin: 0 auto 16px;
+            position: relative;
+        }
+        .profile-avatar {
+            width: 96px; height: 96px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: linear-gradient(135deg, #794DFD, #9d6fff);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff;
+            font-size: 32px; font-weight: 700;
+            position: relative; z-index: 1;
+            box-shadow: 0 16px 40px -12px rgba(121, 77, 253, 0.45);
+        }
+        .profile-avatar img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+        }
+        .profile-avatar-wrap::before {
+            content: ""; position: absolute; inset: -8px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #794DFD, #9d6fff);
+            filter: blur(20px); opacity: 0.35;
+            z-index: 0;
+        }
+
+        .profile-name {
+            font-size: 18px; font-weight: 700;
+            text-align: center; letter-spacing: -0.02em;
+            color: var(--text); line-height: 1.3;
+            margin-bottom: 4px;
+        }
+        .profile-username {
+            font-size: 13px;
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 18px;
+        }
+
+        .profile-roles {
+            display: flex; flex-wrap: wrap; gap: 6px;
+            justify-content: center;
+            margin-bottom: 18px;
+        }
+        .profile-role-chip {
+            font-size: 11px; font-weight: 700;
+            letter-spacing: 0.02em;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(121, 77, 253, 0.10);
+            color: #794DFD;
+        }
+
+        .profile-info-list {
+            display: flex; flex-direction: column;
+            gap: 4px;
+            border-top: 1px solid rgba(15, 23, 42, 0.06);
+            padding-top: 14px;
+        }
+        .profile-info-row {
+            display: flex; align-items: flex-start;
+            gap: 12px;
+            padding: 10px 4px;
+            border-radius: 9px;
+        }
+        .profile-info-icon {
+            width: 36px; height: 36px;
+            border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(121, 77, 253, 0.08);
+            color: #794DFD;
+            flex-shrink: 0;
+        }
+        .profile-info-icon svg { width: 17px; height: 17px; }
+        .profile-info-body { flex: 1; min-width: 0; }
+        .profile-info-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        .profile-info-value {
+            font-size: 14px;
+            color: var(--text);
+            font-weight: 500;
+            word-break: break-word;
+        }
+        .profile-info-value.empty {
+            color: var(--text-muted);
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        /* ════════════════════════════════════════════════════════════════════
+           Bottom navigation
+           ════════════════════════════════════════════════════════════════════ */
+        .bottom-nav {
+            position: fixed;
+            left: 0; right: 0; bottom: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.85);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            backdrop-filter: blur(24px) saturate(180%);
+            border-top: 1px solid rgba(15, 23, 42, 0.06);
+            display: flex;
+            padding: 8px max(8px, env(safe-area-inset-left)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-right));
+            gap: 4px;
+        }
+        @media (prefers-color-scheme: dark) {
+            .bottom-nav {
+                background: rgba(30, 41, 59, 0.85);
+                border-top-color: rgba(255, 255, 255, 0.08);
+            }
+        }
+
+        .nav-tab {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 9px 4px 7px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 11px; font-weight: 600;
+            color: var(--text-muted);
+            display: flex; flex-direction: column; align-items: center;
+            gap: 4px;
+            border-radius: 12px;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+        .nav-tab svg { width: 22px; height: 22px; }
+        .nav-tab.active {
+            color: #794DFD;
+            background: rgba(121, 77, 253, 0.10);
+        }
+        .nav-tab.active svg { color: #794DFD; }
+
+        /* Hide bottom nav until we're authenticated (during loading/error/not-linked) */
+        body:not(.authenticated) .bottom-nav { display: none; }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            .doc-card { opacity: 1 !important; transform: none !important; }
+            .blob { animation: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Background blobs -->
+<div class="bg-blobs" aria-hidden="true">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+</div>
+
+<!-- Header -->
+<div class="header">
+    <div class="header-row">
+        <div class="header-logo">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                </svg>
+            </div>
+            <span>EdoLine</span>
+        </div>
+        <span class="badge-count" id="doc-count"></span>
+    </div>
+    <div class="header-sub" id="header-sub">Yuklanmoqda...</div>
+</div>
+
+<!-- Loading -->
+<div class="state active" id="state-loading">
+    <div class="loader">
+        <div class="spinner-wrap">
+            <div class="spinner"></div>
+        </div>
+        <div class="loader-text">Hujjatlar yuklanmoqda...</div>
+    </div>
+    <div class="skeleton-list" aria-hidden="true">
+        <div class="skeleton-card">
+            <div class="skel-line skel-w-70" style="margin-bottom: 12px"></div>
+            <div style="display:flex; gap:6px">
+                <div class="skel-line skel-w-30" style="height:18px"></div>
+                <div class="skel-line skel-w-30" style="height:18px"></div>
+            </div>
+        </div>
+        <div class="skeleton-card">
+            <div class="skel-line skel-w-50" style="margin-bottom: 12px"></div>
+            <div style="display:flex; gap:6px">
+                <div class="skel-line skel-w-30" style="height:18px"></div>
+                <div class="skel-line skel-w-30" style="height:18px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error -->
+<div class="state" id="state-error">
+    <div class="error-card">
+        <div class="error-icon-wrap">
+            <svg viewBox="0 0 24 24">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+        </div>
+        <div class="error-text" id="error-msg">Xatolik yuz berdi</div>
+        <button class="btn-retry" onclick="init()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 4 3 10 9 10"/></svg>
+            Qayta urinish
+        </button>
+    </div>
+</div>
+
+<!-- Not linked -->
+<div class="state" id="state-not-linked">
+    <div class="empty">
+        <div class="empty-icon-wrap brand">
+            <svg viewBox="0 0 24 24">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+            </svg>
+        </div>
+        <div class="empty-text">Akkaunt bog'lanmagan</div>
+        <div class="empty-sub">Botga /start yuboring va akkauntingizni bog'lash uchun login va parolingizni kiriting</div>
+    </div>
+</div>
+
+<!-- Empty -->
+<div class="state" id="state-empty">
+    <div class="empty">
+        <div class="empty-icon-wrap success">
+            <svg viewBox="0 0 24 24">
+                <path d="M5 12.5l4.5 4.5L19 7.5"/>
+            </svg>
+        </div>
+        <div class="empty-text">Imzolash uchun hujjat yo'q</div>
+        <div class="empty-sub">Barcha hujjatlar imzolangan</div>
+    </div>
+</div>
+
+<!-- List -->
+<div class="state" id="state-list">
+    <div class="doc-list" id="doc-list"></div>
+</div>
+
+<!-- Detail -->
+<div class="state" id="state-detail">
+    <div class="detail-top">
+        <div class="back-btn" onclick="showList()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Orqaga
+        </div>
+        <div class="detail-title" id="detail-name"></div>
+        <div class="detail-number" id="detail-number"></div>
+        <span class="role-badge" id="detail-role-badge"></span>
+    </div>
+
+    <div class="detail-section">
+        <div class="detail-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Ma'lumotlar
+        </div>
+        <div class="detail-row">
+            <span class="detail-row-label">Sana</span>
+            <span class="detail-row-value" id="detail-date"></span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-row-label">Amal</span>
+            <span class="detail-row-value" id="detail-action"></span>
+        </div>
+    </div>
+
+    <div class="detail-section" id="doc-body-section" style="display:none">
+        <div class="detail-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="14" y2="18"/></svg>
+            Hujjat matni
+        </div>
+        <div class="doc-body-content" id="doc-body-content"></div>
+    </div>
+
+    <div class="detail-section" id="files-section" style="display:none; margin-bottom: 90px;">
+        <div class="detail-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+            Fayllar
+        </div>
+        <div id="files-list"></div>
+    </div>
+
+    <div class="sign-btn-wrap">
+        <button class="btn-sign" id="btn-sign-main" onclick="openSignPage()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            <span>E-IMZO ID-CARD bilan imzolash</span>
+        </button>
+    </div>
+</div>
+
+<!-- Profile -->
+<div class="state" id="state-profile">
+    <div class="profile-card" id="profile-card">
+        <!-- Filled by renderProfile() -->
+    </div>
+</div>
+
+<!-- Bottom navigation -->
+<nav class="bottom-nav" id="bottom-nav">
+    <button class="nav-tab active" id="nav-docs" onclick="switchTab('documents')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        <span>Hujjatlar</span>
+    </button>
+    <button class="nav-tab" id="nav-profile" onclick="switchTab('profile')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span>Profil</span>
+    </button>
+</nav>
+
+<script>
+    var tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+    try { tg.setHeaderColor && tg.setHeaderColor('secondary_bg_color'); } catch (e) {}
+
+    function haptic(type) {
+        if (!tg || !tg.HapticFeedback) return;
+        try {
+            if (type === 'success' || type === 'error' || type === 'warning') {
+                tg.HapticFeedback.notificationOccurred(type);
+            } else {
+                tg.HapticFeedback.impactOccurred(type || 'light');
+            }
+        } catch (e) {}
+    }
+
+    var BASE_URL   = 'https://edoline.uz';
+    var AUTH_TOKEN = null;
+    var CURRENT_USER = null;
+    var currentDoc = null;
+    var currentTab = 'documents';
+    var profileLoaded = false;
+    var profileData = null;
+
+    function setState(name) {
+        document.querySelectorAll('.state').forEach(function(el) { el.classList.remove('active'); });
+        var el = document.getElementById('state-' + name);
+        if (el) {
+            // Force reflow so CSS animation re-runs even if we set the same class
+            el.offsetHeight;
+            el.classList.add('active');
+        }
+    }
+
+    async function init() {
+        setState('loading');
+        try {
+            var initData = tg.initData;
+            if (!initData) {
+                document.getElementById('error-msg').textContent =
+                    'Bu sahifa faqat Telegram ichida ishlaydi.';
+                setState('error');
+                return;
+            }
+
+            var authResp = await fetch(BASE_URL + '/api/telegram/auth', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({init_data: initData})
+            });
+            var authData = await authResp.json();
+
+            if (!authResp.ok) {
+                if (authData.error === 'not_linked') { setState('not-linked'); return; }
+                throw new Error(authData.message || 'Auth xatosi');
+            }
+
+            AUTH_TOKEN = authData.token;
+            CURRENT_USER = authData.user || null;
+            document.getElementById('header-sub').textContent =
+                authData.user.name + ' — Imzolash uchun hujjatlar';
+
+            // Bottom navigation становится видимой
+            document.body.classList.add('authenticated', 'with-bottom-nav');
+
+            await loadDocuments();
+        } catch(e) {
+            haptic('error');
+            document.getElementById('error-msg').textContent = e.message || 'Ulanishda xatolik';
+            setState('error');
+        }
+    }
+
+    async function loadDocuments() {
+        var resp = await fetch(BASE_URL + '/api/telegram/documents', {
+            headers: {'Authorization': 'Bearer ' + AUTH_TOKEN}
+        });
+        if (!resp.ok) throw new Error('Hujjatlar yuklanmadi');
+        var data = await resp.json();
+        var docs = data.documents || [];
+
+        if (!docs.length) { setState('empty'); return; }
+
+        var cnt = document.getElementById('doc-count');
+        cnt.textContent = docs.length;
+        cnt.style.display = 'inline-block';
+
+        renderList(docs);
+        setState('list');
+    }
+
+    function roleClass(role) {
+        if (role === 'RESOL') return 'role-RESOL';
+        if (role === 'AGREE') return 'role-AGREE';
+        return 'role-SIGN';
+    }
+
+    function accentClass(role) {
+        if (role === 'RESOL') return 'accent-RESOL';
+        if (role === 'AGREE') return 'accent-AGREE';
+        return 'accent-SIGN';
+    }
+
+    function renderList(docs) {
+        var html = '';
+        docs.forEach(function(doc) {
+            html += '<div class="doc-card ' + accentClass(doc.role) + '" onclick="openDoc(' + doc.id + ')">' +
+                '<div class="doc-card-top">' +
+                '<div class="doc-name">' + esc(doc.doc_name) + '</div>' +
+                '<div class="doc-arrow">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>' +
+                '</div>' +
+                '</div>' +
+                '<div class="doc-meta">' +
+                (doc.doc_number ? '<span class="meta-tag">№' + esc(doc.doc_number) + '</span>' : '') +
+                '<span class="meta-tag">' + esc(doc.created_at) + '</span>' +
+                '<span class="role-badge ' + roleClass(doc.role) + '">' + esc(doc.role_label) + '</span>' +
+                '</div>' +
+                '</div>';
+        });
+        document.getElementById('doc-list').innerHTML = html;
+    }
+
+    async function openDoc(docId) {
+        haptic('light');
+        setState('loading');
+        try {
+            var resp = await fetch(BASE_URL + '/api/telegram/documents/' + docId, {
+                headers: {'Authorization': 'Bearer ' + AUTH_TOKEN}
+            });
+            if (!resp.ok) throw new Error('Hujjat topilmadi');
+            var doc = await resp.json();
+            currentDoc = doc;
+
+            document.getElementById('detail-name').textContent    = doc.doc_name || '—';
+            document.getElementById('detail-number').textContent  = doc.doc_number ? '№ ' + doc.doc_number : '';
+            document.getElementById('detail-date').textContent    = doc.created_at || '—';
+            document.getElementById('detail-action').textContent  = doc.role_label || '—';
+
+            var badge = document.getElementById('detail-role-badge');
+            badge.textContent  = doc.role_label;
+            badge.className    = 'role-badge ' + roleClass(doc.role);
+
+            var bodySection = document.getElementById('doc-body-section');
+            if (doc.html_doc) {
+                document.getElementById('doc-body-content').innerHTML = doc.html_doc;
+                bodySection.style.display = 'block';
+            } else {
+                bodySection.style.display = 'none';
+            }
+
+            var filesSection = document.getElementById('files-section');
+            if (doc.files && doc.files.length) {
+                var fHtml = '';
+                doc.files.forEach(function(f) {
+                    fHtml += '<div class="file-row">' +
+                        '<div class="file-icon">' +
+                        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' +
+                        '</div>' +
+                        '<span class="file-name">' + esc(f.name) + '</span>' +
+                        '</div>';
+                });
+                document.getElementById('files-list').innerHTML = fHtml;
+                filesSection.style.display = 'block';
+            } else {
+                filesSection.style.display = 'none';
+            }
+
+            setState('detail');
+        } catch(e) {
+            haptic('error');
+            document.getElementById('error-msg').textContent = e.message;
+            setState('error');
+        }
+    }
+
+    function showList() {
+        haptic('light');
+        currentDoc = null;
+        setState('list');
+    }
+
+    async function openSignPage() {
+        if (!currentDoc) return;
+        haptic('medium');
+
+        var btn  = document.getElementById('btn-sign-main');
+        var span = btn.querySelector('span');
+        btn.disabled = true;
+        if (span) span.textContent = 'Yuklanmoqda...';
+
+        try {
+            var resp = await fetch(BASE_URL + '/api/telegram/documents/' + currentDoc.id + '/sign-token', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + AUTH_TOKEN},
+                body: JSON.stringify({})
+            });
+            var data = await resp.json();
+            if (!resp.ok || !data.sign_url) throw new Error(data.error || 'Sign URL olinmadi');
+
+            // Open in same window — not external Safari
+            window.location.href = data.sign_url;
+        } catch(e) {
+            haptic('error');
+            alert('Xatolik: ' + e.message);
+            btn.disabled = false;
+            if (span) span.textContent = 'E-IMZO ID-CARD bilan imzolash';
+        }
+    }
+
+    function esc(str) {
+        if (!str) return '';
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // Tab switching + profile loading
+    // ════════════════════════════════════════════════════════════════════
+
+    function switchTab(tab) {
+        if (tab === currentTab) return;
+        haptic('light');
+
+        currentTab = tab;
+
+        // Update nav active state
+        document.getElementById('nav-docs').classList.toggle('active', tab === 'documents');
+        document.getElementById('nav-profile').classList.toggle('active', tab === 'profile');
+
+        // Header subtitle changes based on tab
+        var sub = document.getElementById('header-sub');
+        var cnt = document.getElementById('doc-count');
+
+        if (tab === 'documents') {
+            // Restore docs view — go back to whatever was the docs state
+            if (currentDoc) {
+                setState('detail');
+            } else {
+                // If we have docs loaded, show list; otherwise reload
+                var docList = document.getElementById('doc-list');
+                if (docList && docList.children.length > 0) {
+                    setState('list');
+                } else {
+                    // No docs cached — try to reload
+                    loadDocuments().catch(function() { setState('empty'); });
+                }
+            }
+            if (CURRENT_USER) {
+                sub.textContent = CURRENT_USER.name + ' — Imzolash uchun hujjatlar';
+            }
+            return;
+        }
+
+        // tab === 'profile'
+        if (cnt) cnt.style.display = 'none';
+        sub.textContent = "Xodim ma'lumotlari";
+
+        if (profileLoaded && profileData) {
+            renderProfile(profileData);
+            setState('profile');
+        } else {
+            setState('loading');
+            loadProfile();
+        }
+    }
+
+    async function loadProfile() {
+        try {
+            var resp = await fetch(BASE_URL + '/api/telegram/profile', {
+                headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN }
+            });
+            if (!resp.ok) throw new Error('Profil yuklanmadi');
+            var data = await resp.json();
+            profileData = data.profile;
+            profileLoaded = true;
+            renderProfile(profileData);
+            setState('profile');
+        } catch (e) {
+            haptic('error');
+            document.getElementById('error-msg').textContent = e.message || 'Profil yuklanmadi';
+            setState('error');
+        }
+    }
+
+    function renderProfile(p) {
+        if (!p) return;
+        var card = document.getElementById('profile-card');
+
+        // Avatar — image or initial
+        var avatarHtml;
+        if (p.avatar_url) {
+            avatarHtml = '<img src="' + esc(p.avatar_url) + '" alt="avatar">';
+        } else {
+            var initial = '';
+            var nameSrc = p.full_name || p.username || '?';
+            initial = nameSrc.trim().charAt(0).toUpperCase();
+            avatarHtml = esc(initial);
+        }
+
+        // Roles chips
+        var rolesHtml = '';
+        if (Array.isArray(p.roles) && p.roles.length > 0) {
+            rolesHtml = '<div class="profile-roles">'
+                + p.roles.map(function(r) {
+                    return '<span class="profile-role-chip">' + esc(r) + '</span>';
+                }).join('')
+                + '</div>';
+        }
+
+        // Info rows
+        function infoRow(svg, label, value) {
+            var isEmpty = !value;
+            return '<div class="profile-info-row">'
+                + '<div class="profile-info-icon">' + svg + '</div>'
+                + '<div class="profile-info-body">'
+                + '<div class="profile-info-label">' + esc(label) + '</div>'
+                + '<div class="profile-info-value ' + (isEmpty ? 'empty' : '') + '">'
+                + (isEmpty ? '—' : esc(value))
+                + '</div>'
+                + '</div>'
+                + '</div>';
+        }
+
+        var ICONS = {
+            building: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="9" y1="9" x2="9" y2="9.01"/><line x1="15" y1="9" x2="15" y2="9.01"/><line x1="9" y1="13" x2="9" y2="13.01"/><line x1="15" y1="13" x2="15" y2="13.01"/><line x1="9" y1="17" x2="15" y2="17"/></svg>',
+            briefcase: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>',
+            award: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.5 13l1.4 7-4.9-3-4.9 3 1.4-7"/></svg>',
+            mail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,6 12,13 2,6"/></svg>',
+            phone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>'
+        };
+
+        var orgName = p.organization ? p.organization.name_uz : null;
+
+        card.innerHTML = ''
+            + '<div class="profile-avatar-wrap">'
+            + '<div class="profile-avatar">' + avatarHtml + '</div>'
+            + '</div>'
+            + '<div class="profile-name">' + esc(p.full_name || p.username || '—') + '</div>'
+            + '<div class="profile-username">@' + esc(p.username || '') + '</div>'
+            + rolesHtml
+            + '<div class="profile-info-list">'
+            + infoRow(ICONS.building,  'Tashkilot',  orgName)
+            + infoRow(ICONS.briefcase, "Bo'lim",     p.department)
+            + infoRow(ICONS.award,     'Lavozim',    p.position)
+            + infoRow(ICONS.mail,      'Email',      p.email)
+            + infoRow(ICONS.phone,     'Telefon',    p.phone)
+            + '</div>';
+    }
+
+    init();
+</script>
+</body>
+</html>

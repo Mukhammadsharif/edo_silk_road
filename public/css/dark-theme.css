@@ -1,0 +1,1239 @@
+/*
+ * ============================================================
+ *  EDOLINE - Global Dark Theme v3 (Full Coverage)
+ *  Based on analysis of ALL uploaded CSS files
+ *  Applied via: body.theme-dark
+ * ============================================================
+ */
+
+/* ============================================================
+   1. ROOT & LAYOUT
+   ============================================================ */
+body.theme-dark {
+    background-color: #0f172a !important;
+    color: #e2e8f0 !important;
+}
+body.theme-dark .wrapper,
+body.theme-dark .page-wrap,
+body.theme-dark .main-content {
+    background-color: #0f172a !important;
+}
+
+/* ============================================================
+   2. INLINE STYLE OVERRIDES (hardcoded in HTML attributes)
+   ============================================================ */
+body.theme-dark [style*="background: white"],
+body.theme-dark [style*="background:#fff"],
+body.theme-dark [style*="background: #fff"],
+body.theme-dark [style*="background:#ffffff"],
+body.theme-dark [style*="background: #ffffff"],
+body.theme-dark [style*="background-color: white"],
+body.theme-dark [style*="background-color:#fff"],
+body.theme-dark [style*="background-color: #fff"],
+body.theme-dark [style*="background-color:#ffffff"],
+body.theme-dark [style*="background-color: #ffffff"],
+body.theme-dark [style*="background-color: rgb(255"],
+body.theme-dark [style*="background:#f8fafc"],
+body.theme-dark [style*="background: #f8fafc"],
+body.theme-dark [style*="background-color:#f8fafc"],
+body.theme-dark [style*="background-color: #f8fafc"],
+body.theme-dark [style*="background:#f1f5f9"],
+body.theme-dark [style*="background: #f1f5f9"],
+body.theme-dark [style*="background-color:#f1f5f9"],
+body.theme-dark [style*="background-color: #f1f5f9"],
+body.theme-dark [style*="background-color: #f8f9fb"],
+body.theme-dark [style*="background-color: #fafafa"] {
+    background-color: #1e293b !important;
+}
+body.theme-dark [style*="color: #1e293b"],
+body.theme-dark [style*="color:#1e293b"],
+body.theme-dark [style*="color: #334155"],
+body.theme-dark [style*="color: #475569"],
+body.theme-dark [style*="color: #64748b"],
+body.theme-dark [style*="color: rgb(30, 41, 59)"],
+body.theme-dark [style*="color: rgb(100, 116, 139)"] {
+    color: #e2e8f0 !important;
+}
+
+/* ============================================================
+   3. HEADER
+   ============================================================ */
+body.theme-dark .header-top {
+    background-color: #1e293b !important;
+    border-bottom: 1px solid #334155 !important;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.5) !important;
+}
+body.theme-dark .header-top a,
+body.theme-dark .header-top span,
+body.theme-dark .header-top .fw-bold { color: #e2e8f0 !important; }
+body.theme-dark .header-top button,
+body.theme-dark .header-top .btn-light {
+    background-color: #334155 !important;
+    border-color: #475569 !important;
+    color: #e2e8f0 !important;
+}
+
+/* ============================================================
+   4. PAGE CONTAINERS (from common-document-styles.css + others)
+   ============================================================ */
+body.theme-dark .document-page-modern,
+body.theme-dark .work-view-page-modern,
+body.theme-dark .document-view-page-modern,
+body.theme-dark .work-docs-page-modern,
+body.theme-dark .inbox-page-modern,
+body.theme-dark .outgoing-page-modern,
+body.theme-dark .outgoing-view-page-modern,
+body.theme-dark .pricing-page-modern,
+body.theme-dark .modern-container,
+body.theme-dark .content-wrapper-modern {
+    background-color: #0f172a !important;
+    color: #e2e8f0 !important;
+}
+
+/* ============================================================
+   5. CARD COMPONENTS (all variants found in CSS files)
+   ============================================================ */
+body.theme-dark .card,
+body.theme-dark .card-body,
+body.theme-dark .card-header,
+body.theme-dark .card-footer,
+body.theme-dark .table-card-modern,
+body.theme-dark .filter-card-modern,
+body.theme-dark .filters-card-modern,
+body.theme-dark .content-card-modern,
+body.theme-dark .document-card-modern,
+body.theme-dark .document-container-modern,
+body.theme-dark .document-editor-modern,
+body.theme-dark .editor-card-modern,
+body.theme-dark .form-card,
+body.theme-dark .edit-card-modern,
+body.theme-dark .help-card,
+body.theme-dark .info-card,
+body.theme-dark .info-card-modern,
+body.theme-dark .info-card-ecp,
+body.theme-dark .sidebar-card-modern,
+body.theme-dark .steps-card-modern,
+body.theme-dark .execution-card-modern,
+body.theme-dark .sign-roles-card,
+body.theme-dark .sign-type-section,
+body.theme-dark .roles-card-modern,
+body.theme-dark .settings-card-modern,
+body.theme-dark .tabs-card-modern,
+body.theme-dark .template-form-section,
+body.theme-dark .template-preview-card,
+body.theme-dark .template-stat-card,
+body.theme-dark .tariff-info-card,
+body.theme-dark .pricing-card-modern,
+body.theme-dark .subscription-status-card,
+body.theme-dark .doc-stat-card,
+body.theme-dark .hr-content-card,
+body.theme-dark .profile-card-modern,
+body.theme-dark .export-section-modern,
+body.theme-dark .report-form-builder,
+body.theme-dark .rte-container-modern,
+body.theme-dark .description-section,
+body.theme-dark .icon-selection-section,
+body.theme-dark .translations-section,
+body.theme-dark .language-inputs-section,
+body.theme-dark .user-selection-container,
+body.theme-dark .emp-profile-section,
+body.theme-dark .support-section-modern,
+body.theme-dark .upload-option-card,
+body.theme-dark .sent-doc-modern,
+body.theme-dark .work-doc-page,
+body.theme-dark .confirmation-text {
+    background-color: #1e293b !important;
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+}
+
+/* ============================================================
+   6. CARD HEADERS / SECTION HEADERS
+   ============================================================ */
+body.theme-dark .card-header-modern,
+body.theme-dark .filters-header,
+body.theme-dark .document-card-header,
+body.theme-dark .template-form-header,
+body.theme-dark .template-preview-header,
+body.theme-dark .export-header-modern,
+body.theme-dark .sidebar-header,
+body.theme-dark .hr-menu-header,
+body.theme-dark .subscription-header,
+body.theme-dark .active-subscription .subscription-header {
+    background: linear-gradient(135deg, #1e293b 0%, #273449 100%) !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+}
+
+/* ============================================================
+   7. TABLES (all variants)
+   ============================================================ */
+body.theme-dark .table,
+body.theme-dark .modern-table,
+body.theme-dark .work-docs-table-modern,
+body.theme-dark .signature-table {
+    background-color: #1e293b !important;
+    color: #e2e8f0 !important;
+    border-color: #334155 !important;
+}
+body.theme-dark .table thead,
+body.theme-dark .modern-table thead,
+body.theme-dark .table thead th,
+body.theme-dark .modern-table thead th {
+    background: linear-gradient(135deg, #312e81 0%, #4c1d95 100%) !important;
+    color: white !important;
+    border-color: rgba(255,255,255,0.15) !important;
+}
+body.theme-dark .table tbody tr,
+body.theme-dark .modern-table tbody tr {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+}
+body.theme-dark .table tbody tr:nth-child(even),
+body.theme-dark .modern-table tbody tr:nth-child(even),
+body.theme-dark .signature-table tr.row-alt {
+    background-color: #1a2540 !important;
+}
+body.theme-dark .table tbody tr:hover,
+body.theme-dark .modern-table tbody tr:hover,
+body.theme-dark .table-row-modern:hover,
+body.theme-dark .work-docs-table-modern tbody tr:hover {
+    background-color: #2d3f5a !important;
+    transform: none !important;
+}
+body.theme-dark td, body.theme-dark th {
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+}
+
+/* ============================================================
+   8. FORMS & INPUTS (all variants)
+   ============================================================ */
+body.theme-dark .form-control,
+body.theme-dark .form-control-modern,
+body.theme-dark .filter-input-modern,
+body.theme-dark .filter-select-modern,
+body.theme-dark .search-box-modern,
+body.theme-dark .group-select-modern,
+body.theme-dark .role-select-modern,
+body.theme-dark .tariff-input-modern,
+body.theme-dark .date-input-modern,
+body.theme-dark .rte-container-modern .rte-toolbar,
+body.theme-dark input[type="text"],
+body.theme-dark input[type="number"],
+body.theme-dark input[type="email"],
+body.theme-dark input[type="password"],
+body.theme-dark input[type="search"],
+body.theme-dark input[type="date"],
+body.theme-dark input[type="datetime-local"],
+body.theme-dark input[type="tel"],
+body.theme-dark textarea,
+body.theme-dark select,
+body.theme-dark .form-group-modern select {
+    background-color: #0f172a !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+}
+body.theme-dark input::placeholder,
+body.theme-dark textarea::placeholder { color: #64748b !important; }
+body.theme-dark input:focus,
+body.theme-dark textarea:focus,
+body.theme-dark select:focus,
+body.theme-dark .form-control:focus,
+body.theme-dark .form-control-modern:focus {
+    background-color: #0f172a !important;
+    border-color: #794DFD !important;
+    color: #e2e8f0 !important;
+    box-shadow: 0 0 0 3px rgba(121,77,253,0.25) !important;
+    outline: none !important;
+}
+body.theme-dark .form-control-modern:read-only {
+    background-color: #273449 !important;
+    color: #94a3b8 !important;
+}
+body.theme-dark label,
+body.theme-dark .form-label,
+body.theme-dark .form-group label,
+body.theme-dark .form-group-modern label,
+body.theme-dark .filter-item label { color: #94a3b8 !important; }
+body.theme-dark .input-group-text {
+    background-color: #273449 !important;
+    border-color: #334155 !important;
+    color: #94a3b8 !important;
+}
+
+/* ============================================================
+   9. SELECT2 (full override)
+   ============================================================ */
+body.theme-dark .select2-container--default .select2-selection--single,
+body.theme-dark .select2-container--default .select2-selection--multiple {
+    background-color: #0f172a !important;
+    border-color: #334155 !important;
+}
+body.theme-dark .select2-container--default .select2-selection--single .select2-selection__rendered,
+body.theme-dark .select2-container--default .select2-selection__placeholder { color: #e2e8f0 !important; }
+body.theme-dark .select2-dropdown { background-color: #1e293b !important; border-color: #334155 !important; }
+body.theme-dark .select2-search--dropdown .select2-search__field {
+    background-color: #0f172a !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+}
+body.theme-dark .select2-results__option { color: #e2e8f0 !important; background-color: #1e293b !important; }
+body.theme-dark .select2-container--default .select2-results__option--highlighted[aria-selected],
+body.theme-dark .select2-container--default .select2-results__option[aria-selected=true] {
+    background-color: #794DFD !important; color: #fff !important;
+}
+body.theme-dark .select2-container--default .select2-selection__choice {
+    background-color: #334155 !important; border-color: #475569 !important; color: #e2e8f0 !important;
+}
+
+/* ============================================================
+   10. BUTTONS (non-colored)
+   ============================================================ */
+body.theme-dark .btn-secondary,
+body.theme-dark .btn-light,
+body.theme-dark .btn-white,
+body.theme-dark .btn-default,
+body.theme-dark .btn-outline,
+body.theme-dark .btn-cancel,
+body.theme-dark .btn-outline-secondary,
+body.theme-dark .filter-chip,
+body.theme-dark .export-btn-modern,
+body.theme-dark .tab-link {
+    background-color: #334155 !important;
+    border-color: #475569 !important;
+    color: #e2e8f0 !important;
+}
+body.theme-dark .btn-secondary:hover,
+body.theme-dark .btn-cancel:hover,
+body.theme-dark .btn-light:hover { background-color: #475569 !important; color: #fff !important; }
+
+/* ============================================================
+   11. BADGES (light variants)
+   ============================================================ */
+body.theme-dark .badge-success { background-color: #14381f !important; color: #86efac !important; }
+body.theme-dark .badge-info,
+body.theme-dark .badge-modern.badge-info { background-color: #1e3a5f !important; color: #93c5fd !important; }
+body.theme-dark .badge-warning { background-color: #3d2e00 !important; color: #fcd34d !important; }
+body.theme-dark .badge-danger { background-color: #3d1515 !important; color: #fca5a5 !important; }
+body.theme-dark .badge-confirm { background-color: #1a3a5f !important; color: #93c5fd !important; }
+body.theme-dark .badge-sign { background-color: #2d1b4e !important; color: #c4b5fd !important; }
+body.theme-dark .badge-view { background-color: #1e3a2e !important; color: #86efac !important; }
+body.theme-dark .status-gray { background-color: #273449 !important; color: #94a3b8 !important; }
+body.theme-dark .doc-type-badge-modern { background-color: #273449 !important; color: #e2e8f0 !important; }
+body.theme-dark .filter-chips-container { background-color: #1e293b !important; border-color: #334155 !important; }
+
+/* ============================================================
+   12. FILE UPLOAD AREAS
+   ============================================================ */
+body.theme-dark .file-display-area,
+body.theme-dark .file-display-area.has-file,
+body.theme-dark .file-list-display,
+body.theme-dark .file-item-card,
+body.theme-dark .file-item-modern,
+body.theme-dark .image-wrapper,
+body.theme-dark .field-row,
+body.theme-dark .file-name-badge {
+    background-color: #273449 !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+}
+body.theme-dark .file-item-card:hover,
+body.theme-dark .file-item-modern:hover { background-color: #2d3f5a !important; }
+
+/* ============================================================
+   13. NAVIGATION - TABS, HR LEFT MENU
+   ============================================================ */
+body.theme-dark .tabs-nav-modern,
+body.theme-dark .custom-tabs__header,
+body.theme-dark .hr-left-menu-modern {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+}
+body.theme-dark .tab-link,
+body.theme-dark .custom-tab { color: #94a3b8 !important; background-color: transparent !important; }
+body.theme-dark .custom-tab.active { background-color: #794DFD !important; color: white !important; }
+body.theme-dark .nav-tabs { border-bottom-color: #334155 !important; }
+body.theme-dark .nav-tabs .nav-link { color: #94a3b8 !important; }
+body.theme-dark .nav-tabs .nav-link.active {
+    background-color: #1e293b !important;
+    border-color: #334155 #334155 #1e293b !important;
+    color: #794DFD !important;
+}
+body.theme-dark .tab-content { background-color: #1e293b !important; }
+
+/* ============================================================
+   14. EXECUTION STEPS / WORKFLOW
+   ============================================================ */
+body.theme-dark .step-item-modern,
+body.theme-dark .step-item-modern.step-success,
+body.theme-dark .step-item-modern.step-warning,
+body.theme-dark .execution-steps-card,
+body.theme-dark .execution-steps-header,
+body.theme-dark .execution-status-modern {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+}
+body.theme-dark .step-line { background-color: #334155 !important; }
+body.theme-dark .step-item-modern:hover { background-color: #273449 !important; }
+
+/* ============================================================
+   15. USER SELECTION CARDS (document routing)
+   ============================================================ */
+body.theme-dark .user-item-modern,
+body.theme-dark .user-card-content,
+body.theme-dark .user-checkbox-card-extended,
+body.theme-dark .role-item-modern,
+body.theme-dark .performer-item-modern,
+body.theme-dark .sign-role-item,
+body.theme-dark .sign-type-option,
+body.theme-dark .radio-option-modern,
+body.theme-dark .status-radio-item,
+body.theme-dark .status-radio-option,
+body.theme-dark .class-card,
+body.theme-dark .status-toggle-wrapper,
+body.theme-dark .toggle-item-modern {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+}
+body.theme-dark .user-item-modern:hover,
+body.theme-dark .role-item-modern:hover,
+body.theme-dark .sign-type-option:hover,
+body.theme-dark .radio-option-modern:hover,
+body.theme-dark .status-radio-item:hover,
+body.theme-dark .status-radio-option:hover { background-color: #273449 !important; }
+body.theme-dark .user-checkbox-card .checkbox-indicator {
+    background-color: #0f172a !important;
+    border-color: #475569 !important;
+}
+
+/* ============================================================
+   16. DOCUMENT TREE / PROTOCOL TREE / DEPARTMENT TREE
+   ============================================================ */
+body.theme-dark .list-tree li,
+body.theme-dark .document-types-tree li,
+body.theme-dark .protocol-tree-item li {
+    background: #1e293b !important;
+    color: #e2e8f0 !important;
+}
+body.theme-dark .list-tree li:hover,
+body.theme-dark .document-types-tree li:hover,
+body.theme-dark .protocol-tree-item li:hover { background: #273449 !important; transform: none !important; }
+
+/* ============================================================
+   17. PROFILE PAGE
+   ============================================================ */
+body.theme-dark .profile-card-modern,
+body.theme-dark .profile-photo-section,
+body.theme-dark .profile-status-badge,
+body.theme-dark .info-block,
+body.theme-dark .info-item,
+body.theme-dark .date-value,
+body.theme-dark .icon-wrap,
+body.theme-dark .icon-card {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+}
+body.theme-dark .info-item:hover { background-color: #273449 !important; }
+
+/* ============================================================
+   18. LANG / DEPARTMENT TAGS
+   ============================================================ */
+body.theme-dark .lang-inputs-group,
+body.theme-dark .lang-label-header,
+body.theme-dark .lang-ru,
+body.theme-dark .lang-uz,
+body.theme-dark .flag-ru,
+body.theme-dark .flag-uz,
+body.theme-dark .department-tag {
+    background-color: #273449 !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+}
+
+/* ============================================================
+   19. QR CODE / DIGEST
+   ============================================================ */
+body.theme-dark .qr-wrapper,
+body.theme-dark .qr-code-wrapper,
+body.theme-dark .digest-value {
+    background-color: #fff !important; /* Keep white for QR readability */
+    border-color: #334155 !important;
+}
+
+/* ============================================================
+   20. COMMENTS / CHAT
+   ============================================================ */
+body.theme-dark .comments-card-modern,
+body.theme-dark .comment-item-modern { background-color: #1e293b !important; border-color: #334155 !important; color: #e2e8f0 !important; }
+body.theme-dark .comment-item-modern:hover { background-color: #273449 !important; }
+body.theme-dark .comment-views-btn { background-color: #273449 !important; border-color: #334155 !important; color: #e2e8f0 !important; }
+
+/* ============================================================
+   21. MODALS
+   ============================================================ */
+body.theme-dark .modal-content,
+body.theme-dark .modal-body,
+body.theme-dark .modal-header,
+body.theme-dark .modal-footer,
+body.theme-dark .delete-modal-modern .modal-body .warning-box {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+}
+body.theme-dark .modal-title { color: #e2e8f0 !important; }
+body.theme-dark .close,
+body.theme-dark .close-modal,
+body.theme-dark .close-modern { color: #94a3b8 !important; text-shadow: none !important; opacity: 1 !important; }
+body.theme-dark .close-modal:hover,
+body.theme-dark .close-modern:hover { background-color: #334155 !important; color: #e2e8f0 !important; }
+
+/* ============================================================
+   22. DROPDOWN
+   ============================================================ */
+body.theme-dark .dropdown-menu { background-color: #1e293b !important; border-color: #334155 !important; }
+body.theme-dark .dropdown-item { color: #e2e8f0 !important; }
+body.theme-dark .dropdown-item:hover { background-color: #334155 !important; color: #fff !important; }
+body.theme-dark .dropdown-divider { border-top-color: #334155 !important; }
+
+/* ============================================================
+   23. ALERTS
+   ============================================================ */
+body.theme-dark .alert-success,
+body.theme-dark .alert-success-modern { background-color: #14381f !important; border-color: #16a34a !important; color: #86efac !important; }
+body.theme-dark .alert-warning,
+body.theme-dark .alert-warning-modern { background-color: #3d2e00 !important; border-color: #d97706 !important; color: #fcd34d !important; }
+body.theme-dark .alert-info { background-color: #1e3a5f !important; border-color: #2563eb !important; color: #93c5fd !important; }
+body.theme-dark .alert-danger { background-color: #3d1515 !important; border-color: #dc2626 !important; color: #fca5a5 !important; }
+
+/* ============================================================
+   24. PAGINATION / BREADCRUMB
+   ============================================================ */
+body.theme-dark .pagination-wrapper-modern { border-top-color: #334155 !important; }
+body.theme-dark .page-link { background-color: #1e293b !important; border-color: #334155 !important; color: #94a3b8 !important; }
+body.theme-dark .page-item.active .page-link { background-color: #794DFD !important; border-color: #794DFD !important; color: #fff !important; }
+body.theme-dark .page-item.disabled .page-link { background-color: #0f172a !important; color: #475569 !important; }
+body.theme-dark .breadcrumb { background-color: transparent !important; }
+body.theme-dark .breadcrumb-item,
+body.theme-dark .breadcrumb-modern .breadcrumb-item { color: #94a3b8 !important; }
+body.theme-dark .breadcrumb-item a { color: #a78bfa !important; }
+body.theme-dark .breadcrumb-item.active { color: #794DFD !important; }
+body.theme-dark .breadcrumb-separator { color: #475569 !important; }
+
+/* ============================================================
+   25. DIVIDERS / BORDERS
+   ============================================================ */
+body.theme-dark hr,
+body.theme-dark .divider-modern,
+body.theme-dark .divider-line,
+body.theme-dark .section-divider,
+body.theme-dark .tariff-divider,
+body.theme-dark .template-divider,
+body.theme-dark .protocol-divider,
+body.theme-dark .work-docs-divider,
+body.theme-dark .languages-divider {
+    border-color: #334155 !important;
+    background-color: #334155 !important;
+    opacity: 1 !important;
+}
+
+/* ============================================================
+   26. BOOTSTRAP UTILITY
+   ============================================================ */
+body.theme-dark .bg-white { background-color: #1e293b !important; }
+body.theme-dark .bg-light { background-color: #273449 !important; }
+body.theme-dark .text-dark,
+body.theme-dark .text-body { color: #e2e8f0 !important; }
+body.theme-dark .text-muted,
+body.theme-dark .text-secondary { color: #64748b !important; }
+body.theme-dark .border { border-color: #334155 !important; }
+body.theme-dark .border-bottom { border-bottom-color: #334155 !important; }
+body.theme-dark .border-top { border-top-color: #334155 !important; }
+
+/* ============================================================
+   27. TYPOGRAPHY
+   ============================================================ */
+body.theme-dark h1,body.theme-dark h2,body.theme-dark h3,
+body.theme-dark h4,body.theme-dark h5,body.theme-dark h6 { color: #e2e8f0 !important; }
+body.theme-dark p { color: #cbd5e1; }
+body.theme-dark a:not([class*="btn"]):not([class*="page-header"]):not(.doc-link):not(.menu-header) { color: #a78bfa; }
+body.theme-dark .doc-link { color: #a78bfa !important; }
+body.theme-dark .doc-link:hover { background-color: #2d1b4e !important; color: #c4b5fd !important; }
+
+/* ============================================================
+   28. SIDEBAR USER CARD
+   ============================================================ */
+body.theme-dark .sidebar-user-profile-card {
+    background: linear-gradient(135deg, #1e293b 0%, #273449 100%) !important;
+    border-color: #334155 !important;
+    box-shadow: none !important;
+}
+body.theme-dark .sidebar-user-name { color: #e2e8f0 !important; }
+body.theme-dark .sidebar-user-role { color: #94a3b8 !important; }
+
+/* ============================================================
+   29. SCROLLBARS
+   ============================================================ */
+body.theme-dark ::-webkit-scrollbar { width: 6px; height: 6px; }
+body.theme-dark ::-webkit-scrollbar-track { background: #0f172a !important; }
+body.theme-dark ::-webkit-scrollbar-thumb { background: #334155 !important; border-radius: 3px; }
+body.theme-dark ::-webkit-scrollbar-thumb:hover { background: #475569 !important; }
+body.theme-dark .tabs-nav-modern::-webkit-scrollbar-track,
+body.theme-dark .steps-body-modern::-webkit-scrollbar-track,
+body.theme-dark .users-list-modern::-webkit-scrollbar-track,
+body.theme-dark .sortable-user-list::-webkit-scrollbar-track,
+body.theme-dark .sidebar-body::-webkit-scrollbar-track,
+body.theme-dark .profile-sidebar > div > div:last-child::-webkit-scrollbar-track { background: #0f172a !important; }
+
+/* ============================================================
+   30. UNIVERSAL FALLBACK
+   Keep this last — catches anything missed above
+   ============================================================ */
+body.theme-dark .request-row { background-color: #1e293b !important; border-color: #334155 !important; color: #e2e8f0 !important; }
+body.theme-dark .request-row:hover { background-color: #273449 !important; }
+body.theme-dark .feature-item { background-color: #1e293b !important; border-color: #334155 !important; }
+body.theme-dark .feature-item:hover { background-color: #273449 !important; }
+body.theme-dark .savings-badge { background-color: #14381f !important; color: #86efac !important; }
+body.theme-dark .discount-percent { background-color: #3d2e00 !important; color: #fcd34d !important; }
+body.theme-dark .toggle-switch::after { background-color: #94a3b8 !important; }
+
+/* ============================================================
+   31. TEXT COLOR FIXES — All hardcoded dark text selectors
+   Found by analyzing every CSS file systematically
+   ============================================================ */
+
+/* --- User list / table cells --- */
+body.theme-dark .user-name,
+body.theme-dark .user-name-modern,
+body.theme-dark .department-name,
+body.theme-dark .position-name,
+body.theme-dark .position-name-cell,
+body.theme-dark .position-value,
+body.theme-dark .role-name,
+body.theme-dark .org-name-modern,
+body.theme-dark .name-text,
+body.theme-dark .name-value,
+body.theme-dark .phone-number,
+body.theme-dark .creator-cell-modern span,
+body.theme-dark .secretary-cell-modern span,
+body.theme-dark .tax-cell span { color: #e2e8f0 !important; }
+
+/* --- Document table cells --- */
+body.theme-dark .doc-number,
+body.theme-dark .doc-date,
+body.theme-dark .doc-date-cell-modern,
+body.theme-dark .doc-number-badge,
+body.theme-dark .doc-stat-value,
+body.theme-dark .doc-text,
+body.theme-dark .datetime-cell .date,
+body.theme-dark .sent-doc-date-number,
+body.theme-dark .term-date,
+body.theme-dark .period-value,
+body.theme-dark .status-value,
+body.theme-dark .modern-table tbody td,
+body.theme-dark .logs-table-modern .date-cell .date,
+body.theme-dark .logs-table-modern .doc-name-cell,
+body.theme-dark .logs-table-modern .user-cell span,
+body.theme-dark .template-table-modern .created-date-cell .date,
+body.theme-dark .template-table-modern .doc-name-cell,
+body.theme-dark .tariff-table-modern .tariff-name { color: #e2e8f0 !important; }
+
+/* --- Page titles / headers --- */
+body.theme-dark .page-title-modern,
+body.theme-dark .page-info h1,
+body.theme-dark .header-title,
+body.theme-dark .header-text h1,
+body.theme-dark .section-header h3,
+body.theme-dark .section-header-small h4,
+body.theme-dark .roles-header,
+body.theme-dark .document-card-header h3,
+body.theme-dark .document-content h3,
+body.theme-dark .document-types-tree h4,
+body.theme-dark .execution-steps-header h3,
+body.theme-dark .export-header-modern h3,
+body.theme-dark .sidebar-header h3,
+body.theme-dark .hr-menu-header h3,
+body.theme-dark .subscription-header h3,
+body.theme-dark .tariff-info-content h3,
+body.theme-dark .tariff-section-title,
+body.theme-dark .tariff-form-group label,
+body.theme-dark .tab-pane-header h3,
+body.theme-dark .template-form-header h3,
+body.theme-dark .template-preview-header h3,
+body.theme-dark .position-form-header h3,
+body.theme-dark .position-section-title,
+body.theme-dark .language-section-title,
+body.theme-dark .translations-section-title,
+body.theme-dark .settings-content h4,
+body.theme-dark .modal-tariff-info h4,
+body.theme-dark .modern-modal-header h4,
+body.theme-dark .no-subscription-content h4,
+body.theme-dark .image-preview-card h6,
+body.theme-dark .description-section h4,
+body.theme-dark .emp-section-title,
+body.theme-dark .emp-profile-name,
+body.theme-dark .pricing-card-title,
+body.theme-dark .price-amount { color: #e2e8f0 !important; }
+
+/* --- Form labels / inputs --- */
+body.theme-dark .filters-title,
+body.theme-dark .filter-item label,
+body.theme-dark .date-input-group-modern label,
+body.theme-dark .form-header h5,
+body.theme-dark .form-radio-modern > label:first-child,
+body.theme-dark .modal-form-group label,
+body.theme-dark .modal-input-modern,
+body.theme-dark .position-form-group label,
+body.theme-dark .position-input-modern,
+body.theme-dark .position-search-input,
+body.theme-dark .template-form-group label,
+body.theme-dark .template-search-input { color: #e2e8f0 !important; }
+
+body.theme-dark .modal-input-modern,
+body.theme-dark .position-input-modern,
+body.theme-dark .position-search-input,
+body.theme-dark .template-search-input {
+    background-color: #0f172a !important;
+    border-color: #334155 !important;
+}
+
+/* --- Muted / secondary text --- */
+body.theme-dark .document-content,
+body.theme-dark .modern-modal-body p,
+body.theme-dark .description-section p,
+body.theme-dark .confirmation-text p,
+body.theme-dark .pending-text,
+body.theme-dark .toggle-text,
+body.theme-dark .demo-toggle label,
+body.theme-dark .feature-text,
+body.theme-dark .empty-title { color: #94a3b8 !important; }
+
+/* --- Values / data text --- */
+body.theme-dark .info-value,
+body.theme-dark .info-card-value,
+body.theme-dark .info-value-ecp,
+body.theme-dark .info-block .info-value,
+body.theme-dark .emp-info-value,
+body.theme-dark .feature-value,
+body.theme-dark .template-stat-value,
+body.theme-dark .logs-stat-value,
+body.theme-dark .doc-stat-value,
+body.theme-dark .date-value { color: #e2e8f0 !important; }
+
+/* --- Executor / Signer / Performer cards --- */
+body.theme-dark .executor-name,
+body.theme-dark .performer-name,
+body.theme-dark .profile-name,
+body.theme-dark .step-title,
+body.theme-dark .step-label-modern,
+body.theme-dark .step-user,
+body.theme-dark .sign-type-title,
+body.theme-dark .sign-role-label,
+body.theme-dark .sign-type-option label,
+body.theme-dark .role-item-modern label,
+body.theme-dark .parent-radio-btn,
+body.theme-dark .upload-option-card h4 { color: #e2e8f0 !important; }
+
+/* --- Breadcrumb fix --- */
+body.theme-dark .breadcrumb-modern,
+body.theme-dark .breadcrumb-item,
+body.theme-dark .breadcrumb-modern .breadcrumb-item {
+    background-color: #1e293b !important;
+    color: #94a3b8 !important;
+}
+body.theme-dark .breadcrumb-item a,
+body.theme-dark .breadcrumb-modern a { color: #a78bfa !important; }
+body.theme-dark .breadcrumb-item.active { color: #c4b5fd !important; font-weight: 600; }
+body.theme-dark .breadcrumb-separator { color: #475569 !important; }
+
+/* --- Cancel buttons (modal) --- */
+body.theme-dark .modal-btn-cancel,
+body.theme-dark .template-btn-cancel {
+    background-color: #334155 !important;
+    border-color: #475569 !important;
+    color: #e2e8f0 !important;
+}
+body.theme-dark .modal-btn-cancel:hover,
+body.theme-dark .template-btn-cancel:hover {
+    background-color: #475569 !important;
+    color: #fff !important;
+}
+
+/* --- Replies / comments --- */
+body.theme-dark .replies-list-modern .sl-left,
+body.theme-dark .comment-author,
+body.theme-dark .comment-text { color: #e2e8f0 !important; }
+
+/* --- Confirmation dialogs --- */
+body.theme-dark .confirmation-text strong,
+body.theme-dark .delete-confirmation-text h4 { color: #e2e8f0 !important; }
+
+/* --- Filter chip active state --- */
+body.theme-dark .filter-chip { color: #e2e8f0 !important; }
+
+/* --- Status toggle --- */
+body.theme-dark .status-toggle .toggle-label { color: #94a3b8 !important; }
+
+/* --- Lang label --- */
+body.theme-dark .lang-label-header { color: #94a3b8 !important; }
+
+/* --- Tree text --- */
+body.theme-dark .tree-item-text { color: #e2e8f0 !important; }
+
+/* --- Permission name --- */
+body.theme-dark .permission-name { color: #e2e8f0 !important; }
+
+/* --- File names --- */
+body.theme-dark .file-link,
+body.theme-dark .file-name { color: #a78bfa !important; }
+
+/* --- Doc executor cards (Image 3 issue) --- */
+body.theme-dark .user-checkbox-card,
+body.theme-dark .user-radio-card {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+}
+body.theme-dark .user-checkbox-card:hover,
+body.theme-dark .user-radio-card:hover {
+    border-color: #794DFD !important;
+    background-color: #273449 !important;
+}
+body.theme-dark .user-checkbox-card input[type="checkbox"]:checked ~ .user-card-content,
+body.theme-dark .user-radio-card input[type="radio"]:checked ~ .user-card-content {
+    background: #2d1b4e !important;
+    /*background-color: #2d1b4e !important;*/
+}
+body.theme-dark .user-card-content,
+body.theme-dark .user-card-content-extended {
+    background-color: transparent !important;
+    color: #e2e8f0 !important;
+}
+
+/* --- Selected user card (purple highlight in Image 3) --- */
+body.theme-dark .user-checkbox-card-extended input[type="checkbox"]:checked ~ .user-card-content-extended {
+    background: #2d1b4e !important;
+    border-color: #794DFD !important;
+}
+
+/* ============================================================
+   32. SELECTED USER CARDS — Radio/Checkbox checked states
+   (Image 3: binafsha, Image 4: yashil selected cards)
+   ============================================================ */
+
+/* Binafsha selected (radio) */
+body.theme-dark .user-radio-card input[type="radio"]:checked ~ .user-card-content,
+body.theme-dark [class*="radio"]:checked ~ .user-card-content,
+body.theme-dark .user-item-modern.selected,
+body.theme-dark .user-item-modern.active {
+    background-color: #2d1b4e !important;
+    border-color: #794DFD !important;
+    color: #e2e8f0 !important;
+}
+body.theme-dark .user-radio-card input[type="radio"]:checked ~ .user-card-content *,
+body.theme-dark .user-item-modern.selected * { color: #e2e8f0 !important; }
+
+/* Yashil selected (checkbox — executor) */
+body.theme-dark .user-checkbox-card input[type="checkbox"]:checked ~ .user-card-content,
+body.theme-dark .user-checkbox-card-extended input[type="checkbox"]:checked ~ .user-card-content-extended {
+    background-color: #14381f !important;
+    border-color: #16a34a !important;
+    color: #e2e8f0 !important;
+}
+body.theme-dark .user-checkbox-card input[type="checkbox"]:checked ~ .user-card-content *,
+body.theme-dark .user-checkbox-card-extended input[type="checkbox"]:checked ~ .user-card-content-extended * {
+    color: #e2e8f0 !important;
+}
+
+/* Hover states for user cards */
+body.theme-dark .file-display-area:hover { background: #2d1b4e !important; border-color: #794DFD !important; }
+body.theme-dark .file-display-area.has-file { background: #14381f !important; border-color: #16a34a !important; }
+body.theme-dark .upload-option-card:hover { background: #2d1b4e !important; border-color: #794DFD !important; }
+
+/* ============================================================
+   33. DOC TEXT AREA — White paper background (Image 2 center)
+   ============================================================ */
+body.theme-dark .work-doc-subpage,
+body.theme-dark .work-doc-page,
+body.theme-dark .document-iframe,
+body.theme-dark .letterhead-modern,
+body.theme-dark .document-iframe iframe {
+    background: #1e293b !important;
+    color: #e2e8f0 !important;
+    border-color: #334155 !important;
+}
+body.theme-dark .doc-text,
+body.theme-dark .doc-text p,
+body.theme-dark .doc-text h1,
+body.theme-dark .doc-text h2,
+body.theme-dark .doc-text h3 { color: #e2e8f0 !important; }
+
+/* ============================================================
+   34. RESOLUTION BOX — Sariq fon (Image 2 o'ng panel)
+   ============================================================ */
+body.theme-dark .subscription-warning,
+body.theme-dark [class*="resolution-box"],
+body.theme-dark [class*="resolution-section"] {
+    background: #3d2e00 !important;
+    border-color: #d97706 !important;
+    color: #fcd34d !important;
+}
+body.theme-dark .subscription-warning i { color: #f59e0b !important; }
+body.theme-dark .subscription-warning * { color: #fcd34d !important; }
+
+/* Resolution text (Uzbek text in yellow box) */
+body.theme-dark [class*="resolution"] p,
+body.theme-dark [class*="resolution"] span,
+body.theme-dark [class*="resolution"] .resolution-text { color: #fcd34d !important; }
+
+/* ============================================================
+   35. TERM BADGES — "0 Day remainder" / "overdue -2 Day"
+   (Image 1 — yashil va sariq badge)
+   ============================================================ */
+body.theme-dark .term-active,
+body.theme-dark .term-badge.term-active {
+    background: #14381f !important;
+    color: #6ee7b7 !important;
+    border-color: #16a34a !important;
+}
+body.theme-dark .term-overdue,
+body.theme-dark .term-badge.term-overdue {
+    background: #3d2e00 !important;
+    color: #fcd34d !important;
+    border-color: #d97706 !important;
+}
+body.theme-dark .term-urgent,
+body.theme-dark .term-badge.term-urgent {
+    background: #3d1515 !important;
+    color: #fca5a5 !important;
+    border-color: #dc2626 !important;
+}
+body.theme-dark .term-date { color: #e2e8f0 !important; }
+
+/* ============================================================
+   36. DOCUMENT TYPE BADGE — "Incoming message" (Image 1)
+   Green badge with invisible text fix
+   ============================================================ */
+body.theme-dark .doc-type-badge-modern,
+body.theme-dark .badge-modern,
+body.theme-dark [class*="doc-type"] {
+    color: #e2e8f0 !important;
+}
+/* Keep colored backgrounds but ensure text contrast */
+body.theme-dark .badge-success { color: #86efac !important; }
+body.theme-dark .badge-info { color: #93c5fd !important; }
+body.theme-dark .badge-warning { color: #fcd34d !important; }
+body.theme-dark .badge-danger { color: #fca5a5 !important; }
+
+/* Status badges in table (Image 1 — "Process" button) */
+body.theme-dark .status-badge-modern,
+body.theme-dark .status-badge-modern.badge-success,
+body.theme-dark .status-badge-modern.badge-info,
+body.theme-dark .status-badge-modern.badge-warning {
+    color: #e2e8f0 !important;
+}
+
+/* ============================================================
+   37. FORM ACTIONS BORDER
+   ============================================================ */
+body.theme-dark .form-actions { border-top-color: #334155 !important; }
+
+/* ============================================================
+   38. DOC INFO PANEL (Image 2 left sidebar)
+   Labels: DOCUMENT, CONFIDENTIALITY, DOC NAME etc.
+   ============================================================ */
+body.theme-dark .doc-info-label,
+body.theme-dark [class*="doc-label"],
+body.theme-dark [class*="info-label"],
+body.theme-dark .sidebar-card-modern .text-uppercase,
+body.theme-dark small[class*="label"],
+body.theme-dark .field-label { color: #64748b !important; }
+
+body.theme-dark .doc-info-value,
+body.theme-dark [class*="doc-value"],
+body.theme-dark [class*="info-value"] { color: #e2e8f0 !important; }
+
+/* ============================================================
+   39. DOCUMENT PRINT PREVIEW — Oq qog'oz saqlansin
+   (Hujjat matni har doim oq fonda qora matn bo'lishi kerak)
+   ============================================================ */
+body.theme-dark .work-doc-page,
+body.theme-dark .print-page-modern,
+body.theme-dark .work-doc-subpage,
+body.theme-dark .letterhead-modern {
+    background: #ffffff !important;
+    color: #000000 !important;
+    /*box-shadow: 0 4px 24px rgba(0,0,0,0.5) !important;*/
+}
+body.theme-dark .work-doc-subpage *,
+body.theme-dark .work-doc-page *,
+body.theme-dark .print-page-modern * {
+    color: #1e293b !important;
+}
+/* Exceptions inside print — keep colored elements */
+body.theme-dark .work-doc-subpage .badge-count,
+body.theme-dark .work-doc-subpage [class*="badge-primary"],
+body.theme-dark .work-doc-page .qr-wrapper {
+    color: inherit !important;
+}
+/* QR code stays white bg */
+body.theme-dark .qr-wrapper,
+body.theme-dark .qr-code-wrapper {
+    background: #ffffff !important;
+    border-color: #e2e8f0 !important;
+}
+
+/* ============================================================
+   40. ALL BADGE CLASSES — Complete dark mode color mapping
+   (Every badge found across all CSS files)
+   ============================================================ */
+
+/* --- Green badges (success) --- */
+body.theme-dark .badge-success,
+body.theme-dark .badge-confirm,
+body.theme-dark .badge-modern.badge-success,
+body.theme-dark .status-badge-modern.badge-success,
+body.theme-dark .status-badge.status-approved,
+body.theme-dark .doc-type-badge-modern,
+body.theme-dark .doc-status-badge-modern.signed,
+body.theme-dark .logs-table-modern .act-type-badge.created,
+body.theme-dark .protocol-role-badge,
+body.theme-dark .savings-badge {
+    background: linear-gradient(135deg, #14381f, #1a4a28) !important;
+    color: #6ee7b7 !important;
+    border-color: #16a34a !important;
+}
+
+/* --- Blue badges (info) --- */
+body.theme-dark .badge-info,
+body.theme-dark .badge-blue,
+body.theme-dark .badge-light-blue,
+body.theme-dark .badge-aqua,
+body.theme-dark .badge-modern.badge-info,
+body.theme-dark .status-badge-modern.badge-info,
+body.theme-dark .doc-type-badge-modern.protocol,
+body.theme-dark .doc-status-badge-modern.completed,
+body.theme-dark .logs-table-modern .act-type-badge.updated,
+body.theme-dark .logs-table-modern .doc-type-badge,
+body.theme-dark .protocol-parent-badge,
+body.theme-dark .code-badge,
+body.theme-dark .status-blue {
+    background: linear-gradient(135deg, #1e3a5f, #1e4080) !important;
+    color: #93c5fd !important;
+    border-color: #2563eb !important;
+}
+
+/* --- Yellow/Warning badges --- */
+body.theme-dark .badge-warning,
+body.theme-dark .badge-view,
+body.theme-dark .status-badge-modern.badge-warning,
+body.theme-dark .status-badge.status-pending,
+body.theme-dark .doc-type-badge-modern.public,
+body.theme-dark .doc-status-badge-modern.pending,
+body.theme-dark .logs-table-modern .act-type-badge.viewed {
+    background: linear-gradient(135deg, #3d2e00, #4a3800) !important;
+    color: #fcd34d !important;
+    border-color: #d97706 !important;
+}
+
+/* --- Red/Danger badges --- */
+body.theme-dark .badge-danger,
+body.theme-dark .badge-sign,
+body.theme-dark .status-badge-modern.badge-danger,
+body.theme-dark .status-badge.status-rejected,
+body.theme-dark .doc-status-badge-modern.rejected,
+body.theme-dark .logs-table-modern .act-type-badge.deleted {
+    background: linear-gradient(135deg, #3d1515, #4a1a1a) !important;
+    color: #fca5a5 !important;
+    border-color: #dc2626 !important;
+}
+
+/* --- Gray/Draft badges --- */
+body.theme-dark .status-gray,
+body.theme-dark .doc-status-badge-modern.draft,
+body.theme-dark .doc-number-badge {
+    background: linear-gradient(135deg, #1e293b, #273449) !important;
+    color: #94a3b8 !important;
+    border-color: #475569 !important;
+}
+
+/* --- Purple badges --- */
+body.theme-dark .protocol-code-badge {
+    background: linear-gradient(135deg, #2d1b4e, #3b1f6e) !important;
+    color: #d8b4fe !important;
+    border-color: #7c3aed !important;
+}
+
+/* --- Term badges (deadline) --- */
+body.theme-dark .term-active {
+    background: #14381f !important;
+    color: #6ee7b7 !important;
+    border-color: #16a34a !important;
+}
+body.theme-dark .term-overdue {
+    background: #3d2e00 !important;
+    color: #fcd34d !important;
+    border-color: #d97706 !important;
+}
+body.theme-dark .term-urgent {
+    background: #3d1515 !important;
+    color: #fca5a5 !important;
+    border-color: #dc2626 !important;
+}
+
+/* --- Status items (text-only status indicators) --- */
+body.theme-dark .status-item.status-completed { color: #6ee7b7 !important; }
+body.theme-dark .status-item.status-completed i { color: #22c55e !important; }
+body.theme-dark .status-item.status-pending { color: #fcd34d !important; }
+body.theme-dark .status-item.status-pending i { color: #f59e0b !important; }
+body.theme-dark .status-item.status-rejected { color: #fca5a5 !important; }
+body.theme-dark .status-item.status-rejected i { color: #ef4444 !important; }
+body.theme-dark .status-item.status-editing { color: #93c5fd !important; }
+body.theme-dark .status-item.status-editing i { color: #3b82f6 !important; }
+body.theme-dark .status-item.status-deleted { color: #fdba74 !important; }
+body.theme-dark .status-item.status-deleted i { color: #ea580c !important; }
+
+/* --- Status radio items --- */
+body.theme-dark .status-radio-item,
+body.theme-dark .status-radio-option {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+}
+body.theme-dark .status-radio-item:hover,
+body.theme-dark .status-radio-option:hover { background: #273449 !important; }
+body.theme-dark .status-radio-item.success:has(input:checked),
+body.theme-dark .status-radio-option.success:has(input:checked) {
+    background: linear-gradient(135deg, #14381f, #1a4a28) !important;
+    color: #6ee7b7 !important;
+}
+body.theme-dark .status-radio-item.danger:has(input:checked),
+body.theme-dark .status-radio-option.danger:has(input:checked) {
+    background: linear-gradient(135deg, #3d1515, #4a1a1a) !important;
+    color: #fca5a5 !important;
+}
+
+/* --- File name badge --- */
+body.theme-dark .file-name-badge {
+    background: linear-gradient(135deg, #2d1b4e, #3b1f6e) !important;
+    color: #e2e8f0 !important;
+}
+body.theme-dark .file-name-badge i { color: #a78bfa !important; }
+
+/* --- Order badge --- */
+body.theme-dark .order-badge-modern { color: white !important; }
+
+/* --- Status (generic .status class) --- */
+body.theme-dark .status {
+    background: rgba(121, 77, 253, 0.2) !important;
+    color: #a78bfa !important;
+}
+
+/* --- Status label --- */
+body.theme-dark .status-label { color: #94a3b8 !important; }
+
+/* ============================================================
+   41. FOOTER — inline <style> override
+   ============================================================ */
+body.theme-dark .main-footer {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+    border-top-color: #334155 !important;
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.4) !important;
+}
+body.theme-dark .footer-left,
+body.theme-dark .footer-right { color: #64748b !important; }
+body.theme-dark .footer-left span { color: #64748b !important; }
+
+/* ============================================================
+   42. ORG STRUCTURE PAGE — all inline styles override
+   ============================================================ */
+
+/* Page wrapper: style="background: #f8fafc" */
+body.theme-dark [style*="background: #f8fafc"],
+body.theme-dark [style*="background:#f8fafc"],
+body.theme-dark [style*="background-color: #f8fafc"] {
+    background: #0f172a !important;
+}
+
+/* Main card: style="background: white" */
+body.theme-dark [style*="background: white"],
+body.theme-dark [style*="background:white"] {
+    background: #1e293b !important;
+}
+
+/* Card header gradient */
+body.theme-dark [style*="background: linear-gradient(135deg, #f8fafc"],
+body.theme-dark [style*="background:linear-gradient(135deg, #f8fafc"] {
+    background: linear-gradient(135deg, #1e293b 0%, #273449 100%) !important;
+}
+
+/* border-bottom: 2px solid #e2e8f0 */
+body.theme-dark [style*="border-bottom: 2px solid #e2e8f0"],
+body.theme-dark [style*="border-left: 2px solid #e2e8f0"] {
+    border-color: #334155 !important;
+}
+
+/* color: #1e293b (headings) */
+body.theme-dark [style*="color: #1e293b"] { color: #e2e8f0 !important; }
+body.theme-dark [style*="color: #64748b"] { color: #94a3b8 !important; }
+body.theme-dark [style*="color: #475569"] { color: #94a3b8 !important; }
+
+/* Diagram area background */
+body.theme-dark #myDiagramDiv {
+    background: #0f172a !important;
+    border-color: #334155 !important;
+}
+
+/* Inspector sidebar */
+body.theme-dark #inspector {
+    background: #1e293b !important;
+    border-left-color: #334155 !important;
+    color: #e2e8f0 !important;
+}
+body.theme-dark #inspector * { color: #e2e8f0 !important; }
+
+/* Inspector employee cards (white boxes) */
+body.theme-dark #inspector div[style*="background: white"],
+body.theme-dark #inspector div[style*="background:white"],
+body.theme-dark #inspector div[style*="border: 1px solid"],
+body.theme-dark #inspector [style*="background: #f8fafc"] {
+    background: #273449 !important;
+    border-color: #475569 !important;
+    color: #e2e8f0 !important;
+}
+body.theme-dark #inspector [style*="color: #1e293b"],
+body.theme-dark #inspector [style*="color: #374151"],
+body.theme-dark #inspector [style*="color: #6b7280"],
+body.theme-dark #inspector [style*="color: #64748b"] {
+    color: #e2e8f0 !important;
+}
+body.theme-dark #inspector [style*="color: #6b7280"],
+body.theme-dark #inspector [style*="color: #94a3b8"] {
+    color: #94a3b8 !important;
+}
+
+/* Inspector title */
+body.theme-dark #inspector [style*="font-size: 18px"],
+body.theme-dark #inspector [style*="font-weight: 700"] {
+    color: #e2e8f0 !important;
+}
+
+/* Inspector border-bottom separators */
+body.theme-dark #inspector [style*="border-bottom: 1px solid"] {
+    border-bottom-color: #334155 !important;
+}
+
+/* GoJS canvas — diagram nodes remain colored (blue/red by JS) */
+body.theme-dark #myDiagramDiv canvas {
+    filter: brightness(0.9) saturate(1.1);
+}
+
+body.theme-dark #inspector ul li {
+    background: transparent !important;
+}
+
+body.theme-dark #myDiagramDiv::after {
+    background: #131a23 !important;
+}

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class UserApiController extends Controller
@@ -13,8 +14,8 @@ class UserApiController extends Controller
     /**
      * @OA\Get(
      *     path="/api/v1/users",
-     *     summary="Получить список пользователей",
-     *     description="Возвращает список пользователей с персональными данными, текущим местом работы и ролями",
+     *     summary="Получить список пользователей своей организации",
+     *     description="Возвращает список пользователей, принадлежащих организации текущего пользователя",
      *     tags={"Users"},
      *     security={{"sanctum":{}}},
      *
@@ -32,15 +33,8 @@ class UserApiController extends Controller
      *         @OA\JsonContent(ref="#/components/schemas/UserListResponse")
      *     ),
      *
-     *     @OA\Response(
-     *         response=401,
-     *         description="Неавторизован"
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=500,
-     *         description="Внутренняя ошибка сервера"
-     *     )
+     *     @OA\Response(response=401, description="Неавторизован"),
+     *     @OA\Response(response=500, description="Внутренняя ошибка сервера")
      * )
      */
     public function index(Request $request): JsonResponse
@@ -48,11 +42,15 @@ class UserApiController extends Controller
         try {
             $perPage = $request->input('per_page', 25);
 
-            $users = User::with([
-                'userPersonal',
-                'currentWork',
-                'userRoles'
-            ])
+            // Возвращаем только пользователей своей организации
+            $orgUnitId = Auth::user()->org_unit_id;
+
+            $users = User::where('org_unit_id', $orgUnitId)
+                ->with([
+                    'userPersonal',
+                    'currentWork',
+                    'userRoles'
+                ])
                 ->orderByDesc('id')
                 ->paginate($perPage);
 
@@ -65,8 +63,8 @@ class UserApiController extends Controller
         } catch (\Throwable $e) {
 
             Log::error('Error retrieving users', [
-                'error' => $e->getMessage(),
-                'user_id' => auth()->id(),
+                'error'   => $e->getMessage(),
+                'user_id' => Auth::id(),
             ]);
 
             return response()->json([

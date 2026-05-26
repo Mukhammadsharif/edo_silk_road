@@ -37,6 +37,7 @@ return [
 
     'telegram-bot-api' => [
         'token' => env('TELEGRAM_BOT_TOKEN', 'YOUR BOT TOKEN HERE'),
+        'webhook_url' => env('TELEGRAM_WEBHOOK_URL'),
     ],
 
     'e-imzo-server' => [

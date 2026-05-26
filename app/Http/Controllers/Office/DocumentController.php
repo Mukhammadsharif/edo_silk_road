@@ -202,6 +202,12 @@ class DocumentController extends Controller
     public function store(Request $request): RedirectResponse
     {
         //
+        $request->validate([
+            'resolution_user' => 'required'
+        ], [
+            'resolution_user.required' => __('field.resolution_user_required'),
+        ]);
+
         $journal_type = JournalTypes::find($request->journal_type);
 
         $journal_type2 = JournalTypes::find($request->journal_type2);

@@ -288,7 +288,7 @@ class HrEmpController extends Controller
             $this->userLogService->editUserLog($id, ['comment' => 'Updated personal info']);
         }
 
-        return back()->with('success', 'User Info updated successfully');
+        return back()->with('success', __('message.success_message'));
     }
 
     public function orderView($id)

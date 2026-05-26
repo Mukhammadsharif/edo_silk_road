@@ -12,6 +12,7 @@ use App\Http\Controllers\EimzoTestController;
 use App\Http\Controllers\ExecutionController;
 use App\Http\Controllers\File\FileController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\Mobile\MobileSignController;
 use App\Http\Controllers\Office\DepartmentJournalsController;
 use App\Http\Controllers\Office\DocOrganizationsController;
 use App\Http\Controllers\Office\DocumentController;
@@ -24,6 +25,7 @@ use App\Http\Controllers\PdfGenerateController;
 use App\Http\Controllers\ProtocolsController;
 use App\Http\Controllers\QrCodeDocController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\Storage\OrgStorageController;
 use App\Http\Controllers\TelegramWebhookController;
 use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -32,6 +34,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\OrganizationSwitchController;
 use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\UserPostController;
 use App\Http\Controllers\Admin\RoleController;
@@ -73,6 +76,40 @@ Route::post('e-imzo/backend-auth',  [SignDocImzoController::class, 'backendAuthL
 Route::group(['middleware' => ['auth']], function() {
 
     Route::get('/edo', [HomeController::class, 'index'])->name('home');
+
+    // Переключение между организациями (мульти-org membership)
+    Route::post('/switch-organization/{org_id}', [OrganizationSwitchController::class, 'switch'])
+        ->whereNumber('org_id')
+        ->name('organization.switch');
+
+    // ════════════════════════════════════════════════════════════════════
+    // Хранилище организации (CRUD: Director / IT_Admin / Super_Admin)
+    // ════════════════════════════════════════════════════════════════════
+    Route::prefix('org-storage')->name('storage.')->group(function () {
+        Route::get('/',                       [OrgStorageController::class, 'index'])->name('index');
+        Route::get('/folder/{id}',            [OrgStorageController::class, 'showFolder'])->whereNumber('id')->name('folder.show');
+
+        Route::post('/folder',                [OrgStorageController::class, 'createFolder'])->name('folder.create');
+        Route::patch('/folder/{id}',          [OrgStorageController::class, 'renameFolder'])->whereNumber('id')->name('folder.rename');
+        Route::delete('/folder/{id}',         [OrgStorageController::class, 'deleteFolder'])->whereNumber('id')->name('folder.delete');
+
+        // Per-folder permissions management
+        Route::get('/folder/{id}/permissions',                  [OrgStorageController::class, 'showPermissions'])->whereNumber('id')->name('folder.permissions.show');
+        Route::post('/folder/{id}/permissions',                 [OrgStorageController::class, 'grantPermission'])->whereNumber('id')->name('folder.permissions.grant');
+        Route::delete('/folder/{id}/permissions/{permId}',      [OrgStorageController::class, 'revokePermission'])->whereNumber('id')->whereNumber('permId')->name('folder.permissions.revoke');
+
+        Route::post('/file',                  [OrgStorageController::class, 'uploadFile'])->name('file.upload');
+        Route::patch('/file/{id}',            [OrgStorageController::class, 'renameFile'])->whereNumber('id')->name('file.rename');
+        Route::delete('/file/{id}',           [OrgStorageController::class, 'deleteFile'])->whereNumber('id')->name('file.delete');
+        Route::get('/file/{id}/download',     [OrgStorageController::class, 'downloadFile'])->whereNumber('id')->name('file.download');
+        Route::get('/file/{id}/preview',      [OrgStorageController::class, 'previewFile'])->whereNumber('id')->name('file.preview');
+
+        Route::get('/trash',                  [OrgStorageController::class, 'trash'])->name('trash');
+        Route::post('/trash/folder/{id}/restore', [OrgStorageController::class, 'restoreFolder'])->whereNumber('id')->name('trash.folder.restore');
+        Route::delete('/trash/folder/{id}',   [OrgStorageController::class, 'purgeFolder'])->whereNumber('id')->name('trash.folder.purge');
+        Route::post('/trash/file/{id}/restore',   [OrgStorageController::class, 'restoreFile'])->whereNumber('id')->name('trash.file.restore');
+        Route::delete('/trash/file/{id}',     [OrgStorageController::class, 'purgeFile'])->whereNumber('id')->name('trash.file.purge');
+    });
 
     Route::get('charts/documents', [HomeController::class, 'chartDocuments'])->name('charts.documents');
     Route::post('get-menu-count', [HomeController::class, 'getMenuCount'])->name('get-menu-count');
@@ -446,3 +483,34 @@ Route::get('/privacy-policy', [EimzoTestController::class, 'privacy'])
     ->name('eimzo.privacy');
 
 Route::post('/frontend/mobile/upload', [SignDocImzoMobileApiController::class, 'mobileUpload']);
+
+Route::prefix('mobile')->group(function () {
+    Route::get('/sign/{token}', [MobileSignController::class, 'show'])->name('mobile.sign');
+    Route::post('/sign/{token}/complete', [MobileSignController::class, 'complete'])->name('mobile.sign.complete');
+});
+
+Route::get('/mobile/redirect', function(\Illuminate\Http\Request $request) {
+    $url = $request->query('url', '');
+    if (!str_starts_with($url, 'eimzo://')) abort(400);
+    return view('mobile.redirect', ['url' => $url]);
+})->name('mobile.redirect');
+
+Route::get('/telegram-link/eimzo', function(\Illuminate\Http\Request $request) {
+    $token = $request->query('token', '');
+    if (!is_string($token) || $token === '' || strlen($token) > 128) {
+        abort(400, 'Invalid token');
+    }
+
+    $payload = \Illuminate\Support\Facades\Cache::get("tg_eimzo_link:{$token}");
+    if (!$payload || empty($payload['chat_id'])) {
+        return view('mobile.eimzo-link', [
+            'link_token' => null,
+            'expired'    => true,
+        ]);
+    }
+
+    return view('mobile.eimzo-link', [
+        'link_token' => $token,
+        'expired'    => false,
+    ]);
+})->name('telegram.link.eimzo');

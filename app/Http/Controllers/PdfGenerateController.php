@@ -129,7 +129,7 @@ class PdfGenerateController extends Controller
 
         $edoJournal = DocumentJournals::where('doc_id', $doc_id)->where('status', '>', 4)->first();
         if ($edoDocument && $edoJournal) {
-            $domainName = env('APP_URL', 'https://demoedo.uztest.uz');
+            $domainName = env('APP_URL', 'https://edoline.uz');
             $qr_code = base64_encode(QrCode::size(60)->generate($domainName.'/d/'.$edoDocument->doc_code));
             return '<img src="data:image/png;base64, '.$qr_code.'">';
         }

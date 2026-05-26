@@ -181,24 +181,49 @@ class UserController extends Controller
 
         $user = User::findOrFail($requestOrg->user_id);
 
+        // Меняем активную организацию пользователя на ту, в которую его принимают.
+        // ВАЖНО: старые UserWorkHistory НЕ деактивируем — пользователь остаётся
+        // членом всех ранее одобренных организаций и может переключаться между ними
+        // через дропдаун в сайдбаре. users.org_unit_id хранит ТЕКУЩУЮ выбранную.
         $user->org_unit_id = $requestOrg->org_unit_id;
         $user->save();
 
         $nextYear = Carbon::now()->addYear()->format('Y-m-d');
 
-        $oldUserWorkHistory = UserWorkHistory::where('user_id', $user->id)->first();
+        // Если у пользователя уже была work_history в этой же организации (например,
+        // он раньше работал, был отключён и снова подаёт заявку) — реактивируем её,
+        // иначе создаём новую.
+        $existing = UserWorkHistory::where('user_id', $user->id)
+            ->where('org_id', $this->organizationId())
+            ->first();
 
-        if ($oldUserWorkHistory) $oldUserWorkHistory->update(['status' => 2]);
+        if ($existing) {
+            $existing->update([
+                'dep_id'    => $request->dep_id,
+                'post_id'   => $request->post_id ?? 3,
+                'from_date' => Carbon::now()->format('Y-m-d'),
+                'to_date'   => $nextYear,
+                'status'    => 1,
+            ]);
+        } else {
+            UserWorkHistory::create([
+                'user_id'   => $user->id,
+                'org_id'    => $this->organizationId(),
+                'dep_id'    => $request->dep_id,
+                'post_id'   => $request->post_id ?? 3,
+                'from_date' => Carbon::now()->format('Y-m-d'),
+                'to_date'   => $nextYear,
+                'status'    => 1,
+            ]);
+        }
 
-        UserWorkHistory::create([
-            'user_id' => $user->id,
-            'org_id' => $this->organizationId(),
-            'dep_id' => $request->dep_id,
-            'post_id' => $request->post_id ?? 3,
-            'from_date' => Carbon::now()->format('Y-m-d'),
-            'to_date' => $nextYear,
-            'status' => 1
-        ]);
+        $demo = UserWorkHistory::where('user_id', $user->id)
+            ->where('org_id', 1)
+            ->first();
+
+        if ($demo) {
+            $demo->update(['status'    => 2]);
+        }
 
         $requestOrg->status = 2;
         $requestOrg->save();
@@ -351,6 +376,47 @@ class UserController extends Controller
         //
         $user = User::where('id', $id)->where('user_hash', $hash)->first();
         if ($user) {
+
+            // ════════════════════════════════════════════════════════════════
+            // ЗАЩИТА ОТ ADMIN LOCKOUT:
+            // В каждой организации должен оставаться хотя бы один активный
+            // IT_Admin. Если эта операция оставит организацию без IT_Admin —
+            // блокируем сохранение и просим сначала назначить роль другому
+            // сотруднику.
+            // ════════════════════════════════════════════════════════════════
+            $itAdminRole = Role::where('name', 'IT_Admin')->first();
+            $newRoleIds  = array_map('intval', $request->role_ids ?? []);
+
+            if ($itAdminRole) {
+                $wasItAdmin    = UserRole::where('model_id', $id)
+                    ->where('role_id', $itAdminRole->id)
+                    ->exists();
+                $willBeItAdmin = in_array($itAdminRole->id, $newRoleIds, true);
+
+                // Снимают IT_Admin (был, теперь не будет)
+                if ($wasItAdmin && !$willBeItAdmin) {
+                    $userOrgId = $user->org_unit_id;
+
+                    // Считаем других активных юзеров с IT_Admin в этой же org
+                    $orgUserIds = User::where('org_unit_id', $userOrgId)
+                        ->where('status', 1)
+                        ->where('id', '!=', $user->id)
+                        ->pluck('id')
+                        ->toArray();
+
+                    $otherItAdminsExist = !empty($orgUserIds) && UserRole::where('role_id', $itAdminRole->id)
+                            ->whereIn('model_id', $orgUserIds)
+                            ->exists();
+
+                    if (!$otherItAdminsExist) {
+                        return back()->with(
+                            'error',
+                            __('field.cannot_remove_last_it_admin')
+                            ?? 'Нельзя снять роль IT_Admin: в организации должен остаться хотя бы один сотрудник с этой ролью. Сначала назначьте её другому пользователю.'
+                        );
+                    }
+                }
+            }
 
             UserRole::where('model_id', $id)->delete();
 

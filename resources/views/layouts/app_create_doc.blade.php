@@ -7,7 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'EAI-EDO') }}</title>
-    <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo_new.svg') }}">
     <link href="{{ asset('/assets/fonts.css?family=Nunito+Sans:300,400,600,700,800') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('/assets/node_modules/bootstrap/dist/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('/assets/node_modules/@fortawesome/fontawesome-free/css/all.min.css') }}">
@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="{{ asset('/assets/node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.css') }}">
     <link rel="stylesheet" href="{{ asset('/assets/dist/css/theme.min.css') }}">
     <link rel="stylesheet" href="{{ asset('/assets/dist/css/main.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/dark-theme.css') }}">
 
     <link rel="stylesheet" href="{{ asset('fontawesome-web/css/all.min.css') }}">
 

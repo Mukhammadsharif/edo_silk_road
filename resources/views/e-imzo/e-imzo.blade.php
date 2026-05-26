@@ -203,7 +203,7 @@
         }
     };
 
-    var successCheckSignPost = function (pkcs7, ecp_doc_id, ecp_doc_type, ecp_confirm_id, ecp_r_text) {
+    var successCheckSignPost = function (pkcs7, ecp_doc_id, ecp_doc_type, ecp_confirm_id, ecp_r_text, pinfl) {
         $.ajax({
             url: '/ecp-sign-doc',
             type: 'POST',
@@ -212,7 +212,8 @@
                 ecp_doc_id: ecp_doc_id,
                 ecp_doc_type: ecp_doc_type,
                 ecp_confirm_id: ecp_confirm_id,
-                ecp_r_text: ecp_r_text
+                ecp_r_text: ecp_r_text,
+                pinfl: pinfl
             },
             beforeSend: function () {
                 $('.loadingGif').show();
@@ -253,6 +254,10 @@
                         keyboard: false,
                         show: true
                     });
+
+                    setTimeout(function () {
+                        location.reload();
+                    }, 2000);
                 }
             },
             error: function (s) {
@@ -279,7 +284,7 @@
             if (keyId) {
                 EIMZOClient.createPkcs7(keyId, ecp_doc_id, null, function (pkcs7) {
                     document.testform.pkcs7.value = pkcs7;
-                    successCheckSignPost(pkcs7, ecp_doc_id, ecp_doc_type, ecp_confirm_id, ecp_r_text);
+                    successCheckSignPost(pkcs7, ecp_doc_id, ecp_doc_type, ecp_confirm_id, ecp_r_text, vo.PINFL);
                 }, function (e, r) {
                     if (r) {
                         if (r.indexOf("BadPaddingException") != -1) {
@@ -302,7 +307,7 @@
                     }
                     EIMZOClient.createPkcs7(id, ecp_doc_id, null, function (pkcs7) {
                         document.testform.pkcs7.value = pkcs7;
-                        successCheckSignPost(pkcs7, ecp_doc_id, ecp_doc_type, ecp_confirm_id, ecp_r_text);
+                        successCheckSignPost(pkcs7, ecp_doc_id, ecp_doc_type, ecp_confirm_id, ecp_r_text, vo.PINFL);
                     }, function (e, r) {
                         if (r) {
                             if (r.indexOf("BadPaddingException") != -1) {

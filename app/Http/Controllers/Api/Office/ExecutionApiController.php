@@ -855,10 +855,17 @@ class ExecutionApiController extends Controller
             $status = $request->input('status');
             $perPage = $request->input('per_page', 25);
 
-            $controls = JournalTypeControls::where('status', 1)->pluck('journal_type_id');
+            $orgUnitId = Auth::user()->org_unit_id;
+
+            // Контролируемые типы — только для текущей организации
+            $orgJournalTypeIds = JournalTypes::where('org_id', $orgUnitId)->pluck('id');
+            $controls = JournalTypeControls::where('status', 1)
+                ->whereIn('journal_type_id', $orgJournalTypeIds)
+                ->pluck('journal_type_id');
             $today = Carbon::now()->format('Y-m-d');
 
             $search = DocumentJournals::whereIn('j_type', $controls)
+                ->where('org_unit_id', $orgUnitId)
                 ->where('status', '!=', 1);
 
             if ($status === '12') {
@@ -1507,8 +1514,46 @@ class ExecutionApiController extends Controller
     public function viewControlDocument($j_id): JsonResponse
     {
         try {
+            $user      = Auth::user();
+            $workIds   = $user->userWorkIDs();
+            $orgUnitId = $user->org_unit_id;
+
             $journal = DocumentJournals::findOrFail($j_id);
             $document = Documents::where('id', $journal->doc_id)->firstOrFail();
+
+            // 1) Документ должен принадлежать организации пользователя
+            if ((int) $journal->org_unit_id !== (int) $orgUnitId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Access denied to this document'
+                ], 403);
+            }
+
+            // 2) Тип документа должен быть в списке контролируемых для этой организации
+            $orgJournalTypeIds = JournalTypes::where('org_id', $orgUnitId)->pluck('id');
+            $isControlType = JournalTypeControls::where('status', 1)
+                ->whereIn('journal_type_id', $orgJournalTypeIds)
+                ->where('journal_type_id', $journal->j_type)
+                ->exists();
+
+            if (!$isControlType) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Access denied to this document'
+                ], 403);
+            }
+
+            // 3) Пользователь должен быть участником исполнения документа
+            $hasStep = DocumentExecutionSteps::where('j_id', $journal->id)
+                ->whereIn('to_user', $workIds)
+                ->exists();
+
+            if (!$hasStep) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Access denied to this document'
+                ], 403);
+            }
 
             $documentFiles = $journal->files;
 

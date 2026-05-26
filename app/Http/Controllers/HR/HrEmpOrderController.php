@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin\Department;
 use App\Models\Admin\HR\HrEmpExperience;
 use App\Models\Admin\HR\HrEmpOrder;
+use App\Models\Admin\Role;
 use App\Models\Admin\StatusList;
 use App\Models\Admin\UserPosition;
 use App\Models\Admin\UserRole;
@@ -48,6 +49,51 @@ class HrEmpOrderController extends Controller
             ]);
         }
 
+        // ════════════════════════════════════════════════════════════════
+        // ЗАЩИТА ОТ ADMIN LOCKOUT при увольнении (ord_code == 4):
+        // Если увольняемый сотрудник — единственный активный IT_Admin
+        // в этой организации, блокируем приказ. Иначе организация
+        // останется без IT-администратора, и никто не сможет управлять
+        // ролями, пользователями и т.д.
+        //
+        // Проверяем ДО любых записей в БД, чтобы откат был не нужен.
+        // ════════════════════════════════════════════════════════════════
+        if ((int) $request->ord_code === 4) {
+            $itAdminRole = Role::where('name', 'IT_Admin')->first();
+            $targetUser  = User::find($request->user_id);
+
+            if ($itAdminRole && $targetUser) {
+                $isItAdmin = UserRole::where('model_id', $targetUser->id)
+                    ->where('role_id', $itAdminRole->id)
+                    ->exists();
+
+                if ($isItAdmin) {
+                    $orgUnitId = $this->organizationId();
+
+                    // Другие активные IT_Admin в этой же org
+                    $otherOrgUserIds = User::where('org_unit_id', $orgUnitId)
+                        ->where('status', 1)
+                        ->where('id', '!=', $targetUser->id)
+                        ->pluck('id')
+                        ->toArray();
+
+                    $otherItAdminsExist = !empty($otherOrgUserIds) && UserRole::where('role_id', $itAdminRole->id)
+                            ->whereIn('model_id', $otherOrgUserIds)
+                            ->exists();
+
+                    if (!$otherItAdminsExist) {
+                        return back()
+                            ->withInput()
+                            ->with(
+                                'error',
+                                __('field.cannot_dismiss_last_it_admin')
+                                ?? 'Невозможно уволить: этот сотрудник — единственный IT_Admin в организации. Сначала назначьте роль IT_Admin другому сотруднику.'
+                            );
+                    }
+                }
+            }
+        }
+
         $to_date = null;
         if ($request->to_date) {
             $to_date = date('Y-m-d', strtotime($request->to_date));
@@ -67,9 +113,17 @@ class HrEmpOrderController extends Controller
 
         $user = User::find($request->user_id);
 
+        // work_history именно в ТЕКУЩЕЙ организации, а не произвольный последний.
+        // Приказ создаётся админом конкретной org для сотрудника в этой же org.
+        $currentWorkInOrg = UserWorkHistory::where('user_id', $user->id)
+            ->where('org_id', $this->organizationId())
+            ->where('status', 1)
+            ->orderByDesc('id')
+            ->first();
+
         $createEmpOrder = new HrEmpOrder();
         $createEmpOrder->user_id = $request->user_id;
-        $createEmpOrder->w_user_id = $user->currentWork->id??0;
+        $createEmpOrder->w_user_id = $currentWorkInOrg->id ?? 0;
         $createEmpOrder->ord_code = $request->ord_code;
         $createEmpOrder->ord_name = $request->ord_name;
         $createEmpOrder->ord_num = $request->ord_num;
@@ -81,7 +135,12 @@ class HrEmpOrderController extends Controller
         if ($request->dep_id) {
             $nextYear = Carbon::now()->addYear()->format('Y-m-d');
 
-            $deactivateLastWorkUser = UserWorkHistory::where('user_id', $request->user_id)->where('status', 1)->get();
+            // Деактивируем только work_history В ТЕКУЩЕЙ организации.
+            // Если юзер числится в нескольких org — другие НЕ должны отключаться.
+            $deactivateLastWorkUser = UserWorkHistory::where('user_id', $request->user_id)
+                ->where('org_id', $this->organizationId())
+                ->where('status', 1)
+                ->get();
             if ($deactivateLastWorkUser) {
                 foreach ($deactivateLastWorkUser as $item) {
                     $item->update([
@@ -122,7 +181,53 @@ class HrEmpOrderController extends Controller
         }
 
         if ($request->ord_code == 4) {
-            $user->update(['status' => 3]);
+            // ════════════════════════════════════════════════════════════════
+            // УВОЛЬНЕНИЕ (с учётом мульти-org)
+            // ════════════════════════════════════════════════════════════════
+            //
+            // 1) Деактивируем work_history именно в ТЕКУЩЕЙ организации
+            //    (которая выпускает приказ об увольнении).
+            // 2) Если у юзера остались активные work_history в ДРУГИХ org —
+            //    юзера не отключаем; если текущая org была активной — переключаем
+            //    users.org_unit_id на одну из оставшихся (чтобы юзер при
+            //    следующем входе попал в работающую org, а не в "пустую").
+            // 3) Если это была ПОСЛЕДНЯЯ организация — деактивируем юзера
+            //    (User::status = 3) как и раньше.
+            // ════════════════════════════════════════════════════════════════
+
+            $currentOrgId = $this->organizationId();
+
+            // Деактивируем все активные work_history юзера в этой org
+            $worksInThisOrg = UserWorkHistory::where('user_id', $user->id)
+                ->where('org_id', $currentOrgId)
+                ->where('status', 1)
+                ->get();
+
+            foreach ($worksInThisOrg as $work) {
+                $work->update([
+                    'status'  => 2,
+                    'to_date' => Carbon::now(),
+                ]);
+                ProtocolDocTypeUser::where('user_id', $work->id)->delete();
+            }
+
+            // Сколько активных work_history осталось у юзера в других org?
+            $remainingActive = UserWorkHistory::where('user_id', $user->id)
+                ->where('status', 1)
+                ->orderByDesc('id')
+                ->get();
+
+            if ($remainingActive->isEmpty()) {
+                // Это была последняя организация — отключаем юзера полностью
+                $user->update(['status' => 3]);
+            } else {
+                // Есть ещё работа в других org — юзера оставляем активным.
+                // Если текущая выбранная org была именно той, откуда уволили —
+                // переключаем org_unit_id на одну из оставшихся.
+                if ((int) $user->org_unit_id === (int) $currentOrgId) {
+                    $user->update(['org_unit_id' => $remainingActive->first()->org_id]);
+                }
+            }
         }
 
         return redirect()->route('hr.emp.order.view', [$user->id, $user->user_hash])
