@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\Protocol\ProtocolApiCommentController;
 use App\Http\Controllers\Api\Protocol\ProtocolApiEmpHrOrdersController;
 use App\Http\Controllers\Api\Protocol\ProtocolsApiController;
 use App\Http\Controllers\Api\Telegram\TelegramDocumentController;
+use App\Http\Controllers\Api\Telegram\TelegramDocumentCreateController;
 use App\Http\Controllers\Api\Telegram\TelegramEimzoLinkController;
 use App\Http\Controllers\Api\Telegram\TelegramMiniAppAuthController;
 use App\Http\Controllers\Api\Telegram\TelegramProfileController;
@@ -287,12 +288,31 @@ Route::prefix('telegram')->group(function () {
     });
 
     // Документы (используют собственную auth через Bearer token)
+    Route::get('/counts', [TelegramDocumentController::class, 'counts']);
     Route::get('/documents', [TelegramDocumentController::class, 'forSign']);
-    Route::get('/documents/{j_id}', [TelegramDocumentController::class, 'show']);
-    Route::post('/documents/{j_id}/sign-token', [TelegramDocumentController::class, 'createSignToken']);
+    Route::get('/documents/{j_id}', [TelegramDocumentController::class, 'show'])->whereNumber('j_id');
+    Route::post('/documents/{j_id}/sign-token', [TelegramDocumentController::class, 'createSignToken'])->whereNumber('j_id');
+
+    // Mening hujjatlarim — документы созданные текущим юзером
+    Route::get('/my-documents', [TelegramDocumentController::class, 'myDocuments']);
+    Route::get('/my-documents/{j_id}', [TelegramDocumentController::class, 'showMine'])->whereNumber('j_id');
+    Route::post('/my-documents/{j_id}/send', [TelegramDocumentController::class, 'sendForSign'])->whereNumber('j_id');
+    Route::delete('/my-documents/{j_id}', [TelegramDocumentController::class, 'deleteOwn'])->whereNumber('j_id');
 
     // Карточка сотрудника
     Route::get('/profile', [TelegramProfileController::class, 'show']);
+    Route::post('/profile/avatar',   [TelegramProfileController::class, 'updateAvatar']);
+    Route::delete('/profile/avatar', [TelegramProfileController::class, 'deleteAvatar']);
+    Route::post('/profile/password', [TelegramProfileController::class, 'updatePassword']);
+    Route::post('/profile/info',     [TelegramProfileController::class, 'updatePersonalInfo']);
+
+    // Создание документа (wizard в Mini App). Все защищены через Bearer.
+    Route::get('/create/init/{type}',              [TelegramDocumentCreateController::class, 'init']);
+    Route::get('/create/journals/{j_type_id}',     [TelegramDocumentCreateController::class, 'journals'])->whereNumber('j_type_id');
+    Route::get('/create/execution-users/{j_id}',   [TelegramDocumentCreateController::class, 'executionUsers'])->whereNumber('j_id');
+    Route::get('/create/doc-organizations/{j_id}', [TelegramDocumentCreateController::class, 'docOrganizations'])->whereNumber('j_id');
+    Route::post('/create/store',                   [TelegramDocumentCreateController::class, 'store']);
+    Route::post('/create/web-editor',              [TelegramDocumentCreateController::class, 'webEditor']);
 
     // E-IMZO ID-Card привязка аккаунта (без auth middleware — используем link_token)
     Route::post('/eimzo-link/auth-init',  [TelegramEimzoLinkController::class, 'authInit']);

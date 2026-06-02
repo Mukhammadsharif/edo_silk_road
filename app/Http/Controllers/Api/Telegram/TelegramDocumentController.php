@@ -8,6 +8,7 @@ use App\Models\Document\DocumentExecutionSteps;
 use App\Models\Document\DocumentJournals;
 use App\Models\TelegramMiniAppToken;
 use App\Services\DocumentService;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,7 +38,202 @@ class TelegramDocumentController extends Controller
     }
 
     /**
+     * GET /api/telegram/my-documents
+     *
+     * Зеркалирует web workDocs(): список документов, созданных текущим юзером
+     * (исключая BASE_INCOMING/BASE_OUTGOING — те идут отдельной inbox/sent логикой).
+     *
+     * Параметры:
+     *  - q           — поиск по doc_name / doc_text (substring)
+     *  - status      — фильтр по DocumentJournals.status (число)
+     *  - date_from   — DD.MM.YYYY
+     *  - date_till   — DD.MM.YYYY
+     *  - page        — пагинация (по 25)
+     */
+    public function myDocuments(Request $request): JsonResponse
+    {
+        $record = $this->resolveUser($request);
+        if (!$record) return response()->json(['error' => 'Unauthorized'], 401);
+
+        $q          = trim((string) $request->query('q', ''));
+        $status     = $request->query('status');
+        $dateFrom   = trim((string) $request->query('date_from', ''));
+        $dateTill   = trim((string) $request->query('date_till', ''));
+        $page       = max(1, (int) $request->query('page', 1));
+
+        $search = DocumentJournals::whereHas('journal', function ($qb) {
+            $qb->whereNotIn('doc_code', ['BASE_INCOMING', 'BASE_OUTGOING']);
+        })
+            ->where('org_unit_id', $this->organizationId())
+            ->whereIn('created_user', $this->authActiveUserIds());
+
+        $today = Carbon::now()->format('Y-m-d');
+
+        // Спец-статусы из web (12 = просроченные, 14 = просрочена резолюция)
+        if ($status == '12') {
+            $search->whereHas('doc', function ($qd) use ($today) {
+                $qd->where('doc_term', '<', $today)
+                    ->whereNotIn('status', [2, 9, 10, 11]);
+            });
+        } elseif ($status == '14') {
+            $search->whereNotIn('status', [2, 10, 11])
+                ->whereHas('directorResolution', function ($qr) use ($today) {
+                    $qr->where('res_term', '<', $today);
+                });
+        } elseif ($status) {
+            $search->where('status', $status);
+        } else {
+            $search->where('status', '!=', 2);
+        }
+
+        if ($q !== '') {
+            $search->whereHas('doc', function ($qd) use ($q) {
+                $qd->where('doc_name', 'ILIKE', '%' . $q . '%')
+                    ->orWhere('doc_text', 'ILIKE', '%' . $q . '%');
+            });
+        }
+
+        if ($dateFrom !== '' && $dateTill !== '') {
+            try {
+                $from = Carbon::createFromFormat('d.m.Y', $dateFrom)->format('Y-m-d');
+                $till = Carbon::createFromFormat('d.m.Y', $dateTill)->format('Y-m-d');
+                $search->whereHas('doc', function ($qd) use ($from, $till) {
+                    $qd->whereBetween('doc_date', [$from, $till]);
+                });
+            } catch (\Throwable $e) {
+                // ignore bad date input
+            }
+        } elseif ($dateFrom !== '') {
+            try {
+                $from = Carbon::createFromFormat('d.m.Y', $dateFrom)->format('Y-m-d');
+                $search->whereHas('doc', fn($qd) => $qd->where('doc_date', '>=', $from));
+            } catch (\Throwable $e) {}
+        } elseif ($dateTill !== '') {
+            try {
+                $till = Carbon::createFromFormat('d.m.Y', $dateTill)->format('Y-m-d');
+                $search->whereHas('doc', fn($qd) => $qd->where('doc_date', '<=', $till));
+            } catch (\Throwable $e) {}
+        }
+
+        $paginator = $search->where('status', '!=', 13)
+            ->orderByDesc('id')
+            ->with(['doc', 'journal', 'statusWork'])
+            ->paginate(25, ['*'], 'page', $page);
+
+        $items = collect($paginator->items())->map(function ($journal) {
+            $doc    = $journal->doc;
+            $jrnl   = $journal->journal;
+            $status = $journal->statusWork;
+
+            $journalLabel = $jrnl?->title ?? '—';
+            if ($jrnl && $jrnl->lang_id) {
+                try {
+                    $lng = $jrnl->langName;
+                    if ($lng && isset($lng->text)) {
+                        $text = is_array($lng->text) ? $lng->text : json_decode($lng->text, true);
+                        if ($text) {
+                            $locale = app()->getLocale() ?: 'uz';
+                            $journalLabel = $text[$locale] ?? $text['uz'] ?? $jrnl->title;
+                        }
+                    }
+                } catch (\Throwable $e) {}
+            }
+
+            $statusLabel = null;
+            $statusBadge = null;
+            if ($status) {
+                $statusLabel = $status->title ?? null;
+                if ($status->lang_id) {
+                    try {
+                        $lng = $status->langName ?? null;
+                        if ($lng && isset($lng->text)) {
+                            $text = is_array($lng->text) ? $lng->text : json_decode($lng->text, true);
+                            if ($text) {
+                                $locale = app()->getLocale() ?: 'uz';
+                                $statusLabel = $text[$locale] ?? $text['uz'] ?? $statusLabel;
+                            }
+                        }
+                    } catch (\Throwable $e) {}
+                }
+                $statusBadge = $status->badgeClass ?? null;
+            }
+
+            return [
+                'id'            => $journal->id,
+                'doc_hash'      => $doc?->doc_hash,
+                'doc_number'    => $doc?->doc_number,
+                'doc_name'      => $doc?->doc_name ?? '—',
+                'doc_date'      => $doc?->doc_date ? Carbon::parse($doc->doc_date)->format('d.m.Y') : null,
+                'journal'       => $journalLabel,
+                'status'        => $statusLabel,
+                'status_badge'  => $statusBadge,
+                'created_at'    => $journal->created_at?->format('d.m.Y'),
+            ];
+        })->values();
+
+        return response()->json([
+            'data' => $items,
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'last_page'    => $paginator->lastPage(),
+                'per_page'     => $paginator->perPage(),
+                'total'        => $paginator->total(),
+                'has_more'     => $paginator->hasMorePages(),
+            ],
+        ]);
+    }
+
+    /**
+     * GET /api/telegram/counts
+     *
+     * 4 числа для главных карточек:
+     *   - for_resolution (RESOL): сколько ждёт моей резолюции
+     *   - for_sign (SIGN):        сколько ждёт моей подписи
+     *   - for_approval (AGREE):   сколько ждёт моего согласования
+     *   - my_docs:                сколько моих созданных
+     */
+    public function counts(Request $request): JsonResponse
+    {
+        $record = $this->resolveUser($request);
+        if (!$record) return response()->json(['error' => 'Unauthorized'], 401);
+
+        $user    = Auth::user();
+        $workIds = $user->userWorkIDs();
+        $orgId   = $this->organizationId();
+
+        $countFor = function (string $roleCode) use ($workIds, $orgId) {
+            return DocumentJournals::where('org_unit_id', $orgId)
+                ->whereHas('executionSteps', function ($q) use ($workIds, $roleCode) {
+                    $q->whereIn('to_user', $workIds)
+                        ->where('status', 2)
+                        ->whereHas('role', fn($r) => $r->where('doc_code', $roleCode));
+                })
+                ->where('status', '>', 1)
+                ->count();
+        };
+
+        $myDocsCount = DocumentJournals::where('org_unit_id', $orgId)
+            ->whereHas('journal', function ($qb) {
+                $qb->whereNotIn('doc_code', ['BASE_INCOMING', 'BASE_OUTGOING']);
+            })
+            ->whereIn('created_user', $this->authActiveUserIds())
+            ->where('status', '!=', 2)
+            ->where('status', '!=', 13)
+            ->count();
+
+        return response()->json([
+            'for_resolution' => $countFor('RESOL'),
+            'for_sign'       => $countFor('SIGN'),
+            'for_approval'   => $countFor('AGREE'),
+            'my_docs'        => $myDocsCount,
+        ]);
+    }
+
+    /**
      * GET /api/telegram/documents
+     *
+     * Параметр ?category=RESOL|SIGN|AGREE отфильтровывает по конкретной роли.
+     * Без параметра — все три (back-compat).
      */
     public function forSign(Request $request): JsonResponse
     {
@@ -46,41 +242,299 @@ class TelegramDocumentController extends Controller
 
         $user    = Auth::user();
         $workIds = $user->userWorkIDs();
+        $orgId   = $this->organizationId();
 
-        $documents = DocumentJournals::whereHas('executionSteps', function ($q) use ($workIds) {
-            $q->whereIn('to_user', $workIds)
-                ->where('status', 2)
-                ->whereHas('role', fn($r) => $r->whereIn('doc_code', $this->allowedRoles));
-        })
+        $category = $request->query('category');
+        $roles = in_array($category, ['RESOL', 'SIGN', 'AGREE'])
+            ? [$category]
+            : $this->allowedRoles;
+
+        // Step status filter: 'all' = no filter, otherwise int (1..5). Default = 2 (pending).
+        $stepStatus = $request->query('step_status', '2');
+        $applyStepFilter = ($stepStatus !== 'all' && $stepStatus !== '' && $stepStatus !== null);
+
+        $documents = DocumentJournals::where('org_unit_id', $orgId)
+            ->whereHas('executionSteps', function ($q) use ($workIds, $roles, $stepStatus, $applyStepFilter) {
+                $q->whereIn('to_user', $workIds)
+                    ->whereHas('role', fn($r) => $r->whereIn('doc_code', $roles));
+                if ($applyStepFilter) {
+                    $q->where('status', (int) $stepStatus);
+                }
+            })
             ->where('status', '>', 1)
             ->with('doc')
             ->orderByDesc('created_at')
             ->limit(50)
             ->get();
 
-        $result = $documents->map(function ($journal) use ($workIds) {
+        $result = $documents->map(function ($journal) use ($workIds, $roles, $stepStatus, $applyStepFilter) {
             $doc = $journal->doc;
 
-            // Найти шаг и его роль
-            $step = DocumentExecutionSteps::where('j_id', $journal->id)
+            $stepQuery = DocumentExecutionSteps::where('j_id', $journal->id)
                 ->whereIn('to_user', $workIds)
-                ->where('status', 2)
-                ->whereHas('role', fn($r) => $r->whereIn('doc_code', $this->allowedRoles))
-                ->first();
+                ->whereHas('role', fn($r) => $r->whereIn('doc_code', $roles));
+            if ($applyStepFilter) {
+                $stepQuery->where('status', (int) $stepStatus);
+            }
+            $step = $stepQuery->first();
 
             $roleCode = $step ? $this->getStepRole($step) : null;
 
             return [
-                'id'         => $journal->id,
-                'doc_number' => $doc?->doc_number ?? '—',
-                'doc_name'   => $doc?->doc_name ?? '—',
-                'created_at' => $journal->created_at?->format('d.m.Y'),
-                'role'       => $roleCode,
-                'role_label' => $this->roleLabel($roleCode),
+                'id'          => $journal->id,
+                'doc_number'  => $doc?->doc_number ?? '—',
+                'doc_name'    => $doc?->doc_name ?? '—',
+                'created_at'  => $journal->created_at?->format('d.m.Y'),
+                'role'        => $roleCode,
+                'role_label'  => $this->roleLabel($roleCode),
+                'step_status' => $step?->status,
             ];
         });
 
         return response()->json(['count' => $result->count(), 'documents' => $result]);
+    }
+
+    /**
+     * GET /api/telegram/my-documents/{j_id}
+     *
+     * Детальный просмотр СВОЕГО документа. Доступ только если юзер автор
+     * (created_user через work_history).
+     *
+     * Также возвращает массив доступных action'ов на основе статуса:
+     *   - status in [1, 2, 3] → edit, delete
+     *   - status == 1         → send_to_sign | send_to_agreement | send_to_create_res
+     */
+    public function showMine(Request $request, int $jId): JsonResponse
+    {
+        $record = $this->resolveUser($request);
+        if (!$record) return response()->json(['error' => 'Unauthorized'], 401);
+
+        $journal = DocumentJournals::with(['doc', 'files', 'journal', 'statusWork'])->find($jId);
+        if (!$journal) return response()->json(['error' => 'Document not found'], 404);
+
+        $workIds = $this->authActiveUserIds();
+        if (!in_array($journal->created_user, $workIds)) {
+            return response()->json(['error' => 'Access denied'], 403);
+        }
+
+        // HTML тело документа
+        $htmlDoc = null;
+        try {
+            $htmlDoc = app(DocumentService::class)->getHtmlDoc($journal, $journal->doc);
+        } catch (\Throwable $e) {}
+
+        $files = $journal->files->map(function ($f) {
+            return [
+                'name' => $f->original_name ?? $f->file_name,
+                'url'  => url('/storage/' . $f->file_path),
+            ];
+        });
+
+        // Журнал label с lang
+        $journalLabel = $journal->journal?->title ?? '—';
+        if ($journal->journal && $journal->journal->lang_id) {
+            try {
+                $lng = $journal->journal->langName;
+                if ($lng && isset($lng->text)) {
+                    $text = is_array($lng->text) ? $lng->text : json_decode($lng->text, true);
+                    if ($text) {
+                        $locale = app()->getLocale() ?: 'uz';
+                        $journalLabel = $text[$locale] ?? $text['uz'] ?? $journalLabel;
+                    }
+                }
+            } catch (\Throwable $e) {}
+        }
+
+        // Status label
+        $statusLabel = null;
+        if ($journal->statusWork) {
+            $s = $journal->statusWork;
+            $statusLabel = $s->title ?? null;
+            if ($s->lang_id) {
+                try {
+                    $lng = $s->langName ?? null;
+                    if ($lng && isset($lng->text)) {
+                        $text = is_array($lng->text) ? $lng->text : json_decode($lng->text, true);
+                        if ($text) {
+                            $locale = app()->getLocale() ?: 'uz';
+                            $statusLabel = $text[$locale] ?? $text['uz'] ?? $statusLabel;
+                        }
+                    }
+                } catch (\Throwable $e) {}
+            }
+        }
+
+        // ─── Расчёт доступных actions (зеркалирует view-right.blade.php логику) ───
+        $signRole  = DocumentExecutionRoles::where('doc_code', 'SIGN')->where('status', 1)->first();
+        $agreeRole = DocumentExecutionRoles::where('doc_code', 'AGREE')->where('status', 1)->first();
+
+        $hasSigner = $signRole && DocumentExecutionSteps::where('j_id', $journal->id)
+                ->where('exec_role', $signRole->id)
+                ->exists();
+
+        $agreeCount = $agreeRole ? DocumentExecutionSteps::where('j_id', $journal->id)
+            ->where('exec_role', $agreeRole->id)
+            ->count() : 0;
+
+        $actions = [];
+
+        // delete и edit — для статусов 1, 2, 3
+        if (in_array($journal->status, [1, 2, 3])) {
+            $actions[] = [
+                'code'  => 'delete',
+                'label' => __('action.delete') ?: 'O\'chirish',
+                'style' => 'danger',
+            ];
+            $actions[] = [
+                'code'    => 'edit',
+                'label'   => __('action.edit') ?: 'Tahrirlash',
+                'style'   => 'warning',
+                // Editor работает в браузере, не в Mini App
+                'web_url' => url('/office/edit-doc/internal/' . $journal->id . '/' . $journal->doc?->doc_hash),
+            ];
+        }
+
+        // Send_to_* — только для status=1
+        if ($journal->status === 1) {
+            if ($hasSigner) {
+                $actions[] = [
+                    'code'      => 'send_to_sign',
+                    'label'     => __('action.send_to_signer') ?: 'Imzolovchiga yuborish',
+                    'style'     => 'success',
+                    'sign_type' => 'send_to_sign',
+                ];
+            } elseif ($agreeCount > 0) {
+                $actions[] = [
+                    'code'      => 'send_to_agreement',
+                    'label'     => __('action.send_to_ag') ?: 'Kelishishga yuborish',
+                    'style'     => 'success',
+                    'sign_type' => 'send_to_agreement',
+                ];
+            } else {
+                $actions[] = [
+                    'code'      => 'send_to_create_res',
+                    'label'     => __('action.send_for_signature') ?: 'Imzolash uchun yuborish',
+                    'style'     => 'success',
+                    'sign_type' => 'send_to_create_res',
+                ];
+            }
+        }
+
+        return response()->json([
+            'id'         => $journal->id,
+            'doc_id'     => $journal->doc_id,
+            'doc_number' => $journal->doc?->doc_number,
+            'doc_name'   => $journal->doc?->doc_name,
+            'doc_date'   => $journal->doc?->doc_date ? Carbon::parse($journal->doc->doc_date)->format('d.m.Y') : null,
+            'doc_term'   => $journal->doc?->doc_term ? Carbon::parse($journal->doc->doc_term)->format('d.m.Y') : null,
+            'doc_text'   => $journal->doc?->doc_text,
+            'doc_hash'   => $journal->doc?->doc_hash,
+            'journal'    => $journalLabel,
+            'status'     => $statusLabel,
+            'status_code'=> $journal->status,
+            'created_at' => $journal->created_at?->format('d.m.Y H:i'),
+            'html_doc'   => $htmlDoc,
+            'files'      => $files,
+            'actions'    => $actions,
+        ]);
+    }
+
+    /**
+     * POST /api/telegram/my-documents/{j_id}/send
+     *
+     * Создаёт sign-token для одного из трёх типов: send_to_sign /
+     * send_to_agreement / send_to_create_res. Затем Mini App открывает sign URL,
+     * мобильный sign flow обработает (тот же SignDocImzoMobileApiController).
+     */
+    public function sendForSign(Request $request, int $jId): JsonResponse
+    {
+        $record = $this->resolveUser($request);
+        if (!$record) return response()->json(['error' => 'Unauthorized'], 401);
+
+        $request->validate([
+            'sign_type' => 'required|in:send_to_sign,send_to_agreement,send_to_create_res',
+        ]);
+
+        $journal = DocumentJournals::with('doc')->find($jId);
+        if (!$journal) return response()->json(['error' => 'Document not found'], 404);
+
+        // Проверка авторства
+        $workIds = $this->authActiveUserIds();
+        if (!in_array($journal->created_user, $workIds)) {
+            return response()->json(['error' => 'Access denied'], 403);
+        }
+
+        // Статус должен быть 1 (черновик)
+        if ($journal->status !== 1) {
+            return response()->json([
+                'error'   => 'invalid_status',
+                'message' => 'Hujjat status bilan bu amalni bajarib bo\'lmaydi',
+            ], 422);
+        }
+
+        $signType  = $request->input('sign_type');
+        $signToken = $record->createSignToken($journal->doc_id, $signType);
+
+        return response()->json([
+            'sign_url'   => url("/mobile/sign/{$signToken}"),
+            'sign_type'  => $signType,
+            'expires_in' => 900,
+        ]);
+    }
+
+    /**
+     * DELETE /api/telegram/my-documents/{j_id}
+     *
+     * Удаляет документ (всё связанное). Только статус [1, 2, 3] и только автор.
+     */
+    public function deleteOwn(Request $request, int $jId): JsonResponse
+    {
+        $record = $this->resolveUser($request);
+        if (!$record) return response()->json(['error' => 'Unauthorized'], 401);
+
+        $journal = DocumentJournals::find($jId);
+        if (!$journal) return response()->json(['error' => 'Document not found'], 404);
+
+        $workIds = $this->authActiveUserIds();
+        if (!in_array($journal->created_user, $workIds)) {
+            return response()->json(['error' => 'Access denied'], 403);
+        }
+
+        if (!in_array($journal->status, [1, 2, 3])) {
+            return response()->json([
+                'error'   => 'invalid_status',
+                'message' => 'Bu statusda hujjatni o\'chirib bo\'lmaydi',
+            ], 422);
+        }
+
+        $docId = $journal->doc_id;
+
+        // Зеркалирует DocController::delWorkDoc()
+        try {
+            \DB::transaction(function () use ($docId, $journal) {
+                DocumentJournals::where('doc_id', $docId)->delete();
+                \App\Models\Comment\DocumentCommentUser::where('doc_id', $docId)->delete();
+                \App\Models\Comment\DocumentComment::where('doc_id', $docId)->delete();
+                \App\Models\Document\DocumentFiles::where('doc_id', $docId)->delete();
+                DocumentExecutionSteps::where('j_id', $journal->id)->delete();
+                \App\Models\Document\DocumentReplyComments::where('j_id', $journal->id)->delete();
+                \App\Models\Resolution\DocumentResolutions::where('j_id', $journal->id)->delete();
+                \App\Models\Document\Documents::where('id', $docId)->delete();
+            });
+        } catch (\Throwable $e) {
+            \Log::error('TG deleteOwn failed', [
+                'j_id' => $jId, 'error' => $e->getMessage(),
+            ]);
+            return response()->json([
+                'error'   => 'server_error',
+                'message' => 'O\'chirishda xatolik',
+            ], 500);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "Hujjat o'chirildi",
+        ]);
     }
 
     /**

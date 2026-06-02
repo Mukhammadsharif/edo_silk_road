@@ -23,9 +23,9 @@
             --text-subtle: rgba(10, 14, 26, 0.55);
 
             /* Brand & accents */
-            --brand-1:     #3b82f6;     /* blue-500 */
-            --brand-2:     #8b5cf6;     /* violet-500 */
-            --brand-3:     #ec4899;     /* pink-500 */
+            --brand-1:     #3b82f6;
+            --brand-2:     #8b5cf6;
+            --brand-3:     #ec4899;
             --success:     #10b981;
             --success-2:   #059669;
             --warning:     #f59e0b;
@@ -33,24 +33,35 @@
 
             /* Borders & shadows */
             --border:      rgba(15, 23, 42, 0.06);
-            --border-glass: rgba(255, 255, 255, 0.45);
+            --border-glass: rgba(15, 23, 42, 0.08);
             --shadow-1:    0 0 0 1px rgba(15, 23, 42, 0.04), 0 2px 4px rgba(15, 23, 42, 0.04);
             --shadow-2:    0 0 0 1px rgba(15, 23, 42, 0.04), 0 4px 12px -2px rgba(15, 23, 42, 0.08), 0 24px 40px -16px rgba(15, 23, 42, 0.18);
             --shadow-glow: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 12px 32px -8px rgba(59, 130, 246, 0.45);
 
-            /* Geometry */
             --r-sm: 12px;
             --r-md: 18px;
             --r-lg: 24px;
-
-            /* Easing */
             --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
             --smooth: cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        /* Dark mode adjustments — Telegram dark theme */
+        /* Dark mode — manual toggle or Telegram dark */
+        body.dark, body.tg-dark {
+            --surface-0:   #0f1629;
+            --surface-1:   rgba(30, 41, 59, 0.72);
+            --surface-2:   #1e293b;
+            --text:        #f1f5f9;
+            --text-muted:  #94a3b8;
+            --text-subtle: rgba(241, 245, 249, 0.55);
+            --border:      rgba(255, 255, 255, 0.08);
+            --border-glass: rgba(255, 255, 255, 0.10);
+            --shadow-1:    0 0 0 1px rgba(255, 255, 255, 0.05), 0 2px 4px rgba(0, 0, 0, 0.3);
+            --shadow-2:    0 0 0 1px rgba(255, 255, 255, 0.05), 0 4px 12px rgba(0, 0, 0, 0.4), 0 24px 40px -16px rgba(0, 0, 0, 0.6);
+        }
+
+        /* System fallback */
         @media (prefers-color-scheme: dark) {
-            :root {
+            body:not(.light):not(.dark) {
                 --surface-0:   var(--tg-theme-bg-color, #0f1629);
                 --surface-1:   rgba(30, 41, 59, 0.72);
                 --surface-2:   var(--tg-theme-secondary-bg-color, #1e293b);
@@ -63,6 +74,41 @@
                 --shadow-2:    0 0 0 1px rgba(255, 255, 255, 0.05), 0 4px 12px rgba(0, 0, 0, 0.4), 0 24px 40px -16px rgba(0, 0, 0, 0.6);
             }
         }
+
+        /* Manual dark mode equivalent */
+        body.dark body:not(.light):not(.dark),
+        body.tg-dark body:not(.light):not(.dark) {
+            --surface-0:   var(--tg-theme-bg-color, #0f1629);
+            --surface-1:   rgba(30, 41, 59, 0.72);
+            --surface-2:   var(--tg-theme-secondary-bg-color, #1e293b);
+            --text:        var(--tg-theme-text-color, #f1f5f9);
+            --text-muted:  var(--tg-theme-hint-color, #94a3b8);
+            --text-subtle: rgba(241, 245, 249, 0.55);
+            --border:      rgba(255, 255, 255, 0.08);
+            --border-glass: rgba(255, 255, 255, 0.10);
+            --shadow-1:    0 0 0 1px rgba(255, 255, 255, 0.05), 0 2px 4px rgba(0, 0, 0, 0.3);
+            --shadow-2:    0 0 0 1px rgba(255, 255, 255, 0.05), 0 4px 12px rgba(0, 0, 0, 0.4), 0 24px 40px -16px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Back button — top of page */
+        .top-back-btn {
+            position: fixed;
+            top: max(12px, env(safe-area-inset-top));
+            left: 12px;
+            z-index: 100;
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 14px 8px 10px;
+            background: var(--surface-2);
+            color: var(--text);
+            border: 1px solid var(--border-glass);
+            font-size: 13px; font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: var(--shadow-1);
+            font-family: inherit;
+        }
+        .top-back-btn:active { transform: scale(0.97); }
+        .top-back-btn svg { width: 14px; height: 14px; }
 
         /* ════════════════════════════════════════════════════════════════════
            Reset & base
@@ -131,6 +177,16 @@
             .blob { opacity: 0.30; }
             .blob-3 { opacity: 0.18; }
         }
+
+        /* Manual dark mode equivalent */
+        body.dark .blob,
+        body.tg-dark .blob {
+            opacity: 0.30;
+        }
+        body.dark .blob-3,
+        body.tg-dark .blob-3 {
+            opacity: 0.18;
+        }
         @keyframes float-1 {
             0%, 100% { transform: translate(0, 0) scale(1); }
             50%      { transform: translate(-30px, 40px) scale(1.1); }
@@ -164,6 +220,14 @@
                 rgba(15, 22, 41, 0.85) 0%,
                 rgba(15, 22, 41, 0.65) 100%);
             }
+        }
+
+        /* Manual dark mode equivalent */
+        body.dark .top-bar,
+        body.tg-dark .top-bar {
+            background: linear-gradient(180deg,
+            rgba(15, 22, 41, 0.85) 0%,
+            rgba(15, 22, 41, 0.65) 100%);
         }
 
         .top-bar-row {
@@ -201,6 +265,12 @@
         }
         @media (prefers-color-scheme: dark) {
             .step { background: rgba(255, 255, 255, 0.08); }
+        }
+
+        /* Manual dark mode equivalent */
+        body.dark .step,
+        body.tg-dark .step {
+            background: rgba(255, 255, 255, 0.08);
         }
         .step.done {
             background: linear-gradient(90deg, var(--brand-1), var(--brand-2));
@@ -313,6 +383,20 @@
             .role-AGREE { color: #34d399; }
         }
 
+        /* Manual dark mode equivalent */
+        body.dark .role-SIGN,
+        body.tg-dark .role-SIGN {
+            color: #60a5fa;
+        }
+        body.dark .role-RESOL,
+        body.tg-dark .role-RESOL {
+            color: #a78bfa;
+        }
+        body.dark .role-AGREE,
+        body.tg-dark .role-AGREE {
+            color: #34d399;
+        }
+
         /* ════════════════════════════════════════════════════════════════════
            Document body
            ════════════════════════════════════════════════════════════════════ */
@@ -348,6 +432,14 @@
                 rgba(30, 41, 59, 0) 0%,
                 rgba(30, 41, 59, 0.85) 100%);
             }
+        }
+
+        /* Manual dark mode equivalent */
+        body.dark .doc-body::after,
+        body.tg-dark .doc-body::after {
+            background: linear-gradient(to bottom,
+            rgba(30, 41, 59, 0) 0%,
+            rgba(30, 41, 59, 0.85) 100%);
         }
         .doc-body-header {
             padding: 14px 18px;
@@ -620,6 +712,12 @@
         @media (prefers-color-scheme: dark) {
             .status-bar { color: #fbbf24; }
         }
+
+        /* Manual dark mode equivalent */
+        body.dark .status-bar,
+        body.tg-dark .status-bar {
+            color: #fbbf24;
+        }
         .status-bar::before {
             content: "";
             position: absolute; inset: 0;
@@ -688,6 +786,12 @@
         }
         @media (prefers-color-scheme: dark) {
             .result-box.error { color: #fca5a5; }
+        }
+
+        /* Manual dark mode equivalent */
+        body.dark .result-box.error,
+        body.tg-dark .result-box.error {
+            color: #fca5a5;
         }
         .result-box.success  {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.10), rgba(16, 185, 129, 0.05));
@@ -805,6 +909,12 @@
     </style>
 </head>
 <body>
+
+<!-- Back button -->
+<button type="button" class="top-back-btn" onclick="goBackToMiniApp()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    Orqaga
+</button>
 
 <!-- Animated background blobs -->
 <div class="bg-blobs" aria-hidden="true">
@@ -979,7 +1089,50 @@
     if (tgApp) {
         tgApp.ready();
         try { tgApp.expand && tgApp.expand(); } catch (e) {}
-        try { tgApp.setHeaderColor && tgApp.setHeaderColor('secondary_bg_color'); } catch (e) {}
+    }
+
+    // ── Theme sync (uses same preference as Mini App) ─────────────────────────
+    function applyTheme() {
+        var pref = 'auto';
+        try { pref = localStorage.getItem('tg_app_theme') || 'auto'; } catch (e) {}
+
+        document.body.classList.remove('dark', 'light', 'tg-dark');
+        if (pref === 'dark') {
+            document.body.classList.add('dark');
+        } else if (pref === 'light') {
+            document.body.classList.add('light');
+        } else {
+            // auto — follow Telegram
+            try {
+                if (tgApp && tgApp.colorScheme === 'dark') {
+                    document.body.classList.add('tg-dark');
+                }
+            } catch (e) {}
+        }
+
+        // Sync Telegram chrome to match
+        try {
+            var isDark = document.body.classList.contains('dark') || document.body.classList.contains('tg-dark');
+            if (tgApp && tgApp.setHeaderColor) tgApp.setHeaderColor(isDark ? '#0f1629' : '#f5f7fb');
+            if (tgApp && tgApp.setBackgroundColor) tgApp.setBackgroundColor(isDark ? '#0f1629' : '#f5f7fb');
+        } catch (e) {}
+    }
+    applyTheme();
+    if (tgApp) {
+        try { tgApp.onEvent('themeChanged', applyTheme); } catch (e) {}
+    }
+
+    function goBackToMiniApp() {
+        if (tgApp && tgApp.HapticFeedback) {
+            try { tgApp.HapticFeedback.impactOccurred('light'); } catch (e) {}
+        }
+        if (window.history.length > 1) {
+            window.history.back();
+        } else if (tgApp && tgApp.close) {
+            tgApp.close();
+        } else {
+            window.location.href = '/telegram-app/index.html';
+        }
     }
 
     function haptic(type) {
