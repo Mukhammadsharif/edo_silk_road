@@ -2,7 +2,7 @@
 
 @section('content')
 
-<body>
+    <body>
     <main>
         <div class="logo">
             <a href="{{ url('/') }}" class="logo-flex">
@@ -11,8 +11,8 @@
             </a>
         </div>
 
-    <video class="auth-sidebar__video" playsinline autoplay loop muted
-            src="{{ asset('images/back1.mp4') }}"></video>
+        <video class="auth-sidebar__video" playsinline autoplay loop muted
+               src="{{ asset('images/back1.mp4') }}"></video>
 
 
 
@@ -41,16 +41,16 @@
                         <div class="input-group">
                             <i data-lucide="lock" class="icon"></i>
                             <input type="password" id="password" name="password"
-                                placeholder="{{ __('field.type_password') }}" required>
+                                   placeholder="{{ __('field.type_password') }}" required>
                             <i data-lucide="eye" onclick="togglePassword()"
                                style="position: absolute; right: 15px; top: 13px; cursor: pointer; color: #999;"></i>
                         </div>
 
                         <div class="remember-forgot">
-{{--                            <label class="remember-me">--}}
-{{--                                <input type="checkbox">--}}
-{{--                                {{ __('field.remember_me') }}--}}
-{{--                            </label>--}}
+                            {{--                            <label class="remember-me">--}}
+                            {{--                                <input type="checkbox">--}}
+                            {{--                                {{ __('field.remember_me') }}--}}
+                            {{--                            </label>--}}
                             <div class="forgot"></div>
                         </div>
 
@@ -72,10 +72,10 @@
                     </div>
 
 
-{{--                    <div class="button btn-usb input-group" onclick="openUsbToken()">--}}
-{{--                        <img src="https://esi.uz/oauth2/assets/images/icons/pfx.ico" alt="pfx" style="height: 20px">--}}
-{{--                        {{ __('action.choose_key') }}--}}
-{{--                    </div>--}}
+                    {{--                    <div class="button btn-usb input-group" onclick="openUsbToken()">--}}
+                    {{--                        <img src="https://esi.uz/oauth2/assets/images/icons/pfx.ico" alt="pfx" style="height: 20px">--}}
+                    {{--                        {{ __('action.choose_key') }}--}}
+                    {{--                    </div>--}}
 
                     <button onclick="signin()" class="button" id="eriLoginBtn" disabled style="margin-top: 15px;">
                         <i data-lucide="shield-check"></i>
@@ -112,34 +112,34 @@
     <script src="{{ asset('js/e_imzo_client.js') }}"></script>
     <script src="{{ asset('js/login_e_imzo.js') }}"></script>
 
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 
-<script>
-    localStorage.clear();
-    lucide.createIcons();
+    <script>
+        localStorage.clear();
+        lucide.createIcons();
 
-    function showTab(tabName) {
-        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-        document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+        function showTab(tabName) {
+            document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+            document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
 
-        if (tabName === 'login') {
-            document.querySelector('[data-tab="password"]').classList.add("active");
-            document.getElementById("login-tab").classList.add("active");
-        } else if (tabName === 'eri') {
-            document.querySelector('[data-tab="eri"]').classList.add("active");
-            document.getElementById("eri-tab").classList.add("active");
+            if (tabName === 'login') {
+                document.querySelector('[data-tab="password"]').classList.add("active");
+                document.getElementById("login-tab").classList.add("active");
+            } else if (tabName === 'eri') {
+                document.querySelector('[data-tab="eri"]').classList.add("active");
+                document.getElementById("eri-tab").classList.add("active");
+            }
+
+            lucide.createIcons();
         }
 
-        lucide.createIcons();
-    }
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+        }
 
-    function togglePassword() {
-        const passwordInput = document.getElementById('password');
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-    }
-
-</script>
+    </script>
 
 @endsection
 
@@ -715,5 +715,151 @@
         width:50vw;
         height:100vh;
         height:100%;
+    }
+
+    /* ════════════════════════════════════════════════════════════════════
+       Responsive — tablets and mobile
+       ════════════════════════════════════════════════════════════════════ */
+
+    /* Tablet — single column, video on top half */
+    @media (max-width: 1024px) {
+        .containers {
+            position: relative;
+            top: auto;
+            left: auto;
+            margin: 80px auto 40px;
+            width: 90%;
+            max-width: 480px;
+            padding: 32px 28px;
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 18px;
+            box-shadow: 0 20px 60px -20px rgba(15, 23, 42, 0.30);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .auth-sidebar__video {
+            width: 100vw;
+            height: 100vh;
+            opacity: 0.45;
+        }
+    }
+
+    /* Mobile (phones) */
+    @media (max-width: 640px) {
+        * { font-size: 15px; }
+
+        main {
+            align-items: flex-start;
+            padding: 0;
+        }
+
+        .logo {
+            top: 18px;
+            left: 18px;
+        }
+        .logo img {
+            width: 26px !important;
+        }
+        .logo-flex p {
+            font-size: 16px !important;
+        }
+
+        .containers {
+            top: auto;
+            left: auto;
+            position: relative;
+            margin: 70px 14px 24px;
+            width: auto;
+            max-width: 100%;
+            padding: 24px 18px;
+            background: rgba(255, 255, 255, 0.94);
+            border-radius: 16px;
+            box-shadow: 0 16px 40px -12px rgba(15, 23, 42, 0.30);
+        }
+
+        .tabs {
+            gap: 6px;
+        }
+        .tab {
+            padding: 11px 8px;
+            font-size: 13px;
+            gap: 4px;
+        }
+        .tab i {
+            width: 16px !important;
+            height: 16px !important;
+        }
+
+        .tab-wrapper {
+            margin-top: 24px;
+            min-height: auto;
+        }
+        .tab-content {
+            position: relative;
+        }
+        .tab-content.active ~ .tab-content {
+            display: none;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+        input, select {
+            padding: 13px 14px 13px 40px;
+            font-size: 15px;
+            border-radius: 10px;
+        }
+        .icon {
+            width: 18px;
+            height: 18px;
+            top: 11px;
+            left: 12px;
+        }
+
+        .button {
+            padding: 13px;
+            font-size: 15px;
+            border-radius: 10px;
+        }
+
+        .auth-sidebar__video {
+            width: 100vw;
+            height: 100vh;
+            opacity: 0.30;
+            position: fixed;
+        }
+
+        /* E-RI modal */
+        .eri-modal-content {
+            width: 92%;
+            max-height: 88vh;
+            max-width: 100%;
+        }
+    }
+
+    /* Very small phones */
+    @media (max-width: 380px) {
+        .tab {
+            font-size: 12px;
+            padding: 10px 6px;
+        }
+        .tab i {
+            width: 14px !important;
+            height: 14px !important;
+        }
+        .containers {
+            padding: 20px 14px;
+        }
+    }
+
+    /* Landscape orientation on phones — reduce vertical spacing */
+    @media (max-height: 500px) and (orientation: landscape) {
+        main { align-items: flex-start; padding: 8px 0; }
+        .containers {
+            margin: 50px auto 16px;
+            padding: 18px 22px;
+        }
+        .tab-wrapper { margin-top: 18px; }
+        .input-group { margin-bottom: 12px; }
     }
 </style>
