@@ -514,3 +514,43 @@ Route::get('/telegram-link/eimzo', function(\Illuminate\Http\Request $request) {
         'expired'    => false,
     ]);
 })->name('telegram.link.eimzo');
+
+/**
+* Handoff из Mini App в Web — открыть OnlyOffice editor для создания документа.
+ *
+ * Юзер на телефоне набрал часть формы в Mini App, нажал «Открыть на компьютере».
+ * Mini App вызвал POST /api/telegram/create/web-editor и получил такой URL.
+ * Здесь мы достаём draft из cache, проверяем что юзер тот же, и редиректим
+* на форму создания с pre-fill через query параметр draft.
+ *
+ * Требует логин в обычном web-интерфейсе (через auth middleware ниже).
+ */
+Route::middleware(['auth'])->group(function() {
+    Route::get('/telegram/handoff-create', function(\Illuminate\Http\Request $request) {
+        $draft = $request->query('draft', '');
+        if (!is_string($draft) || $draft === '' || strlen($draft) > 128) {
+            abort(400, 'Invalid draft token');
+        }
+
+        $payload = \Illuminate\Support\Facades\Cache::get("tg_create_draft:{$draft}");
+        if (!$payload || empty($payload['user_id'])) {
+            return redirect()->route('home')
+                ->with('error', 'Ссылка на черновик устарела или не найдена. Создайте документ заново.');
+        }
+
+        // Проверка владельца: draft создан конкретным юзером, его и должен открыть
+        if ((int) $payload['user_id'] !== (int) \Illuminate\Support\Facades\Auth::id()) {
+            return redirect()->route('home')
+                ->with('error', 'Этот черновик принадлежит другому пользователю.');
+        }
+
+        $data = $payload['data'] ?? [];
+        $type = $data['type'] ?? 'internal';
+        if (!in_array($type, ['incoming', 'outgoing', 'internal'], true)) {
+            $type = 'internal';
+        }
+
+        // Прокидываем драфт-токен в URL — фронт-форма прочитает и пресет поля.
+        return redirect("/office/document/create/{$type}?prefill=" . urlencode($draft));
+    })->name('telegram.handoff.create');
+});
