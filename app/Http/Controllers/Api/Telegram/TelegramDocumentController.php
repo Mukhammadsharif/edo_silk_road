@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Telegram;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\StatusList;
 use App\Models\Document\DocumentExecutionRoles;
 use App\Models\Document\DocumentExecutionSteps;
 use App\Models\Document\DocumentJournals;
@@ -64,7 +65,6 @@ class TelegramDocumentController extends Controller
         $search = DocumentJournals::whereHas('journal', function ($qb) {
             $qb->whereNotIn('doc_code', ['BASE_INCOMING', 'BASE_OUTGOING']);
         })
-            ->where('org_unit_id', $this->organizationId())
             ->whereIn('created_user', $this->authActiveUserIds());
 
         $today = Carbon::now()->format('Y-m-d');
@@ -183,6 +183,7 @@ class TelegramDocumentController extends Controller
         ]);
     }
 
+
     /**
      * GET /api/telegram/counts
      *
@@ -192,6 +193,74 @@ class TelegramDocumentController extends Controller
      *   - for_approval (AGREE):   сколько ждёт моего согласования
      *   - my_docs:                сколько моих созданных
      */
+    /**
+     * GET /api/telegram/status-options?category=for_resolution|for_sign|for_approval|my_docs
+     *
+     * Возвращает список доступных статусов для категории (берётся из StatusList — как в web).
+     * Поддерживаемые типы:
+     *   - for_resolution (Tasdiqlash) → type='doc_exec'
+     *   - for_sign / for_approval    → type='doc_signer'
+     *   - my_docs                    → type='work_document' (исключая 1,4,5,6,7,13)
+     */
+    public function statusOptions(Request $request): JsonResponse
+    {
+        $record = $this->resolveUser($request);
+        if (!$record) return response()->json(['error' => 'Unauthorized'], 401);
+
+        $category = $request->query('category');
+
+        // Map both old (RESOL/SIGN/AGREE) and new (for_resolution/...) category names
+        $type = 'doc_signer';
+        $excludeCodes = [];
+        $defaultCode = '2';
+
+        switch ($category) {
+            case 'RESOL':
+            case 'for_resolution':
+                $type = 'doc_exec';
+                $defaultCode = '2';
+                break;
+            case 'SIGN':
+            case 'for_sign':
+            case 'AGREE':
+            case 'for_approval':
+                $type = 'doc_signer';
+                $defaultCode = '2';
+                break;
+            case 'my_docs':
+                $type = 'work_document';
+                $excludeCodes = [1, 4, 5, 6, 7, 13];
+                $defaultCode = '';  // Barchasi by default
+                break;
+        }
+
+        $query = \App\Models\Admin\StatusList::where('type', $type);
+        if (!empty($excludeCodes)) {
+            $query->whereNotIn('code', $excludeCodes);
+        }
+        $rows = $query->orderBy('order_number')->get();
+
+        $locale = app()->getLocale() ?: 'uz';
+
+        $options = $rows->map(function ($row) use ($locale) {
+            // Use the static helper which properly resolves through LanguageLine
+            $title = \App\Models\Admin\StatusList::lang($row->id);
+            // Clean "(hujjat)" suffix for compact display
+            $title = trim(preg_replace('/\s*\((hujjat|документ|doc)\)\s*$/iu', '', $title));
+            return [
+                'code'  => (string) $row->code,
+                'label' => $title,
+            ];
+        })->values();
+
+        return response()->json([
+            'category' => $category,
+            'type'     => $type,
+            'default'  => $defaultCode,
+            'options'  => $options,
+        ]);
+    }
+
     public function counts(Request $request): JsonResponse
     {
         $record = $this->resolveUser($request);
@@ -212,10 +281,9 @@ class TelegramDocumentController extends Controller
                 ->count();
         };
 
-        $myDocsCount = DocumentJournals::where('org_unit_id', $orgId)
-            ->whereHas('journal', function ($qb) {
-                $qb->whereNotIn('doc_code', ['BASE_INCOMING', 'BASE_OUTGOING']);
-            })
+        $myDocsCount = DocumentJournals::whereHas('journal', function ($qb) {
+            $qb->whereNotIn('doc_code', ['BASE_INCOMING', 'BASE_OUTGOING']);
+        })
             ->whereIn('created_user', $this->authActiveUserIds())
             ->where('status', '!=', 2)
             ->where('status', '!=', 13)
@@ -226,6 +294,11 @@ class TelegramDocumentController extends Controller
             'for_sign'       => $countFor('SIGN'),
             'for_approval'   => $countFor('AGREE'),
             'my_docs'        => $myDocsCount,
+            '_debug'         => [
+                'org_unit_id'   => $orgId,
+                'work_ids'      => $workIds,
+                'work_ids_count'=> count($workIds),
+            ],
         ]);
     }
 

@@ -2175,17 +2175,21 @@
     // Status filter for my_docs (one of: '', '1', '9', '10', '12')
     var myDocsFilter = '';
 
-    // Step status filter for sign-style categories (default '2' = Imzo kutilmoqda / pending)
-    // Values: 'all' | '1' (Yaratilgan) | '2' (Kutilmoqda) | '3' (Bekor qilingan) | '4' (Tahrirlashga qaytarilgan) | '5' (Imzolangan)
-    var signFilter = '2';
+    // Step status filter per sign-category (default '2' = Imzo kutilmoqda / pending for all)
+    var signFilters = {
+        for_resolution: '2',
+        for_sign:       '2',
+        for_approval:   '2',
+    };
 
-    var SIGN_FILTER_OPTIONS = [
-        { value: '2',   label: 'Kutilmoqda' },
-        { value: 'all', label: 'Barchasi' },
-        { value: '5',   label: 'Bajarilgan' },
-        { value: '4',   label: 'Qaytarilgan' },
-        { value: '3',   label: 'Bekor qilingan' },
-    ];
+    // Did user manually change filter? (to avoid resetting to server default after first interaction)
+    var signFiltersTouched = {};
+
+    // Server-provided default status per category (filled by ensureStatusOptions)
+    var categoryDefaults = {};
+
+    // Dynamic status options loaded from backend (per category)
+    var statusOptionsCache = {};
 
     // Was detail opened from for_sign-style list or my_docs?
     var detailFrom = 'for_sign';
@@ -2355,9 +2359,8 @@
                 p.classList.toggle('active', p.dataset.status === '');
             });
         } else {
-            // Reset to default sign filter (Kutilmoqda)
-            signFilter = '2';
-            renderSignFilters();
+            // Preserve per-category filter (sticky)
+            renderSignFilters(cat);
         }
 
         // Always fetch fresh
@@ -2365,25 +2368,72 @@
         await loadCategory(cat, true);
     }
 
-    function renderSignFilters() {
+    async function ensureStatusOptions(cat) {
+        if (statusOptionsCache[cat]) return statusOptionsCache[cat];
+        var role = CATEGORY_META[cat].role; // RESOL | SIGN | AGREE
+        try {
+            var resp = await fetch(BASE_URL + '/api/telegram/status-options?category=' + role, {
+                headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN }
+            });
+            if (!resp.ok) throw new Error('status options load failed');
+            var data = await resp.json();
+            // Always prepend "Barchasi" so user can clear filter
+            var opts = [{ code: 'all', label: 'Barchasi' }].concat(
+                (data.options || []).map(function(o) { return { code: String(o.code), label: o.label }; })
+            );
+            // Remember server's default per category
+            var serverDefault = data.default || '2';
+            categoryDefaults[cat] = serverDefault;
+            // Initialize signFilters with server default if not already set by user
+            if (!signFiltersTouched[cat]) {
+                signFilters[cat] = serverDefault;
+            }
+            // Move default to first position after Barchasi (most common case)
+            var defaultIdx = opts.findIndex(function(o) { return o.code === serverDefault; });
+            if (defaultIdx > 1) {
+                var def = opts.splice(defaultIdx, 1)[0];
+                opts.splice(0, 0, def);
+            }
+            statusOptionsCache[cat] = opts;
+            return opts;
+        } catch (e) {
+            var fallback = [
+                { code: '2',   label: 'Kutilmoqda' },
+                { code: 'all', label: 'Barchasi' },
+                { code: '5',   label: 'Bajarilgan' },
+            ];
+            statusOptionsCache[cat] = fallback;
+            return fallback;
+        }
+    }
+
+    async function renderSignFilters(cat) {
         var el = document.getElementById('sign-filters');
         if (!el) return;
-        el.innerHTML = SIGN_FILTER_OPTIONS.map(function(opt) {
-            var active = (opt.value === signFilter) ? ' active' : '';
-            return '<button class="filter-pill' + active + '" data-status="' + esc(opt.value) + '" onclick="setSignFilter(this, \'' + esc(opt.value) + '\')">' + esc(opt.label) + '</button>';
+        // Show loading state while options arrive
+        if (!statusOptionsCache[cat]) {
+            el.innerHTML = '<div style="padding:8px 4px; color: var(--text-muted); font-size:12px;">Filtrlar yuklanmoqda…</div>';
+        }
+        var opts = await ensureStatusOptions(cat);
+        // Skip re-render if user navigated to another category meanwhile
+        if (currentCategory !== cat) return;
+        var current = signFilters[cat] || '2';
+        el.innerHTML = opts.map(function(opt) {
+            var active = (opt.code === current) ? ' active' : '';
+            return '<button class="filter-pill' + active + '" data-status="' + esc(opt.code) + '" onclick="setSignFilter(this, \'' + esc(opt.code) + '\')">' + esc(opt.label) + '</button>';
         }).join('');
     }
 
     function setSignFilter(btn, value) {
-        if (signFilter === value) return;
+        if (!currentCategory || currentCategory === 'my_docs') return;
+        if (signFilters[currentCategory] === value) return;
         haptic('light');
-        signFilter = value;
+        signFilters[currentCategory] = value;
+        signFiltersTouched[currentCategory] = true;
         document.querySelectorAll('#sign-filters .filter-pill').forEach(function(p) {
             p.classList.toggle('active', p === btn);
         });
-        if (currentCategory && currentCategory !== 'my_docs') {
-            loadCategory(currentCategory, true);
-        }
+        loadCategory(currentCategory, true);
     }
 
     function setMyDocsFilter(btn, status) {
@@ -2411,8 +2461,9 @@
                 if (myDocsFilter) url += '&status=' + encodeURIComponent(myDocsFilter);
             } else {
                 var role = CATEGORY_META[cat].role;
+                var stepStatus = signFilters[cat] || '2';
                 url = BASE_URL + '/api/telegram/documents?category=' + role
-                    + '&step_status=' + encodeURIComponent(signFilter);
+                    + '&step_status=' + encodeURIComponent(stepStatus);
             }
 
             var resp = await fetch(url, {
@@ -2465,11 +2516,14 @@
         if (cache.items.length === 0) {
             // Always render inline empty so filter pills stay visible
             listEl.innerHTML = ''
-                + '<div style="text-align:center; padding:36px 16px; color: var(--text-muted);">'
-                +   '<div style="font-size:14px; font-weight:600; color: var(--text); margin-bottom:6px;">'
+                + '<div style="text-align:center; padding:48px 20px; color: var(--text-muted);">'
+                +   '<div style="width:64px;height:64px;border-radius:50%;background:var(--surface-2);border:1px solid var(--border-soft);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--text-muted);">'
+                +     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="28" height="28"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'
+                +   '</div>'
+                +   '<div style="font-size:15px; font-weight:600; color: var(--text); margin-bottom:6px;">'
                 +     esc(meta.empty)
                 +   '</div>'
-                +   '<div style="font-size:13px;">Bu filtr bo\'yicha hujjat topilmadi</div>'
+                +   '<div style="font-size:13px; max-width:260px; margin:0 auto;">Tanlangan filtr bo\'yicha hujjat topilmadi</div>'
                 + '</div>';
             if (paginationEl) paginationEl.style.display = 'none';
             setState('list');

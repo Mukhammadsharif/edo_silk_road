@@ -289,6 +289,7 @@ Route::prefix('telegram')->group(function () {
 
     // Документы (используют собственную auth через Bearer token)
     Route::get('/counts', [TelegramDocumentController::class, 'counts']);
+    Route::get('/status-options', [TelegramDocumentController::class, 'statusOptions']);
     Route::get('/documents', [TelegramDocumentController::class, 'forSign']);
     Route::get('/documents/{j_id}', [TelegramDocumentController::class, 'show'])->whereNumber('j_id');
     Route::post('/documents/{j_id}/sign-token', [TelegramDocumentController::class, 'createSignToken'])->whereNumber('j_id');
