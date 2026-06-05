@@ -537,6 +537,31 @@ class TelegramDocumentController extends Controller
             }
         }
 
+        // Рендер документа теми же шаблонами что и веб (по типу doc_code)
+        $renderedHtml = null;
+        try {
+            $document = $journal->doc;
+            $directorDocument = DocumentExecutionSteps::where('j_id', $journal->id)
+                ->where('exec_role', $this->getResolutionRole()->id)->first();
+            $signerStep = DocumentExecutionSteps::where('j_id', $journal->id)
+                ->where('exec_role', $this->getSignerRole()->id)->first();
+            $agreementUsers = DocumentExecutionSteps::where('j_id', $journal->id)
+                ->where('exec_role', $this->getAgreementRole()->id)->get();
+
+            if ($document && $directorDocument) {
+                $renderedHtml = view('telegram.doc-content', [
+                    'journal'          => $journal,
+                    'document'         => $document,
+                    'directorDocument' => $directorDocument,
+                    'signer'           => $signerStep,
+                    'agreement_users'  => $agreementUsers,
+                    'html_doc'         => $htmlDoc,
+                ])->render();
+            }
+        } catch (\Throwable $e) {
+            $renderedHtml = null;
+        }
+
         return response()->json([
             'id'         => $journal->id,
             'doc_id'     => $journal->doc_id,
@@ -551,6 +576,7 @@ class TelegramDocumentController extends Controller
             'status_code'=> $journal->status,
             'created_at' => $journal->created_at?->format('d.m.Y H:i'),
             'html_doc'   => $htmlDoc,
+            'rendered_html' => $renderedHtml,
             'files'      => $files,
             'actions'    => $actions,
         ]);
@@ -693,18 +719,121 @@ class TelegramDocumentController extends Controller
             'url'  => url('/storage/' . $f->file_path),
         ]);
 
+        // ── Info-карта «Hujjat haqida ma'lumot» (как в публичной веб-странице) ──
+        $locale = app()->getLocale() ?: 'uz';
+
+        // Тип журнала (локализованный)
+        $journalType = null;
+        try {
+            $jrnl = $journal->journal;
+            if ($jrnl) {
+                $journalType = $jrnl->title;
+                if ($jrnl->lang_id) {
+                    $lng = $jrnl->langName;
+                    if ($lng && isset($lng->text)) {
+                        $txt = is_array($lng->text) ? $lng->text : json_decode($lng->text, true);
+                        $journalType = $txt[$locale] ?? $txt['uz'] ?? $jrnl->title;
+                    }
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        // Подписант-резолютор (Kim tomonidan imzolangan)
+        $signedBy = null; $signedAt = null;
+        try {
+            $resolStep = DocumentExecutionSteps::where('j_id', $jId)
+                ->whereHas('role', fn($r) => $r->where('doc_code', 'RESOL'))
+                ->whereIn('status', [5, 2, 6])
+                ->orderByDesc('updated_at')
+                ->first();
+            if ($resolStep && $resolStep->toUser && $resolStep->toUser->personal) {
+                $p = $resolStep->toUser->personal;
+                $signedBy = trim(
+                    mb_substr($p->f_name ?? '', 0, 1) . '. ' .
+                    (($p->m_name ?? '') ? mb_substr($p->m_name, 0, 1) . '. ' : '') .
+                    ($p->l_name ?? '')
+                );
+                $signedAt = $resolStep->updated_at?->format('d.m.Y H:i');
+            }
+        } catch (\Throwable $e) {}
+
+        // Создатель документа (Hujjat yaratuvchisi)
+        $creator = null;
+        try {
+            if ($journal->fromUser && $journal->fromUser->personal) {
+                $p = $journal->fromUser->personal;
+                $creator = trim(
+                    mb_substr($p->f_name ?? '', 0, 1) . '. ' .
+                    (($p->m_name ?? '') ? mb_substr($p->m_name, 0, 1) . '. ' : '') .
+                    ($p->l_name ?? '')
+                );
+            }
+        } catch (\Throwable $e) {}
+
+        $docDate = null;
+        try {
+            $docDate = $journal->doc?->doc_date
+                ? \Carbon\Carbon::parse($journal->doc->doc_date)->format('d.m.Y')
+                : null;
+        } catch (\Throwable $e) {}
+
+        // Публичная страница документа с QR (доступна когда полностью подписан)
+        $publicUrl = null;
+        $isFullySigned = in_array($journal->status, [9, 10, 11]);
+        if ($isFullySigned && $journal->doc?->doc_code) {
+            $publicUrl = url('/d/' . $journal->doc->doc_code);
+        }
+
+        // Рендер документа теми же шаблонами что и веб (по типу doc_code)
+        $renderedHtml = null;
+        try {
+            $document = $journal->doc;
+            $directorDocument = DocumentExecutionSteps::where('j_id', $journal->id)
+                ->where('exec_role', $this->getResolutionRole()->id)->first();
+            $signerStep = DocumentExecutionSteps::where('j_id', $journal->id)
+                ->where('exec_role', $this->getSignerRole()->id)->first();
+            $agreementUsers = DocumentExecutionSteps::where('j_id', $journal->id)
+                ->where('exec_role', $this->getAgreementRole()->id)->get();
+
+            if ($document && $directorDocument) {
+                $renderedHtml = view('telegram.doc-content', [
+                    'journal'          => $journal,
+                    'document'         => $document,
+                    'directorDocument' => $directorDocument,
+                    'signer'           => $signerStep,
+                    'agreement_users'  => $agreementUsers,
+                    'html_doc'         => $htmlDoc,
+                ])->render();
+            }
+        } catch (\Throwable $e) {
+            $renderedHtml = null;
+        }
+
         return response()->json([
-            'id'         => $journal->id,
-            'doc_id'   => $journal->doc_id,
-            'doc_number' => $journal->doc?->doc_number,
-            'doc_name'   => $journal->doc?->doc_name,
-            'created_at' => $journal->created_at?->format('d.m.Y H:i'),
-            'role'       => $roleCode,
-            'role_label' => $this->roleLabel($roleCode),
-            'sign_type'  => $signType,
-            'step_id'    => $step->id,
-            'html_doc'   => $htmlDoc,
-            'files'      => $files,
+            'id'          => $journal->id,
+            'doc_id'      => $journal->doc_id,
+            'doc_code'    => $journal->doc?->doc_code,
+            'doc_number'  => $journal->doc?->doc_number,
+            'doc_name'    => $journal->doc?->doc_name,
+            'created_at'  => $journal->created_at?->format('d.m.Y H:i'),
+            'role'        => $roleCode,
+            'role_label'  => $this->roleLabel($roleCode),
+            'sign_type'   => $signType,
+            'step_id'     => $step->id,
+            'html_doc'    => $htmlDoc,
+            'rendered_html' => $renderedHtml,
+            'files'       => $files,
+            // info-карта
+            'info' => [
+                'journal_type' => $journalType,
+                'doc_name'     => $journal->doc?->doc_name,
+                'doc_date'     => $docDate,
+                'signed_by'    => $signedBy,
+                'signed_at'    => $signedAt,
+                'creator'      => $creator,
+            ],
+            'public_url'     => $publicUrl,
+            'is_fully_signed'=> $isFullySigned,
         ]);
     }
 

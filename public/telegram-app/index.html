@@ -843,6 +843,44 @@
         }
         .detail-section-title svg { width: 12px; height: 12px; opacity: 0.7; }
 
+        /* Document info — feed-item style (mirrors qr-code page) */
+        .info-feed-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-soft);
+        }
+        .info-feed-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .info-feed-icon {
+            flex-shrink: 0;
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            background: rgba(59, 130, 246, 0.10);
+            color: var(--brand-1);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .info-feed-icon svg { width: 18px; height: 18px; }
+        .info-feed-body { flex: 1; min-width: 0; padding-top: 1px; }
+        .info-feed-label {
+            font-size: 12px; font-weight: 600;
+            color: var(--brand-1);
+            margin-bottom: 3px;
+        }
+        .info-feed-value {
+            font-size: 14px; font-weight: 600;
+            color: var(--text);
+            line-height: 1.4;
+            word-break: break-word;
+        }
+        body.dark .info-feed-icon,
+        body.tg-dark .info-feed-icon {
+            background: rgba(96, 165, 250, 0.16);
+            color: #60a5fa;
+        }
+        body.dark .info-feed-label,
+        body.tg-dark .info-feed-label { color: #60a5fa; }
+
         .doc-body-content {
             font-size: 13px; line-height: 1.7;
             color: var(--text);
@@ -857,6 +895,28 @@
         .doc-body-content::-webkit-scrollbar { width: 4px; }
         .doc-body-content::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 4px; opacity: 0.3; }
         .doc-body-content img { max-width: 100%; border-radius: 8px; }
+
+        /* Rendered document (web templates) — white paper look */
+        .doc-render-wrap {
+            width: 100%;
+            background: #fff;
+            color: #1a1a1a;
+            border-top: 1px solid var(--border-soft);
+            padding: 18px 14px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .doc-render-wrap * { max-width: 100%; }
+        .doc-render-wrap img { height: auto; }
+        .doc-render-wrap table { border-collapse: collapse; width: 100%; }
+        /* Always render document on white paper regardless of app theme */
+        body.dark .doc-render-wrap,
+        body.tg-dark .doc-render-wrap {
+            background: #fff;
+            color: #1a1a1a;
+        }
 
         /* Force readable text color over inline OnlyOffice colors in dark mode */
         body.dark .doc-body-content,
@@ -1862,19 +1922,90 @@
         <span class="role-badge" id="detail-role-badge"></span>
     </div>
 
-    <div class="detail-section">
+    <div class="detail-section doc-info-card">
         <div class="detail-section-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            Ma'lumotlar
+            <span data-i18n="mini.doc_info">Hujjat haqida ma'lumot</span>
         </div>
-        <div class="detail-row">
-            <span class="detail-row-label" data-i18n="field.doc_date">Sana</span>
-            <span class="detail-row-value" id="detail-date"></span>
+
+        <div class="info-feed-item" id="row-jtype" style="display:none;">
+            <div class="info-feed-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+            </div>
+            <div class="info-feed-body">
+                <div class="info-feed-label" data-i18n="mini.doc_type">Hujjat turi</div>
+                <div class="info-feed-value" id="detail-jtype"></div>
+            </div>
         </div>
-        <div class="detail-row">
-            <span class="detail-row-label" data-i18n="mini.actions">Amal</span>
-            <span class="detail-row-value" id="detail-action"></span>
+
+        <div class="info-feed-item" id="row-dname" style="display:none;">
+            <div class="info-feed-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div class="info-feed-body">
+                <div class="info-feed-label" data-i18n="field.doc_name">Hujjat nomi</div>
+                <div class="info-feed-value" id="detail-dname"></div>
+            </div>
         </div>
+
+        <div class="info-feed-item">
+            <div class="info-feed-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div class="info-feed-body">
+                <div class="info-feed-label" data-i18n="field.doc_date">Sana</div>
+                <div class="info-feed-value" id="detail-date"></div>
+            </div>
+        </div>
+
+        <div class="info-feed-item" id="row-signedby" style="display:none;">
+            <div class="info-feed-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <div class="info-feed-body">
+                <div class="info-feed-label" data-i18n="mini.signed_by">Kim imzolagan</div>
+                <div class="info-feed-value" id="detail-signedby"></div>
+            </div>
+        </div>
+
+        <div class="info-feed-item" id="row-signedat" style="display:none;">
+            <div class="info-feed-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg>
+            </div>
+            <div class="info-feed-body">
+                <div class="info-feed-label" data-i18n="mini.signed_at">Imzolangan sana</div>
+                <div class="info-feed-value" id="detail-signedat"></div>
+            </div>
+        </div>
+
+        <div class="info-feed-item" id="row-creator" style="display:none;">
+            <div class="info-feed-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <div class="info-feed-body">
+                <div class="info-feed-label" data-i18n="mini.creator">Yaratuvchi</div>
+                <div class="info-feed-value" id="detail-creator"></div>
+            </div>
+        </div>
+
+        <div class="info-feed-item" id="row-action">
+            <div class="info-feed-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            </div>
+            <div class="info-feed-body">
+                <div class="info-feed-label" data-i18n="mini.actions">Amal</div>
+                <div class="info-feed-value" id="detail-action"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rendered document (same templates as web, by doc type) -->
+    <div class="detail-section" id="doc-render-section" style="display:none; padding:0; overflow:hidden;">
+        <div class="detail-section-title" style="padding:16px 16px 0;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="14" y2="18"/></svg>
+            <span data-i18n="mini.doc_view">Hujjat</span>
+        </div>
+        <div class="doc-render-wrap" id="doc-render-wrap"></div>
     </div>
 
     <div class="detail-section" id="doc-body-section" style="display:none">
@@ -2588,6 +2719,12 @@
         currentDoc = null;
         currentMyDoc = null;
 
+        // Clear the rendered document section
+        var rwrap = document.getElementById('doc-render-wrap');
+        if (rwrap) rwrap.innerHTML = '';
+        var rsec = document.getElementById('doc-render-section');
+        if (rsec) rsec.style.display = 'none';
+
         // Restore default detail UI
         var signWrap = document.querySelector('.sign-btn-wrap');
         if (signWrap) signWrap.classList.remove('visible');
@@ -2708,6 +2845,17 @@
         document.getElementById('doc-list').innerHTML = html;
     }
 
+    function setInfoRow(rowId, valId, value) {
+        var row = document.getElementById(rowId);
+        var val = document.getElementById(valId);
+        if (value && String(value).trim()) {
+            if (val) val.textContent = value;
+            if (row) row.style.display = '';
+        } else {
+            if (row) row.style.display = 'none';
+        }
+    }
+
     async function openDoc(docId) {
         haptic('light');
         setState('loading');
@@ -2724,15 +2872,35 @@
             document.getElementById('detail-date').textContent    = doc.created_at || '—';
             document.getElementById('detail-action').textContent  = doc.role_label || '—';
 
+            // Info card fields (mirror web public page)
+            var info = doc.info || {};
+            setInfoRow('row-jtype',   'detail-jtype',   info.journal_type);
+            setInfoRow('row-dname',   'detail-dname',   info.doc_name);
+            setInfoRow('row-signedby','detail-signedby',info.signed_by);
+            setInfoRow('row-signedat','detail-signedat',info.signed_at);
+            setInfoRow('row-creator', 'detail-creator', info.creator);
+            if (info.doc_date) {
+                document.getElementById('detail-date').textContent = info.doc_date;
+            }
+
             var badge = document.getElementById('detail-role-badge');
             badge.textContent  = doc.role_label;
             badge.className    = 'role-badge ' + roleClass(doc.role);
 
+            // Rendered document (same web templates, by doc type)
+            var renderSection = document.getElementById('doc-render-section');
+            var renderWrap = document.getElementById('doc-render-wrap');
             var bodySection = document.getElementById('doc-body-section');
-            if (doc.html_doc) {
+            if (doc.rendered_html) {
+                renderWrap.innerHTML = doc.rendered_html;
+                renderSection.style.display = 'block';
+                bodySection.style.display = 'none';
+            } else if (doc.html_doc) {
+                renderSection.style.display = 'none';
                 document.getElementById('doc-body-content').innerHTML = doc.html_doc;
                 bodySection.style.display = 'block';
             } else {
+                renderSection.style.display = 'none';
                 bodySection.style.display = 'none';
             }
 
@@ -2797,6 +2965,15 @@
     function renderMyDocDetail(doc) {
         currentMyDoc = doc;
 
+        // Hide the extended info rows (used by sign-detail) + iframe
+        ['row-jtype','row-dname','row-signedby','row-signedat','row-creator'].forEach(function(id){
+            var el = document.getElementById(id); if (el) el.style.display = 'none';
+        });
+        var rsec = document.getElementById('doc-render-section');
+        if (rsec) rsec.style.display = 'none';
+        var rwrap = document.getElementById('doc-render-wrap');
+        if (rwrap) rwrap.innerHTML = '';
+
         // Top
         document.getElementById('detail-name').textContent = doc.doc_name || '—';
         document.getElementById('detail-number').textContent = doc.doc_number ? ('№ ' + doc.doc_number) : '';
@@ -2813,13 +2990,21 @@
             actionEl.textContent = (doc.journal || '—') + statusTxt;
         }
 
-        // Optional doc_text
+        // Rendered document (same web templates) — preferred
+        var rSec = document.getElementById('doc-render-section');
+        var rWrap = document.getElementById('doc-render-wrap');
         var docBody = document.getElementById('doc-body-section');
         var docContent = document.getElementById('doc-body-content');
-        if (doc.html_doc || doc.doc_text) {
+        if (doc.rendered_html) {
+            rWrap.innerHTML = doc.rendered_html;
+            rSec.style.display = 'block';
+            docBody.style.display = 'none';
+        } else if (doc.html_doc || doc.doc_text) {
+            rSec.style.display = 'none';
             docContent.innerHTML = doc.html_doc || ('<p>' + esc(doc.doc_text) + '</p>');
             docBody.style.display = '';
         } else {
+            rSec.style.display = 'none';
             docBody.style.display = 'none';
         }
 
