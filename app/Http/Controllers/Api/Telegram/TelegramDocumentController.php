@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Telegram;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\StatusList;
 use App\Models\Document\DocumentExecutionRoles;
 use App\Models\Document\DocumentExecutionSteps;
 use App\Models\Document\DocumentJournals;
@@ -24,6 +25,14 @@ class TelegramDocumentController extends Controller
         $record = TelegramMiniAppToken::findValidAuth($bearer);
         if (!$record) return null;
         Auth::setUser($record->user);
+
+        // Set locale from ?lang= param (uz|ru|en). 'cyr' maps to uz on backend.
+        $lang = $request->query('lang', 'uz');
+        if ($lang === 'cyr') $lang = 'uz';
+        if (in_array($lang, ['uz', 'ru', 'en'])) {
+            app()->setLocale($lang);
+        }
+
         return $record;
     }
 
@@ -61,11 +70,18 @@ class TelegramDocumentController extends Controller
         $dateTill   = trim((string) $request->query('date_till', ''));
         $page       = max(1, (int) $request->query('page', 1));
 
+        $locale = $request->query('lang', 'uz');
+        if ($locale === 'cyr') $locale = 'uz';
+        if (!in_array($locale, ['uz', 'ru', 'en'])) $locale = 'uz';
+
+        $user = Auth::user();
+        $allWorkIds = \App\Models\Admin\UserWorkHistory::where('user_id', $user->id)
+            ->pluck('id')->toArray();
+
         $search = DocumentJournals::whereHas('journal', function ($qb) {
             $qb->whereNotIn('doc_code', ['BASE_INCOMING', 'BASE_OUTGOING']);
         })
-            ->where('org_unit_id', $this->organizationId())
-            ->whereIn('created_user', $this->authActiveUserIds());
+            ->whereIn('created_user', $allWorkIds);
 
         $today = Carbon::now()->format('Y-m-d');
 
@@ -120,7 +136,7 @@ class TelegramDocumentController extends Controller
             ->with(['doc', 'journal', 'statusWork'])
             ->paginate(25, ['*'], 'page', $page);
 
-        $items = collect($paginator->items())->map(function ($journal) {
+        $items = collect($paginator->items())->map(function ($journal) use ($locale) {
             $doc    = $journal->doc;
             $jrnl   = $journal->journal;
             $status = $journal->statusWork;
@@ -132,7 +148,6 @@ class TelegramDocumentController extends Controller
                     if ($lng && isset($lng->text)) {
                         $text = is_array($lng->text) ? $lng->text : json_decode($lng->text, true);
                         if ($text) {
-                            $locale = app()->getLocale() ?: 'uz';
                             $journalLabel = $text[$locale] ?? $text['uz'] ?? $jrnl->title;
                         }
                     }
@@ -142,19 +157,8 @@ class TelegramDocumentController extends Controller
             $statusLabel = null;
             $statusBadge = null;
             if ($status) {
-                $statusLabel = $status->title ?? null;
-                if ($status->lang_id) {
-                    try {
-                        $lng = $status->langName ?? null;
-                        if ($lng && isset($lng->text)) {
-                            $text = is_array($lng->text) ? $lng->text : json_decode($lng->text, true);
-                            if ($text) {
-                                $locale = app()->getLocale() ?: 'uz';
-                                $statusLabel = $text[$locale] ?? $text['uz'] ?? $statusLabel;
-                            }
-                        }
-                    } catch (\Throwable $e) {}
-                }
+                $statusLabel = \App\Models\Admin\StatusList::docLang($status->id, $locale);
+                $statusLabel = trim(preg_replace('/\s*\((hujjat|документ|doc)\)\s*$/iu', '', (string) $statusLabel));
                 $statusBadge = $status->badgeClass ?? null;
             }
 
@@ -183,6 +187,7 @@ class TelegramDocumentController extends Controller
         ]);
     }
 
+
     /**
      * GET /api/telegram/counts
      *
@@ -192,39 +197,121 @@ class TelegramDocumentController extends Controller
      *   - for_approval (AGREE):   сколько ждёт моего согласования
      *   - my_docs:                сколько моих созданных
      */
+    /**
+     * GET /api/telegram/status-options?category=for_resolution|for_sign|for_approval|my_docs
+     *
+     * Возвращает список доступных статусов для категории (берётся из StatusList — как в web).
+     * Поддерживаемые типы:
+     *   - for_resolution (Tasdiqlash) → type='doc_exec'
+     *   - for_sign / for_approval    → type='doc_signer'
+     *   - my_docs                    → type='work_document' (исключая 1,4,5,6,7,13)
+     */
+    public function statusOptions(Request $request): JsonResponse
+    {
+        $record = $this->resolveUser($request);
+        if (!$record) return response()->json(['error' => 'Unauthorized'], 401);
+
+        $category = $request->query('category');
+
+        // Map both old (RESOL/SIGN/AGREE) and new (for_resolution/...) category names
+        $type = 'doc_signer';
+        $excludeCodes = [];
+        $defaultCode = '2';
+
+        switch ($category) {
+            case 'RESOL':
+            case 'for_resolution':
+                $type = 'doc_exec';
+                $defaultCode = '2';
+                break;
+            case 'SIGN':
+            case 'for_sign':
+            case 'AGREE':
+            case 'for_approval':
+                $type = 'doc_signer';
+                $defaultCode = '2';
+                break;
+            case 'my_docs':
+                $type = 'work_document';
+                $excludeCodes = [1, 4, 5, 6, 7, 13];
+                $defaultCode = '';  // Barchasi by default
+                break;
+        }
+
+        $query = \App\Models\Admin\StatusList::where('type', $type);
+        if (!empty($excludeCodes)) {
+            $query->whereNotIn('code', $excludeCodes);
+        }
+        $rows = $query->orderBy('order_number')->get();
+
+        // Явная локаль из ?lang= (resolveUser уже применил app locale, но docLang
+        // надёжнее с явным параметром — не зависит от кэша переводов).
+        $locale = $request->query('lang', 'uz');
+        if ($locale === 'cyr') $locale = 'uz';
+        if (!in_array($locale, ['uz', 'ru', 'en'])) $locale = 'uz';
+
+        $options = $rows->map(function ($row) use ($locale) {
+            $title = \App\Models\Admin\StatusList::docLang($row->id, $locale);
+            $title = trim(preg_replace('/\s*\((hujjat|документ|doc)\)\s*$/iu', '', (string) $title));
+            return [
+                'code'  => (string) $row->code,
+                'label' => $title,
+            ];
+        })->values();
+
+        return response()->json([
+            'category' => $category,
+            'type'     => $type,
+            'default'  => $defaultCode,
+            'options'  => $options,
+        ]);
+    }
+
     public function counts(Request $request): JsonResponse
     {
         $record = $this->resolveUser($request);
         if (!$record) return response()->json(['error' => 'Unauthorized'], 401);
 
-        $user    = Auth::user();
-        $workIds = $user->userWorkIDs();
-        $orgId   = $this->organizationId();
+        $user = Auth::user();
 
-        $countFor = function (string $roleCode) use ($workIds, $orgId) {
-            return DocumentJournals::where('org_unit_id', $orgId)
-                ->whereHas('executionSteps', function ($q) use ($workIds, $roleCode) {
-                    $q->whereIn('to_user', $workIds)
-                        ->where('status', 2)
-                        ->whereHas('role', fn($r) => $r->where('doc_code', $roleCode));
-                })
-                ->where('status', '>', 1)
-                ->count();
-        };
+        // ВАЖНО: web menuCount() использует ВСЕ work_history записи юзера
+        // (без фильтра org_id/status), поэтому счётчики на главной берут все
+        // организации. Делаем точно так же чтобы числа совпадали с вебом.
+        $workIds = \App\Models\Admin\UserWorkHistory::where('user_id', $user->id)
+            ->pluck('id')->toArray();
 
-        $myDocsCount = DocumentJournals::where('org_unit_id', $orgId)
-            ->whereHas('journal', function ($qb) {
-                $qb->whereNotIn('doc_code', ['BASE_INCOMING', 'BASE_OUTGOING']);
-            })
-            ->whereIn('created_user', $this->authActiveUserIds())
+        // DOC_SIGN: role SIGN, status = 2
+        $signCount = DocumentExecutionSteps::whereIn('to_user', $workIds)
+            ->whereHas('role', fn($q) => $q->where('doc_code', 'SIGN'))
+            ->where('status', 2)
+            ->count();
+
+        // DOC_APPROVE: role AGREE, status = 2
+        $approveCount = DocumentExecutionSteps::whereIn('to_user', $workIds)
+            ->whereHas('role', fn($q) => $q->where('doc_code', 'AGREE'))
+            ->where('status', 2)
+            ->count();
+
+        // DOC_CONF (resolution): role RESOL, status IN [2, 6]
+        $resolCount = DocumentExecutionSteps::whereIn('to_user', $workIds)
+            ->whereHas('role', fn($q) => $q->where('doc_code', 'RESOL'))
+            ->whereIn('status', [2, 6])
+            ->count();
+
+        // My docs count — ДОЛЖЕН совпадать с длиной списка myDocuments():
+        // status != 2 (не в работе) и != 13, свои work-документы (не base in/out).
+        $myDocsCount = DocumentJournals::whereHas('journal', function ($q) {
+            $q->whereNotIn('doc_code', ['BASE_INCOMING', 'BASE_OUTGOING']);
+        })
+            ->whereIn('created_user', $workIds)
             ->where('status', '!=', 2)
             ->where('status', '!=', 13)
             ->count();
 
         return response()->json([
-            'for_resolution' => $countFor('RESOL'),
-            'for_sign'       => $countFor('SIGN'),
-            'for_approval'   => $countFor('AGREE'),
+            'for_resolution' => $resolCount,
+            'for_sign'       => $signCount,
+            'for_approval'   => $approveCount,
             'my_docs'        => $myDocsCount,
         ]);
     }
@@ -240,54 +327,84 @@ class TelegramDocumentController extends Controller
         $record = $this->resolveUser($request);
         if (!$record) return response()->json(['error' => 'Unauthorized'], 401);
 
-        $user    = Auth::user();
-        $workIds = $user->userWorkIDs();
-        $orgId   = $this->organizationId();
+        $user = Auth::user();
+
+        // Явная локаль
+        $locale = $request->query('lang', 'uz');
+        if ($locale === 'cyr') $locale = 'uz';
+        if (!in_array($locale, ['uz', 'ru', 'en'])) $locale = 'uz';
+
+        // ВСЕ work_history записи (как в counts/menuCount) — числа на главной
+        // и длина списка теперь совпадают.
+        $workIds = \App\Models\Admin\UserWorkHistory::where('user_id', $user->id)
+            ->pluck('id')->toArray();
 
         $category = $request->query('category');
         $roles = in_array($category, ['RESOL', 'SIGN', 'AGREE'])
             ? [$category]
             : $this->allowedRoles;
 
-        // Step status filter: 'all' = no filter, otherwise int (1..5). Default = 2 (pending).
+        // Дефолтный статус зависит от роли (как в web menuCount):
+        //   RESOL → [2,6], SIGN/AGREE → [2]
+        $isResol = ($roles === ['RESOL']);
+        $defaultStatuses = $isResol ? [2, 6] : [2];
+
+        // Step status filter: 'all' = no filter, '' = default, иначе конкретный int.
         $stepStatus = $request->query('step_status', '2');
         $applyStepFilter = ($stepStatus !== 'all' && $stepStatus !== '' && $stepStatus !== null);
+        // Если фронт прислал именно дефолт '2' для резолюции — расширяем до [2,6]
+        $statusList = ($applyStepFilter && $stepStatus === '2' && $isResol)
+            ? [2, 6]
+            : [(int) $stepStatus];
 
-        $documents = DocumentJournals::where('org_unit_id', $orgId)
-            ->whereHas('executionSteps', function ($q) use ($workIds, $roles, $stepStatus, $applyStepFilter) {
-                $q->whereIn('to_user', $workIds)
-                    ->whereHas('role', fn($r) => $r->whereIn('doc_code', $roles));
-                if ($applyStepFilter) {
-                    $q->where('status', (int) $stepStatus);
-                }
-            })
+        $documents = DocumentJournals::whereHas('executionSteps', function ($q) use ($workIds, $roles, $statusList, $applyStepFilter) {
+            $q->whereIn('to_user', $workIds)
+                ->whereHas('role', fn($r) => $r->whereIn('doc_code', $roles));
+            if ($applyStepFilter) {
+                $q->whereIn('status', $statusList);
+            }
+        })
             ->where('status', '>', 1)
             ->with('doc')
             ->orderByDesc('created_at')
             ->limit(50)
             ->get();
 
-        $result = $documents->map(function ($journal) use ($workIds, $roles, $stepStatus, $applyStepFilter) {
+        $result = $documents->map(function ($journal) use ($workIds, $roles, $statusList, $applyStepFilter, $locale) {
             $doc = $journal->doc;
 
             $stepQuery = DocumentExecutionSteps::where('j_id', $journal->id)
                 ->whereIn('to_user', $workIds)
                 ->whereHas('role', fn($r) => $r->whereIn('doc_code', $roles));
             if ($applyStepFilter) {
-                $stepQuery->where('status', (int) $stepStatus);
+                $stepQuery->whereIn('status', $statusList);
             }
             $step = $stepQuery->first();
 
             $roleCode = $step ? $this->getStepRole($step) : null;
 
+            // Локализованный статус шага (как badge в вебе)
+            $statusType = ($roles === ['RESOL']) ? 'doc_exec' : 'doc_signer';
+            $statusLabel = null;
+            if ($step) {
+                $statusRow = \App\Models\Admin\StatusList::where('type', $statusType)
+                    ->where('code', $step->status)
+                    ->first();
+                if ($statusRow) {
+                    $statusLabel = \App\Models\Admin\StatusList::docLang($statusRow->id, $locale);
+                    $statusLabel = trim(preg_replace('/\s*\((hujjat|документ|doc)\)\s*$/iu', '', (string) $statusLabel));
+                }
+            }
+
             return [
-                'id'          => $journal->id,
-                'doc_number'  => $doc?->doc_number ?? '—',
-                'doc_name'    => $doc?->doc_name ?? '—',
-                'created_at'  => $journal->created_at?->format('d.m.Y'),
-                'role'        => $roleCode,
-                'role_label'  => $this->roleLabel($roleCode),
-                'step_status' => $step?->status,
+                'id'           => $journal->id,
+                'doc_number'   => $doc?->doc_number ?? '—',
+                'doc_name'     => $doc?->doc_name ?? '—',
+                'created_at'   => $journal->created_at?->format('d.m.Y'),
+                'role'         => $roleCode,
+                'role_label'   => $this->roleLabel($roleCode),
+                'step_status'  => $step?->status,
+                'status_label' => $statusLabel,
             ];
         });
 
@@ -312,7 +429,7 @@ class TelegramDocumentController extends Controller
         $journal = DocumentJournals::with(['doc', 'files', 'journal', 'statusWork'])->find($jId);
         if (!$journal) return response()->json(['error' => 'Document not found'], 404);
 
-        $workIds = $this->authActiveUserIds();
+        $workIds = \App\Models\Admin\UserWorkHistory::where('user_id', Auth::id())->pluck('id')->toArray();
         if (!in_array($journal->created_user, $workIds)) {
             return response()->json(['error' => 'Access denied'], 403);
         }
@@ -420,6 +537,31 @@ class TelegramDocumentController extends Controller
             }
         }
 
+        // Рендер документа теми же шаблонами что и веб (по типу doc_code)
+        $renderedHtml = null;
+        try {
+            $document = $journal->doc;
+            $directorDocument = DocumentExecutionSteps::where('j_id', $journal->id)
+                ->where('exec_role', $this->getResolutionRole()->id)->first();
+            $signerStep = DocumentExecutionSteps::where('j_id', $journal->id)
+                ->where('exec_role', $this->getSignerRole()->id)->first();
+            $agreementUsers = DocumentExecutionSteps::where('j_id', $journal->id)
+                ->where('exec_role', $this->getAgreementRole()->id)->get();
+
+            if ($document && $directorDocument) {
+                $renderedHtml = view('telegram.doc-content', [
+                    'journal'          => $journal,
+                    'document'         => $document,
+                    'directorDocument' => $directorDocument,
+                    'signer'           => $signerStep,
+                    'agreement_users'  => $agreementUsers,
+                    'html_doc'         => $htmlDoc,
+                ])->render();
+            }
+        } catch (\Throwable $e) {
+            $renderedHtml = null;
+        }
+
         return response()->json([
             'id'         => $journal->id,
             'doc_id'     => $journal->doc_id,
@@ -434,6 +576,7 @@ class TelegramDocumentController extends Controller
             'status_code'=> $journal->status,
             'created_at' => $journal->created_at?->format('d.m.Y H:i'),
             'html_doc'   => $htmlDoc,
+            'rendered_html' => $renderedHtml,
             'files'      => $files,
             'actions'    => $actions,
         ]);
@@ -459,7 +602,7 @@ class TelegramDocumentController extends Controller
         if (!$journal) return response()->json(['error' => 'Document not found'], 404);
 
         // Проверка авторства
-        $workIds = $this->authActiveUserIds();
+        $workIds = \App\Models\Admin\UserWorkHistory::where('user_id', Auth::id())->pluck('id')->toArray();
         if (!in_array($journal->created_user, $workIds)) {
             return response()->json(['error' => 'Access denied'], 403);
         }
@@ -495,7 +638,7 @@ class TelegramDocumentController extends Controller
         $journal = DocumentJournals::find($jId);
         if (!$journal) return response()->json(['error' => 'Document not found'], 404);
 
-        $workIds = $this->authActiveUserIds();
+        $workIds = \App\Models\Admin\UserWorkHistory::where('user_id', Auth::id())->pluck('id')->toArray();
         if (!in_array($journal->created_user, $workIds)) {
             return response()->json(['error' => 'Access denied'], 403);
         }
@@ -546,16 +689,18 @@ class TelegramDocumentController extends Controller
         if (!$record) return response()->json(['error' => 'Unauthorized'], 401);
 
         $user    = Auth::user();
-        $workIds = $user->userWorkIDs();
+        $workIds = \App\Models\Admin\UserWorkHistory::where('user_id', $user->id)
+            ->pluck('id')->toArray();
 
         $journal = DocumentJournals::with(['doc', 'files', 'journal'])->find($jId);
         if (!$journal) return response()->json(['error' => 'Document not found'], 404);
 
-        // Найти шаг пользователя
+        // Найти шаг пользователя (любой статус — фильтр статуса только для списка)
         $step = DocumentExecutionSteps::where('j_id', $jId)
             ->whereIn('to_user', $workIds)
-            ->where('status', 2)
             ->whereHas('role', fn($r) => $r->whereIn('doc_code', $this->allowedRoles))
+            ->orderByRaw("CASE WHEN status = 2 THEN 0 ELSE 1 END") // prefer pending step
+            ->orderByDesc('id')
             ->first();
 
         if (!$step) return response()->json(['error' => 'Access denied'], 403);
@@ -574,18 +719,121 @@ class TelegramDocumentController extends Controller
             'url'  => url('/storage/' . $f->file_path),
         ]);
 
+        // ── Info-карта «Hujjat haqida ma'lumot» (как в публичной веб-странице) ──
+        $locale = app()->getLocale() ?: 'uz';
+
+        // Тип журнала (локализованный)
+        $journalType = null;
+        try {
+            $jrnl = $journal->journal;
+            if ($jrnl) {
+                $journalType = $jrnl->title;
+                if ($jrnl->lang_id) {
+                    $lng = $jrnl->langName;
+                    if ($lng && isset($lng->text)) {
+                        $txt = is_array($lng->text) ? $lng->text : json_decode($lng->text, true);
+                        $journalType = $txt[$locale] ?? $txt['uz'] ?? $jrnl->title;
+                    }
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        // Подписант-резолютор (Kim tomonidan imzolangan)
+        $signedBy = null; $signedAt = null;
+        try {
+            $resolStep = DocumentExecutionSteps::where('j_id', $jId)
+                ->whereHas('role', fn($r) => $r->where('doc_code', 'RESOL'))
+                ->whereIn('status', [5, 2, 6])
+                ->orderByDesc('updated_at')
+                ->first();
+            if ($resolStep && $resolStep->toUser && $resolStep->toUser->personal) {
+                $p = $resolStep->toUser->personal;
+                $signedBy = trim(
+                    mb_substr($p->f_name ?? '', 0, 1) . '. ' .
+                    (($p->m_name ?? '') ? mb_substr($p->m_name, 0, 1) . '. ' : '') .
+                    ($p->l_name ?? '')
+                );
+                $signedAt = $resolStep->updated_at?->format('d.m.Y H:i');
+            }
+        } catch (\Throwable $e) {}
+
+        // Создатель документа (Hujjat yaratuvchisi)
+        $creator = null;
+        try {
+            if ($journal->fromUser && $journal->fromUser->personal) {
+                $p = $journal->fromUser->personal;
+                $creator = trim(
+                    mb_substr($p->f_name ?? '', 0, 1) . '. ' .
+                    (($p->m_name ?? '') ? mb_substr($p->m_name, 0, 1) . '. ' : '') .
+                    ($p->l_name ?? '')
+                );
+            }
+        } catch (\Throwable $e) {}
+
+        $docDate = null;
+        try {
+            $docDate = $journal->doc?->doc_date
+                ? \Carbon\Carbon::parse($journal->doc->doc_date)->format('d.m.Y')
+                : null;
+        } catch (\Throwable $e) {}
+
+        // Публичная страница документа с QR (доступна когда полностью подписан)
+        $publicUrl = null;
+        $isFullySigned = in_array($journal->status, [9, 10, 11]);
+        if ($isFullySigned && $journal->doc?->doc_code) {
+            $publicUrl = url('/d/' . $journal->doc->doc_code);
+        }
+
+        // Рендер документа теми же шаблонами что и веб (по типу doc_code)
+        $renderedHtml = null;
+        try {
+            $document = $journal->doc;
+            $directorDocument = DocumentExecutionSteps::where('j_id', $journal->id)
+                ->where('exec_role', $this->getResolutionRole()->id)->first();
+            $signerStep = DocumentExecutionSteps::where('j_id', $journal->id)
+                ->where('exec_role', $this->getSignerRole()->id)->first();
+            $agreementUsers = DocumentExecutionSteps::where('j_id', $journal->id)
+                ->where('exec_role', $this->getAgreementRole()->id)->get();
+
+            if ($document && $directorDocument) {
+                $renderedHtml = view('telegram.doc-content', [
+                    'journal'          => $journal,
+                    'document'         => $document,
+                    'directorDocument' => $directorDocument,
+                    'signer'           => $signerStep,
+                    'agreement_users'  => $agreementUsers,
+                    'html_doc'         => $htmlDoc,
+                ])->render();
+            }
+        } catch (\Throwable $e) {
+            $renderedHtml = null;
+        }
+
         return response()->json([
-            'id'         => $journal->id,
-            'doc_id'   => $journal->doc_id,
-            'doc_number' => $journal->doc?->doc_number,
-            'doc_name'   => $journal->doc?->doc_name,
-            'created_at' => $journal->created_at?->format('d.m.Y H:i'),
-            'role'       => $roleCode,
-            'role_label' => $this->roleLabel($roleCode),
-            'sign_type'  => $signType,
-            'step_id'    => $step->id,
-            'html_doc'   => $htmlDoc,
-            'files'      => $files,
+            'id'          => $journal->id,
+            'doc_id'      => $journal->doc_id,
+            'doc_code'    => $journal->doc?->doc_code,
+            'doc_number'  => $journal->doc?->doc_number,
+            'doc_name'    => $journal->doc?->doc_name,
+            'created_at'  => $journal->created_at?->format('d.m.Y H:i'),
+            'role'        => $roleCode,
+            'role_label'  => $this->roleLabel($roleCode),
+            'sign_type'   => $signType,
+            'step_id'     => $step->id,
+            'html_doc'    => $htmlDoc,
+            'rendered_html' => $renderedHtml,
+            'files'       => $files,
+            // info-карта
+            'info' => [
+                'journal_type' => $journalType,
+                'doc_name'     => $journal->doc?->doc_name,
+                'doc_date'     => $docDate,
+                'signed_by'    => $signedBy,
+                'signed_at'    => $signedAt,
+                'creator'      => $creator,
+            ],
+            'public_url'     => $publicUrl,
+            'is_fully_signed'=> $isFullySigned,
         ]);
     }
 

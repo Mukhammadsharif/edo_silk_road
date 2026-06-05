@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Telegram;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\UserWorkHistory;
 use App\Models\TelegramMiniAppToken;
 use App\Models\TelegramUser;
 use App\Models\User;
@@ -69,6 +70,30 @@ class TelegramMiniAppAuthController extends Controller
 
         if (!$user) {
             return response()->json(['error' => 'User not found'], 404);
+        }
+
+        // Убедимся что org_unit_id указывает на организацию где у юзера есть
+        // активная work_history. Иначе списки документов будут пустыми
+        // (всё фильтруется через org_unit_id). В Mini App нет переключателя
+        // организаций, поэтому делаем это автоматически.
+        $hasActiveInCurrent = $user->org_unit_id && UserWorkHistory::where('user_id', $user->id)
+                ->where('org_id', $user->org_unit_id)
+                ->where('status', 1)
+                ->exists();
+
+        if (!$hasActiveInCurrent) {
+            $firstWork = UserWorkHistory::where('user_id', $user->id)
+                ->where('status', 1)
+                ->orderByDesc('id')
+                ->first();
+            if ($firstWork) {
+                $user->org_unit_id = $firstWork->org_id;
+                $user->save();
+                Log::info('Telegram auth: org_unit_id auto-set', [
+                    'user_id' => $user->id,
+                    'org_id'  => $firstWork->org_id,
+                ]);
+            }
         }
 
         // Создаём auth token

@@ -843,6 +843,44 @@
         }
         .detail-section-title svg { width: 12px; height: 12px; opacity: 0.7; }
 
+        /* Document info — feed-item style (mirrors qr-code page) */
+        .info-feed-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-soft);
+        }
+        .info-feed-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .info-feed-icon {
+            flex-shrink: 0;
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            background: rgba(59, 130, 246, 0.10);
+            color: var(--brand-1);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .info-feed-icon svg { width: 18px; height: 18px; }
+        .info-feed-body { flex: 1; min-width: 0; padding-top: 1px; }
+        .info-feed-label {
+            font-size: 12px; font-weight: 600;
+            color: var(--brand-1);
+            margin-bottom: 3px;
+        }
+        .info-feed-value {
+            font-size: 14px; font-weight: 600;
+            color: var(--text);
+            line-height: 1.4;
+            word-break: break-word;
+        }
+        body.dark .info-feed-icon,
+        body.tg-dark .info-feed-icon {
+            background: rgba(96, 165, 250, 0.16);
+            color: #60a5fa;
+        }
+        body.dark .info-feed-label,
+        body.tg-dark .info-feed-label { color: #60a5fa; }
+
         .doc-body-content {
             font-size: 13px; line-height: 1.7;
             color: var(--text);
@@ -857,6 +895,28 @@
         .doc-body-content::-webkit-scrollbar { width: 4px; }
         .doc-body-content::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 4px; opacity: 0.3; }
         .doc-body-content img { max-width: 100%; border-radius: 8px; }
+
+        /* Rendered document (web templates) — white paper look */
+        .doc-render-wrap {
+            width: 100%;
+            background: #fff;
+            color: #1a1a1a;
+            border-top: 1px solid var(--border-soft);
+            padding: 18px 14px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .doc-render-wrap * { max-width: 100%; }
+        .doc-render-wrap img { height: auto; }
+        .doc-render-wrap table { border-collapse: collapse; width: 100%; }
+        /* Always render document on white paper regardless of app theme */
+        body.dark .doc-render-wrap,
+        body.tg-dark .doc-render-wrap {
+            background: #fff;
+            color: #1a1a1a;
+        }
 
         /* Force readable text color over inline OnlyOffice colors in dark mode */
         body.dark .doc-body-content,
@@ -1688,7 +1748,7 @@
         </div>
         <span class="badge-count" id="doc-count"></span>
     </div>
-    <div class="header-sub" id="header-sub">Yuklanmoqda...</div>
+    <div class="header-sub" id="header-sub" data-i18n="mini.loading">Yuklanmoqda...</div>
 </div>
 
 <!-- Loading -->
@@ -1697,7 +1757,7 @@
         <div class="spinner-wrap">
             <div class="spinner"></div>
         </div>
-        <div class="loader-text">Hujjatlar yuklanmoqda...</div>
+        <div class="loader-text" data-i18n="mini.loading">Hujjatlar yuklanmoqda...</div>
     </div>
     <div class="skeleton-list" aria-hidden="true">
         <div class="skeleton-card">
@@ -1727,10 +1787,10 @@
                 <line x1="12" y1="17" x2="12.01" y2="17"/>
             </svg>
         </div>
-        <div class="error-text" id="error-msg">Xatolik yuz berdi</div>
+        <div class="error-text" id="error-msg" data-i18n="mini.err_generic">Xatolik yuz berdi</div>
         <button class="btn-retry" onclick="init()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 4 3 10 9 10"/></svg>
-            Qayta urinish
+            <span data-i18n="mini.retry">Qayta urinish</span>
         </button>
     </div>
 </div>
@@ -1744,7 +1804,7 @@
                 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
             </svg>
         </div>
-        <div class="empty-text">Akkaunt bog'lanmagan</div>
+        <div class="empty-text" data-i18n="mini.not_linked_title">Akkaunt bog'lanmagan</div>
         <div class="empty-sub">Botga /start yuboring va akkauntingizni bog'lash uchun login va parolingizni kiriting</div>
     </div>
 </div>
@@ -1759,7 +1819,7 @@
             </div>
             <div>
                 <div class="home-card-count" id="cnt-for-resolution">0</div>
-                <div class="home-card-label">Tasdiqlash uchun</div>
+                <div class="home-card-label" data-i18n="menu.for_resolution">Tasdiqlash uchun</div>
             </div>
             <div class="home-card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
         </button>
@@ -1771,7 +1831,7 @@
             </div>
             <div>
                 <div class="home-card-count" id="cnt-for-sign">0</div>
-                <div class="home-card-label">Imzolash uchun</div>
+                <div class="home-card-label" data-i18n="menu.for_sign">Imzolash uchun</div>
             </div>
             <div class="home-card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
         </button>
@@ -1783,7 +1843,7 @@
             </div>
             <div>
                 <div class="home-card-count" id="cnt-for-approval">0</div>
-                <div class="home-card-label">Kelishish uchun</div>
+                <div class="home-card-label" data-i18n="menu.for_coillaborate">Kelishish uchun</div>
             </div>
             <div class="home-card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
         </button>
@@ -1795,7 +1855,7 @@
             </div>
             <div>
                 <div class="home-card-count" id="cnt-my-docs">0</div>
-                <div class="home-card-label">Mening hujjatlarim</div>
+                <div class="home-card-label" data-i18n="menu.my_docs">Mening hujjatlarim</div>
             </div>
             <div class="home-card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
         </button>
@@ -1814,7 +1874,7 @@
         <div class="empty-sub" id="empty-sub">Bu kategoriyada hujjat topilmadi</div>
         <button class="btn-w btn-w-secondary" onclick="goHome()" style="margin-top:18px; width:auto; padding:10px 22px;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-            Bosh sahifa
+            <span data-i18n="menu.home">Bosh sahifa</span>
         </button>
     </div>
 </div>
@@ -1824,18 +1884,18 @@
     <div style="margin-bottom:12px; display:flex; align-items:center; gap:8px;">
         <button class="back-btn" onclick="goHome()" style="display:inline-flex;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-            Orqaga
+            <span data-i18n="action.back">Orqaga</span>
         </button>
         <div id="list-title" style="font-size:15px; font-weight:700; color: var(--text);"></div>
     </div>
 
     <!-- Status filter pills — only shown for my_docs -->
     <div class="filter-pill-row" id="my-docs-filters" style="display:none;">
-        <button class="filter-pill active" data-status=""   onclick="setMyDocsFilter(this, '')">Barchasi</button>
-        <button class="filter-pill" data-status="1"  onclick="setMyDocsFilter(this, '1')">Yangi</button>
-        <button class="filter-pill" data-status="9"  onclick="setMyDocsFilter(this, '9')">Rezolyutsiyada</button>
-        <button class="filter-pill" data-status="10" onclick="setMyDocsFilter(this, '10')">Imzolangan</button>
-        <button class="filter-pill" data-status="12" onclick="setMyDocsFilter(this, '12')">Muddati o'tgan</button>
+        <button class="filter-pill active" data-status=""   onclick="setMyDocsFilter(this, '')" data-i18n="mini.all">Barchasi</button>
+        <button class="filter-pill" data-status="1"  onclick="setMyDocsFilter(this, '1')" data-i18n="mini.st_new">Yangi</button>
+        <button class="filter-pill" data-status="9"  onclick="setMyDocsFilter(this, '9')" data-i18n="mini.st_in_resol">Rezolyutsiyada</button>
+        <button class="filter-pill" data-status="10" onclick="setMyDocsFilter(this, '10')" data-i18n="mini.st_signed">Imzolangan</button>
+        <button class="filter-pill" data-status="12" onclick="setMyDocsFilter(this, '12')" data-i18n="mini.st_overdue">Muddati o'tgan</button>
     </div>
 
     <!-- Step status filter pills — for for_resolution / for_sign / for_approval -->
@@ -1845,7 +1905,7 @@
 
     <div class="doc-list" id="doc-list"></div>
     <div class="pagination-bar" id="list-pagination" style="display:none;">
-        <button id="list-load-more" onclick="loadMoreInCurrentCategory()">Yana yuklash</button>
+        <button id="list-load-more" onclick="loadMoreInCurrentCategory()" data-i18n="action.load_more">Yana yuklash</button>
     </div>
 </div>
 
@@ -1855,32 +1915,103 @@
     <div class="detail-top">
         <div class="back-btn" onclick="showList()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-            Orqaga
+            <span data-i18n="action.back">Orqaga</span>
         </div>
         <div class="detail-title" id="detail-name"></div>
         <div class="detail-number" id="detail-number"></div>
         <span class="role-badge" id="detail-role-badge"></span>
     </div>
 
-    <div class="detail-section">
+    <div class="detail-section doc-info-card">
         <div class="detail-section-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            Ma'lumotlar
+            <span data-i18n="mini.doc_info">Hujjat haqida ma'lumot</span>
         </div>
-        <div class="detail-row">
-            <span class="detail-row-label">Sana</span>
-            <span class="detail-row-value" id="detail-date"></span>
+
+        <div class="info-feed-item" id="row-jtype" style="display:none;">
+            <div class="info-feed-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+            </div>
+            <div class="info-feed-body">
+                <div class="info-feed-label" data-i18n="mini.doc_type">Hujjat turi</div>
+                <div class="info-feed-value" id="detail-jtype"></div>
+            </div>
         </div>
-        <div class="detail-row">
-            <span class="detail-row-label">Amal</span>
-            <span class="detail-row-value" id="detail-action"></span>
+
+        <div class="info-feed-item" id="row-dname" style="display:none;">
+            <div class="info-feed-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div class="info-feed-body">
+                <div class="info-feed-label" data-i18n="field.doc_name">Hujjat nomi</div>
+                <div class="info-feed-value" id="detail-dname"></div>
+            </div>
         </div>
+
+        <div class="info-feed-item">
+            <div class="info-feed-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div class="info-feed-body">
+                <div class="info-feed-label" data-i18n="field.doc_date">Sana</div>
+                <div class="info-feed-value" id="detail-date"></div>
+            </div>
+        </div>
+
+        <div class="info-feed-item" id="row-signedby" style="display:none;">
+            <div class="info-feed-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <div class="info-feed-body">
+                <div class="info-feed-label" data-i18n="mini.signed_by">Kim imzolagan</div>
+                <div class="info-feed-value" id="detail-signedby"></div>
+            </div>
+        </div>
+
+        <div class="info-feed-item" id="row-signedat" style="display:none;">
+            <div class="info-feed-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg>
+            </div>
+            <div class="info-feed-body">
+                <div class="info-feed-label" data-i18n="mini.signed_at">Imzolangan sana</div>
+                <div class="info-feed-value" id="detail-signedat"></div>
+            </div>
+        </div>
+
+        <div class="info-feed-item" id="row-creator" style="display:none;">
+            <div class="info-feed-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <div class="info-feed-body">
+                <div class="info-feed-label" data-i18n="mini.creator">Yaratuvchi</div>
+                <div class="info-feed-value" id="detail-creator"></div>
+            </div>
+        </div>
+
+        <div class="info-feed-item" id="row-action">
+            <div class="info-feed-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            </div>
+            <div class="info-feed-body">
+                <div class="info-feed-label" data-i18n="mini.actions">Amal</div>
+                <div class="info-feed-value" id="detail-action"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rendered document (same templates as web, by doc type) -->
+    <div class="detail-section" id="doc-render-section" style="display:none; padding:0; overflow:hidden;">
+        <div class="detail-section-title" style="padding:16px 16px 0;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="14" y2="18"/></svg>
+            <span data-i18n="mini.doc_view">Hujjat</span>
+        </div>
+        <div class="doc-render-wrap" id="doc-render-wrap"></div>
     </div>
 
     <div class="detail-section" id="doc-body-section" style="display:none">
         <div class="detail-section-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="14" y2="18"/></svg>
-            Hujjat matni
+            <span data-i18n="mini.doc_text">Hujjat matni</span>
         </div>
         <div class="doc-body-content" id="doc-body-content"></div>
     </div>
@@ -1888,7 +2019,7 @@
     <div class="detail-section" id="files-section" style="display:none; margin-bottom: 90px;">
         <div class="detail-section-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-            Fayllar
+            <span data-i18n="mini.files">Fayllar</span>
         </div>
         <div id="files-list"></div>
     </div>
@@ -1897,7 +2028,7 @@
     <div class="detail-section" id="owner-actions-section">
         <div class="detail-section-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            Amallar
+            <span data-i18n="mini.actions">Amallar</span>
         </div>
         <div class="owner-actions-grid" id="owner-actions-grid">
             <!-- Buttons rendered by JS -->
@@ -1907,7 +2038,7 @@
     <div class="sign-btn-wrap">
         <button class="btn-sign" id="btn-sign-main" onclick="openSignPage()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-            <span>E-IMZO ID-CARD bilan imzolash</span>
+            <span data-i18n="mini.sign_eimzo">E-IMZO ID-CARD bilan imzolash</span>
         </button>
     </div>
 </div>
@@ -1921,8 +2052,8 @@
         <div class="confirm-title" id="confirm-title">O'chirishni tasdiqlang</div>
         <div class="confirm-text" id="confirm-text">Bu amalni qaytarib bo'lmaydi.</div>
         <div class="confirm-actions">
-            <button class="action-btn" style="background:rgba(15,23,42,0.06);color:var(--text);" onclick="closeConfirm()">Bekor qilish</button>
-            <button class="action-btn action-btn-danger" id="confirm-ok-btn">O'chirish</button>
+            <button class="action-btn" style="background:rgba(15,23,42,0.06);color:var(--text);" onclick="closeConfirm()" data-i18n="mini.cancel">Bekor qilish</button>
+            <button class="action-btn action-btn-danger" id="confirm-ok-btn" data-i18n="mini.delete">O'chirish</button>
         </div>
     </div>
 </div>
@@ -1938,7 +2069,7 @@
     <div class="profile-section">
         <div class="profile-section-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            Asosiy ma'lumotlar
+            <span data-i18n="mini.main_info">Asosiy ma'lumotlar</span>
         </div>
         <div id="profile-main-info"></div>
     </div>
@@ -1947,22 +2078,22 @@
     <div class="profile-section">
         <div class="profile-section-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            Akkaunt sozlamalari
+            <span data-i18n="mini.account_settings">Akkaunt sozlamalari</span>
         </div>
         <div id="profile-account-info"></div>
 
         <!-- Avatar upload buttons -->
         <div style="margin-top:14px;">
-            <label class="form-field-mini" style="margin-bottom:6px;">Profil rasmi</label>
+            <label class="form-field-mini" style="margin-bottom:6px;" data-i18n="mini.profile_photo">Profil rasmi</label>
             <input type="file" id="avatar-input" accept="image/png,image/jpeg,image/jpg" style="display:none;" onchange="onAvatarChange(this)">
             <div class="avatar-upload-row">
                 <button class="btn-avatar-action" onclick="document.getElementById('avatar-input').click()">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                    Yuklash
+                    <span data-i18n="mini.upload">Yuklash</span>
                 </button>
                 <button class="btn-avatar-action danger" onclick="deleteAvatar()">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg>
-                    O'chirish
+                    <span data-i18n="mini.delete">O'chirish</span>
                 </button>
             </div>
         </div>
@@ -1970,20 +2101,20 @@
         <!-- Password change -->
         <div style="margin-top:14px;">
             <div class="form-field-mini">
-                <label>Joriy parol</label>
+                <label data-i18n="mini.current_password">Joriy parol</label>
                 <input type="password" id="pw-current" autocomplete="current-password">
             </div>
             <div class="form-field-mini">
-                <label>Yangi parol</label>
+                <label data-i18n="mini.new_password">Yangi parol</label>
                 <input type="password" id="pw-new" autocomplete="new-password">
             </div>
             <div class="form-field-mini">
-                <label>Yangi parolni tasdiqlang</label>
+                <label data-i18n="mini.confirm_password">Yangi parolni tasdiqlang</label>
                 <input type="password" id="pw-new-confirm" autocomplete="new-password">
             </div>
             <button class="btn-w btn-w-primary" onclick="changePassword()" style="width:100%; padding:11px;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
-                Saqlash
+                <span data-i18n="action.save">Saqlash</span>
             </button>
         </div>
     </div>
@@ -1992,7 +2123,7 @@
     <div class="profile-section" id="profile-roles-section">
         <div class="profile-section-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            Mening faol rollarim
+            <span data-i18n="mini.my_roles">Mening faol rollarim</span>
         </div>
         <div id="profile-roles-list" class="profile-roles"></div>
     </div>
@@ -2001,7 +2132,7 @@
     <div class="profile-section">
         <div class="profile-section-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            Xodim buyruqlari
+            <span data-i18n="mini.hr_orders">Xodim buyruqlari</span>
         </div>
         <div id="profile-hr-orders"></div>
     </div>
@@ -2010,29 +2141,43 @@
     <div class="profile-section">
         <div class="profile-section-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-            Ish tajribasi
+            <span data-i18n="mini.work_experience">Ish tajribasi</span>
         </div>
         <div id="profile-experiences"></div>
+    </div>
+
+    <!-- Language selector -->
+    <div class="profile-section">
+        <div class="profile-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span data-i18n="mini.language">Til</span>
+        </div>
+        <div class="theme-toggle-row" id="lang-toggle-row" style="flex-wrap:wrap;">
+            <button class="theme-toggle-btn" data-lang="uz" onclick="setLang('uz')" style="flex:1 1 45%;">O'zbekcha</button>
+            <button class="theme-toggle-btn" data-lang="cyr" onclick="setLang('cyr')" style="flex:1 1 45%;">Ўзбекча</button>
+            <button class="theme-toggle-btn" data-lang="ru" onclick="setLang('ru')" style="flex:1 1 45%;">Русский</button>
+            <button class="theme-toggle-btn" data-lang="en" onclick="setLang('en')" style="flex:1 1 45%;">English</button>
+        </div>
     </div>
 
     <!-- Theme toggle -->
     <div class="profile-section">
         <div class="profile-section-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
-            Tema
+            <span data-i18n="mini.theme">Tema</span>
         </div>
         <div class="theme-toggle-row">
             <button class="theme-toggle-btn" id="theme-btn-auto" onclick="setTheme('auto')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg>
-                Avto
+                <span data-i18n="mini.theme_auto">Avto</span>
             </button>
             <button class="theme-toggle-btn" id="theme-btn-light" onclick="setTheme('light')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/></svg>
-                Yorug'
+                <span data-i18n="mini.theme_light">Yorug'</span>
             </button>
             <button class="theme-toggle-btn" id="theme-btn-dark" onclick="setTheme('dark')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-                Qorong'i
+                <span data-i18n="mini.theme_dark">Qorong'i</span>
             </button>
         </div>
     </div>
@@ -2057,8 +2202,8 @@
                     </svg>
                 </div>
                 <div class="type-card-body">
-                    <div class="type-card-title">Ichki hujjat</div>
-                    <div class="type-card-sub">Tashkilot ichida tarqatish uchun</div>
+                    <div class="type-card-title" data-i18n="mini.type_internal">Ichki hujjat</div>
+                    <div class="type-card-sub" data-i18n="mini.type_internal_sub">Tashkilot ichida tarqatish uchun</div>
                 </div>
             </button>
             <button class="type-card" onclick="selectDocType('outgoing')">
@@ -2069,8 +2214,8 @@
                     </svg>
                 </div>
                 <div class="type-card-body">
-                    <div class="type-card-title">Chiquvchi hujjat</div>
-                    <div class="type-card-sub">Tashqi tashkilotga yuboriladigan</div>
+                    <div class="type-card-title" data-i18n="mini.type_outgoing">Chiquvchi hujjat</div>
+                    <div class="type-card-sub" data-i18n="mini.type_outgoing_sub">Tashqi tashkilotga yuboriladigan</div>
                 </div>
             </button>
             <button class="type-card" onclick="selectDocType('incoming')">
@@ -2081,8 +2226,8 @@
                     </svg>
                 </div>
                 <div class="type-card-body">
-                    <div class="type-card-title">Kiruvchi hujjat</div>
-                    <div class="type-card-sub">Tashqi tashkilotdan keldi</div>
+                    <div class="type-card-title" data-i18n="mini.type_incoming">Kiruvchi hujjat</div>
+                    <div class="type-card-sub" data-i18n="mini.type_incoming_sub">Tashqi tashkilotdan keldi</div>
                 </div>
             </button>
         </div>
@@ -2108,7 +2253,7 @@
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
             <polyline points="14 2 14 8 20 8"/>
         </svg>
-        <span>Hujjatlar</span>
+        <span data-i18n="mini.documents">Hujjatlar</span>
     </button>
     <button class="nav-tab" id="nav-create" onclick="switchTab('create')" style="display:none;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -2122,7 +2267,7 @@
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
             <circle cx="12" cy="7" r="4"/>
         </svg>
-        <span>Profil</span>
+        <span data-i18n="mini.profile">Profil</span>
     </button>
 </nav>
 
@@ -2175,17 +2320,21 @@
     // Status filter for my_docs (one of: '', '1', '9', '10', '12')
     var myDocsFilter = '';
 
-    // Step status filter for sign-style categories (default '2' = Imzo kutilmoqda / pending)
-    // Values: 'all' | '1' (Yaratilgan) | '2' (Kutilmoqda) | '3' (Bekor qilingan) | '4' (Tahrirlashga qaytarilgan) | '5' (Imzolangan)
-    var signFilter = '2';
+    // Step status filter per sign-category (default '2' = Imzo kutilmoqda / pending for all)
+    var signFilters = {
+        for_resolution: '2',
+        for_sign:       '2',
+        for_approval:   '2',
+    };
 
-    var SIGN_FILTER_OPTIONS = [
-        { value: '2',   label: 'Kutilmoqda' },
-        { value: 'all', label: 'Barchasi' },
-        { value: '5',   label: 'Bajarilgan' },
-        { value: '4',   label: 'Qaytarilgan' },
-        { value: '3',   label: 'Bekor qilingan' },
-    ];
+    // Did user manually change filter? (to avoid resetting to server default after first interaction)
+    var signFiltersTouched = {};
+
+    // Server-provided default status per category (filled by ensureStatusOptions)
+    var categoryDefaults = {};
+
+    // Dynamic status options loaded from backend (per category)
+    var statusOptionsCache = {};
 
     // Was detail opened from for_sign-style list or my_docs?
     var detailFrom = 'for_sign';
@@ -2222,6 +2371,11 @@
         // Apply saved theme immediately to avoid flash
         applyTheme();
 
+        // Load translations and apply (non-blocking for auth, but await so first paint is localized)
+        await loadTranslations();
+        applyI18n();
+        updateLangButtons();
+
         // Listen for Telegram theme changes (when user changes their app theme)
         try {
             tg.onEvent('themeChanged', applyTheme);
@@ -2232,7 +2386,7 @@
             var initData = tg.initData;
             if (!initData) {
                 document.getElementById('error-msg').textContent =
-                    'Bu sahifa faqat Telegram ichida ishlaydi.';
+                    t('mini.err_only_telegram');
                 setState('error');
                 return;
             }
@@ -2246,12 +2400,12 @@
 
             if (!authResp.ok) {
                 if (authData.error === 'not_linked') { setState('not-linked'); return; }
-                throw new Error(authData.message || 'Auth xatosi');
+                throw new Error(authData.message || t('mini.err_auth'));
             }
 
             AUTH_TOKEN = authData.token;
             CURRENT_USER = authData.user || null;
-            document.getElementById('header-sub').textContent = 'Bosh sahifa';
+            document.getElementById('header-sub').textContent = t('menu.home');
 
             // Bottom navigation становится видимой
             document.body.classList.add('authenticated', 'with-bottom-nav');
@@ -2263,7 +2417,7 @@
             await goHome();
         } catch(e) {
             haptic('error');
-            document.getElementById('error-msg').textContent = e.message || 'Ulanishda xatolik';
+            document.getElementById('error-msg').textContent = e.message || t('mini.err_connect');
             setState('error');
         }
     }
@@ -2280,7 +2434,7 @@
 
         var sub = document.getElementById('header-sub');
         var cnt = document.getElementById('doc-count');
-        if (sub) sub.textContent = 'Bosh sahifa';
+        if (sub) sub.textContent = t('menu.home');
         if (cnt) cnt.style.display = 'none';
 
         // Restore detail-screen UI for next time
@@ -2355,9 +2509,8 @@
                 p.classList.toggle('active', p.dataset.status === '');
             });
         } else {
-            // Reset to default sign filter (Kutilmoqda)
-            signFilter = '2';
-            renderSignFilters();
+            // Preserve per-category filter (sticky)
+            renderSignFilters(cat);
         }
 
         // Always fetch fresh
@@ -2365,25 +2518,71 @@
         await loadCategory(cat, true);
     }
 
-    function renderSignFilters() {
+    async function ensureStatusOptions(cat) {
+        if (statusOptionsCache[cat]) return statusOptionsCache[cat];
+        var role = CATEGORY_META[cat].role; // RESOL | SIGN | AGREE
+        try {
+            var resp = await fetch(BASE_URL + '/api/telegram/status-options?category=' + role + '&lang=' + backendLang(), {
+                headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN }
+            });
+            if (!resp.ok) throw new Error('status options load failed');
+            var data = await resp.json();
+            // Always prepend "Barchasi" so user can clear filter
+            var opts = [{ code: 'all', label: t('mini.all') }].concat(
+                (data.options || []).map(function(o) { return { code: String(o.code), label: o.label }; })
+            );
+            // Remember server's default per category
+            var serverDefault = data.default || '2';
+            categoryDefaults[cat] = serverDefault;
+            // Initialize signFilters with server default if not already set by user
+            if (!signFiltersTouched[cat]) {
+                signFilters[cat] = serverDefault;
+            }
+            // Move default to first position after Barchasi (most common case)
+            var defaultIdx = opts.findIndex(function(o) { return o.code === serverDefault; });
+            if (defaultIdx > 1) {
+                var def = opts.splice(defaultIdx, 1)[0];
+                opts.splice(0, 0, def);
+            }
+            statusOptionsCache[cat] = opts;
+            return opts;
+        } catch (e) {
+            var fallback = [
+                { code: 'all', label: t('mini.all') },
+                { code: '2',   label: 'Kutilmoqda' },
+            ];
+            statusOptionsCache[cat] = fallback;
+            return fallback;
+        }
+    }
+
+    async function renderSignFilters(cat) {
         var el = document.getElementById('sign-filters');
         if (!el) return;
-        el.innerHTML = SIGN_FILTER_OPTIONS.map(function(opt) {
-            var active = (opt.value === signFilter) ? ' active' : '';
-            return '<button class="filter-pill' + active + '" data-status="' + esc(opt.value) + '" onclick="setSignFilter(this, \'' + esc(opt.value) + '\')">' + esc(opt.label) + '</button>';
+        // Show loading state while options arrive
+        if (!statusOptionsCache[cat]) {
+            el.innerHTML = '<div style="padding:8px 4px; color: var(--text-muted); font-size:12px;">Filtrlar yuklanmoqda…</div>';
+        }
+        var opts = await ensureStatusOptions(cat);
+        // Skip re-render if user navigated to another category meanwhile
+        if (currentCategory !== cat) return;
+        var current = signFilters[cat] || '2';
+        el.innerHTML = opts.map(function(opt) {
+            var active = (opt.code === current) ? ' active' : '';
+            return '<button class="filter-pill' + active + '" data-status="' + esc(opt.code) + '" onclick="setSignFilter(this, \'' + esc(opt.code) + '\')">' + esc(opt.label) + '</button>';
         }).join('');
     }
 
     function setSignFilter(btn, value) {
-        if (signFilter === value) return;
+        if (!currentCategory || currentCategory === 'my_docs') return;
+        if (signFilters[currentCategory] === value) return;
         haptic('light');
-        signFilter = value;
+        signFilters[currentCategory] = value;
+        signFiltersTouched[currentCategory] = true;
         document.querySelectorAll('#sign-filters .filter-pill').forEach(function(p) {
             p.classList.toggle('active', p === btn);
         });
-        if (currentCategory && currentCategory !== 'my_docs') {
-            loadCategory(currentCategory, true);
-        }
+        loadCategory(currentCategory, true);
     }
 
     function setMyDocsFilter(btn, status) {
@@ -2407,18 +2606,20 @@
         try {
             var url;
             if (cat === 'my_docs') {
-                url = BASE_URL + '/api/telegram/my-documents?page=' + cache.page;
+                url = BASE_URL + '/api/telegram/my-documents?page=' + cache.page + '&lang=' + backendLang();
                 if (myDocsFilter) url += '&status=' + encodeURIComponent(myDocsFilter);
             } else {
                 var role = CATEGORY_META[cat].role;
+                var stepStatus = signFilters[cat] || '2';
                 url = BASE_URL + '/api/telegram/documents?category=' + role
-                    + '&step_status=' + encodeURIComponent(signFilter);
+                    + '&step_status=' + encodeURIComponent(stepStatus)
+                    + '&lang=' + backendLang();
             }
 
             var resp = await fetch(url, {
                 headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN }
             });
-            if (!resp.ok) throw new Error('Yuklanmadi');
+            if (!resp.ok) throw new Error(t('mini.err_not_loaded'));
             var data = await resp.json();
 
             if (cat === 'my_docs') {
@@ -2438,7 +2639,7 @@
         } catch (e) {
             if (currentCategory !== cat) return; // also skip error if user navigated away
             haptic('error');
-            document.getElementById('error-msg').textContent = e.message || 'Yuklashda xatolik';
+            document.getElementById('error-msg').textContent = e.message || t('mini.err_load');
             setState('error');
         }
     }
@@ -2449,9 +2650,9 @@
         if (!cache.hasMore) return;
         cache.page += 1;
         var btn = document.getElementById('list-load-more');
-        if (btn) { btn.disabled = true; btn.textContent = 'Yuklanmoqda...'; }
+        if (btn) { btn.disabled = true; btn.textContent = t('mini.loading'); }
         await loadCategory(currentCategory, false);
-        if (btn) { btn.disabled = false; btn.textContent = 'Yana yuklash'; }
+        if (btn) { btn.disabled = false; btn.textContent = t('action.load_more'); }
     }
 
     function renderCategoryList() {
@@ -2465,11 +2666,14 @@
         if (cache.items.length === 0) {
             // Always render inline empty so filter pills stay visible
             listEl.innerHTML = ''
-                + '<div style="text-align:center; padding:36px 16px; color: var(--text-muted);">'
-                +   '<div style="font-size:14px; font-weight:600; color: var(--text); margin-bottom:6px;">'
+                + '<div style="text-align:center; padding:48px 20px; color: var(--text-muted);">'
+                +   '<div style="width:64px;height:64px;border-radius:50%;background:var(--surface-2);border:1px solid var(--border-soft);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--text-muted);">'
+                +     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="28" height="28"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'
+                +   '</div>'
+                +   '<div style="font-size:15px; font-weight:600; color: var(--text); margin-bottom:6px;">'
                 +     esc(meta.empty)
                 +   '</div>'
-                +   '<div style="font-size:13px;">Bu filtr bo\'yicha hujjat topilmadi</div>'
+                +   '<div style="font-size:13px; max-width:260px; margin:0 auto;">' + esc(t('mini.no_documents_sub')) + '</div>'
                 + '</div>';
             if (paginationEl) paginationEl.style.display = 'none';
             setState('list');
@@ -2515,6 +2719,12 @@
         currentDoc = null;
         currentMyDoc = null;
 
+        // Clear the rendered document section
+        var rwrap = document.getElementById('doc-render-wrap');
+        if (rwrap) rwrap.innerHTML = '';
+        var rsec = document.getElementById('doc-render-section');
+        if (rsec) rsec.style.display = 'none';
+
         // Restore default detail UI
         var signWrap = document.querySelector('.sign-btn-wrap');
         if (signWrap) signWrap.classList.remove('visible');
@@ -2545,7 +2755,7 @@
         var btn  = document.getElementById('btn-sign-main');
         var span = btn.querySelector('span');
         btn.disabled = true;
-        if (span) span.textContent = 'Yuklanmoqda...';
+        if (span) span.textContent = t('mini.loading');
 
         try {
             var resp = await fetch(BASE_URL + '/api/telegram/documents/' + currentDoc.id + '/sign-token', {
@@ -2554,14 +2764,14 @@
                 body: JSON.stringify({})
             });
             var data = await resp.json();
-            if (!resp.ok || !data.sign_url) throw new Error(data.error || 'Sign URL olinmadi');
+            if (!resp.ok || !data.sign_url) throw new Error(data.error || t('mini.err_sign_url'));
 
             window.location.href = data.sign_url;
         } catch(e) {
             haptic('error');
-            alert('Xatolik: ' + e.message);
+            alert(t('mini.error') + ': ' + e.message);
             btn.disabled = false;
-            if (span) span.textContent = 'E-IMZO ID-CARD bilan imzolash';
+            if (span) span.textContent = t('mini.sign_eimzo');
         }
     }
 
@@ -2628,21 +2838,32 @@
                 '<div class="doc-meta">' +
                 (doc.doc_number ? '<span class="meta-tag">№' + esc(doc.doc_number) + '</span>' : '') +
                 '<span class="meta-tag">' + esc(doc.created_at) + '</span>' +
-                '<span class="role-badge ' + roleClass(doc.role) + '">' + esc(doc.role_label) + '</span>' +
+                '<span class="role-badge ' + roleClass(doc.role) + '">' + esc(doc.status_label || doc.role_label) + '</span>' +
                 '</div>' +
                 '</div>';
         });
         document.getElementById('doc-list').innerHTML = html;
     }
 
+    function setInfoRow(rowId, valId, value) {
+        var row = document.getElementById(rowId);
+        var val = document.getElementById(valId);
+        if (value && String(value).trim()) {
+            if (val) val.textContent = value;
+            if (row) row.style.display = '';
+        } else {
+            if (row) row.style.display = 'none';
+        }
+    }
+
     async function openDoc(docId) {
         haptic('light');
         setState('loading');
         try {
-            var resp = await fetch(BASE_URL + '/api/telegram/documents/' + docId, {
+            var resp = await fetch(BASE_URL + '/api/telegram/documents/' + docId + '?lang=' + backendLang(), {
                 headers: {'Authorization': 'Bearer ' + AUTH_TOKEN}
             });
-            if (!resp.ok) throw new Error('Hujjat topilmadi');
+            if (!resp.ok) throw new Error(t('mini.no_documents'));
             var doc = await resp.json();
             currentDoc = doc;
 
@@ -2651,15 +2872,35 @@
             document.getElementById('detail-date').textContent    = doc.created_at || '—';
             document.getElementById('detail-action').textContent  = doc.role_label || '—';
 
+            // Info card fields (mirror web public page)
+            var info = doc.info || {};
+            setInfoRow('row-jtype',   'detail-jtype',   info.journal_type);
+            setInfoRow('row-dname',   'detail-dname',   info.doc_name);
+            setInfoRow('row-signedby','detail-signedby',info.signed_by);
+            setInfoRow('row-signedat','detail-signedat',info.signed_at);
+            setInfoRow('row-creator', 'detail-creator', info.creator);
+            if (info.doc_date) {
+                document.getElementById('detail-date').textContent = info.doc_date;
+            }
+
             var badge = document.getElementById('detail-role-badge');
             badge.textContent  = doc.role_label;
             badge.className    = 'role-badge ' + roleClass(doc.role);
 
+            // Rendered document (same web templates, by doc type)
+            var renderSection = document.getElementById('doc-render-section');
+            var renderWrap = document.getElementById('doc-render-wrap');
             var bodySection = document.getElementById('doc-body-section');
-            if (doc.html_doc) {
+            if (doc.rendered_html) {
+                renderWrap.innerHTML = doc.rendered_html;
+                renderSection.style.display = 'block';
+                bodySection.style.display = 'none';
+            } else if (doc.html_doc) {
+                renderSection.style.display = 'none';
                 document.getElementById('doc-body-content').innerHTML = doc.html_doc;
                 bodySection.style.display = 'block';
             } else {
+                renderSection.style.display = 'none';
                 bodySection.style.display = 'none';
             }
 
@@ -2708,7 +2949,7 @@
             });
             if (!resp.ok) {
                 var err = await resp.json().catch(function(){return{};});
-                throw new Error(err.message || err.error || 'Hujjat ochilmadi');
+                throw new Error(err.message || err.error || t('mini.err_doc_open'));
             }
             var doc = await resp.json();
             renderMyDocDetail(doc);
@@ -2716,13 +2957,22 @@
             setState('detail');
         } catch (e) {
             haptic('error');
-            document.getElementById('error-msg').textContent = e.message || 'Ochishda xatolik';
+            document.getElementById('error-msg').textContent = e.message || t('mini.err_open');
             setState('error');
         }
     }
 
     function renderMyDocDetail(doc) {
         currentMyDoc = doc;
+
+        // Hide the extended info rows (used by sign-detail) + iframe
+        ['row-jtype','row-dname','row-signedby','row-signedat','row-creator'].forEach(function(id){
+            var el = document.getElementById(id); if (el) el.style.display = 'none';
+        });
+        var rsec = document.getElementById('doc-render-section');
+        if (rsec) rsec.style.display = 'none';
+        var rwrap = document.getElementById('doc-render-wrap');
+        if (rwrap) rwrap.innerHTML = '';
 
         // Top
         document.getElementById('detail-name').textContent = doc.doc_name || '—';
@@ -2740,13 +2990,21 @@
             actionEl.textContent = (doc.journal || '—') + statusTxt;
         }
 
-        // Optional doc_text
+        // Rendered document (same web templates) — preferred
+        var rSec = document.getElementById('doc-render-section');
+        var rWrap = document.getElementById('doc-render-wrap');
         var docBody = document.getElementById('doc-body-section');
         var docContent = document.getElementById('doc-body-content');
-        if (doc.html_doc || doc.doc_text) {
+        if (doc.rendered_html) {
+            rWrap.innerHTML = doc.rendered_html;
+            rSec.style.display = 'block';
+            docBody.style.display = 'none';
+        } else if (doc.html_doc || doc.doc_text) {
+            rSec.style.display = 'none';
             docContent.innerHTML = doc.html_doc || ('<p>' + esc(doc.doc_text) + '</p>');
             docBody.style.display = '';
         } else {
+            rSec.style.display = 'none';
             docBody.style.display = 'none';
         }
 
@@ -2849,7 +3107,7 @@
             var data = await resp.json();
 
             if (!resp.ok || !data.sign_url) {
-                throw new Error(data.message || data.error || 'Yuborishda xatolik');
+                throw new Error(data.message || data.error || t('mini.err_send'));
             }
 
             haptic('success');
@@ -2857,7 +3115,7 @@
             window.location.href = data.sign_url;
         } catch (e) {
             haptic('error');
-            alert('Xatolik: ' + e.message);
+            alert(t('mini.error') + ': ' + e.message);
             document.querySelectorAll('#owner-actions-grid .action-btn').forEach(function(b) {
                 b.disabled = false;
             });
@@ -2910,7 +3168,7 @@
             setState('list');
         } catch (e) {
             haptic('error');
-            alert('Xatolik: ' + e.message);
+            alert(t('mini.error') + ': ' + e.message);
             // Restore detail screen
             setState('detail');
             document.querySelectorAll('#owner-actions-grid .action-btn').forEach(function(b) {
@@ -2976,16 +3234,16 @@
                 + '</div>';
         }
         document.getElementById('profile-main-info').innerHTML = ''
-            + infoFieldHtml('F.I.SH.',    p.full_name)
-            + infoFieldHtml('Tashkilot',  orgName)
-            + infoFieldHtml("Bo'lim",     p.department)
-            + infoFieldHtml('Lavozimi',   p.position);
+            + infoFieldHtml(t('mini.fish'),       p.full_name)
+            + infoFieldHtml(t('mini.org'),        orgName)
+            + infoFieldHtml(t('mini.department'), p.department)
+            + infoFieldHtml(t('mini.position'),   p.position);
 
         // Akkaunt sozlamalari
         document.getElementById('profile-account-info').innerHTML = ''
-            + infoFieldHtml('Email', p.email)
-            + infoFieldHtml('Login', p.username)
-            + infoFieldHtml('Telefon', p.phone);
+            + infoFieldHtml(t('mini.email'),  p.email)
+            + infoFieldHtml(t('mini.login'),  p.username)
+            + infoFieldHtml(t('mini.phone'),  p.phone);
 
         // Roles
         var rolesEl = document.getElementById('profile-roles-list');
@@ -2995,7 +3253,7 @@
             }).join('');
             document.getElementById('profile-roles-section').style.display = '';
         } else {
-            rolesEl.innerHTML = '<div class="table-empty">Faol rollar yo\'q</div>';
+            rolesEl.innerHTML = '<div class="table-empty">' + esc(t('mini.no_roles')) + '</div>';
         }
 
         // HR Orders table
@@ -3003,11 +3261,11 @@
             document.getElementById('profile-hr-orders'),
             p.hr_orders || [],
             [
-                { key: 'ord_code',  label: 'Turi' },
-                { key: 'ord_name',  label: 'Buyruq nomi' },
-                { key: 'ord_num',   label: 'Raqami' },
-                { key: 'from_date', label: 'Sanasi boshl.' },
-                { key: 'to_date',   label: 'Sanasi tug.' },
+                { key: 'ord_code',  label: t('mini.col_type') },
+                { key: 'ord_name',  label: t('mini.col_order_name') },
+                { key: 'ord_num',   label: t('mini.col_number') },
+                { key: 'from_date', label: t('mini.col_date_from') },
+                { key: 'to_date',   label: t('mini.col_date_to') },
             ]
         );
 
@@ -3016,11 +3274,11 @@
             document.getElementById('profile-experiences'),
             p.experiences || [],
             [
-                { key: 'exp_name',  label: 'Ish joyi' },
-                { key: 'post_name', label: 'Lavozimi' },
-                { key: 'exp_descr', label: 'Lavozim tavsifi' },
-                { key: 'from_date', label: 'Sanasi boshl.' },
-                { key: 'to_date',   label: 'Sanasi tug.' },
+                { key: 'exp_name',  label: t('mini.col_work_place') },
+                { key: 'post_name', label: t('mini.col_position') },
+                { key: 'exp_descr', label: t('mini.col_position_desc') },
+                { key: 'from_date', label: t('mini.col_date_from') },
+                { key: 'to_date',   label: t('mini.col_date_to') },
             ]
         );
 
@@ -3031,7 +3289,7 @@
     function renderProfileTable(container, items, columns) {
         if (!container) return;
         if (!items || items.length === 0) {
-            container.innerHTML = '<div class="table-empty">Ma\'lumot topilmadi</div>';
+            container.innerHTML = '<div class="table-empty">' + esc(t('field.not_found')) + '</div>';
             return;
         }
         var thead = '<thead><tr>' + columns.map(function(c) {
@@ -3055,7 +3313,7 @@
         var file = input.files[0];
 
         if (file.size > 5 * 1024 * 1024) {
-            alert('Faylning hajmi 5MB dan kichik bo\'lishi kerak');
+            alert(t('mini.err_avatar_too_big'));
             input.value = '';
             return;
         }
@@ -3072,7 +3330,7 @@
             });
             var data = await resp.json();
             if (!resp.ok || !data.success) {
-                throw new Error(data.message || data.error || 'Yuklash xatosi');
+                throw new Error(data.message || data.error || t('mini.err_upload'));
             }
             haptic('success');
             // Update cached profile data + re-render
@@ -3082,7 +3340,7 @@
             }
         } catch (e) {
             haptic('error');
-            alert('Xatolik: ' + e.message);
+            alert(t('mini.error') + ': ' + e.message);
         } finally {
             input.value = '';
         }
@@ -3112,7 +3370,7 @@
             }
         } catch (e) {
             haptic('error');
-            alert('Xatolik: ' + e.message);
+            alert(t('mini.error') + ': ' + e.message);
         }
     }
 
@@ -3122,15 +3380,15 @@
         var confirmPw = document.getElementById('pw-new-confirm').value;
 
         if (!current || !newPw || !confirmPw) {
-            alert('Barcha maydonlarni to\'ldiring');
+            alert(t('mini.err_fill_all'));
             return;
         }
         if (newPw.length < 6) {
-            alert('Yangi parol kamida 6 ta belgi bo\'lishi kerak');
+            alert(t('mini.err_pw_short'));
             return;
         }
         if (newPw !== confirmPw) {
-            alert('Yangi parollar mos kelmadi');
+            alert(t('mini.err_pw_mismatch'));
             return;
         }
 
@@ -3150,17 +3408,144 @@
             });
             var data = await resp.json();
             if (!resp.ok || !data.success) {
-                throw new Error(data.message || 'Parol o\'zgartirilmadi');
+                throw new Error(data.message || t('mini.err_save'));
             }
             haptic('success');
-            alert(data.message || 'Parol o\'zgartirildi');
+            alert(data.message || t('mini.pw_changed'));
             document.getElementById('pw-current').value = '';
             document.getElementById('pw-new').value = '';
             document.getElementById('pw-new-confirm').value = '';
         } catch (e) {
             haptic('error');
-            alert('Xatolik: ' + e.message);
+            alert(t('mini.error') + ': ' + e.message);
         }
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // i18n — language system (uz / cyr / ru / en)
+    // ════════════════════════════════════════════════════════════════════
+
+    var I18N = {};            // { key: { uz, cyr, ru, en } }
+    var I18N_LOADED = false;
+
+    var LANG_OPTIONS = [
+        { code: 'uz',  label: "O'zbekcha",  flag: 'uz' },
+        { code: 'cyr', label: 'Ўзбекча',    flag: 'uz' },
+        { code: 'ru',  label: 'Русский',    flag: 'ru' },
+        { code: 'en',  label: 'English',    flag: 'gb' },
+    ];
+
+    function getLang() {
+        try { return localStorage.getItem('tg_app_lang') || 'uz'; } catch (e) { return 'uz'; }
+    }
+
+    // Lang code to send to backend for DB data. cyr → uz (data stays latin per design).
+    function backendLang() {
+        var l = getLang();
+        return l === 'cyr' ? 'uz' : l;
+    }
+
+    function setLang(code) {
+        haptic('light');
+        try { localStorage.setItem('tg_app_lang', code); } catch (e) {}
+        applyI18n();
+        updateLangButtons();
+
+        // Drop ALL cached status-option pills — they're language-specific.
+        statusOptionsCache = {};
+        // Also drop cached list items so DB-driven labels reload in new language.
+        for (var k in listCache) {
+            if (listCache.hasOwnProperty(k)) {
+                listCache[k].items = [];
+                listCache[k].page = 1;
+                listCache[k].hasMore = false;
+            }
+        }
+
+        // Re-render dynamic content with new language based on what's actually visible
+        var activeState = document.querySelector('.state.active');
+        var activeId = activeState ? activeState.id : '';
+
+        if (activeId === 'state-profile' && profileData) {
+            renderProfile(profileData);
+        } else if (activeId === 'state-list' && currentCategory) {
+            if (currentCategory !== 'my_docs') {
+                renderSignFilters(currentCategory);
+            }
+            loadCategory(currentCategory, true);
+        } else if (activeId === 'state-home') {
+            loadCounts().catch(function(){});
+        } else if (activeId === 'state-detail') {
+            if (currentMyDoc) {
+                openMyDocDetail(currentMyDoc.id, '');
+            } else if (currentDoc) {
+                openDoc(currentDoc.id);
+            }
+        }
+    }
+
+    // Translate a key for current language
+    function t(key) {
+        var lang = getLang();
+        var entry = I18N[key];
+        if (!entry) return key;
+        return entry[lang] || entry.uz || key;
+    }
+
+    async function loadTranslations() {
+        try {
+            var resp = await fetch(BASE_URL + '/api/telegram/translations');
+            if (!resp.ok) throw new Error('translations failed');
+            var data = await resp.json();
+            I18N = data.translations || {};
+            I18N_LOADED = true;
+        } catch (e) {
+            // Non-fatal — UI will fall back to default (uz) text already in HTML
+            I18N_LOADED = false;
+        }
+    }
+
+    // Apply translations to all [data-i18n] elements
+    function applyI18n() {
+        var lang = getLang();
+
+        // Set <html lang> for accessibility
+        try { document.documentElement.setAttribute('lang', lang === 'cyr' ? 'uz' : lang); } catch (e) {}
+
+        document.querySelectorAll('[data-i18n]').forEach(function(el) {
+            var key = el.getAttribute('data-i18n');
+            var val = t(key);
+            if (val && val !== key) {
+                el.textContent = val;
+            }
+        });
+        // Placeholders
+        document.querySelectorAll('[data-i18n-ph]').forEach(function(el) {
+            var key = el.getAttribute('data-i18n-ph');
+            var val = t(key);
+            if (val && val !== key) {
+                el.setAttribute('placeholder', val);
+            }
+        });
+
+        // Update category meta titles (home cards + list titles use CATEGORY_META)
+        if (typeof CATEGORY_META !== 'undefined') {
+            CATEGORY_META.for_resolution.title = t('menu.for_resolution');
+            CATEGORY_META.for_sign.title       = t('menu.for_sign');
+            CATEGORY_META.for_approval.title   = t('menu.for_coillaborate');
+            CATEGORY_META.my_docs.title        = t('menu.my_docs');
+            CATEGORY_META.for_resolution.empty = t('mini.no_documents');
+            CATEGORY_META.for_sign.empty       = t('mini.no_documents');
+            CATEGORY_META.for_approval.empty   = t('mini.no_documents');
+            CATEGORY_META.my_docs.empty        = t('mini.no_documents');
+        }
+    }
+
+    function updateLangButtons() {
+        var lang = getLang();
+        document.querySelectorAll('#lang-toggle-row .theme-toggle-btn').forEach(function(b) {
+            b.classList.toggle('active', b.dataset.lang === lang);
+        });
     }
 
     // ════════════════════════════════════════════════════════════════════
@@ -3227,7 +3612,7 @@
             var resp = await fetch(BASE_URL + '/api/telegram/profile', {
                 headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN }
             });
-            if (!resp.ok) throw new Error('Profil yuklanmadi');
+            if (!resp.ok) throw new Error(t('mini.err_profile_load'));
             var data = await resp.json();
             profileData = data.profile;
             profileLoaded = true;
@@ -3235,7 +3620,7 @@
             setState('profile');
         } catch (e) {
             haptic('error');
-            document.getElementById('error-msg').textContent = e.message || 'Profil yuklanmadi';
+            document.getElementById('error-msg').textContent = e.message || t('mini.err_profile_load');
             setState('error');
         }
     }
@@ -3290,7 +3675,7 @@
             });
             if (!resp.ok) {
                 var err = await resp.json().catch(function(){return {};});
-                throw new Error(err.message || 'Init xatosi');
+                throw new Error(err.message || t('mini.err_init'));
             }
             createState.init = await resp.json();
             renderCreateForm();
@@ -3638,12 +4023,12 @@
         var allowed = ['doc', 'docx'];
         var ext = file.name.split('.').pop().toLowerCase();
         if (allowed.indexOf(ext) === -1) {
-            alert("Faqat .doc yoki .docx fayllar ruxsat etilgan");
+            alert(t('mini.err_only_doc'));
             input.value = '';
             return;
         }
         if (file.size > 50 * 1024 * 1024) {
-            alert("Fayl hajmi 50MB dan katta bo'lishi mumkin emas");
+            alert(t('mini.err_file_too_big'));
             input.value = '';
             return;
         }
@@ -3658,7 +4043,7 @@
         for (var i = 0; i < input.files.length; i++) {
             var f = input.files[i];
             if (f.size > 50 * 1024 * 1024) {
-                alert("Fayl " + f.name + " 50MB dan katta");
+                alert(t('mini.err_file_too_big'));
                 continue;
             }
             createState.docFiles.push(f);
@@ -3734,13 +4119,13 @@
 
     async function submitCreate() {
         if (!createState.journal_type) {
-            alert('Jurnal turini tanlang');
+            alert(t('mini.err_select_journal2'));
             return;
         }
         // resolution_user обязателен
         var resolEl = document.getElementById('f-resolution-user');
         if (!resolEl || !resolEl.value) {
-            alert('Rezolyutsiya beruvchini tanlang');
+            alert(t('mini.err_select_resol'));
             return;
         }
 
@@ -3759,7 +4144,7 @@
             var data = await resp.json();
 
             if (!resp.ok || !data.success) {
-                var msg = data.message || 'Saqlashda xatolik';
+                var msg = data.message || t('mini.err_save');
                 if (data.messages) {
                     msg += "\n" + Object.values(data.messages).flat().join("\n");
                 }
@@ -3806,7 +4191,7 @@
 
     async function openOnComputer() {
         if (!createState.journal_type) {
-            alert('Avval jurnal turini tanlang');
+            alert(t('mini.err_select_journal'));
             return;
         }
         haptic('light');
@@ -3844,7 +4229,7 @@
             tg.openLink(rd.url);
         } catch (e) {
             haptic('error');
-            alert('Xatolik: ' + e.message);
+            alert(t('mini.error') + ': ' + e.message);
         }
     }
 
