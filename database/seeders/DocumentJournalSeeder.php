@@ -37,6 +37,7 @@ class DocumentJournalSeeder extends Seeder
                 'level_number' => $item['level_number'],
                 'order_number' => $item['order_number'],
                 'status' => $item['status'],
+                'org_id' => $item['org_id'],
             ]);
         }
 
