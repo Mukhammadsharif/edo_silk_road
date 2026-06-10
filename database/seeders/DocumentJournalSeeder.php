@@ -50,7 +50,7 @@ class DocumentJournalSeeder extends Seeder
                 't_code' => $item1['t_code'],
                 't_text' => $item1['t_text'],
                 't_category' => $item1['t_category'],
-//                'created_id' => $item1['created_id'],
+                'created_id' => $item1['created_id'],
                 'status' => $item1['status'],
             ]);
         }
