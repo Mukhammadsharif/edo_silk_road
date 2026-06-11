@@ -1,0 +1,153 @@
+/* ============================================================
+   EDOLINE — Global Responsive Layer
+   Покрывает каркас всех страниц (sidebar / header / main-content /
+   таблицы / формы / модалки). Подключается глобально в head.
+   ============================================================ */
+
+/* ---------- Планшет и ниже: off-canvas sidebar ---------- */
+@media (max-width: 991.98px) {
+
+    /* Sidebar уезжает за левый край, открывается классом .mobile-open */
+    #sidebar,
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        width: var(--sidebar-width, 260px) !important;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.18);
+        z-index: 40000;
+    }
+    #sidebar.mobile-open,
+    .sidebar.mobile-open {
+        transform: translateX(0);
+    }
+    /* На мобильном collapse-режим не нужен — всегда полная ширина */
+    #sidebar.collapsed,
+    .sidebar.collapsed {
+        width: var(--sidebar-width, 260px) !important;
+    }
+    #sidebar.collapsed .menu-text,
+    #sidebar.collapsed .chevron,
+    #sidebar.collapsed .badge-count,
+    #sidebar.collapsed span:not(.icon) {
+        display: inline !important;
+    }
+    #sidebar.collapsed .menu-header,
+    #sidebar.collapsed a.d-flex {
+        justify-content: flex-start !important;
+        padding-left: 1rem !important;
+    }
+
+    /* main-content на всю ширину, без отступа под sidebar */
+    .wrapper .page-wrap .main-content,
+    .main-content {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    body.sidebar-collapsed .wrapper .page-wrap .main-content {
+        padding-left: 15px !important;
+    }
+
+    /* Затемнение позади открытого sidebar */
+    .sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 39000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease;
+    }
+    .sidebar-overlay.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Кнопка-бургер всегда видна, без сдвига */
+    #sidebar-toggle {
+        margin-left: 0 !important;
+    }
+}
+
+/* ---------- Телефон ---------- */
+@media (max-width: 767.98px) {
+
+    .wrapper .page-wrap .main-content,
+    .main-content {
+        padding-top: 20px !important;
+        padding-bottom: 20px !important;
+    }
+
+    /* Хедер компактнее */
+    .header-top {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+    .header-top .fw-bold.fs-5 { font-size: 1rem !important; }
+
+    /* Карточки/контейнеры без лишних боковых отступов */
+    .content-wrapper-modern,
+    .document-page-modern { padding-left: 0 !important; padding-right: 0 !important; }
+
+    .page-header-modern { padding: 1rem !important; }
+    .page-header-modern h1 { font-size: 1.15rem !important; }
+    .page-header-modern p  { font-size: 0.8rem !important; }
+    .header-icon { width: 42px !important; height: 42px !important; }
+
+    /* Заголовки секций */
+    .filters-header {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 0.75rem;
+    }
+    .filters-header .btn-modern,
+    .filters-header a.btn-modern { width: 100% !important; justify-content: center; }
+
+    /* Формы-сетки в один столбец */
+    .tariff-form-grid { grid-template-columns: 1fr !important; }
+    .tariff-form-group.full-width { grid-column: auto !important; }
+
+    /* Кнопки действий — столбиком */
+    .form-actions {
+        flex-direction: column-reverse;
+        gap: 0.5rem;
+    }
+    .form-actions .btn-modern { width: 100%; justify-content: center; }
+
+    /* Breadcrumb перенос */
+    .breadcrumb-modern { flex-wrap: wrap; }
+}
+
+/* ---------- Таблицы: горизонтальный скролл на всех узких экранах ---------- */
+@media (max-width: 991.98px) {
+    .table-responsive,
+    .table-wrapper-modern {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    /* модерн-таблицы и обычные таблицы не сжимаются в кашу */
+    .modern-table,
+    table.table {
+        min-width: 640px;
+    }
+}
+
+/* ---------- Модалки на телефоне ---------- */
+@media (max-width: 575.98px) {
+    .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100% - 1rem);
+    }
+    .modal-body { padding: 1rem !important; }
+    .modal-footer { flex-wrap: wrap; gap: 0.5rem; }
+    .modal-footer .btn-modern,
+    .modal-footer form { width: 100%; }
+    .modal-footer .btn-modern { width: 100%; justify-content: center; }
+}
+
+/* ---------- Утилиты ---------- */
+@media (max-width: 767.98px) {
+    /* Прячем чисто декоративные элементы на узких экранах при необходимости */
+    .hide-on-mobile { display: none !important; }
+    /* Длинные слова/ссылки переносятся */
+    .text-break-mobile { word-break: break-word; }
+}

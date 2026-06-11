@@ -22,10 +22,17 @@ use App\Http\Controllers\Api\Telegram\TelegramDocumentCreateController;
 use App\Http\Controllers\Api\Telegram\TelegramEimzoLinkController;
 use App\Http\Controllers\Api\Telegram\TelegramMiniAppAuthController;
 use App\Http\Controllers\Api\Telegram\TelegramProfileController;
-use App\Http\Controllers\Api\Telegram\TelegramTranslationController;
+use App\Http\Controllers\Api\Didox\DidoxAuthController;
+use App\Http\Controllers\Api\Didox\DidoxProfileController;
+use App\Http\Controllers\Api\Didox\DidoxDocumentController;
+use App\Http\Controllers\Api\Didox\DidoxCatalogController;
+use App\Http\Controllers\Api\Didox\DidoxServiceController;
+use App\Http\Controllers\Api\Integration1C\OnecInboundController;
+use App\Http\Controllers\Api\Integration1C\OnecOutboundController;
 use App\Http\Controllers\Api\User\ProfileApiController;
 use App\Http\Controllers\Api\User\UserApiController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Middleware\OnecAuth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -109,17 +116,17 @@ Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
 });
 
-Route::prefix('main/api-1c/v1')->middleware('auth:sanctum')->group(function () {
+Route::prefix('main/api-1c/v1')->middleware(OnecAuth::class)->group(function () {
 
-    Route::put('/companies/create_update', [CompanyController::class, 'store']);
-
-    Route::put('/persons/create_update_list', [PersonController::class, 'store']);
-
-    Route::put('/divisions/create_update_list', [DivisionController::class, 'store']);
-
-    Route::put('/positions/create_update_list', [PositionController::class, 'store']);
-
-    Route::put('/employees/create_update_list', [EmployeeController::class, 'store']);
+    // Все сущности 1С → generic-приёмник (буфер onec_* + синк в рабочие таблицы)
+    foreach ([
+                 'companies', 'divisions', 'positions', 'stafflist_positions',
+                 'persons', 'employees', 'vocations', 'users',
+             ] as $entity) {
+        Route::put("/{$entity}/create_update",      [OnecInboundController::class, 'createUpdate'])->defaults('entity', $entity);
+        Route::put("/{$entity}/create_update_list", [OnecInboundController::class, 'createUpdateList'])->defaults('entity', $entity);
+        Route::delete("/{$entity}/delete",          [OnecInboundController::class, 'delete'])->defaults('entity', $entity);
+    }
 });
 
 
@@ -290,7 +297,6 @@ Route::prefix('telegram')->group(function () {
 
     // Документы (используют собственную auth через Bearer token)
     Route::get('/counts', [TelegramDocumentController::class, 'counts']);
-    Route::get('/translations', [TelegramTranslationController::class, 'index']);
     Route::get('/status-options', [TelegramDocumentController::class, 'statusOptions']);
     Route::get('/documents', [TelegramDocumentController::class, 'forSign']);
     Route::get('/documents/{j_id}', [TelegramDocumentController::class, 'show'])->whereNumber('j_id');
@@ -321,4 +327,88 @@ Route::prefix('telegram')->group(function () {
     Route::post('/eimzo-link/auth-init',  [TelegramEimzoLinkController::class, 'authInit']);
     Route::post('/eimzo-link/status',     [TelegramEimzoLinkController::class, 'pollStatus']);
     Route::post('/eimzo-link/check-auth', [TelegramEimzoLinkController::class, 'checkAuth']);
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Didox integration API (EDOLINE ↔ Didox)
+|--------------------------------------------------------------------------
+| Все эндпоинты защищены sanctum. Авторизация в самом Didox — через ЭЦП
+| (authId → pkcs7 → login), токен Didox хранится в didox_tokens.
+*/
+//Route::prefix('didox')->middleware('auth:sanctum')->group(function () {
+//
+//    // ── User Authorization ──
+//    Route::prefix('auth')->group(function () {
+//        Route::get('/authId/{serialNumber}', [DidoxAuthController::class, 'authId']);
+//        Route::post('/login',                [DidoxAuthController::class, 'login']);
+//        Route::post('/register',             [DidoxAuthController::class, 'register']);
+//        Route::get('/token',                 [DidoxAuthController::class, 'refresh']);
+//    });
+//
+//    // ── Profile ──
+//    Route::prefix('profile')->group(function () {
+//        Route::get('/',                          [DidoxProfileController::class, 'show']);
+//        Route::post('/update',                   [DidoxProfileController::class, 'update']);
+//        Route::get('/by-tin/{taxId}',            [DidoxProfileController::class, 'byTin']);
+//        Route::get('/operators',                 [DidoxProfileController::class, 'operators']);
+//        Route::post('/operators',                [DidoxProfileController::class, 'updateOperators']);
+//        Route::get('/branches',                  [DidoxProfileController::class, 'branches']);
+//        Route::get('/product-classes/search',    [DidoxProfileController::class, 'searchProductClasses']);
+//        Route::get('/product-classes',           [DidoxProfileController::class, 'productClasses']);
+//        Route::post('/product-classes',          [DidoxProfileController::class, 'attachProductClass']);
+//        Route::put('/product-classes',           [DidoxProfileController::class, 'updateProductClasses']);
+//        Route::delete('/product-classes/{classCode}', [DidoxProfileController::class, 'detachProductClass']);
+//    });
+//
+//    // ── Documents ──
+//    Route::prefix('documents')->group(function () {
+//        Route::get('/',                       [DidoxDocumentController::class, 'index']);
+//        Route::get('/statistics',             [DidoxDocumentController::class, 'statistics']);
+//        Route::get('/exchange',               [DidoxDocumentController::class, 'exchange']);
+//        Route::get('/exchange/types',         [DidoxDocumentController::class, 'exchangeTypes']);
+//        Route::post('/sync/pull',             [DidoxDocumentController::class, 'syncPull']);
+//        Route::post('/sync/push',             [DidoxDocumentController::class, 'syncPush']);
+//        Route::get('/{id}',                   [DidoxDocumentController::class, 'show']);
+//        Route::post('/{docType}/create',      [DidoxDocumentController::class, 'store']);
+//        Route::post('/{id}/update/{docType}', [DidoxDocumentController::class, 'updateDraft']);
+//        Route::post('/{id}/sign',             [DidoxDocumentController::class, 'sign']);
+//        Route::post('/{id}/reject',           [DidoxDocumentController::class, 'reject']);
+//        Route::post('/{id}/delete/draft',     [DidoxDocumentController::class, 'destroyDraft']);
+//        Route::post('/{id}/delete',           [DidoxDocumentController::class, 'destroy']);
+//        Route::get('/{id}/tosign',            [DidoxDocumentController::class, 'toSign']);
+//        Route::get('/{id}/html/{locale}',     [DidoxDocumentController::class, 'html']);
+//        Route::get('/{id}/pdf/{locale}',      [DidoxDocumentController::class, 'pdf']);
+//        Route::get('/{id}/downloadrequest',   [DidoxDocumentController::class, 'downloadRequest']);
+//    });
+//
+//    // ── Catalogs ──
+//    Route::prefix('catalogs')->group(function () {
+//        Route::get('/banks',     [DidoxCatalogController::class, 'banks']);
+//        Route::get('/measures',  [DidoxCatalogController::class, 'measures']);
+//        Route::get('/regions',   [DidoxCatalogController::class, 'regions']);
+//        Route::get('/districts', [DidoxCatalogController::class, 'districts']);
+//    });
+//
+//    // ── Services ──
+//    Route::post('/services/timestamp', [DidoxServiceController::class, 'timestamp']);
+//});
+
+
+/*
+|--------------------------------------------------------------------------
+| 1C Integration (employee-cabinet) — двусторонняя
+|--------------------------------------------------------------------------
+| INBOUND (1С → EDOLINE): 1С шлёт push на /main/api-1c/v1/{entity}/...
+|   защита токеном через middleware onec.auth
+| OUTBOUND (EDOLINE → 1С): /api/onec/push/... под sanctum
+*/
+
+// --- OUTBOUND: EDOLINE отправляет в 1С ---
+Route::prefix('onec')->middleware('auth:sanctum')->group(function () {
+    Route::post('/push/{entity}',      [OnecOutboundController::class, 'push']);
+    Route::post('/push-list/{entity}', [OnecOutboundController::class, 'pushList']);
+    Route::delete('/push/{entity}',    [OnecOutboundController::class, 'pushDelete']);
+    Route::post('/export/persons',     [OnecOutboundController::class, 'exportPersons']);
 });

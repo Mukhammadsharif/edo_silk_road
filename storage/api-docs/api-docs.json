@@ -13,6 +13,10 @@
         {
             "url": "http://localhost:8082",
             "description": "Local server"
+        },
+        {
+            "url": "http://172.17.110.54:8080",
+            "description": "172.17.110.54 server"
         }
     ],
     "paths": {
@@ -1465,6 +1469,337 @@
                     },
                     "404": {
                         "description": "Документ не найден"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/main/api-1c/v1/{entity}/create_update/": {
+            "put": {
+                "tags": [
+                    "1C Inbound"
+                ],
+                "summary": "Upsert одной записи из 1С",
+                "operationId": "feab155656dd1b0b54df24a45b4610fa",
+                "parameters": [
+                    {
+                        "name": "entity",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "companies",
+                                "divisions",
+                                "positions",
+                                "stafflist_positions",
+                                "persons",
+                                "employees",
+                                "vocations",
+                                "users"
+                            ]
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Сохранено"
+                    },
+                    "400": {
+                        "description": "Неизвестная сущность"
+                    },
+                    "422": {
+                        "description": "Ошибка валидации с указанием поля"
+                    }
+                },
+                "security": [
+                    {
+                        "onec_token": []
+                    }
+                ]
+            }
+        },
+        "/api/main/api-1c/v1/{entity}/create_update_list/": {
+            "put": {
+                "tags": [
+                    "1C Inbound"
+                ],
+                "summary": "Пакетный upsert из 1С (массив в обёртке {entity:[...]})",
+                "operationId": "48e6bfce7b27b4d08080f0b08e455968",
+                "parameters": [
+                    {
+                        "name": "entity",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Обработано (с детализацией по каждой записи)"
+                    },
+                    "422": {
+                        "description": "Список не найден / ошибки в записях"
+                    }
+                },
+                "security": [
+                    {
+                        "onec_token": []
+                    }
+                ]
+            }
+        },
+        "/api/main/api-1c/v1/{entity}/delete/": {
+            "delete": {
+                "tags": [
+                    "1C Inbound"
+                ],
+                "summary": "Удаление записи из 1С",
+                "operationId": "56fecd08321302a2d74c2697af6ff502",
+                "parameters": [
+                    {
+                        "name": "entity",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "ID",
+                        "in": "query",
+                        "description": "UUID (для большинства сущностей)",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "personID",
+                        "in": "query",
+                        "description": "Для users",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Удалено / нечего удалять"
+                    },
+                    "422": {
+                        "description": "Не передан ключ"
+                    }
+                },
+                "security": [
+                    {
+                        "onec_token": []
+                    }
+                ]
+            }
+        },
+        "/api/onec/push/{entity}": {
+            "post": {
+                "tags": [
+                    "1C Outbound"
+                ],
+                "summary": "Отправить одну запись EDOLINE → 1С",
+                "operationId": "ed17c452f2e911f74b8f7f8ec60e34c3",
+                "parameters": [
+                    {
+                        "name": "entity",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "companies",
+                                "divisions",
+                                "positions",
+                                "stafflist_positions",
+                                "persons",
+                                "employees",
+                                "vocations",
+                                "users"
+                            ]
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "description": "Данные в формате 1С (camelCase). Либо EDOLINE-формат — будет смаппен.",
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Отправлено в 1С"
+                    },
+                    "502": {
+                        "description": "Ошибка 1С"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "1C Outbound"
+                ],
+                "summary": "Удалить запись в 1С EDOLINE → 1С",
+                "operationId": "3a28dee33bd2d3b0079f00157a5d59f0",
+                "parameters": [
+                    {
+                        "name": "entity",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "ID",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "personID",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Удалено в 1С"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/onec/push-list/{entity}": {
+            "post": {
+                "tags": [
+                    "1C Outbound"
+                ],
+                "summary": "Отправить пакет записей EDOLINE → 1С",
+                "operationId": "754c8ed4f6460f09c519f190ad56aff3",
+                "parameters": [
+                    {
+                        "name": "entity",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "items": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Отправлено в 1С"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/onec/export/persons": {
+            "post": {
+                "tags": [
+                    "1C Outbound"
+                ],
+                "summary": "Выгрузить персон EDOLINE → 1С по user_id (из рабочих таблиц + BitrixHashes)",
+                "operationId": "ac12a74aaadc7431473b8a5b5a3db4a1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "user_ids": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            12,
+                                            15,
+                                            18
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Выгружено в 1С"
+                    },
+                    "502": {
+                        "description": "Ошибка 1С"
                     }
                 },
                 "security": [
@@ -4307,6 +4642,9 @@
                     "200": {
                         "description": "Список комментариев"
                     },
+                    "403": {
+                        "description": "Доступ запрещён"
+                    },
                     "404": {
                         "description": "Протокол не найден"
                     }
@@ -4338,6 +4676,9 @@
                 "responses": {
                     "200": {
                         "description": "Комментарий"
+                    },
+                    "403": {
+                        "description": "Доступ запрещён"
                     },
                     "404": {
                         "description": "Не найден"
@@ -5260,8 +5601,8 @@
                 "tags": [
                     "Users"
                 ],
-                "summary": "Получить список пользователей",
-                "description": "Возвращает список пользователей с персональными данными, текущим местом работы и ролями",
+                "summary": "Получить список пользователей своей организации",
+                "description": "Возвращает список пользователей, принадлежащих организации текущего пользователя",
                 "operationId": "4d63fdfcac3e4af9651b06dbf4181a20",
                 "parameters": [
                     {
@@ -5808,16 +6149,35 @@
             }
         },
         "securitySchemes": {
+            "onec": {
+                "type": "http",
+                "description": "Токен интеграции 1С (входящие) или Sanctum (исходящие)",
+                "scheme": "bearer"
+            },
             "sanctum": {
                 "type": "http",
                 "name": "Authorization",
                 "in": "header",
                 "bearerFormat": "JWT",
                 "scheme": "bearer"
+            },
+            "onec_token": {
+                "type": "apiKey",
+                "description": "Статический токен интеграции 1С (из ONEC_INBOUND_TOKENS). Вводится в Authorize.",
+                "name": "X-1C-Token",
+                "in": "header"
             }
         }
     },
     "tags": [
+        {
+            "name": "1C Inbound",
+            "description": "Приём данных из 1С (push) с валидацией и понятными ошибками"
+        },
+        {
+            "name": "1C Outbound",
+            "description": "Отправка данных EDOLINE → 1С"
+        },
         {
             "name": "Protocols",
             "description": "API для работы HR сотрудников с приказами"

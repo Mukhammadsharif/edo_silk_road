@@ -124,6 +124,9 @@
                 $userRoleNames = \App\Models\Admin\Role::whereIn('id', $userRoleIds)->pluck('name')->toArray();
 
                 $isSuperAdmin     = in_array('Super_Admin', $userRoleNames, true);
+                $canSeeOnec    = $isSuperAdmin
+                    || in_array('Director', $userRoleNames, true)
+                    || in_array('IT_Admin', $userRoleNames, true);
                 $hasActiveWorkInOrg = !$isSuperAdmin && \App\Models\Admin\UserWorkHistory::where('user_id', Auth::id())
                     ->where('org_id', Auth::user()->org_unit_id)
                     ->where('status', 1)
@@ -138,6 +141,24 @@
                         <div style="display: flex; align-items: center; gap:15px; flex: 1;">
                             <i data-lucide="folder-archive" style="width: 22px; height: 22px;"></i>
                             <span class="menu-text">{{ __('menu.org_storage') ?? 'Хранилище организации' }}</span>
+                        </div>
+                    </a>
+                </div>
+            @endif
+
+            {{-- ═══════════════ ИНТЕГРАЦИЯ С 1С ═══════════════
+                 Виден директору, IT-админу и Super_Admin --}}
+            @php
+                $canSeeOnec = $isSuperAdmin
+                    || in_array('Director', $userRoleNames, true)
+                    || in_array('IT_Admin', $userRoleNames, true);
+            @endphp
+            @if($canSeeOnec)
+                <div class="menu-item {{ str_contains(url()->current(), '/admin/onec') ? 'active' : '' }}">
+                    <a href="{{ route('admin.onec.index') }}" class="menu-header">
+                        <div style="display: flex; align-items: center; gap:15px; flex: 1;">
+                            <i data-lucide="plug-zap" style="width: 22px; height: 22px;"></i>
+                            <span class="menu-text">{{ __('Интеграция с 1С') }}</span>
                         </div>
                     </a>
                 </div>
@@ -291,6 +312,23 @@
             @endif
         </div>
 
+        {{-- Litsenziya: superadmin uchun yaratish, mijoz (owner) uchun faollashtirish --}}
+        @if($isSuperAdmin)
+            <div class="menu-item">
+                <a href="{{ route('admin.licenses.index') }}" class="menu-header">
+                    <i data-lucide="key-round" style="width: 22px; height: 22px;"></i>
+                    <span class="menu-text">Litsenziyalar</span>
+                </a>
+            </div>
+        @elseif($isOwner)
+            <div class="menu-item">
+                <a href="{{ route('license.activate') }}" class="menu-header">
+                    <i data-lucide="shield-check" style="width: 22px; height: 22px;"></i>
+                    <span class="menu-text">Litsenziya</span>
+                </a>
+            </div>
+        @endif
+
         <div class="logout">
             <div class="menu-item">
                 <a href="{{ route('logout') }}"
@@ -302,7 +340,7 @@
             </div>
         </div>
 
-{{--        @if(!$isOwner && $isOrganizationDemo && !$request)--}}
+        {{--        @if(!$isOwner && $isOrganizationDemo && !$request)--}}
         @if(!$isOwner && $isOrganizationDemo)
             <div class="request">
                 <div class="rocket-icon">

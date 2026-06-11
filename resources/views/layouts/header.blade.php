@@ -1,15 +1,14 @@
-
 @php
-use App\Models\Admin\RequestForOrgs;
-use Illuminate\Support\Facades\Auth;
+    use App\Models\Admin\RequestForOrgs;
+    use Illuminate\Support\Facades\Auth;
 
-$user = App\Models\User::where('id', Auth::id())->first();
-$isOrganizationDemo = $user?->org_unit_id === 1;
-$request = RequestForOrgs::where('user_id', Auth::id())->first();
+    $user = App\Models\User::where('id', Auth::id())->first();
+    $isOrganizationDemo = $user?->org_unit_id === 1;
+    $request = RequestForOrgs::where('user_id', Auth::id())->first();
 @endphp
 
 <header class="header-top d-flex justify-content-between align-items-center px-4 py-2 shadow-sm bg-white"
-    header-theme="light">
+        header-theme="light">
 
     <div class="d-flex align-items-center gap-3">
         <a href="{{ url('/edo') }}" class="d-flex align-items-center text-decoration-none gap-2">
@@ -18,7 +17,7 @@ $request = RequestForOrgs::where('user_id', Auth::id())->first();
         </a>
 
         <button id="sidebar-toggle" class=" btn-light rounded-circle  shadow-sm border"
-            style="width: 42px; height: 42px; font-size: 1.3rem; transition: all 0.25s;">
+                style="width: 42px; height: 42px; font-size: 1.3rem; transition: all 0.25s;">
             <i data-lucide="panel-left-close" class="icon-closed text-muted " style="width:30px; color:#794DFD"></i>
             <i data-lucide="panel-left-open" class="icon-open text-muted d-none" style="width:30px; color:#794DFD"></i>
         </button>
@@ -30,24 +29,24 @@ $request = RequestForOrgs::where('user_id', Auth::id())->first();
         @php $locale = session()->get('locale', 'uz'); @endphp
         <div class="dropdown language-dropdown">
             <a class="language-toggle d-flex align-items-center" href="#" id="menuDropdown" role="button"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <img src="https://flagcdn.com/24x18/{{ $locale === 'ru' ? 'ru' : ($locale === 'en' ? 'gb' : 'uz') }}.png"
-                    class="flag-straight mr-2" width="24" height="18" alt="{{ strtoupper($locale) }}">
+                     class="flag-straight mr-2" width="24" height="18" alt="{{ strtoupper($locale) }}">
                 <span class="lang-code">{{ strtoupper($locale) }}</span>
                 <i class="ik ik-chevron-down ml-2" style="font-size:12px;"></i>
             </a>
 
             <div class="dropdown-menu dropdown-menu-right language-menu">
                 @foreach (['uz' => 'uz', 'ru' => 'ru', 'en' => 'gb'] as $code => $flag)
-                <a href="{{ url('/lang/'.$code) }}"
-                    class="dropdown-item d-flex align-items-center {{ $locale === $code ? 'active' : '' }}">
-                    <img src="https://flagcdn.com/24x18/{{ $flag }}.png" class="flag-straight mr-3" width="24"
-                        height="18" alt="{{ strtoupper($code) }}">
-                    <span class="flex-grow-1">{{ strtoupper($code) }}</span>
-                    @if($locale === $code)
-                    <i class="ik ik-check ml-auto"></i>
-                    @endif
-                </a>
+                    <a href="{{ url('/lang/'.$code) }}"
+                       class="dropdown-item d-flex align-items-center {{ $locale === $code ? 'active' : '' }}">
+                        <img src="https://flagcdn.com/24x18/{{ $flag }}.png" class="flag-straight mr-3" width="24"
+                             height="18" alt="{{ strtoupper($code) }}">
+                        <span class="flex-grow-1">{{ strtoupper($code) }}</span>
+                        @if($locale === $code)
+                            <i class="ik ik-check ml-auto"></i>
+                        @endif
+                    </a>
                 @endforeach
             </div>
         </div>
@@ -55,8 +54,8 @@ $request = RequestForOrgs::where('user_id', Auth::id())->first();
 
         <div class="dropdown ms-3">
             <a class="dropdown-toggle d-flex align-items-center justify-content-center text-white" href="#"
-                id="userDropdown" role="button" data-toggle="dropdown"
-                style="width:32px; height:32px; border-radius:50%; font-weight:bold;">
+               id="userDropdown" role="button" data-toggle="dropdown"
+               style="width:32px; height:32px; border-radius:50%; font-weight:bold;">
                 <img src="{{ $user->image() }}" alt="user-img" style="width:32px; height:32px; border-radius:50%;"/>
             </a>
 
@@ -64,7 +63,7 @@ $request = RequestForOrgs::where('user_id', Auth::id())->first();
                 <a class="dropdown-item" href="{{ route('profile.my') }}"><i class="ik ik-user dropdown-icon"></i> {{
                     __('field.profile') }}</a>
                 <a class="dropdown-item" href="{{ route('logout') }}"
-                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     <i class="ik ik-power dropdown-icon"></i> {{ __('field.logout') }}
                 </a>
 
@@ -79,51 +78,100 @@ $request = RequestForOrgs::where('user_id', Auth::id())->first();
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-    if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-    }
-
-    const toggle = document.getElementById('sidebar-toggle');
-    const sidebar = document.getElementById('sidebar');
-
-    if (!toggle || !sidebar) {
-        console.warn('Toggle or sidebar not found');
-        return;
-    }
-
-
-    let collapsed = localStorage.getItem('sidebar-collapsed') === 'true';
-
-
-    if (collapsed) {
-        sidebar.classList.add('collapsed');
-        document.body.classList.add('sidebar-collapsed');
-    }
-
-    updateIcon();
-
-    function updateIcon() {
-        const closed = toggle.querySelector('.icon-closed');
-        const open   = toggle.querySelector('.icon-open');
-        if (closed && open) {
-            closed.classList.toggle('d-none', collapsed);
-            open.classList.toggle('d-none', !collapsed);
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
         }
-        lucide.createIcons();
-    }
+
+        const toggle = document.getElementById('sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+
+        if (!toggle || !sidebar) {
+            console.warn('Toggle or sidebar not found');
+            return;
+        }
 
 
-    toggle.addEventListener('click', () => {
-        collapsed = !collapsed;
+        let collapsed = localStorage.getItem('sidebar-collapsed') === 'true';
 
-        sidebar.classList.toggle('collapsed', collapsed);
-        document.body.classList.toggle('sidebar-collapsed', collapsed);
 
-        localStorage.setItem('sidebar-collapsed', collapsed);
+        if (collapsed) {
+            sidebar.classList.add('collapsed');
+            document.body.classList.add('sidebar-collapsed');
+        }
+
         updateIcon();
-        window.dispatchEvent(new Event('resize'));
+
+        function updateIcon() {
+            const closed = toggle.querySelector('.icon-closed');
+            const open   = toggle.querySelector('.icon-open');
+            if (closed && open) {
+                closed.classList.toggle('d-none', collapsed);
+                open.classList.toggle('d-none', !collapsed);
+            }
+            lucide.createIcons();
+        }
+
+
+        // --- Mobile off-canvas overlay (создаём один раз) ---
+        let overlay = document.querySelector('.sidebar-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.className = 'sidebar-overlay';
+            document.body.appendChild(overlay);
+        }
+
+        const isMobile = () => window.matchMedia('(max-width: 991.98px)').matches;
+
+        function openMobileSidebar() {
+            sidebar.classList.add('mobile-open');
+            overlay.classList.add('show');
+        }
+        function closeMobileSidebar() {
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('show');
+        }
+
+        overlay.addEventListener('click', closeMobileSidebar);
+
+        // Закрывать sidebar при клике на пункт меню (на мобильном)
+        sidebar.addEventListener('click', (e) => {
+            if (isMobile() && e.target.closest('a[href]')) {
+                closeMobileSidebar();
+            }
+        });
+
+        // Esc закрывает
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isMobile()) closeMobileSidebar();
+        });
+
+        toggle.addEventListener('click', () => {
+            if (isMobile()) {
+                // На мобильном — открыть/закрыть off-canvas
+                if (sidebar.classList.contains('mobile-open')) {
+                    closeMobileSidebar();
+                } else {
+                    openMobileSidebar();
+                }
+                return;
+            }
+
+            // Desktop — обычный collapse
+            collapsed = !collapsed;
+            sidebar.classList.toggle('collapsed', collapsed);
+            document.body.classList.toggle('sidebar-collapsed', collapsed);
+            localStorage.setItem('sidebar-collapsed', collapsed);
+            updateIcon();
+            window.dispatchEvent(new Event('resize'));
+        });
+
+        // При ресайзе со смены mobile->desktop сбрасываем мобильное состояние
+        window.addEventListener('resize', () => {
+            if (!isMobile()) {
+                closeMobileSidebar();
+            }
+        });
     });
-});
 </script>
 
 
