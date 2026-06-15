@@ -64,7 +64,7 @@
                                         <option value="">— Tashkilotni tanlang —</option>
                                         @foreach($organizations as $org)
                                             <option value="{{ $org->id }}" {{ old('org_unit_id') == $org->id ? 'selected' : '' }}>
-                                                {{ $org->name }}
+                                                {{ $org->name_uz }}
                                             </option>
                                         @endforeach
                                     </select>
