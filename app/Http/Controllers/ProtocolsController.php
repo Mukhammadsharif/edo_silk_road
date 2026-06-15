@@ -587,7 +587,7 @@ class ProtocolsController extends Controller
                 $this->createMailCron(
                     $member->user_id,
                     $document->docType->title,
-                    $document->created_user ? UserPersonalInfo::where('user_id', $document->created_user)->first()->fullName() ?? '-' : '-',
+                    $document->created_user ? (UserPersonalInfo::where('user_id', $document->created_user)->first()?->fullName() ?? '-') : '-',
                     $url,
                     $document->doc_name
                 );
@@ -636,7 +636,7 @@ class ProtocolsController extends Controller
                     $this->createMailCron(
                         $member->user_id,
                         $document->docType->title,
-                        $document->created_user ? UserPersonalInfo::where('user_id', $document->created_user)->first()->fullName() ?? '-' : '-',
+                        $document->created_user ? (UserPersonalInfo::where('user_id', $document->created_user)->first()?->fullName() ?? '-') : '-',
                         $url,
                         $document->doc_name
                     );

@@ -216,8 +216,8 @@
                                     <div class="user-cell">
                                         <i data-lucide="user"></i>
                                         <span>
-                                            {{ $model->userWorkHistory->personal->l_name ?? '-' }}
-                                            {{ $model->userWorkHistory->personal->f_name ?? '-' }}
+                                            {{ $model->userWorkHistory?->personal?->l_name ?? '-' }}
+                                            {{ $model->userWorkHistory?->personal?->f_name ?? '-' }}
                                         </span>
                                     </div>
                                 </td>

@@ -223,3 +223,12 @@
     font-style: italic;
     margin: 0;
 }
+
+/* ===== RESPONSIVE — инфо-панель документа ===== */
+@media (max-width: 768px) {
+    .info-card-modern { margin-bottom: 1rem; }
+    .info-card-header { padding: 0.85rem 1rem !important; }
+    .info-card-body { padding: 0.85rem 1rem !important; }
+    .info-item-modern { flex-direction: column !important; align-items: flex-start !important; gap: 0.25rem !important; }
+    .info-value { font-size: 0.9rem !important; word-break: break-word; }
+}

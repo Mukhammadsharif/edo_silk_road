@@ -186,7 +186,7 @@
                                         <option value="">{{ __('action.choose') }}</option>
                                         @foreach($users as $key => $user)
                                             <option value="{{ $user->id }}">
-                                                {{ $key + 1 }}. {{ $user->userPersonal->fullName() ?? '' }}
+                                                {{ $key + 1 }}. {{ $user->userPersonal?->fullName() ?? '' }}
                                             </option>
                                         @endforeach
                                     </select>

@@ -24,6 +24,7 @@ use App\Jobs\SendTelegramMessageJob;
     OA\Info(version: "1.0.0", description: "Your API Description", title: "Your API Title"),
     OA\Server(url: 'https://edoline.uz', description: "Production server"),
     OA\Server(url: 'http://localhost:8082', description: "Local server"),
+    OA\Server(url: 'http://172.17.110.54:8080', description: "172.17.110.54 server"),
 ]
 
 class Controller extends BaseController

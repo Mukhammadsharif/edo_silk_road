@@ -65,6 +65,14 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'onec' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/onec.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 30,
+            'replace_placeholders' => true,
+        ],
+
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),

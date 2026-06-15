@@ -29,6 +29,7 @@
     <link rel="stylesheet" href="{{ asset('/assets/dist/css/main.css') }}">
     <link rel="stylesheet" href="{{ asset('fontawesome-web/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/dark-theme.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/responsive.css') }}?v=1">
 
     <script src="{{ asset('/assets/jquery-3.3.1.min.js') }}"></script>
     <script src="{{ asset('/assets/js/jquery.inputmask.bundle.js') }}"></script>

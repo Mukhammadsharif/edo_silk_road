@@ -307,3 +307,14 @@
     border: 1px solid #fca5a5;
     color: #991b1b;
 }
+
+/* ===== RESPONSIVE — комментарии ===== */
+@media (max-width: 768px) {
+    .comments-header-modern { padding: 1rem !important; flex-wrap: wrap; }
+    .comment-item-modern { padding: 0.85rem !important; gap: 0.65rem !important; }
+    .comment-meta { gap: 0.5rem !important; }
+    .comment-form-modern,
+    .comment-input-wrap { flex-direction: column !important; gap: 0.5rem !important; }
+    .comment-form-modern textarea { width: 100% !important; }
+    .comment-views-btn { font-size: 11px; }
+}

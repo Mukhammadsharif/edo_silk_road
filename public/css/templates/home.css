@@ -693,3 +693,61 @@
     width: 16px;
     height: 16px;
 }
+
+/* ============================================================
+   RESPONSIVE — главная (dashboard)
+   ============================================================ */
+@media (max-width: 1200px) {
+    .layer-grid { grid-template-columns: repeat(2, 1fr); }
+    .custom-tabs { max-width: 100%; }
+}
+
+@media (max-width: 768px) {
+    .dashboard-modern { padding: 0 !important; }
+
+    /* Сетка статистики — в один столбец */
+    .layer-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    /* Карточки на всю ширину */
+    .subscription-card,
+    .custom-tabs__panel,
+    .custom-tabs {
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    /* Декоративные оверлеи уменьшаем чтобы не вылазили */
+    .stat-overlay,
+    .stat-overlay2 {
+        width: 110px !important;
+        opacity: 0.5;
+    }
+
+    /* Заголовки/иконки компактнее */
+    .card-content h3 { font-size: 1.4rem !important; }
+    .card-content p  { font-size: 0.85rem !important; }
+    .card-icon { width: 42px !important; height: 42px !important; }
+
+    /* incoming-counter картинка не на весь экран */
+    .incoming-counter img { width: 100px !important; }
+
+    /* Флекс-ряды переносятся */
+    .dashboard-header,
+    .dashboard-row {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 1rem !important;
+    }
+
+    /* Карточка подписки и табы — отступы меньше */
+    .custom-tabs__panel { padding: 1.5rem 1.2rem !important; }
+    .subscription-card  { padding: 1.4rem 1.2rem !important; }
+}
+
+@media (max-width: 480px) {
+    .stat-card { font-size: 2rem !important; }
+    .layer-grid { gap: 10px; }
+}

@@ -4,6 +4,8 @@ use App\Http\Controllers\Admin\DocLogsController;
 use App\Http\Controllers\Admin\PricingController;
 use App\Http\Controllers\Admin\SubscriptionRequestController;
 use App\Http\Controllers\Admin\TariffController;
+use App\Http\Controllers\Admin\LicenseController;
+use App\Http\Controllers\LicenseActivationController;
 use App\Http\Controllers\Api\ECP\SignDocImzoMobileApiController;
 use App\Http\Controllers\DocController;
 use App\Http\Controllers\ECP\SignDocImzoController;
@@ -50,6 +52,7 @@ use App\Http\Controllers\HR\HrEmpEduController;
 use App\Http\Controllers\HR\HrEmpExpController;
 use App\Http\Controllers\HR\HrEmpFamController;
 use App\Http\Controllers\HR\HrEmpOrderController;
+use App\Http\Controllers\Admin\OnecIntegrationController;
 
 use App\Http\Controllers\Protocol\ProtocolDocTypeController;
 use App\Http\Controllers\Protocol\ProtocolEmpHrOrdersController;
@@ -124,6 +127,12 @@ Route::group(['middleware' => ['auth']], function() {
     });
 
     Route::prefix('admin')->group(function () {
+
+        Route::prefix('onec')->group(function () {
+            Route::get('/',          [OnecIntegrationController::class, 'index'])->name('admin.onec.index');
+            Route::post('/generate', [OnecIntegrationController::class, 'generate'])->name('admin.onec.generate');
+            Route::post('/retry',    [OnecIntegrationController::class, 'retry'])->name('admin.onec.retry');
+        });
 
         Route::prefix('organizations')->group(function () {
             Route::any('index', [DepartmentController::class, 'organizationsIndex'])->name('organizations.index');
@@ -221,6 +230,13 @@ Route::group(['middleware' => ['auth']], function() {
             'update'  => 'tariffs.update',
             'destroy' => 'tariffs.destroy',
         ]);
+
+        // Litsenziya boshqaruvi (superadmin)
+        Route::get('licenses', [LicenseController::class, 'index'])->name('admin.licenses.index');
+        Route::get('licenses/create', [LicenseController::class, 'create'])->name('admin.licenses.create');
+        Route::post('licenses', [LicenseController::class, 'store'])->name('admin.licenses.store');
+        Route::get('licenses/{id}/download', [LicenseController::class, 'download'])->name('admin.licenses.download');
+        Route::post('licenses/{id}/revoke', [LicenseController::class, 'revoke'])->name('admin.licenses.revoke');
     });
 
     Route::prefix('document-settings')->group(function () {
@@ -444,6 +460,10 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/pricing', [PricingController::class, 'index'])->name('pricing');
     Route::post('/pricing/subscribe/{tariff}', [PricingController::class, 'subscribe'])->name('pricing.subscribe');
 
+    // Litsenziyani faollashtirish (mijoz: direktor / IT admin)
+    Route::get('/license/activate', [LicenseActivationController::class, 'index'])->name('license.activate');
+    Route::post('/license/activate', [LicenseActivationController::class, 'activate'])->name('license.activate.submit');
+
     Route::get('/subscription-requests/search-organizations', [SubscriptionRequestController::class, 'searchOrganizations'])
         ->name('admin.subscription-requests.search-organizations');
 
@@ -516,12 +536,12 @@ Route::get('/telegram-link/eimzo', function(\Illuminate\Http\Request $request) {
 })->name('telegram.link.eimzo');
 
 /**
-* Handoff из Mini App в Web — открыть OnlyOffice editor для создания документа.
+ * Handoff из Mini App в Web — открыть OnlyOffice editor для создания документа.
  *
  * Юзер на телефоне набрал часть формы в Mini App, нажал «Открыть на компьютере».
  * Mini App вызвал POST /api/telegram/create/web-editor и получил такой URL.
  * Здесь мы достаём draft из cache, проверяем что юзер тот же, и редиректим
-* на форму создания с pre-fill через query параметр draft.
+ * на форму создания с pre-fill через query параметр draft.
  *
  * Требует логин в обычном web-интерфейсе (через auth middleware ниже).
  */

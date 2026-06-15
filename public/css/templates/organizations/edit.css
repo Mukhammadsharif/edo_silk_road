@@ -64,3 +64,14 @@
     background: linear-gradient(135deg, #794DFD 0%, #9d6fff 100%);
     border-radius: 3px;
 }
+
+/* ===== RESPONSIVE форма ===== */
+@media (max-width: 768px) {
+    .form-grid,
+    .form-row,
+    [class*="form-grid"] { grid-template-columns: 1fr !important; }
+    .form-actions { flex-direction: column-reverse !important; gap: 0.5rem; }
+    .form-actions .btn,
+    .form-actions button,
+    .form-actions a { width: 100% !important; justify-content: center; }
+}

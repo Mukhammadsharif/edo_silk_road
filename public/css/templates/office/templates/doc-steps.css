@@ -299,3 +299,13 @@
 .status-item.status-deleted i {
     color: #ea580c;
 }
+
+/* ===== RESPONSIVE — шаги документа ===== */
+@media (max-width: 768px) {
+    .steps-header-modern { padding: 1rem !important; flex-wrap: wrap; gap: 0.5rem; }
+    .steps-body-modern { padding: 0.75rem !important; }
+    .step-item { gap: 0.65rem !important; }
+    .step-icon { width: 38px !important; height: 38px !important; }
+    .header-title span,
+    .header-title h3 { font-size: 0.95rem !important; }
+}

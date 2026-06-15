@@ -27,3 +27,14 @@ body #commentModal .modal-dialog {
 .modal-body-modern::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
 .modal-body-modern::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 .modal-footer-modern { padding: 1.5rem; background: #f8fafc; border-top: 2px solid #e2e8f0; display: flex; justify-content: flex-end; }
+
+/* ===== RESPONSIVE — модалка комментариев протокола ===== */
+@media (max-width: 575.98px) {
+    body #commentModal .modal-dialog { margin: 0.5rem; max-width: calc(100% - 1rem); }
+    .modal-header-modern { padding: 1rem !important; }
+    .modal-body-modern { padding: 1.1rem !important; max-height: 70vh !important; }
+    .modal-footer-modern { padding: 1rem !important; flex-wrap: wrap; gap: 0.5rem; }
+    .modal-footer-modern .btn,
+    .modal-footer-modern button { width: 100%; }
+    .header-title-modal h5 { font-size: 16px !important; }
+}
