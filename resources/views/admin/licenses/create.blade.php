@@ -60,7 +60,7 @@
                                 </label>
                                 <div class="input-with-icon">
                                     <i data-lucide="building"></i>
-                                    <select name="org_unit_id" class="tariff-input-modern" required>
+                                    <select name="org_unit_id" class="tariff-input-modern select2" required>
                                         <option value="">— Tashkilotni tanlang —</option>
                                         @foreach($organizations as $org)
                                             <option value="{{ $org->id }}" {{ old('org_unit_id') == $org->id ? 'selected' : '' }}>
