@@ -178,6 +178,16 @@
 
                                 <div class="info-card">
                                     <div class="info-card-icon">
+                                        <i data-lucide="map-pin" class="text-white"></i>
+                                    </div>
+                                    <div class="info-card-content">
+                                        <div class="info-card-label">{{ __('field.address') ?? 'Адрес проживания' }}</div>
+                                        <div class="info-card-value">{{ $user->userPersonal->address??'-' }}</div>
+                                    </div>
+                                </div>
+
+                                <div class="info-card">
+                                    <div class="info-card-icon">
                                         <i data-lucide="activity" class="text-white"></i>
                                     </div>
                                     <div class="info-card-content">

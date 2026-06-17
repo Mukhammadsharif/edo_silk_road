@@ -39,6 +39,7 @@ class DocumentService
             $empPosition = $journal->fromUser->userPost->lang($journal->fromUser->userPost->id)??'';
             $empShortName = $journal->fromUser->personal->shortName()??'';
             $empDepartment = $journal->fromUser->department->lang($journal->fromUser->department->id)??'';
+            $empAddress = $journal->fromUser->personal->address ?? '';
             $documents = "";
             $docNumber = $document->doc_number??1;
 
@@ -53,7 +54,8 @@ class DocumentService
                 "[EMP_POSITION]",
                 "[EMP_SHORTNAME]",
                 "[DOCUMENTS]",
-                "[DOC_NUMBER]"
+                "[DOC_NUMBER]",
+                "[USER_ADDRESS]"
             ];
 
             $replace_words = [
@@ -67,7 +69,8 @@ class DocumentService
                 $empDepartment.' '.$empPosition,
                 $empShortName,
                 $documents,
-                $docNumber
+                $docNumber,
+                $empAddress
             ];
 
             $html_doc = str_replace($search_words, $replace_words, $temp->t_text);

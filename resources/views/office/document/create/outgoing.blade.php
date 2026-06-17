@@ -133,7 +133,7 @@
                         </div>
 
                         <div class="form-row-modern">
-                             <div class="form-group-modern">
+                            <div class="form-group-modern">
                                 <label>
                                     <i data-lucide="shield"></i>
                                     {{ __('document.confidentiality') }}
@@ -244,6 +244,7 @@
                             @endif
 
                             <button type="submit" id="submitBtn" class="btn-submit" style="display: none;"
+                                    onclick="setFormAction('web')"
                                     @if(!Auth::user()->currentSubscription) disabled @endif>
                                 <i data-lucide="save"></i>
                                 {{ __('action.save') }}

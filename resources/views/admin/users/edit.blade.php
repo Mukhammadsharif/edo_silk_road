@@ -137,6 +137,14 @@
                                 </label>
                                 <input type="text" name="phone" maxlength="13" class="form-control-modern" value="{{ $personal->phone }}">
                             </div>
+
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="map-pin"></i>
+                                    {{ __('field.address') ?? 'Адрес проживания' }}
+                                </label>
+                                <input type="text" name="address" maxlength="500" class="form-control-modern" value="{{ $personal->address ?? '' }}">
+                            </div>
                         </div>
 
                         <div class="form-actions">

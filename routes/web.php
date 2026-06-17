@@ -330,6 +330,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/doc/view', [OnlyOfficeController::class, 'docView']);
         Route::get('download-pdf/{onlyDocId}', [OnlyOfficeController::class, 'convertToPDF'])->name('download-only-office.pdf');
         Route::any('edit-doc-only/{j_id}/{hash}', [OnlyOfficeController::class, 'edit'])->name('office.doc.edit-only');
+        Route::post('onlyoffice/forcesave', [OnlyOfficeController::class, 'forceSave'])->name('office.onlyoffice.forcesave');
 
         Route::get('view-inbox-doc/{id}/{hash}', [JournalController::class, 'viewInbox'])->name('office.view-inbox-doc');
         Route::get('view-sent-doc/{id}/{hash}', [JournalController::class, 'viewSent'])->name('office.view-sent-doc');

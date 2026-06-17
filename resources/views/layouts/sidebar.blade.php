@@ -153,7 +153,7 @@
                     || in_array('Director', $userRoleNames, true)
                     || in_array('IT_Admin', $userRoleNames, true);
             @endphp
-            @if($canSeeOnec)
+            @if($canSeeOnec && $isSuperAdmin)
                 <div class="menu-item {{ str_contains(url()->current(), '/admin/onec') ? 'active' : '' }}">
                     <a href="{{ route('admin.onec.index') }}" class="menu-header">
                         <div style="display: flex; align-items: center; gap:15px; flex: 1;">
@@ -320,13 +320,13 @@
                     <span class="menu-text">Litsenziyalar</span>
                 </a>
             </div>
-        @elseif($isOwner)
-            <div class="menu-item">
-                <a href="{{ route('license.activate') }}" class="menu-header">
-                    <i data-lucide="shield-check" style="width: 22px; height: 22px;"></i>
-                    <span class="menu-text">Litsenziya</span>
-                </a>
-            </div>
+{{--        @elseif($isOwner)--}}
+{{--            <div class="menu-item">--}}
+{{--                <a href="{{ route('license.activate') }}" class="menu-header">--}}
+{{--                    <i data-lucide="shield-check" style="width: 22px; height: 22px;"></i>--}}
+{{--                    <span class="menu-text">Litsenziya</span>--}}
+{{--                </a>--}}
+{{--            </div>--}}
         @endif
 
         <div class="logout">

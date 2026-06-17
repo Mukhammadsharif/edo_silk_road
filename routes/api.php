@@ -103,6 +103,13 @@ Route::post('/callback', function (Request $request) {
 
         Storage::disk('ftp')->put($path, $response->body());
 
+        Log::info('callback saved docx', [
+            'key' => $key,
+            'status' => $status,
+            'path' => $path,
+            'size' => strlen($response->body()),
+        ]);
+
         return response()->json(['error' => 0]);
 
     } catch (\Exception $e) {

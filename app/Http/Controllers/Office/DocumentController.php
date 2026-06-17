@@ -401,7 +401,7 @@ class DocumentController extends Controller
             'journal', 'document', 'documentFiles', 'fromDate', 'toDate', 'organizations', 'departmentJournals', 'labourApps'));
     }
 
-	public function edit($document_key, $j_id, $hash)
+    public function edit($document_key, $j_id, $hash)
     {
         $authUser = $this->authActiveUser();
 
@@ -523,12 +523,26 @@ class DocumentController extends Controller
 
             if (isset($documentKey) && $documentKey) {
                 $onlyOfficeDoc = OnlyOfficeDoc::where('doc_type', 'DOC')->where('doc_id', $document->id)->first();
-                $onlyOfficeDoc->update([
-                    'doc_key' => $documentKey,
-                    'doc_path' => $ood_path,
-                ]);
 
-                $this->onlyOfficeService->createWordToHtmlConverted($documentKey);
+                if ($onlyOfficeDoc) {
+                    // Сначала конвертируем новый docx в HTML. Только если HTML
+                    // успешно создан — переключаем документ на новый ключ.
+                    // Иначе оставляем прежнюю версию, чтобы документ не пропал.
+                    $converted = $this->onlyOfficeService->createWordToHtmlConverted($documentKey);
+
+                    if ($converted) {
+                        $onlyOfficeDoc->update([
+                            'doc_key' => $documentKey,
+                            'doc_path' => $ood_path,
+                        ]);
+                    } else {
+                        \Log::error('Document conversion failed on update, keeping previous version', [
+                            'doc_id' => $document->id,
+                            'new_key' => $documentKey,
+                            'old_key' => $onlyOfficeDoc->doc_key,
+                        ]);
+                    }
+                }
             }
         }
 
@@ -712,9 +726,9 @@ class DocumentController extends Controller
             $agreement_roles_ids = JournalExecutionStepRoles::where('j_exec_step_id', $agreement_step->id)->pluck('role_id')->toArray();
             $user_roles = UserRole::whereIn('role_id', $agreement_roles_ids)->pluck('model_id')->toArray();
             $agreement_users = UserWorkHistory::where('user_work_histories.org_id', $this->organizationId())->
-                whereIn('user_work_histories.user_id', $user_roles)->whereHas('user', function ($query) {
-                    $query->where('status', 1);
-                })->where('user_work_histories.status', 1)
+            whereIn('user_work_histories.user_id', $user_roles)->whereHas('user', function ($query) {
+                $query->where('status', 1);
+            })->where('user_work_histories.status', 1)
                 ->whereNotIn('user_work_histories.user_id', $super_admins_array)
                 ->join('user_personal_infos', 'user_personal_infos.user_id', '=', 'user_work_histories.user_id')
                 ->orderBy('user_personal_infos.sort')
@@ -881,4 +895,3 @@ class DocumentController extends Controller
         $signer_step->save();
     }
 }
-
