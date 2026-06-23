@@ -73,7 +73,20 @@ class DocumentController extends Controller
 
         switch ($type) {
             case str_starts_with($type, 'APP_'):
-                return view('office.document.create.document_forms.app', compact('confidences'))->render();
+                // Динамически показываем поля дат только если в шаблоне
+                // подтипа есть плейсхолдеры [FROM_DATE] / [TO_DATE].
+                $journalType = JournalTypes::where('org_id', $this->organizationId())
+                    ->where('doc_code', $type)
+                    ->first();
+                $tText = '';
+                if ($journalType) {
+                    $tpl = DocumentTypeTemps::where('doc_type_id', $journalType->id)->first();
+                    $tText = $tpl->t_text ?? '';
+                }
+                $hasFromDate = str_contains($tText, '[FROM_DATE]');
+                $hasToDate = str_contains($tText, '[TO_DATE]');
+
+                return view('office.document.create.document_forms.app', compact('confidences', 'hasFromDate', 'hasToDate'))->render();
 
             case 'HR_ORD_MT':
                 $labourApps = DocumentJournals::select('document_journals.*')
@@ -356,6 +369,8 @@ class DocumentController extends Controller
 
         $fromDate = null;
         $toDate = null;
+        $hasFromDate = null;
+        $hasToDate = null;
         $labourApps = null;
 
         $organizations = DocumentOrganizations::where('for_doc_type', $journal->journal->id)->get();
@@ -380,6 +395,13 @@ class DocumentController extends Controller
 
                 $fromDate = $json_data['FROM_DATE']??'';
                 $toDate = $json_data['TO_DATE']??'';
+
+                // Показываем поля дат динамически — по наличию плейсхолдеров
+                // [FROM_DATE] / [TO_DATE] в шаблоне подтипа.
+                $tpl = DocumentTypeTemps::where('doc_type_id', $journal->j_type)->first();
+                $tText = $tpl->t_text ?? '';
+                $hasFromDate = str_contains($tText, '[FROM_DATE]');
+                $hasToDate = str_contains($tText, '[TO_DATE]');
             }
 
             if (str_contains($journal->journal->doc_code, 'HR_ORD')){
@@ -398,7 +420,7 @@ class DocumentController extends Controller
         }
 
         return view('office.document.edit.'.$type, compact('journals', 'departments', 'confidences', 'type', 'authUser',
-            'journal', 'document', 'documentFiles', 'fromDate', 'toDate', 'organizations', 'departmentJournals', 'labourApps'));
+            'journal', 'document', 'documentFiles', 'fromDate', 'toDate', 'hasFromDate', 'hasToDate', 'organizations', 'departmentJournals', 'labourApps'));
     }
 
     public function edit($document_key, $j_id, $hash)
@@ -459,8 +481,12 @@ class DocumentController extends Controller
         ]);
 
         if (str_contains($journal->journal->doc_code, 'APP')){
-            $fromDate = Carbon::createFromFormat('d.m.Y', $request->from_date)->format('Y-m-d');
-            $toDate = Carbon::createFromFormat('d.m.Y', $request->to_date)->format('Y-m-d');
+            $fromDate = $request->from_date
+                ? Carbon::createFromFormat('d.m.Y', $request->from_date)->format('Y-m-d')
+                : '';
+            $toDate = $request->to_date
+                ? Carbon::createFromFormat('d.m.Y', $request->to_date)->format('Y-m-d')
+                : '';
 
             $data = ['FROM_DATE' => $fromDate, 'TO_DATE' => $toDate];
 
@@ -469,8 +495,12 @@ class DocumentController extends Controller
                 'meta_data' => json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
             ]);
         } elseif (str_contains($journal->journal->doc_code, 'HR_ORD')) {
-            $fromDate = Carbon::createFromFormat('d.m.Y', $request->from_date)->format('Y-m-d');
-            $toDate = Carbon::createFromFormat('d.m.Y', $request->to_date)->format('Y-m-d');
+            $fromDate = $request->from_date
+                ? Carbon::createFromFormat('d.m.Y', $request->from_date)->format('Y-m-d')
+                : '';
+            $toDate = $request->to_date
+                ? Carbon::createFromFormat('d.m.Y', $request->to_date)->format('Y-m-d')
+                : '';
             $documentId = $request->app_id;
 
             $appMetaData = DocumentTypeTempMetaData::where('doc_id', $documentId)->first();
