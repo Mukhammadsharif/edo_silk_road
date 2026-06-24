@@ -39,7 +39,7 @@
                             </div>
                             <div class="org-switcher-info">
                                 <span class="org-switcher-label">{{ __('field.organization') ?? 'Tashkilot' }}</span>
-                                <span class="org-switcher-name">{{ $activeOrganization->name_uz ?? '—' }}</span>
+                                <span class="org-switcher-name">{{ $activeOrganization?->name_uz ?? '—' }}</span>
                             </div>
                         </div>
                         <i data-lucide="chevron-down" class="org-switcher-chevron" style="width: 16px; height: 16px;"></i>
@@ -320,13 +320,23 @@
                     <span class="menu-text">Litsenziyalar</span>
                 </a>
             </div>
-{{--        @elseif($isOwner)--}}
-{{--            <div class="menu-item">--}}
-{{--                <a href="{{ route('license.activate') }}" class="menu-header">--}}
-{{--                    <i data-lucide="shield-check" style="width: 22px; height: 22px;"></i>--}}
-{{--                    <span class="menu-text">Litsenziya</span>--}}
-{{--                </a>--}}
-{{--            </div>--}}
+            {{--        @elseif($isOwner)--}}
+            {{--            <div class="menu-item">--}}
+            {{--                <a href="{{ route('license.activate') }}" class="menu-header">--}}
+            {{--                    <i data-lucide="shield-check" style="width: 22px; height: 22px;"></i>--}}
+            {{--                    <span class="menu-text">Litsenziya</span>--}}
+            {{--                </a>--}}
+            {{--            </div>--}}
+        @endif
+
+        {{-- Obuna: faqat tashkilot egasi (owner) uchun. --}}
+        @if($isOwner)
+            <div class="menu-item">
+                <a href="{{ route('pricing') }}" class="menu-header">
+                    <i data-lucide="badge-check" style="width: 22px; height: 22px;"></i>
+                    <span class="menu-text">{{ __('field.subscription') ?? 'Obuna' }}</span>
+                </a>
+            </div>
         @endif
 
         <div class="logout">
@@ -340,8 +350,7 @@
             </div>
         </div>
 
-        {{--        @if(!$isOwner && $isOrganizationDemo && !$request)--}}
-        @if(!$isOwner && $isOrganizationDemo)
+        @if((!$isOwner && $isOrganizationDemo) || !Auth::user()->org_unit_id)
             <div class="request">
                 <div class="rocket-icon">
                     <i data-lucide="rocket" style="width: 30px; height: 30px;"></i>
@@ -386,7 +395,7 @@
             </div>
             <div class="sidebar-user-info">
                 <p class="sidebar-user-name">{{ $user->userPersonal->shortName()??'' }}</p>
-                <p class="sidebar-user-role">{{ $user->currentWork->position->lang($user->currentWork->position->id)??'User' }}</p>
+                <p class="sidebar-user-role">{{ $user->currentWork?->position?->lang($user->currentWork->position->id) ?? 'User' }}</p>
             </div>
         </div>
     </nav>

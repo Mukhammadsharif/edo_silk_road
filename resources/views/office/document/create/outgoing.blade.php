@@ -43,7 +43,7 @@
                             <h3>{{ __('field.document_settings') }}</h3>
                         </div>
 
-                        <input value="{{ $journal->id }}" name="journal_type" id="journal_type" hidden>
+                        <input value="{{ $journal?->id }}" name="journal_type" id="journal_type" hidden>
 
                         <div class="form-group-modern">
                             <label>

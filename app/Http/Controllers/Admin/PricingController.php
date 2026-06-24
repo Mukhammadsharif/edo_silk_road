@@ -14,11 +14,21 @@ class PricingController extends Controller
     //
     public function index()
     {
-        $tariffs = Tariffs::where('status', 1)->orderBy('price_monthly', 'asc')->get();
+        // На этой странице тарифы для выбора больше не показываем —
+        // только активную подписку организации, и только для Director / IT_Admin.
+        $roleNames = $this->authActiveUserRoleNames();
+        $canViewSubscription = in_array('Director', $roleNames, true)
+            || in_array('IT_Admin', $roleNames, true);
 
-        $currentSubscription = Auth::user()->organization->currentSubscription ?? null;
+        $tariffs = collect();
 
-        $pendingSubscription = Auth::user()->organization->pendingSubscription ?? null;
+        $currentSubscription = $canViewSubscription
+            ? Auth::user()->organization?->currentSubscription
+            : null;
+
+        $pendingSubscription = $canViewSubscription
+            ? Auth::user()->organization?->pendingSubscription
+            : null;
 
         return view('pricing.index', compact('tariffs', 'currentSubscription', 'pendingSubscription'));
     }

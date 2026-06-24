@@ -319,7 +319,9 @@ class Controller extends BaseController
 
     public function organizationId()
     {
-        return $this->authActiveUser()->user->org_unit_id;
+        // Физлицо без организации: work history может отсутствовать,
+        // поэтому откатываемся на org_unit_id самого пользователя (может быть null).
+        return $this->authActiveUser()?->user?->org_unit_id ?? Auth::user()?->org_unit_id;
     }
 
     public function isOwner()

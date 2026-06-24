@@ -54,7 +54,7 @@ class DocumentController extends Controller
         $auth = $this->authActiveUser();
 
         // Fetch common data
-        $data = $this->getCommonData($auth->dep_id);
+        $data = $this->getCommonData($auth?->dep_id);
         $data['type'] = $type;
 
         // Fetch type-specific data
@@ -107,7 +107,7 @@ class DocumentController extends Controller
         }
     }
 
-    private function getCommonData(int $departmentId): array
+    private function getCommonData(?int $departmentId): array
     {
         return [
             'journals' => JournalTypes::where('org_id', $this->organizationId())

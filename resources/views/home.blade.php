@@ -122,7 +122,7 @@
             </div>
         </div>
 
-        @if(Auth::user()->organization->pendingSubscription && $isOwner)
+        @if(Auth::user()->organization?->pendingSubscription && $isOwner)
             <div class="pending">
                 <div class="subscription-card">
                     <button class="card-close" onclick="closeSubscriptionCard()">
@@ -166,7 +166,7 @@
             </div>
         @endif
 
-        @if(!Auth::user()->organization->pendingSubscription && !Auth::user()->organization->currentSubscription && $isOwner)
+        @if(!Auth::user()->organization?->pendingSubscription && !Auth::user()->organization?->currentSubscription && $isOwner)
             <div class="pending">
                 <div class="subscription-card">
                     <button class="card-close" onclick="closeSubscriptionCard()">

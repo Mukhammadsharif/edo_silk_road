@@ -91,7 +91,7 @@ class HomeController extends Controller
         $isOwner = $this->isOwner();
 
         $app_temps = JournalTypes::where('doc_code', 'ILIKE', 'APP_%')->where('parent_id', '<>', 0)->where('level_number', 2)->where('status', 1)->get();
-        $pendingSubscription = Auth::user()->organization->pendingSubscription ?? null;
+        $pendingSubscription = Auth::user()->organization?->pendingSubscription;
 
         return view('home', compact('authRoleName', 'docs_count', 'employees', 'app_temps', 'isOwner', 'pendingSubscription'));
     }
