@@ -5,6 +5,10 @@ use App\Http\Controllers\Admin\PricingController;
 use App\Http\Controllers\Admin\SubscriptionRequestController;
 use App\Http\Controllers\Admin\TariffController;
 use App\Http\Controllers\Admin\LicenseController;
+use App\Http\Controllers\Projects\BoardController;
+use App\Http\Controllers\Projects\BoardListController;
+use App\Http\Controllers\Projects\CardCommentController;
+use App\Http\Controllers\Projects\CardController;
 use App\Http\Controllers\LicenseActivationController;
 use App\Http\Controllers\Api\ECP\SignDocImzoMobileApiController;
 use App\Http\Controllers\DocController;
@@ -534,6 +538,42 @@ Route::get('/telegram-link/eimzo', function(\Illuminate\Http\Request $request) {
         'expired'    => false,
     ]);
 })->name('telegram.link.eimzo');
+
+
+Route::middleware('auth')->group(function () {
+    Route::resource('boards', BoardController::class);
+
+    Route::post('boards/{board}/lists', [BoardListController::class, 'store'])->name('lists.store');
+    Route::patch('lists/{list}', [BoardListController::class, 'update'])->name('lists.update');
+    Route::patch('lists/{list}/move', [BoardListController::class, 'move'])->name('lists.move');
+    Route::delete('lists/{list}', [BoardListController::class, 'destroy'])->name('lists.destroy');
+
+    Route::post('lists/{list}/cards', [CardController::class, 'store'])->name('cards.store');
+    Route::get('cards/{card}', [CardController::class, 'show'])->name('cards.show');
+    Route::patch('cards/{card}', [CardController::class, 'update'])->name('cards.update');
+    Route::patch('cards/{card}/move', [CardController::class, 'move'])->name('cards.move');
+    Route::delete('cards/{card}', [CardController::class, 'destroy'])->name('cards.destroy');
+
+    Route::post('cards/{card}/comments', [CardCommentController::class, 'store'])->name('comments.store');
+    Route::delete('comments/{comment}', [CardCommentController::class, 'destroy'])->name('comments.destroy');
+
+    // Карточка целиком (с связями)
+    Route::get('cards/{card}/full', [CardController::class, 'full'])->name('cards.full');
+
+    // Участники
+    Route::post('cards/{card}/members', [CardController::class, 'addMember'])->name('cards.members.add');
+    Route::delete('cards/{card}/members/{user}', [CardController::class, 'removeMember'])->name('cards.members.remove');
+
+    // Чек-листы
+    Route::post('cards/{card}/checklists', [ChecklistController::class, 'store'])->name('checklists.store');
+    Route::delete('checklists/{checklist}', [ChecklistController::class, 'destroy'])->name('checklists.destroy');
+    Route::post('checklists/{checklist}/items', [ChecklistController::class, 'addItem'])->name('checklists.items.add');
+    Route::patch('checklist-items/{item}', [ChecklistController::class, 'toggleItem'])->name('checklist-items.toggle');
+    Route::delete('checklist-items/{item}', [ChecklistController::class, 'destroyItem'])->name('checklist-items.destroy');
+
+    // Список пользователей для назначения
+    Route::get('board-users', [CardController::class, 'boardUsers'])->name('board.users');
+});
 
 /**
  * Handoff из Mini App в Web — открыть OnlyOffice editor для создания документа.

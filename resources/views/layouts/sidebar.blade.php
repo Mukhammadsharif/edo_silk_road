@@ -24,7 +24,11 @@
                     </div>
                 </a>
             </div>
-
+            <a href="{{ route('boards.index') }}"
+               class="flex items-center gap-3 px-4 py-3 rounded-lg {{ request()->routeIs('boards.*') ? 'bg-[#7C3AED] text-white' : 'text-gray-600 hover:bg-gray-50' }}">
+                <i class="ti ti-layout-kanban text-xl"></i>
+                <span>Доски</span>
+            </a>
             {{-- ═══════════════════════════════════════════════════════════════
                  ORG SWITCHER — над «Создать документ»
                  Показывается только для юзеров не в demo (id=1) и
@@ -79,6 +83,7 @@
                     </div>
                 </div>
             @endif
+
 
             <div class="menu-item ">
                 <div class="menu-header">
