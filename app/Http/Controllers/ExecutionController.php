@@ -115,6 +115,7 @@ class ExecutionController extends Controller
         }
 
         $journal_types = JournalTypes::whereDoesntHave('childs')
+            ->where('org_id', $this->organizationId())
             ->where('status', 1)
             ->whereNotIn('doc_code', ['BASE_OUTGOING'])
             ->orderBy('order_number')->get();
@@ -204,6 +205,7 @@ class ExecutionController extends Controller
         }
 
         $journal_types = JournalTypes::whereDoesntHave('childs')
+            ->where('org_id', $this->organizationId())
             ->where('status', 1)
             ->whereNotIn('doc_code', ['BASE_INCOMING', 'BASE_OUTGOING'])
             ->orderBy('order_number')->get();
@@ -291,6 +293,7 @@ class ExecutionController extends Controller
         }
 
         $journal_types = JournalTypes::whereDoesntHave('childs')
+            ->where('org_id', $this->organizationId())
             ->where('status', 1)
             ->whereNotIn('doc_code', ['BASE_INCOMING'])
             ->orderBy('order_number')->get();
@@ -396,6 +399,7 @@ class ExecutionController extends Controller
         }
 
         $journal_types = JournalTypes::whereDoesntHave('childs')
+            ->where('org_id', $this->organizationId())
             ->where('status', 1)
             ->orderBy('order_number')->get();
 
@@ -478,6 +482,7 @@ class ExecutionController extends Controller
         }
 
         $journal_types = JournalTypes::whereDoesntHave('childs')
+            ->where('org_id', $this->organizationId())
             ->where('status', 1)
             ->whereIn('id', $controls)
             ->orderBy('order_number')->get();
