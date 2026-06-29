@@ -45,6 +45,8 @@ class CardController extends Controller
             'due_date'    => 'nullable|date',
             'label_color' => 'nullable|string|max:20',
             'assigned_to' => 'nullable|exists:users,id',
+            'priority'    => 'nullable|in:low,medium,high',
+            'cover_color' => 'nullable|string|max:20',
         ]));
 
         return response()->json($card->load('assignee'));
@@ -101,29 +103,45 @@ class CardController extends Controller
         $card->activities()->create([
             'user_id' => auth()->id(),
             'type' => 'member_added',
-            'description' => "добавил участника {$user->name}",
+            'description' => "добавил участника {$user->username}",   // было name
         ]);
-        return response()->json($card->members);
+
+        // вернуть участников с ключом name для фронта
+        return response()->json($card->members->map(fn ($u) => [
+            'id' => $u->id,
+            'name' => $u->username,
+        ]));
     }
 
     public function removeMember(Card $card, \App\Models\User $user)
     {
         $this->authorizeCard($card);
         $card->members()->detach($user->id);
-        return response()->json($card->members);
+
+        return response()->json($card->members->map(fn ($u) => [
+            'id' => $u->id,
+            'name' => $u->username,
+        ]));
     }
 
-    public function boardUsers()
+
+
+    public function boardUsers(Request $request)
     {
-        // пользователи той же организации (или сам пользователь для физлица)
+        // нужен board_id — берём через карточку или напрямую
+        $boardId = $request->query('board_id');
+        $board = Board::findOrFail($boardId);
+        return response()->json($board->members()->get(['users.id', 'username']));
+    }
+
+    public function allOrgUsers()
+    {
         $orgId = auth()->user()->org_id;
-        $users = \App\Models\User::query()
+        return \App\Models\User::query()
             ->when($orgId, fn ($q) => $q->where('org_id', $orgId))
             ->when(! $orgId, fn ($q) => $q->where('id', auth()->id()))
-            ->get(['id', 'name']);
-        return response()->json($users);
+            ->get(['id', 'username']);
     }
-
     private function authorizeList(BoardList $list): void
     {
         abort_unless(Board::whereKey($list->board_id)->exists(), 404);

@@ -10,7 +10,16 @@ class BoardController extends Controller
 {
     public function index()
     {
-        $boards = Board::active()->latest()->get();
+        $boards = Board::active()
+            ->withCount('lists')
+            ->with(['lists' => fn ($q) => $q->withCount('cards')])
+            ->latest('updated_at')
+            ->get()
+            ->map(function ($board) {
+                $board->cards_total = $board->lists->sum('cards_count');
+                return $board;
+            });
+
         return view('boards.index', compact('boards'));
     }
 
@@ -25,25 +34,45 @@ class BoardController extends Controller
             'title'       => 'required|string|max:255',
             'color'       => 'nullable|string|max:20',
             'description' => 'nullable|string',
+            'manager_id'  => 'nullable|exists:users,id',
         ]);
 
         $board = Board::create($data);
 
-        // Стартовые списки по умолчанию
         foreach (['К исполнению', 'В работе', 'На согласовании', 'Завершено'] as $i => $title) {
             $board->lists()->create(['title' => $title, 'position' => $i]);
         }
 
+        if ($request->expectsJson()) {
+            return response()->json($board);
+        }
         return redirect()->route('boards.show', $board);
     }
 
     public function show(Board $board)
     {
         $board->load([
-            'lists.cards' => fn ($q) => $q->orderBy('position'),
-            'lists.cards.assignee',
+            'lists.cards' => fn ($q) => $q
+                ->withCount('comments')
+                ->with('checklists.items')   // нужны items для подсчёта
+                ->with('assignee')
+                ->orderBy('position'),
         ]);
 
+        // метрики шапки (как было)
+        $board->lists_total = $board->lists->count();
+        $board->cards_total = $board->lists->sum(fn ($l) => $l->cards->count());
+        $doneTitles = ['Завершено', 'Выполнено', 'Готово'];
+        $board->cards_done = $board->lists
+            ->filter(fn ($l) => in_array($l->title, $doneTitles))
+            ->sum(fn ($l) => $l->cards->count());
+        $board->member_avatars = $board->lists
+            ->flatMap(fn ($l) => $l->cards->pluck('assignee'))
+            ->filter()->unique('id')->values();
+        $board->load([
+            'manager',
+            'lists.cards' => fn ($q) => $q->withCount('comments')->with(['checklists.items', 'assignee'])->orderBy('position'),
+        ]);
         return view('boards.show', compact('board'));
     }
 
@@ -54,14 +83,46 @@ class BoardController extends Controller
 
     public function update(Request $request, Board $board)
     {
-        $board->update($request->validate([
+        $data = $request->validate([
             'title'       => 'sometimes|string|max:255',
             'color'       => 'nullable|string|max:20',
             'description' => 'nullable|string',
+            'manager_id'  => 'nullable|exists:users,id',
+            'visibility'  => 'nullable|in:private,public',
             'is_archived' => 'boolean',
-        ]));
+        ]);
 
+        $board->update($data);
+
+        if ($request->expectsJson()) {
+            return response()->json($board->load('manager'));
+        }
         return back();
+    }
+
+    // участники доски (для отображения в настройках)
+    public function members(Board $board)
+    {
+        return response()->json(
+            $board->members()->get(['users.id', 'username'])
+        );
+    }
+
+    public function addMember(Request $request, Board $board)
+    {
+        $userId = $request->validate(['user_id' => 'required|exists:users,id'])['user_id'];
+        $board->members()->syncWithoutDetaching([$userId]);
+        return response()->json($board->members()->get(['users.id', 'username']));
+    }
+
+    public function removeMember(Board $board, \App\Models\User $user)
+    {
+        $board->members()->detach($user->id);
+        // заодно снять его с карточек этой доски
+        $cardIds = $board->lists()->with('cards')->get()
+            ->flatMap(fn ($l) => $l->cards->pluck('id'));
+        \DB::table('card_user')->whereIn('card_id', $cardIds)->where('user_id', $user->id)->delete();
+        return response()->json($board->members()->get(['users.id', 'username']));
     }
 
     public function destroy(Board $board)

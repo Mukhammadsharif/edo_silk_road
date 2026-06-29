@@ -11,7 +11,7 @@ class CardCommentController extends Controller
 {
     public function store(Request $request, Card $card)
     {
-        abort_unless(\App\Models\Board::whereKey($card->list->board_id)->exists(), 404);
+        abort_unless(\App\Models\Projects\Board::whereKey($card->list->board_id)->exists(), 404);
 
         $comment = $card->comments()->create(
             $request->validate(['body' => 'required|string'])

@@ -10,8 +10,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Card extends Model
 {
     protected $fillable = [
-        'board_list_id', 'title', 'description',
-        'position', 'due_date', 'label_color', 'assigned_to',
+        'board_list_id', 'title', 'description', 'position',
+        'due_date', 'label_color', 'priority', 'cover_color', 'assigned_to',
     ];
 
     protected $casts = [

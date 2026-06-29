@@ -2,6 +2,8 @@
 
 namespace App\Models\Projects;
 
+use App\Models\Admin\OrganizationUnits;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -10,7 +12,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Board extends Model
 {
     protected $fillable = [
-        'org_id', 'user_id', 'title', 'color', 'description', 'is_archived',
+        'org_id', 'user_id', 'manager_id', 'title', 'color',
+        'description', 'visibility', 'is_archived',
     ];
 
     protected $casts = [
@@ -50,11 +53,19 @@ class Board extends Model
 
     public function organization(): BelongsTo
     {
-        return $this->belongsTo(Organization::class, 'org_id');
+        return $this->belongsTo(OrganizationUnits::class, 'org_id');
     }
 
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_archived', false);
+    }
+    public function manager()
+    {
+        return $this->belongsTo(User::class, 'manager_id');
+    }
+    public function members()
+    {
+        return $this->belongsToMany(User::class, 'board_user')->withTimestamps();
     }
 }

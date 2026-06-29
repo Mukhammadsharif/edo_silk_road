@@ -1,43 +1,130 @@
-<div x-show="modalOpen" x-cloak class="task-modal-backdrop" @click.self="closeCard()" @keydown.escape.window="closeCard()">
+<div x-show="$store.task.open" x-cloak class="task-modal-backdrop"
+     @click.self="$store.task.open = false" @keydown.escape.window="$store.task.open = false">
     <div class="task-modal" @click.stop>
 
-        <div class="task-modal-head">
-            <span class="task-list-pill" x-text="card.list_title || 'Задача'"></span>
-            <button type="button" class="task-close" @click="closeCard()">&times;</button>
+        <div class="task-cover" :style="$store.task.card.cover_color ? `background:${$store.task.card.cover_color}` : ''">
+            <span class="task-cover-pill" x-text="$store.task.card.list_title || 'Задача'"></span>
+            <div class="task-cover-actions">
+            <span class="task-saving" x-show="$store.task.saving" x-cloak style="color:rgba(255,255,255,.95)">
+                <span class="brd-spinner" style="border-color:rgba(255,255,255,.4);border-top-color:#fff"></span> Сохранение…
+            </span>
+                <i class="fa fa-palette" @click="toggleCoverPicker()"></i>
+                <button type="button" class="task-close" @click="$store.task.open = false">&times;</button>
+            </div>
         </div>
 
-        <div class="task-modal-body">
+        <div class="task-modal-body" x-show="$store.task.loading">
+            <div class="task-main">
+                <div class="sk-row">
+                    <span class="skeleton sk-avatar"></span>
+                    <span class="skeleton sk-line w-70" style="margin:0"></span>
+                </div>
+                <div class="sk-row" style="gap:7px">
+                    <span class="skeleton sk-pill" style="width:80px;margin:0"></span>
+                    <span class="skeleton sk-pill" style="width:70px;margin:0"></span>
+                    <span class="skeleton sk-pill" style="width:75px;margin:0"></span>
+                </div>
+                <span class="skeleton sk-line w-40"></span>
+                <span class="skeleton sk-block"></span>
+                <span class="skeleton sk-line w-50"></span>
+                <span class="skeleton sk-line w-90"></span>
+                <span class="skeleton sk-line w-70"></span>
+            </div>
+            <div class="task-side">
+                <span class="skeleton sk-line w-50"></span>
+                <span class="skeleton sk-block" style="height:40px"></span>
+                <div class="sk-row"><span class="skeleton sk-avatar"></span><span class="skeleton sk-line w-70" style="margin:0"></span></div>
+                <div class="sk-row"><span class="skeleton sk-avatar"></span><span class="skeleton sk-line w-50" style="margin:0"></span></div>
+            </div>
+        </div>
 
+        <div class="task-modal-body" x-show="!$store.task.loading" x-cloak>
             <div class="task-main">
                 <div class="task-title-row">
                     <i class="fa fa-clipboard task-title-icon"></i>
-                    <textarea class="task-title-input" x-model="card.title" @blur="saveField('title')"
+                    <textarea class="task-title-input" x-model="$store.task.card.title" @blur="saveField('title')"
                               rows="1" @input="autoGrow($event)"></textarea>
                 </div>
 
                 <div class="task-actions">
+                    <button class="task-action-btn" @click="togglePrioPicker()"><i class="fa fa-flag"></i> Приоритет</button>
                     <button class="task-action-btn" @click="toggleLabelPicker()"><i class="fa fa-tag"></i> Метки</button>
                     <button class="task-action-btn" @click="focusDate()"><i class="fa fa-clock"></i> Даты</button>
                     <button class="task-action-btn" @click="addChecklist()"><i class="fa fa-list-check"></i> Чек-лист</button>
-                    <button class="task-action-btn" @click="toggleMemberPicker()"><i class="fa fa-users"></i> Участники</button>
+                    <div style="position:relative; display:inline-block;">
+                        <button class="task-action-btn" @click="toggleMemberPicker()">
+                            <i class="fa fa-user-plus"></i> Участники
+                        </button>
+
+                        {{-- Поповер участников --}}
+                        <div class="member-popover" x-show="showMemberPicker" x-cloak
+                             @click.outside="showMemberPicker = false" style="top:calc(100% + 6px); left:0;">
+                            <div class="member-popover-head">
+                                Участники
+                                <button class="member-popover-close" @click="showMemberPicker = false">&times;</button>
+                            </div>
+                            <div class="member-popover-body">
+                                <input type="text" class="member-search" placeholder="Поиск участников"
+                                       x-model="memberSearch" x-ref="memberSearchInput">
+                                <div class="member-list-label">Участники доски</div>
+
+                                <div class="member-list">
+                                    <template x-for="u in filteredUsers()" :key="u.id">
+                                        <button class="member-item" @click="toggleMember(u)">
+                                            <span class="ava" :class="!u.name && 'empty'" x-text="initials(u.name)"></span>
+                                            <span x-text="u.name"></span>
+                                            <i class="fa fa-check check" x-show="isMember(u)"></i>
+                                        </button>
+                                    </template>
+
+                                    <div class="member-empty" x-show="filteredUsers().length === 0">
+                                        Ничего не найдено
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="task-picker" x-show="showPrioPicker" x-cloak>
+                    <span class="task-meta-label mb-2 d-block">Приоритет</span>
+                    <div class="task-prio-picker">
+                        <button class="task-prio-opt low"    @click="setPriority('low')">Low</button>
+                        <button class="task-prio-opt medium" @click="setPriority('medium')">Medium</button>
+                        <button class="task-prio-opt high"   @click="setPriority('high')">High</button>
+                        <button class="task-prio-opt none"   @click="setPriority(null)">No priority</button>
+                    </div>
                 </div>
 
-                <div class="task-meta" x-show="card.members?.length || card.due_date || card.label_color">
-                    <div class="task-meta-block" x-show="card.members?.length">
+                <div class="task-picker" x-show="showCoverPicker" x-cloak>
+                    <span class="task-meta-label mb-2 d-block">Цвет обложки</span>
+                    <div class="task-cover-grid">
+                        <template x-for="c in coverColors" :key="c">
+                            <div class="task-cover-opt" :class="$store.task.card.cover_color === c && 'active'"
+                                 :style="`background:${c}`" @click="setCover(c)"></div>
+                        </template>
+                        <div class="task-cover-opt" style="background:#E4E0F0" @click="setCover(null)" title="Убрать"></div>
+                    </div>
+                </div>
+                <div class="task-meta" x-show="$store.task.card.members?.length || $store.task.card.due_date || $store.task.card.label_color">
+                    <div class="task-meta-block" x-show="$store.task.card.members?.length">
                         <span class="task-meta-label">Участники</span>
                         <div class="task-members">
-                            <template x-for="m in card.members" :key="m.id">
-                                <div class="task-member" :title="m.name" @click="removeMember(m)" x-text="initials(m.name)"></div>
+                            <template x-for="m in $store.task.card.members" :key="m.id">
+                                <div class="task-member" :title="m.username" @click="removeMember(m)" x-text="initials(m.username)"></div>
                             </template>
                         </div>
                     </div>
-                    <div class="task-meta-block" x-show="card.label_color">
-                        <span class="task-meta-label">Метка</span>
-                        <span class="card-label" :style="labelStyle(card.label_color)" x-text="labelText(card.label_color)"></span>
+                    <div class="task-meta-block" x-show="$store.task.card.priority">
+                        <span class="task-meta-label">Приоритет</span>
+                        <span class="task-prio" :class="$store.task.card.priority" x-text="prioLabel($store.task.card.priority)"></span>
                     </div>
-                    <div class="task-meta-block" x-show="card.due_date">
+                    <div class="task-meta-block" x-show="$store.task.card.label_color">
+                        <span class="task-meta-label">Метка</span>
+                        <span class="card-label" :style="labelStyle($store.task.card.label_color)" x-text="labelText($store.task.card.label_color)"></span>
+                    </div>
+                    <div class="task-meta-block" x-show="$store.task.card.due_date">
                         <span class="task-meta-label">Срок</span>
-                        <span class="task-due-pill" :class="card.overdue && 'overdue'" x-text="card.due_label"></span>
+                        <span class="task-due-pill" :class="$store.task.card.overdue && 'overdue'" x-text="$store.task.card.due_label"></span>
                     </div>
                 </div>
 
@@ -64,18 +151,18 @@
 
                 <div class="task-section" x-show="showDate" x-cloak>
                     <input type="date" class="form-control form-control-sm" style="max-width:200px"
-                           x-model="card.due_date" @change="saveField('due_date')">
+                           x-model="$store.task.card.due_date" @change="saveField('due_date')">
                 </div>
 
                 <div class="task-section">
                     <div class="task-section-head">
-                        <span><i class="fa fa-align-left me-2"></i>Описание</span>
+                        <span><i class="fa fa-align-left"></i>Описание</span>
                     </div>
-                    <textarea class="task-desc" x-model="card.description" @blur="saveField('description')"
+                    <textarea class="task-desc" x-model="$store.task.card.description" @blur="saveField('description')"
                               placeholder="Добавьте описание задачи…" rows="3" @input="autoGrow($event)"></textarea>
                 </div>
 
-                <template x-for="cl in card.checklists" :key="cl.id">
+                <template x-for="cl in $store.task.card.checklists" :key="cl.id">
                     <div class="task-section">
                         <div class="task-section-head">
                             <span><i class="fa fa-list-check me-2"></i><span x-text="cl.title"></span></span>
@@ -108,11 +195,15 @@
             <div class="task-side">
                 <div class="task-section-head mb-3"><span><i class="fa fa-comments me-2"></i>Комментарии и события</span></div>
                 <div class="task-comment-box">
-                    <input type="text" class="form-control form-control-sm" placeholder="Напишите комментарий…"
-                           x-model="newComment" @keydown.enter="addComment()">
+                    <input type="text" class="task-comment-input" placeholder="Напишите комментарий…"
+                           x-model="newComment"
+                           @keydown.enter="addComment()">
+                    <button class="task-comment-send" :disabled="!newComment.trim()" @click="addComment()">
+                        <i class="fa fa-paper-plane"></i>
+                    </button>
                 </div>
                 <div class="task-feed">
-                    <template x-for="a in feed" :key="a._key">
+                    <template x-for="a in $store.task.feed" :key="a._key">
                         <div class="task-feed-item">
                             <div class="task-member sm" :style="a.color ? `background:${a.color}` : ''" x-text="initials(a.user)"></div>
                             <div class="task-feed-text">
@@ -122,7 +213,7 @@
                             </div>
                         </div>
                     </template>
-                    <p class="text-muted small" x-show="!feed.length">Пока нет событий</p>
+                    <p class="text-muted small" x-show="!$store.task.feed.length">Пока нет событий</p>
                 </div>
             </div>
 

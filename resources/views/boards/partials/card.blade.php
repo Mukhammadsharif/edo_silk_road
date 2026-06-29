@@ -11,26 +11,31 @@
         ->take(2)->implode('');
 @endphp
 
-<div class="kanban-card" data-card-id="{{ $card->id }}" @click="openCard({{ $card->id }})">
+<div class="kanban-card" data-card-id="{{ $card->id }}" @click="openCard(card)">
+    <div class="card-top">
+        <i class="fa fa-grip-vertical card-grip"></i>
+        <i class="fa fa-file-lines card-type-icon"></i>
+        <span class="card-title">{{ $card->title }}</span>
+    </div>
+
     @if($label)
-        <span class="card-label" style="background:{{ $label['bg'] }};color:{{ $label['fg'] }}">
-      {{ $label['t'] }}
-    </span>
+        <span class="card-label" style="background:{{ $label['bg'] }};color:{{ $label['fg'] }}">{{ $label['t'] }}</span>
     @endif
 
-    <div class="card-title">{{ $card->title }}</div>
-
     <div class="card-foot">
-        @if($card->due_date)
-            <span class="card-due {{ $card->isOverdue() ? 'overdue' : '' }}">
-        <i class="fa fa-clock"></i> {{ $card->due_date->translatedFormat('d MMM') }}
-      </span>
-        @else
-            <span></span>
-        @endif
-
         @if($card->assignee)
             <div class="card-avatar" title="{{ $card->assignee->name }}">{{ $initials }}</div>
         @endif
+
+        @if($card->due_date)
+            <span class="card-stat due {{ $card->isOverdue() ? 'overdue' : '' }}">
+        <i class="fa fa-calendar"></i> {{ $card->due_date->translatedFormat('d MMM') }}
+      </span>
+        @endif
+
+        <div class="card-stats-right">
+            <span class="card-stat"><i class="fa fa-paperclip"></i> {{ $card->checklists_count ?? 0 }}</span>
+            <span class="card-stat"><i class="fa fa-comment"></i> {{ $card->comments_count ?? 0 }}</span>
+        </div>
     </div>
 </div>

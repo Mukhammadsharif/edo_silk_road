@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Projects;
 
+use App\Http\Controllers\Controller;
 use App\Models\Projects\Card;
 use App\Models\Projects\Checklist;
 use App\Models\Projects\ChecklistItem;

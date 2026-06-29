@@ -28,6 +28,7 @@ use App\Http\Controllers\Office\JournalController;
 use App\Http\Controllers\Office\JournalTypesController;
 use App\Http\Controllers\Office\OnlyOfficeController;
 use App\Http\Controllers\PdfGenerateController;
+use App\Http\Controllers\Projects\ChecklistController;
 use App\Http\Controllers\ProtocolsController;
 use App\Http\Controllers\QrCodeDocController;
 use App\Http\Controllers\SettingsController;
@@ -573,6 +574,11 @@ Route::middleware('auth')->group(function () {
 
     // Список пользователей для назначения
     Route::get('board-users', [CardController::class, 'boardUsers'])->name('board.users');
+
+    Route::get('boards/{board}/members', [BoardController::class, 'members'])->name('boards.members');
+    Route::post('boards/{board}/members', [BoardController::class, 'addMember'])->name('boards.members.add');
+    Route::delete('boards/{board}/members/{user}', [BoardController::class, 'removeMember'])->name('boards.members.remove');
+    Route::get('board-users-all', [CardController::class, 'allOrgUsers'])->name('board.users.all');
 });
 
 /**
