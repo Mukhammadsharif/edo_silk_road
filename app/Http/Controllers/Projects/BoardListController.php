@@ -12,6 +12,7 @@ class BoardListController extends Controller
 {
     public function store(Request $request, Board $board)
     {
+        $this->requireAdmin();
         $data = $request->validate(['title' => 'required|string|max:255']);
 
         $list = $board->lists()->create([
@@ -24,6 +25,7 @@ class BoardListController extends Controller
 
     public function update(Request $request, BoardList $list)
     {
+        $this->requireAdmin();
         $this->authorizeList($list);
 
         $list->update($request->validate([
@@ -55,6 +57,7 @@ class BoardListController extends Controller
 
     public function destroy(BoardList $list)
     {
+        $this->requireAdmin();
         $this->authorizeList($list);
         $list->delete();
         return response()->noContent();

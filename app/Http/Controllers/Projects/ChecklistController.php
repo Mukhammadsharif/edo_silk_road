@@ -21,6 +21,14 @@ class ChecklistController extends Controller
 
     public function destroy(Checklist $checklist)
     {
+        $user = auth()->user();
+        $board = $checklist->card->list->board;
+
+        $isAdmin   = $user->hasRole(['Super_Admin', 'IT_Admin']);
+        $isManager = $board->manager_id === $user->id;
+
+        abort_unless($isAdmin || $isManager, 403, 'Только админ или руководитель может удалить чек-лист');
+
         $checklist->delete();
         return response()->noContent();
     }

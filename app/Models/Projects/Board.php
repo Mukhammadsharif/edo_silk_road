@@ -22,22 +22,9 @@ class Board extends Model
 
     protected static function booted(): void
     {
-        // Tenant-scope: юрлицо видит доски своей организации,
-        // физлицо (org = null) — только собственные
-        static::addGlobalScope('tenant', function (Builder $query) {
-            if (! auth()->check()) {
-                return;
-            }
-            $orgId = auth()->user()->org_id;
-
-            $orgId
-                ? $query->where('org_id', $orgId)
-                : $query->whereNull('org_id')->where('user_id', auth()->id());
-        });
-
         static::creating(function (Board $board) {
             $board->user_id ??= auth()->id();
-            $board->org_id  ??= auth()->user()?->org_id;
+            $board->org_id  ??= auth()->user()?->org_unit_id;
         });
     }
 
@@ -50,7 +37,10 @@ class Board extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-
+    public function labels()
+    {
+        return $this->hasMany(BoardLabel::class)->orderBy('position');
+    }
     public function organization(): BelongsTo
     {
         return $this->belongsTo(OrganizationUnits::class, 'org_id');

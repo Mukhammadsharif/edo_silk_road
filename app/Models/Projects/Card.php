@@ -23,7 +23,10 @@ class Card extends Model
     {
         return $this->belongsTo(BoardList::class, 'board_list_id');
     }
-
+    public function labels()
+    {
+        return $this->belongsToMany(BoardLabel::class, 'card_label');
+    }
     public function assignee(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_to');

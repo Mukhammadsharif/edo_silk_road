@@ -12,7 +12,9 @@
             'due_date' => optional($c->due_date)->format('Y-m-d'),
             'due_label' => optional($c->due_date)->translatedFormat('d M'),
             'overdue' => $c->isOverdue(),
-            'label_color' => $c->label_color,
+            'labels' => $c->labels->map(fn ($lb) => [
+                'id' => $lb->id, 'name' => $lb->name, 'color' => $lb->color,
+            ]),
             'priority' => $c->priority,
             'cover_color' => $c->cover_color,
             'assignee' => $c->assignee?->name,
@@ -20,14 +22,17 @@
             'checklist_total' => $c->checklists->sum(fn ($cl) => $cl->items->count()),
             'checklist_done'  => $c->checklists->sum(fn ($cl) => $cl->items->where('is_done', true)->count()),
         ]),
-    ])) }}, {{ $board->id }})"
+    ])) }}, {{ $board->id }}, {{ auth()->user()->hasRole(['Super_Admin','it_admin']) ? 'true' : 'false' }})"
          x-init="init(); boardVisibility = '{{ $board->visibility }}'; boardData = {
         title: @js($board->title),
         color: @js($board->color),
         description: @js($board->description),
         manager_id: {{ $board->manager_id ?? 'null' }},
         visibility: @js($board->visibility)
-     }" class="container-fluid py-3">
+     };
+     boardLabels = {{ Js::from($board->labels->map(fn($l) => ['id'=>$l->id,'name'=>$l->name,'color'=>$l->color])) }};
+     canManageChecklists = ({{ auth()->user()->hasRole(['Super_Admin','IT_Admin']) ? 'true' : 'false' }} || {{ $board->manager_id === auth()->id() ? 'true' : 'false' }});
+     " class="container-fluid py-3">
 
         @php
             $color = $board->color ?: '#7C3AED';
@@ -53,7 +58,7 @@
                         <i class="fa" :class="boardVisibility === 'public' ? 'fa-lock-open' : 'fa-lock'"></i>
                         <span x-text="boardVisibility === 'public' ? 'Открытый' : 'Закрытый'"></span>
                     </span>
-                    <button type="button" class="board-head-btn" @click="openSettings()">
+                    <button type="button" class="board-head-btn" @click="openSettings()" x-show="isAdmin">
                         <i class="fa fa-gear"></i> Настройки
                     </button>
                 </div>
@@ -67,7 +72,7 @@
 
                 @if($board->manager)
                     @php
-                        $mgrIni = \Illuminate\Support\Str::of($board->manager->name ?? $board->manager->username ?? '')
+                        $mgrIni = \Illuminate\Support\Str::of($board->manager->name ?? $board->manager->name ?? '')
                             ->explode(' ')->map(fn($p) => \Illuminate\Support\Str::substr($p, 0, 1))->take(2)->implode('');
                     @endphp
                     <div class="board-head-manager">
@@ -112,8 +117,20 @@
                         <span class="list-dot"></span>
                         <span class="list-title" x-text="list.title"></span>
                         <span class="list-count" x-text="list.cards.length"></span>
-                        <div class="list-head-actions">
-                            <i class="fa fa-ellipsis"></i>
+                        <div class="list-head-actions list-menu-wrap">
+                            <button class="list-menu-btn" @click="toggleListMenu(list.id)">
+                                <i class="fa fa-ellipsis"></i>
+                            </button>
+
+                            <div class="list-menu" x-show="openListMenu === list.id" x-cloak
+                                 @click.outside="openListMenu = null">
+                                <button class="list-menu-item" @click="startAddCard(list); openListMenu = null">
+                                    <i class="fa fa-plus"></i> Добавить карточку
+                                </button>
+                                <button class="list-menu-item danger" @click="deleteList(list)" x-show="isAdmin">
+                                    <i class="fa fa-trash"></i> Удалить список
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -133,9 +150,12 @@
                                         <span class="card-title" x-text="card.title"></span>
                                     </div>
 
-                                    <template x-if="card.priority">
-                                        <span class="card-label" :class="'prio-' + card.priority"
-                                              x-text="prioLabel(card.priority)"></span>
+                                    <template x-if="card.labels && card.labels.length">
+                                        <div class="card-labels">
+                                            <template x-for="lb in card.labels" :key="lb.id">
+                                                <span class="card-label-dot" :style="`background:${lb.color}`" :title="lb.name"></span>
+                                            </template>
+                                        </div>
                                     </template>
 
                                     <div class="card-foot">
@@ -193,7 +213,7 @@
             </template>
 
             {{-- Кнопка-триггер добавления списка --}}
-            <button class="btn-add-list" x-show="!addingList" @click="startAddList()">
+            <button class="btn-add-list" x-show="!addingList && isAdmin" @click="startAddList()">
                 <i class="fa fa-plus"></i> Добавить список
             </button>
 
@@ -217,7 +237,7 @@
              @click.self="settingsOpen = false" @keydown.escape.window="settingsOpen = false">
             <div class="create-modal" @click.stop style="max-width:460px">
                 <div class="create-modal-head">
-                    <h6><i class="fa fa-gear me-2"></i>Настройки доски</h6>
+                    <h6><i class="fa fa-gear me-2"></i> Настройки доски</h6>
                     <button type="button" class="close" @click="settingsOpen = false">&times;</button>
                 </div>
                 <div class="create-modal-body" style="max-height:75vh; overflow-y:auto">
@@ -236,7 +256,35 @@
                             </template>
                         </div>
                     </div>
+                    <div class="create-field">
+                        <label>Метки доски</label>
 
+                        {{-- Список существующих меток --}}
+                        <div class="board-labels-list">
+                            <template x-for="lb in boardLabels" :key="lb.id">
+                                <div class="board-label-row">
+                                    <input type="color" class="label-color-input" x-model="lb.color"
+                                           @change="updateBoardLabel(lb)">
+                                    <input type="text" class="label-name-input" x-model="lb.name"
+                                           @blur="updateBoardLabel(lb)">
+                                    <button class="label-del" @click="deleteBoardLabel(lb)">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </div>
+                            </template>
+                            <div class="board-labels-empty" x-show="!boardLabels.length">Меток пока нет</div>
+                        </div>
+
+                        {{-- Форма добавления --}}
+                        <div class="label-add-row">
+                            <input type="color" class="label-color-input" x-model="newLabelColor">
+                            <input type="text" class="label-name-input" placeholder="Название метки"
+                                   x-model="newLabelName" @keydown.enter.prevent="submitNewLabel()">
+                            <button class="label-add-btn" :disabled="!newLabelName.trim()" @click="submitNewLabel()">
+                                <i class="fa fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
                     <div class="create-field">
                         <label>Видимость</label>
                         <div class="visibility-toggle">
@@ -268,9 +316,11 @@
                              @click.outside="managerOpen = false"
                              style="top:calc(100% + 6px); left:0; right:0; width:auto; max-height:240px;">
                             <div class="member-popover-head">Руководитель
-                                <button class="member-popover-close" @click="managerOpen = false">&times;</button></div>
+                                <button class="member-popover-close" @click="managerOpen = false">&times;</button>
+                            </div>
                             <div class="member-popover-body">
-                                <input type="text" class="member-search" placeholder="Поиск сотрудников" x-model="managerSearch">
+                                <input type="text" class="member-search" placeholder="Поиск сотрудников"
+                                       x-model="managerSearch">
                                 <div class="member-list-label">Сотрудники</div>
                                 <div class="member-list">
                                     <button class="member-item" @click="pickManager(null)">
@@ -315,9 +365,11 @@
                              @click.outside="boardMemberOpen = false"
                              style="top:calc(100% + 6px); left:0; right:0; width:auto; max-height:260px;">
                             <div class="member-popover-head">Добавить участника
-                                <button class="member-popover-close" @click="boardMemberOpen = false">&times;</button></div>
+                                <button class="member-popover-close" @click="boardMemberOpen = false">&times;</button>
+                            </div>
                             <div class="member-popover-body">
-                                <input type="text" class="member-search" placeholder="Поиск сотрудников" x-model="boardMemberSearch">
+                                <input type="text" class="member-search" placeholder="Поиск сотрудников"
+                                       x-model="boardMemberSearch">
                                 <div class="member-list-label">Сотрудники организации</div>
                                 <div class="member-list">
                                     <template x-for="u in filteredOrgUsers()" :key="u.id">
@@ -327,7 +379,9 @@
                                             <i class="fa fa-check check" x-show="isBoardMember(u)"></i>
                                         </button>
                                     </template>
-                                    <div class="member-empty" x-show="filteredOrgUsers().length === 0">Ничего не найдено</div>
+                                    <div class="member-empty" x-show="filteredOrgUsers().length === 0">Ничего не
+                                        найдено
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -338,11 +392,14 @@
                     </div>
 
                     <div class="create-modal-foot">
-                        <button type="button" class="btn btn-link text-muted text-decoration-none" @click="settingsOpen = false">Отмена</button>
+                        <button type="button" class="btn btn-link text-muted text-decoration-none"
+                                @click="settingsOpen = false">Отмена
+                        </button>
                         <button type="button" class="btn text-white fw-medium" style="background:#7C3AED"
                                 :disabled="savingSettings" @click="saveSettings()">
                             <span x-show="!savingSettings"><i class="fa fa-check me-1"></i> Сохранить</span>
-                            <span x-show="savingSettings" x-cloak><span class="brd-spinner me-1"></span> Сохраняем…</span>
+                            <span x-show="savingSettings" x-cloak><span
+                                    class="brd-spinner me-1"></span> Сохраняем…</span>
                         </button>
                     </div>
                 </div>
@@ -372,7 +429,9 @@
 
             });
 
-            Alpine.data('kanban', (initialLists, boardId) => ({
+            Alpine.data('kanban', (initialLists, boardId, isAdmin) => ({
+                isAdmin,
+                canManageChecklists: false,
                 LABELS,
                 boardId,
                 lists: initialLists,
@@ -383,8 +442,8 @@
                 settingsOpen: false,
                 savingSettings: false,
                 boardVisibility: 'private',
-                boardData: { title: '', color: '#7C3AED', description: '', manager_id: null, visibility: 'private' },
-                colors: ['#7C3AED','#F0997B','#ED93B1','#97C459','#85B7EB','#FAC775','#1D9E75','#E0A040'],
+                boardData: {title: '', color: '#7C3AED', description: '', manager_id: null, visibility: 'private'},
+                colors: ['#7C3AED', '#F0997B', '#ED93B1', '#97C459', '#85B7EB', '#FAC775', '#1D9E75', '#E0A040'],
                 // для поповера руководителя
                 managerOpen: false,
                 managerSearch: '',
@@ -420,13 +479,87 @@
                 showPrioPicker: false,
                 showCoverPicker: false,
                 coverColors: ['#A78BFA', '#F0997B', '#ED93B1', '#97C459', '#85B7EB', '#FAC775'],
+                openListMenu: null,
+                boardLabels: [],   // метки доски (из x-init)
+                newLabelName: '',
+                newLabelColor: '#7C3AED',
 
+                async submitNewLabel() {
+                    if (!this.newLabelName.trim()) return;
+                    const lb = await this.req(`/boards/${this.boardId}/labels`, 'POST', {
+                        name: this.newLabelName,
+                        color: this.newLabelColor,
+                    });
+                    this.boardLabels.push(lb);
+                    this.newLabelName = '';
+                    this.newLabelColor = '#7C3AED';
+                },
+                cardHasLabel(lb) {
+                    const store = Alpine.store('task');
+                    return (store.card.labels || []).some(l => l.id === lb.id);
+                },
+                async toggleLabel(lb) {
+                    const store = Alpine.store('task');
+                    if (this.cardHasLabel(lb)) {
+                        store.card.labels = await this.req(`/cards/${store.card.id}/labels/${lb.id}`, 'DELETE');
+                    } else {
+                        store.card.labels = await this.req(`/cards/${store.card.id}/labels/${lb.id}`, 'POST', {});
+                    }
+                    this.syncCardInList();
+                },
+
+                // управление метками доски (в настройках)
+                async addBoardLabel(name, color) {
+                    const lb = await this.req(`/boards/${this.boardId}/labels`, 'POST', { name, color });
+                    this.boardLabels.push(lb);
+                },
+                async updateBoardLabel(lb) {
+                    await this.req(`/board-labels/${lb.id}`, 'PATCH', { name: lb.name, color: lb.color });
+                },
+                async deleteBoardLabel(lb) {
+                    if (!confirm(`Удалить метку «${lb.name}»?`)) return;
+                    await this.req(`/board-labels/${lb.id}`, 'DELETE');
+                    this.boardLabels = this.boardLabels.filter(l => l.id !== lb.id);
+                    // убрать метку с карточек в UI
+                    this.lists.forEach(l => l.cards.forEach(c => {
+                        if (c.labels) c.labels = c.labels.filter(x => x.id !== lb.id);
+                    }));
+                },
+                toggleListMenu(id) {
+                    this.openListMenu = this.openListMenu === id ? null : id;
+                },
+
+                async deleteList(list) {
+                    const count = list.cards.length;
+                    const msg = count > 0
+                        ? `Удалить список «${list.title}» вместе с ${count} карточк(ами)?`
+                        : `Удалить список «${list.title}»?`;
+                    if (!confirm(msg)) return;
+
+                    this.openListMenu = null;
+                    try {
+                        await this.req(`/lists/${list.id}`, 'DELETE');
+                        this.lists = this.lists.filter(l => l.id !== list.id);
+                    } catch (e) {
+                        // ошибка показана в req
+                    }
+                },
                 async openSettings() {
                     this.settingsOpen = true;
                     await this.loadOrgUsers();
                     await this.loadBoardMembers();
                 },
-
+                async deleteChecklist(cl) {
+                    if (!confirm(`Удалить чек-лист «${cl.title}» со всеми пунктами?`)) return;
+                    const store = Alpine.store('task');
+                    try {
+                        await this.req(`/checklists/${cl.id}`, 'DELETE');
+                        store.card.checklists = store.card.checklists.filter(c => c.id !== cl.id);
+                        this.recalcChecklist();
+                    } catch (e) {
+                        // 403 или ошибка показана в req
+                    }
+                },
                 async loadOrgUsers() {
                     if (this.orgUsers.length) return;
                     this.orgUsers = await this.req('/board-users-all', 'GET');
@@ -437,15 +570,17 @@
 
                 filteredOrgUsers() {
                     const q = this.boardMemberSearch.trim().toLowerCase();
-                    return q ? this.orgUsers.filter(u => (u.name||'').toLowerCase().includes(q)) : this.orgUsers;
+                    return q ? this.orgUsers.filter(u => (u.name || '').toLowerCase().includes(q)) : this.orgUsers;
                 },
-                isBoardMember(u) { return this.boardMembers.some(m => m.id === u.id); },
+                isBoardMember(u) {
+                    return this.boardMembers.some(m => m.id === u.id);
+                },
 
                 async toggleBoardMember(u) {
                     if (this.isBoardMember(u)) {
                         this.boardMembers = await this.req(`/boards/${this.boardId}/members/${u.id}`, 'DELETE');
                     } else {
-                        this.boardMembers = await this.req(`/boards/${this.boardId}/members`, 'POST', { user_id: u.id });
+                        this.boardMembers = await this.req(`/boards/${this.boardId}/members`, 'POST', {user_id: u.id});
                     }
                     // сбросить кэш участников для карточек — теперь список изменился
                     this.allUsers = [];
@@ -454,12 +589,18 @@
                     this.boardMembers = await this.req(`/boards/${this.boardId}/members/${m.id}`, 'DELETE');
                     this.allUsers = [];
                 },
-                selectedManager() { return this.users.find(u => u.id == this.boardData.manager_id) || null; },
+                selectedManager() {
+                    return this.orgUsers.find(u => u.id == this.boardData.manager_id) || null;
+                },
                 filteredManagerUsers() {
                     const q = this.managerSearch.trim().toLowerCase();
-                    return q ? this.users.filter(u => (u.name||'').toLowerCase().includes(q)) : this.users;
+                    return q ? this.orgUsers.filter(u => (u.name||'').toLowerCase().includes(q)) : this.orgUsers;
                 },
-                pickManager(u) { this.boardData.manager_id = u ? u.id : null; this.managerOpen = false; this.managerSearch = ''; },
+                pickManager(u) {
+                    this.boardData.manager_id = u ? u.id : null;
+                    this.managerOpen = false;
+                    this.managerSearch = '';
+                },
 
                 async loadUsers() {
                     if (this.allUsers.length) return;
@@ -786,14 +927,14 @@
 
                 async toggleMember(u) {
                     const store = Alpine.store('task');
+                    let result;
                     if (this.isMember(u)) {
-                        // убрать
-                        store.card.members = await this.req(`/cards/${store.card.id}/members/${u.id}`, 'DELETE');
+                        result = await this.req(`/cards/${store.card.id}/members/${u.id}`, 'DELETE');
                     } else {
-                        // добавить
-                        store.card.members = await this.req(`/cards/${store.card.id}/members`, 'POST', {user_id: u.id});
+                        result = await this.req(`/cards/${store.card.id}/members`, 'POST', { user_id: u.id });
                     }
-                    // поповер не закрываем — можно отметить несколько
+                    console.log('участники после изменения:', result);
+                    store.card.members = result;
                 },
                 focusDate() {
                     this.showDate = !this.showDate;
@@ -855,13 +996,14 @@
 
                 buildFeed(full) {
                     const store = Alpine.store('task');
+                    const name = (u) => u?.name || u?.username || '—';
                     const acts = (full.activities || []).map(a => ({
                         _key: 'a' + a.id, raw: a.created_at,
-                        user: a.user?.username || '—', text: a.description, time: this.timeAgo(a.created_at),
+                        user: name(a.user), text: a.description, time: this.timeAgo(a.created_at),
                     }));
                     const comments = (full.comments || []).map(c => ({
                         _key: 'c' + c.id, raw: c.created_at,
-                        user: c.user?.username || '—', text: c.body, time: this.timeAgo(c.created_at),
+                        user: name(c.user), text: c.body, time: this.timeAgo(c.created_at),
                     }));
                     store.feed = [...comments, ...acts].sort((a, b) => new Date(b.raw) - new Date(a.raw));
                 },
@@ -908,7 +1050,7 @@
                 },
                 async removeMember(m) {
                     const store = Alpine.store('task');
-                    if (!confirm(`Убрать ${m.username}?`)) return;
+                    if (!confirm(`Убрать ${m.name}?`)) return;
                     store.card.members = await this.req(`/cards/${store.card.id}/members/${m.id}`, 'DELETE');
                 },
 

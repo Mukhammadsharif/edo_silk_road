@@ -720,7 +720,7 @@ body.theme-dark .card-stat.checklist.done i { color: #6FD3AE; }
 .board-tile {
     background: var(--brd-card-bg, #fff);
     border-radius: 16px;
-    width: 260px;
+    width: 360px;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(80,60,160,0.07);
     cursor: pointer;
@@ -778,10 +778,11 @@ body.theme-dark .card-stat.checklist.done i { color: #6FD3AE; }
 
 /* ---- Модалка создания доски ---- */
 .create-modal-backdrop {
-    position: fixed; inset: 0; z-index: 1060;
+    position: fixed; inset: 0; z-index: 1020;
     background: rgba(30,22,55,.5); backdrop-filter: blur(2px);
     display: flex; align-items: center; justify-content: center;
     padding: 16px;
+    padding-top: 5%;
     animation: brdFade .15s ease;
 }
 .create-modal {
@@ -1214,3 +1215,98 @@ body.theme-dark .visibility-opt { background: var(--brd-card-bg); color: var(--b
 .chip-remove:hover { color: #C0392B; }
 
 body.theme-dark .board-member-chip { background: var(--brd-column-bg); color: var(--brd-text); }
+
+/* меню списка (три точки) */
+.list-menu-wrap { position: relative; }
+.list-menu-btn {
+    background: none; border: none;
+    color: var(--brd-text-muted, #9b94ad);
+    cursor: pointer; padding: 2px 6px;
+    border-radius: 6px; font-size: 15px;
+    transition: background .15s;
+}
+.list-menu-btn:hover { background: rgba(0,0,0,.06); }
+.list-menu {
+    position: absolute;
+    top: calc(100% + 4px); right: 0;
+    z-index: 30;
+    min-width: 180px;
+    background: var(--brd-card-bg, #fff);
+    border: 1px solid var(--brd-card-border, #ECE8F7);
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(40,30,80,0.18);
+    padding: 6px;
+    overflow: hidden;
+}
+.list-menu-item {
+    display: flex; align-items: center; gap: 9px;
+    width: 100%; background: none; border: none;
+    padding: 8px 10px; border-radius: 7px;
+    font-size: 13px; cursor: pointer; text-align: left;
+    color: var(--brd-text, #2C2C2A);
+    transition: background .12s;
+}
+.list-menu-item:hover { background: var(--brd-add-hover, #F1EFF9); }
+.list-menu-item.danger { color: #C0392B; }
+.list-menu-item.danger:hover { background: rgba(192,57,43,.08); }
+.list-menu-item i { width: 15px; text-align: center; }
+
+body.theme-dark .list-menu-btn:hover { background: rgba(255,255,255,.08); }
+.board-tile-org {
+    font-size: 12px;
+    color: var(--brd-purple, #7C3AED);
+    display: flex; align-items: center; gap: 5px;
+    margin-bottom: 3px;
+}
+.board-tile-org i { font-size: 11px; }
+
+body.theme-dark .board-tile-org { color: #C4B5F0; }
+.card-labels { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 8px 26px; }
+.card-label-dot { height: 8px; width: 34px; border-radius: 4px; }
+.board-labels-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.board-label-row, .label-add-row { display: flex; align-items: center; gap: 8px; }
+.label-color-input {
+    width: 38px; height: 38px; padding: 2px;
+    border: 1px solid var(--brd-card-border, #E4E0F0);
+    border-radius: 8px; cursor: pointer; flex-shrink: 0;
+}
+.label-name-input {
+    flex: 1; border: 1px solid var(--brd-card-border, #E4E0F0);
+    border-radius: 8px; padding: 8px 10px; font-size: 14px;
+    background: var(--brd-card-bg, #fff); color: var(--brd-text, #2C2C2A);
+}
+.label-name-input:focus { border-color: var(--brd-purple, #7C3AED); outline: none; }
+.label-del, .label-add-btn {
+    width: 38px; height: 38px; border: none; border-radius: 8px;
+    cursor: pointer; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+}
+.label-del { background: rgba(192,57,43,.1); color: #C0392B; }
+.label-add-btn { background: var(--brd-purple, #7C3AED); color: #fff; }
+.label-add-btn:disabled { opacity: .5; }
+.board-labels-empty { font-size: 13px; color: var(--brd-text-muted, #9b94ad); }
+.label-list { display: flex; flex-direction: column; gap: 4px; }
+.label-row {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%; background: none; border: none;
+    padding: 8px 10px; border-radius: 8px; cursor: pointer;
+    font-size: 14px; color: var(--brd-text, #2C2C2A); text-align: left;
+    transition: background .12s;
+}
+.label-row:hover { background: var(--brd-add-hover, #F1EFF9); }
+.label-swatch { width: 32px; height: 16px; border-radius: 5px; flex-shrink: 0; }
+.label-row .fa-check { color: var(--brd-purple, #7C3AED); }
+
+.task-labels { display: flex; flex-wrap: wrap; gap: 5px; }
+.task-label-chip { font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 7px; }
+
+body.theme-dark .label-name-input,
+body.theme-dark .label-row { color: var(--brd-text); }
+.checklist-del {
+    background: none; border: none;
+    color: var(--brd-text-muted, #9b94ad);
+    cursor: pointer; padding: 2px 6px;
+    border-radius: 6px; font-size: 13px;
+    transition: background .12s, color .12s;
+}
+.checklist-del:hover { background: rgba(192,57,43,.1); color: #C0392B; }

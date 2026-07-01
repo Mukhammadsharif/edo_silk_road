@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\SubscriptionRequestController;
 use App\Http\Controllers\Admin\TariffController;
 use App\Http\Controllers\Admin\LicenseController;
 use App\Http\Controllers\Projects\BoardController;
+use App\Http\Controllers\Projects\BoardLabelController;
 use App\Http\Controllers\Projects\BoardListController;
 use App\Http\Controllers\Projects\CardCommentController;
 use App\Http\Controllers\Projects\CardController;
@@ -579,6 +580,15 @@ Route::middleware('auth')->group(function () {
     Route::post('boards/{board}/members', [BoardController::class, 'addMember'])->name('boards.members.add');
     Route::delete('boards/{board}/members/{user}', [BoardController::class, 'removeMember'])->name('boards.members.remove');
     Route::get('board-users-all', [CardController::class, 'allOrgUsers'])->name('board.users.all');
+    // метки доски (CRUD)
+    Route::get('boards/{board}/labels', [BoardLabelController::class, 'index'])->name('labels.index');
+    Route::post('boards/{board}/labels', [BoardLabelController::class, 'store'])->name('labels.store');
+    Route::patch('board-labels/{label}', [BoardLabelController::class, 'update'])->name('labels.update');
+    Route::delete('board-labels/{label}', [BoardLabelController::class, 'destroy'])->name('labels.destroy');
+
+    // метки на карточке (переключение)
+    Route::post('cards/{card}/labels/{label}', [CardController::class, 'attachLabel'])->name('cards.labels.attach');
+    Route::delete('cards/{card}/labels/{label}', [CardController::class, 'detachLabel'])->name('cards.labels.detach');
 });
 
 /**

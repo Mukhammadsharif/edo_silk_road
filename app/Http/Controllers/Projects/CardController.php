@@ -81,6 +81,7 @@ class CardController extends Controller
 
     public function destroy(Card $card)
     {
+        $this->requireAdmin();
         $this->authorizeCard($card);
         $card->delete();
         return response()->noContent();
@@ -89,8 +90,47 @@ class CardController extends Controller
     public function full(Card $card)
     {
         $this->authorizeCard($card);
-        $card->load(['members', 'assignee', 'checklists.items', 'activities.user', 'comments.user']);
-        return response()->json($card);   // карточка целиком, с id
+        $card->load([
+            'members.personalInfo',
+            'assignee.personalInfo',
+            'checklists.items',
+            'activities.user.personalInfo',
+            'comments.user.personalInfo',
+            'labels',
+        ]);
+
+        return response()->json([
+            'id' => $card->id,
+            'title' => $card->title,
+            'description' => $card->description,
+            'label_color' => $card->label_color,
+            'priority' => $card->priority,
+            'cover_color' => $card->cover_color,
+            'due_date' => optional($card->due_date)->format('Y-m-d'),
+            'members' => $card->members->map(fn ($u) => [
+                'id' => $u->id,
+                'name' => $u->name,
+            ]),
+            'checklists' => $card->checklists->map(fn ($cl) => [
+                'id' => $cl->id,
+                'title' => $cl->title,
+                'items' => $cl->items->map(fn ($i) => [
+                    'id' => $i->id, 'title' => $i->title, 'is_done' => $i->is_done,
+                ]),
+            ]),
+            'activities' => $card->activities->map(fn ($a) => [
+                'id' => $a->id,
+                'description' => $a->description,
+                'created_at' => $a->created_at,
+                'user' => ['id' => $a->user?->id, 'name' => $a->user?->name],
+            ]),
+            'comments' => $card->comments->map(fn ($c) => [
+                'id' => $c->id,
+                'body' => $c->body,
+                'created_at' => $c->created_at,
+                'user' => ['id' => $c->user?->id, 'name' => $c->user?->name],
+            ]),
+        ]);
     }
 
     public function addMember(Request $request, Card $card)
@@ -99,48 +139,76 @@ class CardController extends Controller
         $userId = $request->validate(['user_id' => 'required|exists:users,id'])['user_id'];
         $card->members()->syncWithoutDetaching([$userId]);
 
-        $user = \App\Models\User::find($userId);
+        $user = \App\Models\User::with('personalInfo')->find($userId);
         $card->activities()->create([
             'user_id' => auth()->id(),
             'type' => 'member_added',
-            'description' => "добавил участника {$user->username}",   // было name
+            'description' => "добавил участника {$user->name}",   // ФИО через аксессор
         ]);
 
-        // вернуть участников с ключом name для фронта
-        return response()->json($card->members->map(fn ($u) => [
-            'id' => $u->id,
-            'name' => $u->username,
-        ]));
+        // вернуть участников с ФИО
+        return response()->json(
+            $card->members()->with('personalInfo')->get()->map(fn ($u) => [
+                'id' => $u->id,
+                'name' => $u->name,
+            ])
+        );
+    }
+    public function attachLabel(Card $card, \App\Models\Projects\BoardLabel $label)
+    {
+        $this->authorizeCard($card);
+        $card->labels()->syncWithoutDetaching([$label->id]);
+        return response()->json($card->labels);
     }
 
+    public function detachLabel(Card $card, \App\Models\Projects\BoardLabel $label)
+    {
+        $this->authorizeCard($card);
+        $card->labels()->detach($label->id);
+        return response()->json($card->labels);
+    }
     public function removeMember(Card $card, \App\Models\User $user)
     {
         $this->authorizeCard($card);
         $card->members()->detach($user->id);
-
-        return response()->json($card->members->map(fn ($u) => [
-            'id' => $u->id,
-            'name' => $u->username,
-        ]));
+        $card->activities()->create([
+            'user_id' => auth()->id(),
+            'type' => 'member_removed',
+            'description' => "удалил участника {$user->name}",   // ФИО через аксессор
+        ]);
+        return response()->json(
+            $card->members()->with('personalInfo')->get()->map(fn ($u) => [
+                'id' => $u->id,
+                'name' => $u->name,
+            ])
+        );
     }
 
 
 
     public function boardUsers(Request $request)
     {
-        // нужен board_id — берём через карточку или напрямую
         $boardId = $request->query('board_id');
         $board = Board::findOrFail($boardId);
-        return response()->json($board->members()->get(['users.id', 'username']));
+
+        return response()->json(
+            $board->members()
+                ->with('personalInfo')
+                ->get(['users.id', 'username'])
+                ->map(fn ($u) => ['id' => $u->id, 'name' => $u->name])
+        );
     }
 
     public function allOrgUsers()
     {
-        $orgId = auth()->user()->org_id;
+        $orgId = auth()->user()->org_unit_id;
+
         return \App\Models\User::query()
-            ->when($orgId, fn ($q) => $q->where('org_id', $orgId))
+            ->with('personalInfo')
+            ->when($orgId, fn ($q) => $q->where('org_unit_id', $orgId))
             ->when(! $orgId, fn ($q) => $q->where('id', auth()->id()))
-            ->get(['id', 'username']);
+            ->get(['id', 'username'])
+            ->map(fn ($u) => ['id' => $u->id, 'name' => $u->name]);
     }
     private function authorizeList(BoardList $list): void
     {

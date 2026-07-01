@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container-fluid py-3" x-data="boardsIndex()">
+    <div class="container-fluid py-3" x-data="boardsIndex({{ auth()->user()->hasRole(['Super_Admin','it_admin']) ? 'true' : 'false' }})">
 
         <div class="board-header d-flex align-items-center justify-content-between px-4 py-4 mb-4">
             <div class="d-flex align-items-center gap-3">
@@ -11,7 +11,7 @@
                     <small class="text-white-50">Управление задачами и документами по проектам</small>
                 </div>
             </div>
-            <button type="button" class="btn btn-light btn-sm fw-medium" @click="open = true">
+            <button type="button" class="btn btn-light btn-sm fw-medium" @click="open = true" x-show="isAdmin">
                 <i class="fa fa-plus me-1"></i> Новая доска
             </button>
         </div>
@@ -20,7 +20,7 @@
             @forelse($boards as $board)
                 @php
                     $color = $board->color ?: '#7C3AED';
-                    $ownerInitials = \Illuminate\Support\Str::of($board->owner?->name ?? $board->owner?->username ?? '')
+                    $ownerInitials = \Illuminate\Support\Str::of($board->owner?->name ?? $board->owner?->name ?? '')
                         ->explode(' ')->map(fn($p) => \Illuminate\Support\Str::substr($p, 0, 1))->take(2)->implode('');
                 @endphp
                 <a href="{{ route('boards.show', $board) }}" class="board-tile">
@@ -32,6 +32,11 @@
                             </div>
                             <div class="flex-grow-1">
                                 <div class="board-tile-title">{{ $board->title }}</div>
+                                @if($board->organization && auth()->user()->hasRole(['Super_Admin', 'IT_Admin']))
+                                    <div class="board-tile-org">
+                                        <i class="fa fa-building"></i> {{ $board->organization->lang($board->org_id) }}
+                                    </div>
+                                @endif
                                 <div class="board-tile-sub">Обновлено {{ $board->updated_at->diffForHumans() }}</div>
                             </div>
                         </div>
@@ -55,10 +60,12 @@
                 </div>
             @endforelse
 
-            <button type="button" class="board-tile-new" @click="open = true">
-                <i class="fa fa-plus"></i>
-                <span>Новая доска</span>
-            </button>
+            @if(empty($boards))
+                    <button type="button" class="board-tile-new" @click="open = true" x-show="isAdmin">
+                        <i class="fa fa-plus"></i>
+                        <span>Новая доска</span>
+                    </button>
+            @endif
         </div>
 
         {{-- Модалка создания доски --}}
@@ -162,7 +169,8 @@
 @push('scripts')
     <script>
         document.addEventListener('alpine:init', () => {
-            Alpine.data('boardsIndex', () => ({
+            Alpine.data('boardsIndex', (isAdmin) => ({
+                isAdmin,
                 open: false,
                 saving: false,
                 title: '',
@@ -189,7 +197,7 @@
                 async loadUsers() {
                     if (this.users.length) return;
                     try {
-                        const r = await fetch('/board-users', { headers: { 'Accept': 'application/json' } });
+                        const r = await fetch('/board-users-all', { headers: { 'Accept': 'application/json' } });
                         this.users = await r.json();
                     } catch (e) {}
                 },

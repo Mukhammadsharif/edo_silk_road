@@ -49,6 +49,7 @@
                 <div class="task-actions">
                     <button class="task-action-btn" @click="togglePrioPicker()"><i class="fa fa-flag"></i> Приоритет</button>
                     <button class="task-action-btn" @click="toggleLabelPicker()"><i class="fa fa-tag"></i> Метки</button>
+
                     <button class="task-action-btn" @click="focusDate()"><i class="fa fa-clock"></i> Даты</button>
                     <button class="task-action-btn" @click="addChecklist()"><i class="fa fa-list-check"></i> Чек-лист</button>
                     <div style="position:relative; display:inline-block;">
@@ -105,12 +106,35 @@
                         <div class="task-cover-opt" style="background:#E4E0F0" @click="setCover(null)" title="Убрать"></div>
                     </div>
                 </div>
+                <div class="task-picker" x-show="showLabelPicker" x-cloak>
+                    <span class="task-meta-label mb-2 d-block">Метки доски</span>
+                    <div class="label-list">
+                        <template x-for="lb in boardLabels" :key="lb.id">
+                            <button class="label-row" @click="toggleLabel(lb)">
+                                <span class="label-swatch" :style="`background:${lb.color}`"></span>
+                                <span x-text="lb.name"></span>
+                                <i class="fa fa-check ms-auto" x-show="cardHasLabel(lb)"></i>
+                            </button>
+                        </template>
+                        <div class="member-empty" x-show="!boardLabels.length">
+                            Меток нет. Добавьте их в настройках доски.
+                        </div>
+                    </div>
+                </div>
                 <div class="task-meta" x-show="$store.task.card.members?.length || $store.task.card.due_date || $store.task.card.label_color">
                     <div class="task-meta-block" x-show="$store.task.card.members?.length">
                         <span class="task-meta-label">Участники</span>
                         <div class="task-members">
                             <template x-for="m in $store.task.card.members" :key="m.id">
-                                <div class="task-member" :title="m.username" @click="removeMember(m)" x-text="initials(m.username)"></div>
+                                <div class="task-member" :title="m.name" @click="removeMember(m)" x-text="initials(m.name)"></div>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="task-meta-block" x-show="$store.task.card.labels && $store.task.card.labels.length">
+                        <span class="task-meta-label">Метки</span>
+                        <div class="task-labels">
+                            <template x-for="lb in $store.task.card.labels" :key="lb.id">
+                                <span class="task-label-chip" :style="`background:${lb.color}20;color:${lb.color}`" x-text="lb.name"></span>
                             </template>
                         </div>
                     </div>
@@ -135,7 +159,7 @@
                             <button class="task-label-opt" :style="`background:${l.bg};color:${l.fg}`"
                                     @click="setLabel(key)" x-text="l.t"></button>
                         </template>
-                        <button class="task-label-opt" style="background:#F1EFE8;color:#5F5E5A" @click="setLabel(null)">Без метки</button>
+                        <button class="task-label-opt" style="background:#F1EFE8;color:#5F5E5A" @click="setLabel(null)" x-show="isAdmin">Без метки</button>
                     </div>
                 </div>
 
@@ -166,7 +190,12 @@
                     <div class="task-section">
                         <div class="task-section-head">
                             <span><i class="fa fa-list-check me-2"></i><span x-text="cl.title"></span></span>
-                            <span class="task-cl-count" x-text="`${cl.items.filter(i=>i.is_done).length}/${cl.items.length}`"></span>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="task-cl-count" x-text="`${cl.items.filter(i=>i.is_done).length}/${cl.items.length}`"></span>
+                                <button class="checklist-del" x-show="canManageChecklists" @click="deleteChecklist(cl)" title="Удалить чек-лист">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </div>
                         </div>
                         <div class="task-progress">
                             <div class="task-progress-bar"
@@ -187,8 +216,10 @@
                     </div>
                 </template>
 
-                <div class="task-delete-row">
-                    <button class="btn btn-sm btn-outline-danger" @click="deleteCard()"><i class="fa fa-trash me-1"></i> Удалить карточку</button>
+                <div class="task-delete-row" x-show="isAdmin">
+                    <button class="btn btn-sm btn-outline-danger" @click="deleteCard()">
+                        <i class="fa fa-trash me-1"></i> Удалить карточку
+                    </button>
                 </div>
             </div>
 
