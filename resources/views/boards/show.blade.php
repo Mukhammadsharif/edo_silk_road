@@ -45,21 +45,12 @@
                     <div class="board-head-icon"><i class="fa fa-table-columns"></i></div>
                     <div>
                         <div class="board-head-title">{{ $board->title }}</div>
-                        @if($board->description)
-                            <div class="board-head-sub">{{ $board->description }}</div>
-                        @else
-                            <div class="board-head-sub">Рабочая доска</div>
-                        @endif
+                        <div class="board-head-sub">{{ $board->description ?: 'Рабочая доска' }}</div>
                     </div>
                 </div>
-
                 <div class="board-head-actions">
-                    <span class="board-head-visibility">
-                        <i class="fa" :class="boardVisibility === 'public' ? 'fa-lock-open' : 'fa-lock'"></i>
-                        <span x-text="boardVisibility === 'public' ? 'Открытый' : 'Закрытый'"></span>
-                    </span>
                     <button type="button" class="board-head-btn" @click="openSettings()" x-show="isAdmin">
-                        <i class="fa fa-gear"></i> Настройки
+                        <i class="fa fa-gear"></i> <span>Настройки</span>
                     </button>
                 </div>
             </div>
@@ -69,10 +60,12 @@
                 <span class="board-head-stat"><i class="fa fa-square-check"></i> {{ $board->cards_total }} задач</span>
                 <span class="board-head-stat"><i
                         class="fa fa-circle-check"></i> {{ $board->cards_done }} выполнено</span>
+            </div>
 
+            <div class="board-head-bottom">
                 @if($board->manager)
                     @php
-                        $mgrIni = \Illuminate\Support\Str::of($board->manager->name ?? $board->manager->name ?? '')
+                        $mgrIni = \Illuminate\Support\Str::of($board->manager->name ?? '')
                             ->explode(' ')->map(fn($p) => \Illuminate\Support\Str::substr($p, 0, 1))->take(2)->implode('');
                     @endphp
                     <div class="board-head-manager">
@@ -82,7 +75,14 @@
                             <span class="board-head-manager-name">{{ $board->manager->name }}</span>
                         </div>
                     </div>
+                @else
+                    <span></span>
                 @endif
+
+                <span class="board-head-visibility">
+      <i class="fa" :class="boardVisibility === 'public' ? 'fa-lock-open' : 'fa-lock'"></i>
+      <span x-text="boardVisibility === 'public' ? 'Открытый' : 'Закрытый'"></span>
+    </span>
             </div>
         </div>
 
@@ -115,7 +115,18 @@
                     {{-- Шапка списка --}}
                     <div class="list-head">
                         <span class="list-dot"></span>
-                        <span class="list-title" x-text="list.title"></span>
+                        <span class="list-title" x-show="editingList !== list.id"
+                              @click="isAdmin && startEditList(list)"
+                              :class="isAdmin && 'editable'"
+                              x-text="list.title"></span>
+
+                        <input type="text" class="list-title-input" x-show="editingList === list.id" x-cloak
+                               x-model="editListTitle"
+                               :ref="'listInput' + list.id"
+                               @keydown.enter="saveListTitle(list)"
+                               @keydown.escape="cancelEditList()"
+                               @blur="saveListTitle(list)">
+
                         <span class="list-count" x-text="list.cards.length"></span>
                         <div class="list-head-actions list-menu-wrap">
                             <button class="list-menu-btn" @click="toggleListMenu(list.id)">
@@ -153,7 +164,8 @@
                                     <template x-if="card.labels && card.labels.length">
                                         <div class="card-labels">
                                             <template x-for="lb in card.labels" :key="lb.id">
-                                                <span class="card-label-dot" :style="`background:${lb.color}`" :title="lb.name"></span>
+                                                <span class="card-label-dot" :style="`background:${lb.color}`"
+                                                      :title="lb.name"></span>
                                             </template>
                                         </div>
                                     </template>
@@ -240,7 +252,7 @@
                     <h6><i class="fa fa-gear me-2"></i> Настройки доски</h6>
                     <button type="button" class="close" @click="settingsOpen = false">&times;</button>
                 </div>
-                <div class="create-modal-body" style="max-height:75vh; overflow-y:auto">
+                <div class="create-modal-body" style="max-height:99vh; overflow-y:auto">
 
                     <div class="create-field">
                         <label>Название</label>
@@ -412,13 +424,6 @@
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
     <script>
-        const LABELS = {
-            urgent: {bg: '#FCEBEB', fg: '#A32D2D', t: 'Срочно'},
-            review: {bg: '#FAEEDA', fg: '#854F0B', t: 'На проверке'},
-            done: {bg: '#E1F5EE', fg: '#0F6E56', t: 'Готово'},
-            sign: {bg: '#EEEDFE', fg: '#3C3489', t: 'Подпись E-IMZO'},
-        };
-
         document.addEventListener('alpine:init', () => {
             Alpine.store('task', {
                 card: {},
@@ -426,32 +431,118 @@
                 open: false,
                 loading: false,   // загрузка деталей карточки
                 saving: false,    // автосохранение поля
-
             });
 
             Alpine.data('kanban', (initialLists, boardId, isAdmin) => ({
-                isAdmin,
-                canManageChecklists: false,
-                LABELS,
+                // ============ СОСТОЯНИЕ ============
                 boardId,
+                isAdmin,
                 lists: initialLists,
                 ready: false,
                 isDark: document.body.classList.contains('theme-dark'),
-                addingList: false,
-                newListTitle: '',
+                canManageChecklists: false,
+
+                // доска / настройки
                 settingsOpen: false,
                 savingSettings: false,
                 boardVisibility: 'private',
                 boardData: {title: '', color: '#7C3AED', description: '', manager_id: null, visibility: 'private'},
                 colors: ['#7C3AED', '#F0997B', '#ED93B1', '#97C459', '#85B7EB', '#FAC775', '#1D9E75', '#E0A040'],
-                // для поповера руководителя
+
+                // руководитель / участники (в настройках)
                 managerOpen: false,
                 managerSearch: '',
-                // участники доски (в настройках)
                 boardMembers: [],
-                orgUsers: [],          // все сотрудники организации (для выбора в доску)
+                orgUsers: [],
                 boardMemberOpen: false,
                 boardMemberSearch: '',
+
+                // метки доски
+                boardLabels: [],
+                newLabelName: '',
+                newLabelColor: '#7C3AED',
+
+                // списки
+                addingList: false,
+                newListTitle: '',
+                editingList: null,
+                editListTitle: '',
+                _savingListTitle: false,
+                openListMenu: null,
+
+                // карточки
+                addingTo: null,
+                newCardTitle: '',
+
+                // модалка карточки
+                allUsers: [],
+                newComment: '',
+                memberSearch: '',
+                showLabelPicker: false,
+                showMemberPicker: false,
+                showDate: false,
+                showPrioPicker: false,
+                showCoverPicker: false,
+                coverColors: ['#A78BFA', '#F0997B', '#ED93B1', '#97C459', '#85B7EB', '#FAC775'],
+
+                // ============ ИНИЦИАЛИЗАЦИЯ ============
+                init() {
+                    this.$nextTick(() => {
+                        this.initSortables();
+                        setTimeout(() => {
+                            this.ready = true;
+                        }, 250);
+                    });
+
+                    const obs = new MutationObserver(() => {
+                        this.isDark = document.body.classList.contains('theme-dark');
+                    });
+                    obs.observe(document.body, {attributes: true, attributeFilter: ['class']});
+                },
+                initSortables() {
+                    document.querySelectorAll('.cards-container').forEach(el => {
+                        if (el._sortable) return;
+                        el._sortable = Sortable.create(el, {
+                            group: 'cards',
+                            animation: 160,
+                            ghostClass: 'sortable-ghost',
+                            chosenClass: 'sortable-chosen',
+                            dragClass: 'sortable-drag',
+                            delay: 150,                    // удержание перед drag
+                            delayOnTouchOnly: true,        // задержка только на тач-экранах
+                            touchStartThreshold: 5,
+                            onEnd: (e) => this.onCardMove(e),
+                        });
+                    });
+                    Sortable.create(document.getElementById('lists-container'), {
+                        animation: 160,
+                        handle: '.list-head',
+                        draggable: '.list-column',
+                        ghostClass: 'sortable-ghost',
+                        delay: 150,
+                        delayOnTouchOnly: true,
+                        onEnd: () => this.onListMove(),
+                    });
+                },
+                // ============ HELPERS ============
+                initials(name) {
+                    return (name || '').split(/[\s_]+/).map(p => p[0]).slice(0, 2).join('').toUpperCase();
+                },
+                prioLabel(p) {
+                    return {low: 'Low', medium: 'Medium', high: 'High'}[p] || '';
+                },
+                autoGrow(e) {
+                    e.target.style.height = 'auto';
+                    e.target.style.height = e.target.scrollHeight + 'px';
+                },
+                timeAgo(iso) {
+                    if (!iso) return '';
+                    const diff = (Date.now() - new Date(iso)) / 1000;
+                    if (diff < 60) return 'только что';
+                    if (diff < 3600) return Math.round(diff / 60) + ' мин назад';
+                    if (diff < 86400) return Math.round(diff / 3600) + ' ч назад';
+                    return Math.round(diff / 86400) + ' дн назад';
+                },
                 columnStyle(idx) {
                     const light = [
                         {bg: '#EFEAFB', dot: '#7C3AED', badgeBg: '#DCD3F5', badgeFg: '#534AB7'},
@@ -468,208 +559,175 @@
                     const c = (this.isDark ? dark : light)[idx % 4];
                     return `--col-bg:${c.bg};--col-dot:${c.dot};--col-badge-bg:${c.badgeBg};--col-badge-fg:${c.badgeFg}`;
                 },
-                // --- состояние, не относящееся к карточке (живёт на компоненте) ---
-                allUsers: [],
-                newComment: '',
-                showLabelPicker: false,
-                showMemberPicker: false,
-                showDate: false,
-                memberSearch: '',
-                // состояние пикеров (на компоненте)
-                showPrioPicker: false,
-                showCoverPicker: false,
-                coverColors: ['#A78BFA', '#F0997B', '#ED93B1', '#97C459', '#85B7EB', '#FAC775'],
-                openListMenu: null,
-                boardLabels: [],   // метки доски (из x-init)
-                newLabelName: '',
-                newLabelColor: '#7C3AED',
 
-                async submitNewLabel() {
-                    if (!this.newLabelName.trim()) return;
-                    const lb = await this.req(`/boards/${this.boardId}/labels`, 'POST', {
-                        name: this.newLabelName,
-                        color: this.newLabelColor,
+                // ============ СЕТЬ ============
+                async req(url, method, body) {
+                    const r = await fetch(url, {
+                        method,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',
+                            'Accept': 'application/json',
+                        },
+                        body: body ? JSON.stringify(body) : null,
                     });
-                    this.boardLabels.push(lb);
-                    this.newLabelName = '';
-                    this.newLabelColor = '#7C3AED';
-                },
-                cardHasLabel(lb) {
-                    const store = Alpine.store('task');
-                    return (store.card.labels || []).some(l => l.id === lb.id);
-                },
-                async toggleLabel(lb) {
-                    const store = Alpine.store('task');
-                    if (this.cardHasLabel(lb)) {
-                        store.card.labels = await this.req(`/cards/${store.card.id}/labels/${lb.id}`, 'DELETE');
-                    } else {
-                        store.card.labels = await this.req(`/cards/${store.card.id}/labels/${lb.id}`, 'POST', {});
+                    if (!r.ok) {
+                        const text = await r.text();
+                        alert('Ошибка ' + r.status + ': ' + text.slice(0, 300));
+                        throw new Error(r.status);
                     }
-                    this.syncCardInList();
+                    return r.status === 204 ? null : r.json();
+                },
+                async saveReq(url, method, body) {
+                    const store = Alpine.store('task');
+                    store.saving = true;
+                    try {
+                        return await this.req(url, method, body);
+                    } finally {
+                        setTimeout(() => {
+                            store.saving = false;
+                        }, 300);
+                    }
+                },
+                normalize(c) {
+                    const due = c.due_date ? c.due_date.substring(0, 10) : null;
+                    return {
+                        id: c.id,
+                        title: c.title,
+                        description: c.description,
+                        due_date: due,
+                        due_label: due ? new Date(due).toLocaleDateString('ru-RU', {
+                            day: 'numeric',
+                            month: 'short'
+                        }) : null,
+                        overdue: due ? new Date(due) < new Date(new Date().toDateString()) : false,
+                        labels: c.labels || [],
+                        priority: c.priority,
+                        cover_color: c.cover_color,
+                        assignee: c.assignee?.name ?? c.assignee ?? null,
+                        checklist_total: c.checklist_total ?? 0,
+                        checklist_done: c.checklist_done ?? 0,
+                    };
                 },
 
-                // управление метками доски (в настройках)
-                async addBoardLabel(name, color) {
-                    const lb = await this.req(`/boards/${this.boardId}/labels`, 'POST', { name, color });
-                    this.boardLabels.push(lb);
+                // ============ SORTABLE / DnD ============
+                initSortables() {
+                    document.querySelectorAll('.cards-container').forEach(el => {
+                        if (el._sortable) return;
+                        el._sortable = Sortable.create(el, {
+                            group: 'cards',
+                            animation: 160,
+                            ghostClass: 'sortable-ghost',
+                            chosenClass: 'sortable-chosen',
+                            dragClass: 'sortable-drag',
+                            onEnd: (e) => this.onCardMove(e),
+                        });
+                    });
+                    Sortable.create(document.getElementById('lists-container'), {
+                        animation: 160,
+                        handle: '.list-head',
+                        draggable: '.list-column',
+                        ghostClass: 'sortable-ghost',
+                        onEnd: () => this.onListMove(),
+                    });
                 },
-                async updateBoardLabel(lb) {
-                    await this.req(`/board-labels/${lb.id}`, 'PATCH', { name: lb.name, color: lb.color });
+                refreshSortables() {
+                    this.$nextTick(() => this.initSortables());
                 },
-                async deleteBoardLabel(lb) {
-                    if (!confirm(`Удалить метку «${lb.name}»?`)) return;
-                    await this.req(`/board-labels/${lb.id}`, 'DELETE');
-                    this.boardLabels = this.boardLabels.filter(l => l.id !== lb.id);
-                    // убрать метку с карточек в UI
-                    this.lists.forEach(l => l.cards.forEach(c => {
-                        if (c.labels) c.labels = c.labels.filter(x => x.id !== lb.id);
-                    }));
+                onCardMove(e) {
+                    const cardId = +e.item.dataset.cardId;
+                    const fromId = +e.from.dataset.listId;
+                    const toId = +e.to.dataset.listId;
+
+                    const from = this.lists.find(l => l.id === fromId);
+                    const to = this.lists.find(l => l.id === toId);
+                    const idx = from.cards.findIndex(c => c.id === cardId);
+                    const [moved] = from.cards.splice(idx, 1);
+                    to.cards.splice(e.newIndex, 0, moved);
+
+                    const orderedIds = to.cards.map(c => c.id);
+                    this.req(`/cards/${cardId}/move`, 'PATCH', {board_list_id: toId, ordered_ids: orderedIds})
+                        .catch(() => location.reload());
+                },
+                onListMove() {
+                    const orderedIds = [...document.querySelectorAll('.list-column')].map(c => +c.dataset.listId);
+                    this.lists.sort((a, b) => orderedIds.indexOf(a.id) - orderedIds.indexOf(b.id));
+                    this.req(`/lists/${orderedIds[0]}/move`, 'PATCH', {ordered_ids: orderedIds})
+                        .catch(() => location.reload());
+                },
+
+                // ============ СПИСКИ ============
+                startAddList() {
+                    this.addingList = true;
+                    this.newListTitle = '';
+                    this.$nextTick(() => this.$refs.newListInput?.focus());
+                },
+                cancelAddList() {
+                    this.addingList = false;
+                    this.newListTitle = '';
+                },
+                async submitNewList() {
+                    const title = this.newListTitle.trim();
+                    if (!title) return;
+                    try {
+                        const list = await this.req(`/boards/${this.boardId}/lists`, 'POST', {title});
+                        this.lists.push({id: list.id, title: list.title, cards: []});
+                        this.newListTitle = '';
+                        this.refreshSortables();
+                        this.$nextTick(() => this.$refs.newListInput?.focus());
+                    } catch (e) {
+                    }
                 },
                 toggleListMenu(id) {
                     this.openListMenu = this.openListMenu === id ? null : id;
                 },
-
                 async deleteList(list) {
                     const count = list.cards.length;
                     const msg = count > 0
                         ? `Удалить список «${list.title}» вместе с ${count} карточк(ами)?`
                         : `Удалить список «${list.title}»?`;
                     if (!confirm(msg)) return;
-
                     this.openListMenu = null;
                     try {
                         await this.req(`/lists/${list.id}`, 'DELETE');
                         this.lists = this.lists.filter(l => l.id !== list.id);
                     } catch (e) {
-                        // ошибка показана в req
                     }
                 },
-                async openSettings() {
-                    this.settingsOpen = true;
-                    await this.loadOrgUsers();
-                    await this.loadBoardMembers();
+                startEditList(list) {
+                    this.editingList = list.id;
+                    this.editListTitle = list.title;
+                    this.$nextTick(() => {
+                        const el = this.$refs['listInput' + list.id];
+                        if (el) {
+                            el.focus();
+                            el.select();
+                        }
+                    });
                 },
-                async deleteChecklist(cl) {
-                    if (!confirm(`Удалить чек-лист «${cl.title}» со всеми пунктами?`)) return;
-                    const store = Alpine.store('task');
+                cancelEditList() {
+                    this.editingList = null;
+                    this.editListTitle = '';
+                },
+                async saveListTitle(list) {
+                    if (this._savingListTitle) return;
+                    const title = this.editListTitle.trim();
+                    if (!title || title === list.title) {
+                        this.cancelEditList();
+                        return;
+                    }
+                    this._savingListTitle = true;
                     try {
-                        await this.req(`/checklists/${cl.id}`, 'DELETE');
-                        store.card.checklists = store.card.checklists.filter(c => c.id !== cl.id);
-                        this.recalcChecklist();
-                    } catch (e) {
-                        // 403 или ошибка показана в req
-                    }
-                },
-                async loadOrgUsers() {
-                    if (this.orgUsers.length) return;
-                    this.orgUsers = await this.req('/board-users-all', 'GET');
-                },
-                async loadBoardMembers() {
-                    this.boardMembers = await this.req(`/boards/${this.boardId}/members`, 'GET');
-                },
-
-                filteredOrgUsers() {
-                    const q = this.boardMemberSearch.trim().toLowerCase();
-                    return q ? this.orgUsers.filter(u => (u.name || '').toLowerCase().includes(q)) : this.orgUsers;
-                },
-                isBoardMember(u) {
-                    return this.boardMembers.some(m => m.id === u.id);
-                },
-
-                async toggleBoardMember(u) {
-                    if (this.isBoardMember(u)) {
-                        this.boardMembers = await this.req(`/boards/${this.boardId}/members/${u.id}`, 'DELETE');
-                    } else {
-                        this.boardMembers = await this.req(`/boards/${this.boardId}/members`, 'POST', {user_id: u.id});
-                    }
-                    // сбросить кэш участников для карточек — теперь список изменился
-                    this.allUsers = [];
-                },
-                async removeBoardMember(m) {
-                    this.boardMembers = await this.req(`/boards/${this.boardId}/members/${m.id}`, 'DELETE');
-                    this.allUsers = [];
-                },
-                selectedManager() {
-                    return this.orgUsers.find(u => u.id == this.boardData.manager_id) || null;
-                },
-                filteredManagerUsers() {
-                    const q = this.managerSearch.trim().toLowerCase();
-                    return q ? this.orgUsers.filter(u => (u.name||'').toLowerCase().includes(q)) : this.orgUsers;
-                },
-                pickManager(u) {
-                    this.boardData.manager_id = u ? u.id : null;
-                    this.managerOpen = false;
-                    this.managerSearch = '';
-                },
-
-                async loadUsers() {
-                    if (this.allUsers.length) return;
-                    this.allUsers = await this.req(`/board-users?board_id=${this.boardId}`, 'GET');
-                },
-
-                async saveSettings() {
-                    this.savingSettings = true;
-                    try {
-                        const updated = await this.req(`/boards/${this.boardId}`, 'PATCH', {
-                            title: this.boardData.title,
-                            color: this.boardData.color,
-                            description: this.boardData.description,
-                            manager_id: this.boardData.manager_id || null,
-                            visibility: this.boardData.visibility,
-                        });
-                        // обновляем шапку без перезагрузки
-                        this.boardVisibility = this.boardData.visibility;
-                        document.querySelector('.board-head-title').textContent = this.boardData.title;
-                        this.settingsOpen = false;
-                        // цвет шапки — проще перезагрузить, либо обновить инлайн-стиль
-                        location.reload();
+                        await this.req(`/lists/${list.id}`, 'PATCH', {title});
+                        list.title = title;
                     } catch (e) {
                     } finally {
-                        this.savingSettings = false;
-                    }
-                },
-                startAddList() {
-                    this.addingList = true;
-                    this.newListTitle = '';
-                    this.$nextTick(() => this.$refs.newListInput?.focus());
-                },
-
-                cancelAddList() {
-                    this.addingList = false;
-                    this.newListTitle = '';
-                },
-
-                async submitNewList() {
-                    const title = this.newListTitle.trim();
-                    if (!title) return;
-
-                    try {
-                        const list = await this.req(`/boards/${this.boardId}/lists`, 'POST', {title});
-                        this.lists.push({id: list.id, title: list.title, cards: []});
-                        this.newListTitle = '';
-                        this.refreshSortables();
-                        // фокус остаётся для добавления следующего списка
-                        this.$nextTick(() => this.$refs.newListInput?.focus());
-                    } catch (e) {
-                        // ошибка уже показана в req
+                        this._savingListTitle = false;
+                        this.cancelEditList();
                     }
                 },
 
-                prioLabel(p) {
-                    return {low: 'Low', medium: 'Medium', high: 'High'}[p] || '';
-                },
-
-                togglePrioPicker() {
-                    this.showPrioPicker = !this.showPrioPicker;
-                    this.showCoverPicker = false;
-                },
-                toggleCoverPicker() {
-                    this.showCoverPicker = !this.showCoverPicker;
-                    this.showPrioPicker = false;
-                },
-                addingTo: null,
-                newCardTitle: '',
-
+                // ============ КАРТОЧКИ (добавление в колонке) ============
                 startAddCard(list) {
                     this.addingTo = list.id;
                     this.newCardTitle = '';
@@ -701,250 +759,100 @@
                     }
                 },
 
-                async submitNewCard(list) {
-                    const title = this.newCardTitle.trim();
-                    if (!title) return;
-
-                    // оптимистичная вставка
-                    const temp = {id: 'tmp-' + Date.now(), title, _pending: true};
-                    list.cards.push(temp);
-                    this.newCardTitle = '';
-                    this.$nextTick(() => this.$refs.newCardInput?.focus()); // фокус остаётся для ввода следующей
-
+                // ============ НАСТРОЙКИ ДОСКИ ============
+                async openSettings() {
+                    this.settingsOpen = true;
+                    await this.loadOrgUsers();
+                    await this.loadBoardMembers();
+                },
+                async saveSettings() {
+                    this.savingSettings = true;
                     try {
-                        const card = await this.req(`/lists/${list.id}/cards`, 'POST', {title});
-                        const i = list.cards.findIndex(c => c.id === temp.id);
-                        if (i !== -1) list.cards[i] = this.normalize(card);
-                    } catch (e) {
-                        list.cards = list.cards.filter(c => c.id !== temp.id);
-                    }
-                },
-                async saveReq(url, method, body) {
-                    const store = Alpine.store('task');
-                    store.saving = true;
-                    try {
-                        return await this.req(url, method, body);
-                    } finally {
-                        // небольшая задержка, чтобы спиннер не мигал слишком быстро
-                        setTimeout(() => {
-                            store.saving = false;
-                        }, 300);
-                    }
-                },
-                async setPriority(p) {
-                    const store = Alpine.store('task');
-                    store.card.priority = p;
-                    this.showPrioPicker = false;
-                    await this.req(`/cards/${store.card.id}`, 'PATCH', {priority: p});
-                    this.syncCardInList();
-                },
-
-                async setCover(color) {
-                    const store = Alpine.store('task');
-                    store.card.cover_color = color;
-                    this.showCoverPicker = false;
-                    await this.req(`/cards/${store.card.id}`, 'PATCH', {cover_color: color});
-                    this.syncCardInList();
-                },
-                init() {
-                    this.$nextTick(() => {
-                        this.initSortables();
-                        setTimeout(() => {
-                            this.ready = true;
-                        }, 250);
-                    });
-
-                    const obs = new MutationObserver(() => {
-                        this.isDark = document.body.classList.contains('theme-dark');
-                    });
-                    obs.observe(document.body, {attributes: true, attributeFilter: ['class']});
-                },
-
-                // --- helpers рендера ---
-                labelStyle(key) {
-                    const l = LABELS[key];
-                    return l ? `background:${l.bg};color:${l.fg}` : '';
-                },
-                labelText(key) {
-                    return LABELS[key]?.t ?? '';
-                },
-                initials(name) {
-                    return (name || '').split(' ').map(p => p[0]).slice(0, 2).join('');
-                },
-                autoGrow(e) {
-                    e.target.style.height = 'auto';
-                    e.target.style.height = e.target.scrollHeight + 'px';
-                },
-
-                timeAgo(iso) {
-                    if (!iso) return '';
-                    const diff = (Date.now() - new Date(iso)) / 1000;
-                    if (diff < 60) return 'только что';
-                    if (diff < 3600) return Math.round(diff / 60) + ' мин назад';
-                    if (diff < 86400) return Math.round(diff / 3600) + ' ч назад';
-                    return Math.round(diff / 86400) + ' дн назад';
-                },
-
-                // --- сетевой helper ---
-                async req(url, method, body) {
-                    const r = await fetch(url, {
-                        method,
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',
-                            'Accept': 'application/json',
-                        },
-                        body: body ? JSON.stringify(body) : null,
-                    });
-                    if (!r.ok) {
-                        const text = await r.text();
-                        alert('Ошибка ' + r.status + ': ' + text.slice(0, 300));
-                        throw new Error(r.status);
-                    }
-                    return r.status === 204 ? null : r.json();
-                },
-
-                // приводим карточку с сервера к форме для рендера
-                normalize(c) {
-                    const due = c.due_date ? c.due_date.substring(0, 10) : null;
-                    return {
-                        id: c.id,
-                        title: c.title,
-                        description: c.description,
-                        due_date: due,
-                        due_label: due ? new Date(due).toLocaleDateString('ru-RU', {
-                            day: 'numeric',
-                            month: 'short'
-                        }) : null,
-                        overdue: due ? new Date(due) < new Date(new Date().toDateString()) : false,
-                        label_color: c.label_color,
-                        priority: c.priority,
-                        cover_color: c.cover_color,
-                        assignee: c.assignee?.name ?? c.assignee ?? null,
-                        checklist_total: c.checklist_total ?? 0,
-                        checklist_done: c.checklist_done ?? 0,
-                    };
-                },
-
-                // ============ SORTABLE / DnD ============
-                initSortables() {
-                    document.querySelectorAll('.cards-container').forEach(el => {
-                        if (el._sortable) return;
-                        el._sortable = Sortable.create(el, {
-                            group: 'cards',
-                            animation: 160,
-                            ghostClass: 'sortable-ghost',
-                            chosenClass: 'sortable-chosen',
-                            dragClass: 'sortable-drag',
-                            onEnd: (e) => this.onCardMove(e),
+                        await this.req(`/boards/${this.boardId}`, 'PATCH', {
+                            title: this.boardData.title,
+                            color: this.boardData.color,
+                            description: this.boardData.description,
+                            manager_id: this.boardData.manager_id || null,
+                            visibility: this.boardData.visibility,
                         });
-                    });
-                    Sortable.create(document.getElementById('lists-container'), {
-                        animation: 160,
-                        handle: '.list-head',
-                        draggable: '.list-column',
-                        ghostClass: 'sortable-ghost',
-                        onEnd: () => this.onListMove(),
-                    });
-                },
-
-                refreshSortables() {
-                    this.$nextTick(() => this.initSortables());
-                },
-
-                onCardMove(e) {
-                    const cardId = +e.item.dataset.cardId;
-                    const fromId = +e.from.dataset.listId;
-                    const toId = +e.to.dataset.listId;
-
-                    const from = this.lists.find(l => l.id === fromId);
-                    const to = this.lists.find(l => l.id === toId);
-                    const idx = from.cards.findIndex(c => c.id === cardId);
-                    const [moved] = from.cards.splice(idx, 1);
-                    to.cards.splice(e.newIndex, 0, moved);
-
-                    const orderedIds = to.cards.map(c => c.id);
-                    this.req(`/cards/${cardId}/move`, 'PATCH', {board_list_id: toId, ordered_ids: orderedIds})
-                        .catch(() => location.reload());
-                },
-
-                onListMove() {
-                    const orderedIds = [...document.querySelectorAll('.list-column')].map(c => +c.dataset.listId);
-                    this.lists.sort((a, b) => orderedIds.indexOf(a.id) - orderedIds.indexOf(b.id));
-                    this.req(`/lists/${orderedIds[0]}/move`, 'PATCH', {ordered_ids: orderedIds})
-                        .catch(() => location.reload());
-                },
-
-                // ============ CRUD карточек / списков ============
-                async addCard(list) {
-                    const title = prompt('Название карточки');
-                    if (!title) return;
-                    const temp = {id: 'tmp-' + Date.now(), title, _pending: true, members: [], checklists: []};
-                    list.cards.push(temp);
-                    try {
-                        const card = await this.req(`/lists/${list.id}/cards`, 'POST', {title});
-                        const i = list.cards.findIndex(c => c.id === temp.id);
-                        list.cards[i] = this.normalize(card);
+                        location.reload();
                     } catch (e) {
-                        list.cards = list.cards.filter(c => c.id !== temp.id);
+                    } finally {
+                        this.savingSettings = false;
                     }
                 },
 
-                async addList() {
-                    const title = prompt('Название списка');
-                    if (!title) return;
-                    const list = await this.req(`/boards/${this.boardId}/lists`, 'POST', {title});
-                    this.lists.push({id: list.id, title: list.title, cards: []});
-                    this.refreshSortables();
+                // руководитель
+                selectedManager() {
+                    return this.orgUsers.find(u => u.id == this.boardData.manager_id) || null;
+                },
+                filteredManagerUsers() {
+                    const q = this.managerSearch.trim().toLowerCase();
+                    return q ? this.orgUsers.filter(u => (u.name || '').toLowerCase().includes(q)) : this.orgUsers;
+                },
+                pickManager(u) {
+                    this.boardData.manager_id = u ? u.id : null;
+                    this.managerOpen = false;
+                    this.managerSearch = '';
                 },
 
-                // ============ МОДАЛКА ЗАДАЧИ ============
-                toggleLabelPicker() {
-                    this.showLabelPicker = !this.showLabelPicker;
-                    this.showMemberPicker = false;
+                // участники доски
+                async loadOrgUsers() {
+                    if (this.orgUsers.length) return;
+                    this.orgUsers = await this.req('/board-users-all', 'GET');
                 },
-                toggleMemberPicker() {
-                    this.showMemberPicker = !this.showMemberPicker;
-                    this.showLabelPicker = false;
-                    this.showPrioPicker = this.showCoverPicker = false;
-                    if (this.showMemberPicker) {
-                        this.loadUsers();
-                        this.memberSearch = '';
-                        this.$nextTick(() => this.$refs.memberSearchInput?.focus());
-                    }
+                async loadBoardMembers() {
+                    this.boardMembers = await this.req(`/boards/${this.boardId}/members`, 'GET');
                 },
-
-                filteredUsers() {
-                    const q = this.memberSearch.trim().toLowerCase();
-                    if (!q) return this.allUsers;
-                    return this.allUsers.filter(u => (u.name || '').toLowerCase().includes(q));
+                filteredOrgUsers() {
+                    const q = this.boardMemberSearch.trim().toLowerCase();
+                    return q ? this.orgUsers.filter(u => (u.name || '').toLowerCase().includes(q)) : this.orgUsers;
                 },
-
-                isMember(u) {
-                    const store = Alpine.store('task');
-                    return (store.card.members || []).some(m => m.id === u.id);
+                isBoardMember(u) {
+                    return this.boardMembers.some(m => m.id === u.id);
                 },
-
-                async toggleMember(u) {
-                    const store = Alpine.store('task');
-                    let result;
-                    if (this.isMember(u)) {
-                        result = await this.req(`/cards/${store.card.id}/members/${u.id}`, 'DELETE');
+                async toggleBoardMember(u) {
+                    if (this.isBoardMember(u)) {
+                        this.boardMembers = await this.req(`/boards/${this.boardId}/members/${u.id}`, 'DELETE');
                     } else {
-                        result = await this.req(`/cards/${store.card.id}/members`, 'POST', { user_id: u.id });
+                        this.boardMembers = await this.req(`/boards/${this.boardId}/members`, 'POST', {user_id: u.id});
                     }
-                    console.log('участники после изменения:', result);
-                    store.card.members = result;
+                    this.allUsers = [];
                 },
-                focusDate() {
-                    this.showDate = !this.showDate;
+                async removeBoardMember(m) {
+                    this.boardMembers = await this.req(`/boards/${this.boardId}/members/${m.id}`, 'DELETE');
+                    this.allUsers = [];
                 },
 
+                // метки доски
+                async submitNewLabel() {
+                    if (!this.newLabelName.trim()) return;
+                    const lb = await this.req(`/boards/${this.boardId}/labels`, 'POST', {
+                        name: this.newLabelName,
+                        color: this.newLabelColor,
+                    });
+                    this.boardLabels.push(lb);
+                    this.newLabelName = '';
+                    this.newLabelColor = '#7C3AED';
+                },
+                async updateBoardLabel(lb) {
+                    await this.req(`/board-labels/${lb.id}`, 'PATCH', {name: lb.name, color: lb.color});
+                },
+                async deleteBoardLabel(lb) {
+                    if (!confirm(`Удалить метку «${lb.name}»?`)) return;
+                    await this.req(`/board-labels/${lb.id}`, 'DELETE');
+                    this.boardLabels = this.boardLabels.filter(l => l.id !== lb.id);
+                    this.lists.forEach(l => l.cards.forEach(c => {
+                        if (c.labels) c.labels = c.labels.filter(x => x.id !== lb.id);
+                    }));
+                },
+
+                // ============ МОДАЛКА КАРТОЧКИ ============
                 async openCard(card) {
                     const cardId = card.id;
                     const store = Alpine.store('task');
                     store.open = true;
-                    store.loading = true;          // ← старт загрузки
+                    store.loading = true;
                     this.showLabelPicker = this.showMemberPicker = this.showDate = false;
                     this.showPrioPicker = this.showCoverPicker = false;
                     this.newComment = '';
@@ -956,7 +864,8 @@
                         description: card.description,
                         list_title: listTitle,
                         members: [],
-                        checklists: []
+                        checklists: [],
+                        labels: []
                     };
 
                     try {
@@ -965,7 +874,6 @@
                             id: cardId,
                             title: full.title,
                             description: full.description,
-                            label_color: full.label_color,
                             priority: full.priority,
                             cover_color: full.cover_color,
                             due_date: full.due_date ? full.due_date.substring(0, 10) : null,
@@ -975,6 +883,7 @@
                             }) : null,
                             overdue: full.due_date ? new Date(full.due_date) < new Date(new Date().toDateString()) : false,
                             list_title: listTitle,
+                            labels: full.labels || [],
                             members: full.members || [],
                             checklists: (full.checklists || []).map(cl => ({
                                 ...cl,
@@ -986,14 +895,12 @@
                     } catch (e) {
                         console.warn('full failed:', e);
                     } finally {
-                        store.loading = false;     // ← конец загрузки (всегда)
+                        store.loading = false;
                     }
                 },
-
                 closeCard() {
                     Alpine.store('task').open = false;
                 },
-
                 buildFeed(full) {
                     const store = Alpine.store('task');
                     const name = (u) => u?.name || u?.username || '—';
@@ -1007,8 +914,6 @@
                     }));
                     store.feed = [...comments, ...acts].sort((a, b) => new Date(b.raw) - new Date(a.raw));
                 },
-
-                // синхронизация карточки в колонке после правок
                 syncCardInList() {
                     const store = Alpine.store('task');
                     const n = this.normalize(store.card);
@@ -1017,8 +922,6 @@
                         if (i !== -1) l.cards[i] = {...l.cards[i], ...n};
                     });
                 },
-
-                // автосохранение полей
                 async saveField(field) {
                     const store = Alpine.store('task');
                     const payload = {};
@@ -1033,20 +936,91 @@
                     store.card.overdue = n.overdue;
                     this.syncCardInList();
                 },
-
-                async setLabel(key) {
+                async deleteCard() {
                     const store = Alpine.store('task');
-                    store.card.label_color = key;
-                    this.showLabelPicker = false;
-                    await this.req(`/cards/${store.card.id}`, 'PATCH', {label_color: key});
+                    if (!confirm('Удалить карточку?')) return;
+                    await this.req(`/cards/${store.card.id}`, 'DELETE');
+                    this.lists.forEach(l => {
+                        l.cards = l.cards.filter(c => c.id !== store.card.id);
+                    });
+                    store.open = false;
+                },
+
+                // метки карточки
+                toggleLabelPicker() {
+                    this.showLabelPicker = !this.showLabelPicker;
+                    this.showMemberPicker = this.showPrioPicker = this.showCoverPicker = false;
+                },
+                cardHasLabel(lb) {
+                    const store = Alpine.store('task');
+                    return (store.card.labels || []).some(l => l.id === lb.id);
+                },
+                async toggleLabel(lb) {
+                    const store = Alpine.store('task');
+                    if (this.cardHasLabel(lb)) {
+                        store.card.labels = await this.req(`/cards/${store.card.id}/labels/${lb.id}`, 'DELETE');
+                    } else {
+                        store.card.labels = await this.req(`/cards/${store.card.id}/labels/${lb.id}`, 'POST', {});
+                    }
                     this.syncCardInList();
                 },
 
-                // --- участники ---
-                async addMember(u) {
+                // приоритет / обложка
+                togglePrioPicker() {
+                    this.showPrioPicker = !this.showPrioPicker;
+                    this.showCoverPicker = false;
+                },
+                toggleCoverPicker() {
+                    this.showCoverPicker = !this.showCoverPicker;
+                    this.showPrioPicker = false;
+                },
+                async setPriority(p) {
                     const store = Alpine.store('task');
-                    store.card.members = await this.req(`/cards/${store.card.id}/members`, 'POST', {user_id: u.id});
-                    this.showMemberPicker = false;
+                    store.card.priority = p;
+                    this.showPrioPicker = false;
+                    await this.req(`/cards/${store.card.id}`, 'PATCH', {priority: p});
+                    this.syncCardInList();
+                },
+                async setCover(color) {
+                    const store = Alpine.store('task');
+                    store.card.cover_color = color;
+                    this.showCoverPicker = false;
+                    await this.req(`/cards/${store.card.id}`, 'PATCH', {cover_color: color});
+                    this.syncCardInList();
+                },
+                focusDate() {
+                    this.showDate = !this.showDate;
+                },
+
+                // участники карточки
+                toggleMemberPicker() {
+                    this.showMemberPicker = !this.showMemberPicker;
+                    this.showLabelPicker = this.showPrioPicker = this.showCoverPicker = false;
+                    if (this.showMemberPicker) {
+                        this.loadUsers();
+                        this.memberSearch = '';
+                        this.$nextTick(() => this.$refs.memberSearchInput?.focus());
+                    }
+                },
+                async loadUsers() {
+                    if (this.allUsers.length) return;
+                    this.allUsers = await this.req(`/board-users?board_id=${this.boardId}`, 'GET');
+                },
+                filteredUsers() {
+                    const q = this.memberSearch.trim().toLowerCase();
+                    return q ? this.allUsers.filter(u => (u.name || '').toLowerCase().includes(q)) : this.allUsers;
+                },
+                isMember(u) {
+                    const store = Alpine.store('task');
+                    return (store.card.members || []).some(m => m.id === u.id);
+                },
+                async toggleMember(u) {
+                    const store = Alpine.store('task');
+                    if (this.isMember(u)) {
+                        store.card.members = await this.req(`/cards/${store.card.id}/members/${u.id}`, 'DELETE');
+                    } else {
+                        store.card.members = await this.req(`/cards/${store.card.id}/members`, 'POST', {user_id: u.id});
+                    }
                 },
                 async removeMember(m) {
                     const store = Alpine.store('task');
@@ -1054,18 +1028,44 @@
                     store.card.members = await this.req(`/cards/${store.card.id}/members/${m.id}`, 'DELETE');
                 },
 
-                // --- чек-листы ---
+                // чек-листы
                 async addChecklist() {
                     const store = Alpine.store('task');
                     const cl = await this.req(`/cards/${store.card.id}/checklists`, 'POST', {});
                     store.card.checklists.push({...cl, items: cl.items || [], _newItem: ''});
+                },
+                async deleteChecklist(cl) {
+                    if (!confirm(`Удалить чек-лист «${cl.title}» со всеми пунктами?`)) return;
+                    const store = Alpine.store('task');
+                    try {
+                        await this.req(`/checklists/${cl.id}`, 'DELETE');
+                        store.card.checklists = store.card.checklists.filter(c => c.id !== cl.id);
+                        this.recalcChecklist();
+                    } catch (e) {
+                    }
+                },
+                async addItem(cl) {
+                    if (!cl._newItem || !cl._newItem.trim()) return;
+                    const item = await this.req(`/checklists/${cl.id}/items`, 'POST', {title: cl._newItem});
+                    cl.items.push(item);
+                    cl._newItem = '';
+                    this.recalcChecklist();
+                },
+                async toggleItem(cl, item) {
+                    const updated = await this.req(`/checklist-items/${item.id}`, 'PATCH', {});
+                    item.is_done = updated.is_done;
+                    this.recalcChecklist();
+                },
+                async deleteItem(cl, item) {
+                    await this.req(`/checklist-items/${item.id}`, 'DELETE');
+                    cl.items = cl.items.filter(i => i.id !== item.id);
+                    this.recalcChecklist();
                 },
                 recalcChecklist() {
                     const store = Alpine.store('task');
                     const cls = store.card.checklists || [];
                     store.card.checklist_total = cls.reduce((s, cl) => s + cl.items.length, 0);
                     store.card.checklist_done = cls.reduce((s, cl) => s + cl.items.filter(i => i.is_done).length, 0);
-                    // синхронизируем карточку в колонке
                     this.lists.forEach(l => {
                         const i = l.cards.findIndex(c => c.id === store.card.id);
                         if (i !== -1) {
@@ -1075,25 +1075,7 @@
                     });
                 },
 
-                async toggleItem(cl, item) {
-                    const updated = await this.req(`/checklist-items/${item.id}`, 'PATCH', {});
-                    item.is_done = updated.is_done;
-                    this.recalcChecklist();
-                },
-                async addItem(cl) {
-                    if (!cl._newItem || !cl._newItem.trim()) return;
-                    const item = await this.req(`/checklists/${cl.id}/items`, 'POST', {title: cl._newItem});
-                    cl.items.push(item);
-                    cl._newItem = '';
-                    this.recalcChecklist();
-                },
-                async deleteItem(cl, item) {
-                    await this.req(`/checklist-items/${item.id}`, 'DELETE');
-                    cl.items = cl.items.filter(i => i.id !== item.id);
-                    this.recalcChecklist();
-                },
-
-                // --- комментарии ---
+                // комментарии
                 async addComment() {
                     const store = Alpine.store('task');
                     if (!this.newComment.trim()) return;
@@ -1106,17 +1088,6 @@
                         time: 'только что'
                     });
                     this.newComment = '';
-                },
-
-                // --- удаление карточки ---
-                async deleteCard() {
-                    const store = Alpine.store('task');
-                    if (!confirm('Удалить карточку?')) return;
-                    await this.req(`/cards/${store.card.id}`, 'DELETE');
-                    this.lists.forEach(l => {
-                        l.cards = l.cards.filter(c => c.id !== store.card.id);
-                    });
-                    store.open = false;
                 },
             }));
         });

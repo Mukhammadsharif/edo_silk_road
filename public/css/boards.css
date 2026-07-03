@@ -1127,7 +1127,7 @@ body.theme-dark .task-comment-input {
 
 body.theme-dark .member-search { background: var(--brd-card-bg); color: var(--brd-text); }
 .board-head-manager {
-    margin-left: auto;
+    /*margin-left: auto;*/
     display: flex; align-items: center; gap: 10px;
 }
 .board-head-manager-ava {
@@ -1310,3 +1310,159 @@ body.theme-dark .label-row { color: var(--brd-text); }
     transition: background .12s, color .12s;
 }
 .checklist-del:hover { background: rgba(192,57,43,.1); color: #C0392B; }
+
+.list-title.editable { cursor: pointer; border-radius: 6px; padding: 1px 4px; transition: background .12s; }
+.list-title.editable:hover { background: rgba(0,0,0,.05); }
+body.theme-dark .list-title.editable:hover { background: rgba(255,255,255,.08); }
+
+.list-title-input {
+    flex: 1;
+    font-size: 15px; font-weight: 600;
+    color: var(--brd-title, #3C3489);
+    background: var(--brd-card-bg, #fff);
+    border: 1px solid var(--brd-purple, #7C3AED);
+    border-radius: 7px;
+    padding: 3px 8px;
+    outline: none;
+    min-width: 0;
+}
+body.theme-dark .list-title-input { background: var(--brd-card-bg); color: var(--brd-text); }
+
+
+/* ============================================
+   MOBILE (≤640px)
+   ============================================ */
+@media (max-width: 640px) {
+    .member-popover {
+        position: fixed !important;
+        left: 12px !important;
+        right: 12px !important;
+        top: auto !important;
+        bottom: 12px !important;
+        width: auto !important;
+        max-height: 80vh !important;
+        z-index: 2000;   /* выше модалок (у них 1060) */
+    }
+
+    /* убираем относительное позиционирование обёрток, чтобы fixed считался от экрана */
+    .task-actions > div[style*="position:relative"],
+    .create-field[style*="position:relative"] {
+        position: static !important;
+    }
+    /* --- Доска: колонки вертикально --- */
+    .board-canvas {
+        flex-direction: column;
+        overflow-x: hidden;
+        padding: 12px;
+        gap: 11px;
+        min-height: auto;
+    }
+    .list-column {
+        width: 100%;
+        max-height: none;   /* убираем ограничение высоты — скролл общий */
+    }
+    .cards-container { overflow: visible; max-height: none; }
+    .btn-add-list, .add-list-form { width: 100%; }
+
+    /* --- Шапка доски --- */
+    .board-head { padding: 14px 16px; border-radius: 12px; }
+    .board-head::after { display: none; }   /* убираем декор-блик на узком экране */
+    .board-head-title { font-size: 16px; }
+    .board-head-sub { font-size: 12px; }
+    .board-head-icon { width: 38px; height: 38px; }
+    .board-head-icon i { font-size: 20px; }
+
+    /* метрики компактнее */
+    .board-head-meta {
+        gap: 12px;
+        margin-top: 12px;
+        padding: 11px 0;
+        border-top: 1px solid rgba(255,255,255,0.18);
+        border-bottom: 1px solid rgba(255,255,255,0.18);
+        flex-wrap: nowrap;
+        overflow-x: auto;
+    }
+    .board-head-stat { font-size: 12px; white-space: nowrap; }
+
+    /* руководитель + видимость отдельной строкой снизу */
+    .board-head-bottom {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-top: 11px;
+    }
+    .board-head-members { margin-left: 0; }   /* на десктопе было auto */
+
+    /* кнопка настроек — компактная иконка */
+    .board-head-btn {
+        padding: 8px; width: 36px; height: 36px;
+        justify-content: center;
+    }
+    .board-head-btn span { display: none; }   /* прячем текст, оставляем иконку */
+
+    /* --- Модалка карточки: на весь экран --- */
+    .task-modal-backdrop { padding: 0; align-items: stretch; }
+    .task-modal {
+        max-width: 100%;
+        width: 100%;
+        max-height: 100vh;
+        height: 100vh;
+        border-radius: 0;
+        display: flex;
+        flex-direction: column;
+    }
+    .task-modal-body {
+        flex-direction: column;   /* контент + лента в одну колонку */
+        overflow-y: auto;
+        flex: 1;
+    }
+    .task-main {
+        flex: none;
+        border-right: none;
+        border-bottom: 0.5px solid var(--brd-card-border);
+        --indent: 0;              /* убираем левый отступ блоков на мобильном */
+    }
+    .task-side { flex: none; }
+    .task-title-row, .task-actions, .task-meta,
+    .task-picker, .task-section, .task-delete-row { margin-left: 0; }
+
+    /* кнопки действий — сетка 2 в ряд */
+    .task-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+    .task-action-btn { justify-content: center; }
+
+    /* пикеры на всю ширину */
+    .task-picker { width: 100%; }
+    .member-popover {
+        position: fixed;
+        left: 12px; right: 12px;
+        width: auto;
+        max-height: 50vh;
+    }
+
+    /* --- Модалка создания/настроек доски: на весь экран --- */
+    .create-modal-backdrop { padding: 0; align-items: stretch; }
+    .create-modal {
+        max-width: 100%;
+        width: 100%;
+        min-height: 100vh;
+        border-radius: 0;
+    }
+    .create-modal-body { max-height: calc(100vh - 56px); overflow-y: auto; }
+
+    /* переключатель видимости — не сжимать текст */
+    .visibility-opt { font-size: 13px; padding: 9px; }
+
+    /* --- Карточки на доске чуть плотнее --- */
+    .kanban-card:hover { transform: none; }   /* на тач hover-подъём не нужен */
+}
+/* на десктопе руководитель и видимость в общей строке справа */
+@media (min-width: 641px) {
+    .board-head-bottom {
+        display: flex; align-items: center; gap: 16px;
+        margin-top: 14px; padding-top: 14px;
+        border-top: 1px solid rgba(255,255,255,0.18);
+    }
+    .board-head-visibility { margin-left: auto; }
+}

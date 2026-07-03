@@ -10,6 +10,14 @@ use Illuminate\Support\Facades\DB;
 
 class BoardListController extends Controller
 {
+    private function requireAdmin(): void
+    {
+        abort_unless(
+            auth()->user()?->hasRole(['Super_Admin', 'it_admin']),
+            403,
+            'Недостаточно прав'
+        );
+    }
     public function store(Request $request, Board $board)
     {
         $this->requireAdmin();
