@@ -185,7 +185,7 @@ class HrEmpController extends Controller
             $createEmpExp->created_id = $this->authActiveUser()->id;
             $createEmpExp->save();
 
-            $this->userLogService->createUserLog($createWork->id, ['comment' => 'Created user']);
+            $this->userLogService->createUserLog($createUser->id, ['comment' => 'Created user']);
         }
 
         return Redirect::route('hr.emp.view', [$createUser->id, $createUser->user_hash])->with('success', __('message.task_completed_successfully'));

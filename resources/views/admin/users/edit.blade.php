@@ -178,11 +178,13 @@
                                     {{ __('field.user_current_department') }}
                                 </div>
                                 <div class="info-value department-path">
-                                    @foreach($user->currentWork->department->allParents()->reverse() as $item)
-                                        <span class="path-item">{{ $item->name_uz }}</span>
-                                        <i data-lucide="chevron-right" class="path-separator"></i>
-                                    @endforeach
-                                    <span class="path-item current">{{ $user->currentWork->department->name_uz??'' }}</span>
+                                    @if($user->currentWork && $user->currentWork->department)
+                                        @foreach($user->currentWork->department->allParents()->reverse() as $item)
+                                            <span class="path-item">{{ $item->name_uz }}</span>
+                                            <i data-lucide="chevron-right" class="path-separator"></i>
+                                        @endforeach
+                                        <span class="path-item current">{{ $user->currentWork->department->name_uz??'' }}</span>
+                                    @endif
                                 </div>
                             </div>
 
@@ -191,7 +193,7 @@
                                     <i data-lucide="user-check"></i>
                                     {{ __('field.user_current_position') }}
                                 </div>
-                                <div class="info-value">{{ $user->currentWork->position->name_uz??'' }}</div>
+                                <div class="info-value">{{ $user->currentWork->position ? $user->currentWork->position->name_uz??'' : '' }}</div>
                             </div>
 
                             <div class="info-block">
