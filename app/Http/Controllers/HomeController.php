@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -93,7 +94,14 @@ class HomeController extends Controller
         $app_temps = JournalTypes::where('doc_code', 'ILIKE', 'APP_%')->where('parent_id', '<>', 0)->where('level_number', 2)->where('status', 1)->get();
         $pendingSubscription = Auth::user()->organization?->pendingSubscription;
 
-        return view('home', compact('authRoleName', 'docs_count', 'employees', 'app_temps', 'isOwner', 'pendingSubscription'));
+        // ── Дашборд руководителя: только для роли Director (или владельца организации) ──
+        $isDirector = in_array('Director', $authRoleName) || $isOwner;
+        $directorStats = null;
+        if ($isDirector) {
+            $directorStats = $this->buildDirectorStats($this->organizationId());
+        }
+
+        return view('home', compact('authRoleName', 'docs_count', 'employees', 'app_temps', 'isOwner', 'pendingSubscription', 'isDirector', 'directorStats'));
     }
 
     public function lang($locale)
@@ -136,6 +144,129 @@ class HomeController extends Controller
             'expired' => $expired,
             'all_documents' => $all_documents
         ]);
+    }
+
+    /**
+     * Сводная аналитика по документообороту организации для дашборда руководителя.
+     * Все счётчики считаются по всей организации (org_unit_id), а не по одному пользователю,
+     * чтобы Ген. директор видел полную картину, а не только свои документы.
+     */
+    private function buildDirectorStats($orgId)
+    {
+        $today = Carbon::now()->format('Y-m-d');
+
+        // ── 1. Документы по стадиям процесса (в разрезе роли исполнения) ──
+        // На исполнении (EXEC)
+        $stageExec = DocumentJournals::where('org_unit_id', $orgId)
+            ->whereHas('executionSteps', function ($q) {
+                $q->whereIn('status', [2, 4])->whereHas('role', function ($r) {
+                    $r->where('doc_code', 'EXEC');
+                });
+            })->where('status', '>', 1)->count();
+
+        // На согласовании (AGREE)
+        $stageAgree = DocumentJournals::where('org_unit_id', $orgId)
+            ->whereHas('executionSteps', function ($q) {
+                $q->where('status', 2)->whereHas('role', function ($r) {
+                    $r->where('doc_code', 'AGREE');
+                });
+            })->where('status', '>', 1)->count();
+
+        // На подписи (SIGN)
+        $stageSign = DocumentJournals::where('org_unit_id', $orgId)
+            ->whereHas('executionSteps', function ($q) {
+                $q->where('status', 2)->whereHas('role', function ($r) {
+                    $r->where('doc_code', 'SIGN');
+                });
+            })->where('status', '>', 1)->count();
+
+        // На резолюции (RESOL)
+        $stageResol = DocumentJournals::where('org_unit_id', $orgId)
+            ->whereHas('executionSteps', function ($q) {
+                $q->whereHas('role', function ($r) {
+                    $r->where('doc_code', 'RESOL');
+                });
+            })->whereIn('status', [8, 11])->count();
+
+        // ── 2. Документы по статусам (жизненный цикл) ──
+        $statusDraft   = DocumentJournals::where('org_unit_id', $orgId)->where('status', 1)->count();
+        $statusProcess = DocumentJournals::where('org_unit_id', $orgId)->where('status', 9)->count();
+        $statusDone    = DocumentJournals::where('org_unit_id', $orgId)->where('status', 10)->count();
+        $statusEnsured = DocumentJournals::where('org_unit_id', $orgId)->where('status', 11)->count();
+
+        $statusExpired = DocumentJournals::where('org_unit_id', $orgId)
+            ->whereHas('doc', function ($q) use ($today) {
+                $q->where('doc_term', '<', $today)->whereNotIn('status', [2, 9, 10, 11]);
+            })->whereNotIn('status', [1, 4, 13])->count();
+
+        $totalDocs = DocumentJournals::where('org_unit_id', $orgId)->whereNotIn('status', [1, 4])->count();
+
+        // ── 3. Разбивка по типам документов (топ-8) ──
+        $typeRows = DocumentJournals::where('org_unit_id', $orgId)
+            ->whereNotIn('status', [1, 4])
+            ->select('j_type', DB::raw('count(*) as cnt'))
+            ->groupBy('j_type')
+            ->orderByDesc('cnt')
+            ->limit(8)
+            ->get();
+
+        $types = [];
+        foreach ($typeRows as $row) {
+            $jt = JournalTypes::find($row->j_type);
+            $name = null;
+            if ($jt) {
+                $langName = $jt->lang($jt->lang_id);
+                $name = ($langName && $langName !== 'Lang') ? $langName : ($jt->title ?: ('#' . $row->j_type));
+            }
+            $types[] = [
+                'name'  => $name ?: ('#' . $row->j_type),
+                'count' => (int) $row->cnt,
+            ];
+        }
+
+        // ── 4. Динамика регистрации документов за последние 6 месяцев ──
+        $monthsUz = ['', 'Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyn', 'Iyl', 'Avg', 'Sen', 'Okt', 'Noy', 'Dek'];
+        $monthsRu = ['', 'Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
+        $monthsEn = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        $locale = app()->getLocale();
+        $mMap = $locale === 'ru' ? $monthsRu : ($locale === 'en' ? $monthsEn : $monthsUz);
+
+        $monthly = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $m = Carbon::now()->subMonths($i);
+            $cnt = DocumentJournals::where('org_unit_id', $orgId)
+                ->whereNotIn('status', [1, 4])
+                ->whereYear('j_date', $m->year)
+                ->whereMonth('j_date', $m->month)
+                ->count();
+            $monthly[] = [
+                'label' => $mMap[(int) $m->format('n')] . ' ' . $m->format('y'),
+                'count' => $cnt,
+            ];
+        }
+
+        return [
+            'stages' => [
+                'exec'  => $stageExec,
+                'agree' => $stageAgree,
+                'sign'  => $stageSign,
+                'resol' => $stageResol,
+            ],
+            'statuses' => [
+                'draft'   => $statusDraft,
+                'process' => $statusProcess,
+                'done'    => $statusDone,
+                'ensured' => $statusEnsured,
+                'expired' => $statusExpired,
+            ],
+            'types'   => $types,
+            'monthly' => $monthly,
+            'totals'  => [
+                'documents' => $totalDocs,
+                'expired'   => $statusExpired,
+                'active'    => $statusProcess + $stageExec,
+            ],
+        ];
     }
 
     public function getMenuCount(Request $request)

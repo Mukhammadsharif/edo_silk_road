@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Office;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\ApprovalGroup;
 use App\Models\Admin\AppTemps;
 use App\Models\Admin\Department;
 use App\Models\Admin\Role;
@@ -766,7 +767,9 @@ class DocumentController extends Controller
                 ->get();
         }
 
-        $blade = view('office.templates.execution-steps', compact('resolution_users', 'signatory_users', 'agreement_users'))->render();
+        $approval_groups = $this->buildApprovalGroups($this->organizationId());
+
+        $blade = view('office.templates.execution-steps', compact('resolution_users', 'signatory_users', 'agreement_users', 'approval_groups'))->render();
 
         return response()->json(['success' => true, 'blade' => $blade]);
     }
@@ -875,13 +878,31 @@ class DocumentController extends Controller
             $query->where('doc_code', 'AGREE');
         })->get();
 
+        // ── Гарантия сохранности согласующих при редактировании документа ──
+        // update() удаляет все AGREE-шаги и заново создаёт их ТОЛЬКО из to_agree[].
+        // Значит в списке должны присутствовать (и быть отмечены) ВСЕ уже
+        // назначенные согласующие — даже если сейчас у них нет роли AGREE
+        // (например, они попали в документ через группу согласующих) или их
+        // нет в отфильтрованном списке по иным причинам. Иначе после сохранения
+        // такие согласующие молча пропадают.
+        $assignedAgreeIds = $agreements->pluck('to_user')->map(fn ($v) => (int) $v)->unique();
+        $presentIds = $agreement_users->pluck('id')->map(fn ($v) => (int) $v)->all();
+        $missingIds = $assignedAgreeIds->reject(fn ($id) => in_array($id, $presentIds, true))->values();
+
+        if ($missingIds->isNotEmpty()) {
+            $extraUsers = UserWorkHistory::whereIn('id', $missingIds->all())->get();
+            $agreement_users = $agreement_users->concat($extraUsers);
+        }
+
         $verifier = DocumentExecutionSteps::where('j_id', $id)->whereHas('role', function ($query) {
             $query->where('doc_code', 'RESOL');
         })->first();
 
 
+        $approval_groups = $this->buildApprovalGroups($this->organizationId());
+
         $blade = view('office.templates.edit-execution-steps', compact('resolution_users', 'signatory_users', 'agreement_users',
-            'signer', 'agreements', 'verifier'))->render();
+            'signer', 'agreements', 'verifier', 'approval_groups'))->render();
 
         return response()->json(['success' => true, 'blade' => $blade]);
     }
@@ -909,6 +930,59 @@ class DocumentController extends Controller
         $timestamp = time();
 
         return "{$randomString}_{$timestamp}";
+    }
+
+    /**
+     * Готовые группы согласующих для организации.
+     * Участники резолвятся в актуальные work_history id этой организации,
+     * чтобы значения совпадали с value чекбоксов to_agree[].
+     *
+     * @return array [ ['id'=>.., 'name'=>.., 'members'=>[ ['id'=>work_id,'name'=>..,'position'=>..], ... ] ], ... ]
+     */
+    private function buildApprovalGroups($orgId): array
+    {
+        $groups = ApprovalGroup::where('org_unit_id', $orgId)->where('status', 1)
+            ->orderBy('name')->get();
+
+        $result = [];
+
+        foreach ($groups as $group) {
+            $memberUserIds = $group->memberUserIds();
+            if (empty($memberUserIds)) {
+                continue;
+            }
+
+            $members = UserWorkHistory::where('user_work_histories.org_id', $orgId)
+                ->where('user_work_histories.status', 1)
+                ->whereIn('user_work_histories.user_id', $memberUserIds)
+                ->whereHas('user', function ($q) {
+                    $q->where('status', 1);
+                })
+                ->join('user_personal_infos', 'user_personal_infos.user_id', '=', 'user_work_histories.user_id')
+                ->orderBy('user_personal_infos.sort')
+                ->select('user_work_histories.*')
+                ->get()
+                ->unique('user_id');
+
+            $memberData = [];
+            foreach ($members as $m) {
+                $memberData[] = [
+                    'id'       => $m->id, // work_history id — совпадает с value чекбокса to_agree[]
+                    'name'     => optional($m->personal)->fullName() ?? '-',
+                    'position' => optional($m->userPost)->lang(optional($m->userPost)->id) ?? '',
+                ];
+            }
+
+            if (!empty($memberData)) {
+                $result[] = [
+                    'id'      => $group->id,
+                    'name'    => $group->name,
+                    'members' => $memberData,
+                ];
+            }
+        }
+
+        return $result;
     }
 
     public function extracted($journal_id, $signatory_user, $exec_role_id): void

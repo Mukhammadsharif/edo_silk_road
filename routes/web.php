@@ -64,6 +64,8 @@ use App\Http\Controllers\Protocol\ProtocolDocTypeController;
 use App\Http\Controllers\Protocol\ProtocolEmpHrOrdersController;
 use App\Http\Controllers\Comment\DocumentCommentController;
 
+use App\Http\Controllers\ExternalDocFlowController;
+
 Route::get('/edo', function () {
     return view('auth.login');
 });
@@ -590,6 +592,27 @@ Route::middleware('auth')->group(function () {
     // метки на карточке (переключение)
     Route::post('cards/{card}/labels/{label}', [CardController::class, 'attachLabel'])->name('cards.labels.attach');
     Route::delete('cards/{card}/labels/{label}', [CardController::class, 'detachLabel'])->name('cards.labels.detach');
+
+    Route::prefix('external-docs')->name('external-docs.')->middleware('auth')->group(function () {
+        Route::get('/',                     [ExternalDocFlowController::class, 'index'])->name('index');
+        Route::get('/approvals',            [ExternalDocFlowController::class, 'approvals'])->name('approvals');
+        Route::post('/auth/password',       [ExternalDocFlowController::class, 'loginPassword'])->name('auth.password');
+        Route::post('/auth/ecp',            [ExternalDocFlowController::class, 'loginEcp'])->name('auth.ecp');
+        Route::post('/sync',                [ExternalDocFlowController::class, 'syncNow'])->name('sync');
+        Route::get('/{id}',                 [ExternalDocFlowController::class, 'show'])->whereNumber('id')->name('show');
+        Route::get('/{id}/print',           [ExternalDocFlowController::class, 'printForm'])->whereNumber('id')->name('print');
+        Route::post('/{id}/send-to-review', [ExternalDocFlowController::class, 'sendToReview'])->whereNumber('id')->name('send-review');
+        Route::post('/{id}/decide',         [ExternalDocFlowController::class, 'decide'])->whereNumber('id')->name('decide');
+        Route::post('/{id}/refresh-status', [ExternalDocFlowController::class, 'refreshStatus'])->whereNumber('id')->name('refresh-status');
+
+        // Web-прокси подписи (E-IMZO поток из карточки, работают на web-сессии)
+        Route::post('/timestamp',            [ExternalDocFlowController::class, 'timestamp'])->name('timestamp');
+        Route::post('/signature-join',       [ExternalDocFlowController::class, 'signatureJoin'])->name('signature-join');
+        Route::get('/{id}/document-base64',  [ExternalDocFlowController::class, 'documentBase64'])->whereNumber('id')->name('document-base64');
+        Route::get('/{id}/tosign-value',     [ExternalDocFlowController::class, 'toSignValue'])->whereNumber('id')->name('tosign-value');
+        Route::post('/{id}/tosign',          [ExternalDocFlowController::class, 'toSign'])->whereNumber('id')->name('tosign');
+        Route::post('/{id}/sign',            [ExternalDocFlowController::class, 'sign'])->whereNumber('id')->name('sign');
+    });
 });
 
 /**
@@ -631,3 +654,6 @@ Route::middleware(['auth'])->group(function() {
         return redirect("/office/document/create/{$type}?prefill=" . urlencode($draft));
     })->name('telegram.handoff.create');
 });
+
+// ── Группы согласующих (Super_Admin / IT_Admin) ──
+require __DIR__.'/approval_groups.php';

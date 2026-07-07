@@ -146,6 +146,35 @@
                 </div>
             @endif
 
+            {{-- Внешний документооборот (Didox) --}}
+            <div class="menu-item {{ str_contains(url()->current(), '/external-docs') && !str_contains(url()->current(), 'approvals') ? 'active' : '' }}">
+                <a href="{{ route('external-docs.index') }}" class="menu-header">
+                    <div style="display: flex; align-items: center; gap:15px; flex: 1;">
+                        <i data-lucide="files" style="width: 22px; height: 22px;"></i>
+                        <span class="menu-text">Внешний документооборот</span>
+                    </div>
+                </a>
+            </div>
+
+            {{-- Мне на согласование (Didox) — с каунтером ожидающих --}}
+            @php
+                $didoxPendingCount = \App\Models\Didox\DidoxDocumentApprover::where('user_id', auth()->id())
+                    ->where('status', 'pending')
+                    ->whereHas('document', fn ($q) => $q->where('org_unit_id', auth()->user()->org_unit_id))
+                    ->count();
+            @endphp
+            <div class="menu-item {{ str_contains(url()->current(), '/external-docs/approvals') ? 'active' : '' }}">
+                <a href="{{ route('external-docs.approvals') }}" class="menu-header">
+                    <div style="display: flex; align-items: center; gap:15px; flex: 1;">
+                        <i data-lucide="badge-check" style="width: 22px; height: 22px;"></i>
+                        <span class="menu-text">Didox</span>
+                    </div>
+                    @if($didoxPendingCount > 0)
+                        <span class="badge badge-pill badge-danger">{{ $didoxPendingCount }}</span>
+                    @endif
+                </a>
+            </div>
+
             {{-- ═══════════════ ИНТЕГРАЦИЯ С 1С ═══════════════
                  Виден директору, IT-админу и Super_Admin --}}
             @php
