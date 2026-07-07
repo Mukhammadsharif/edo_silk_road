@@ -21,6 +21,8 @@
         "laravel/ui": "^4.5",
         "league/flysystem-ftp": "^3.28",
         "maatwebsite/excel": "*",
+        "setasign/fpdf": "^1.9",
+        "setasign/fpdi": "^2.6",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-pdf": "^1.8",
         "spatie/laravel-permission": "^6.9",

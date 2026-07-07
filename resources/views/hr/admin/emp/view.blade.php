@@ -96,6 +96,10 @@
                                 <div class="emp-info-label">{{ __('field.mobile_phone') }}</div>
                                 <div class="emp-info-value">{{ $personal->phone??'-' }}</div>
                             </div>
+                            <div class="emp-info-item">
+                                <div class="emp-info-label">{{ __('field.address') ?? 'Адрес проживания' }}</div>
+                                <div class="emp-info-value">{{ $personal->address??'-' }}</div>
+                            </div>
                         </div>
                     </div>
 

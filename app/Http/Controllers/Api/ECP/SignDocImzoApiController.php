@@ -278,7 +278,7 @@ class SignDocImzoApiController extends Controller
                     'email' => strtolower($subjectName['Name']).'_'.strtolower($subjectName['SURNAME']).'@gmail.com',
                     'password' => Hash::make($jsonDecodeBack['subjectCertificateInfo']['serialNumber']),
                     'user_hash' => $this->uniqueId(),
-                    'org_unit_id' => $isOrg ? $organization->id : 1,
+                    'org_unit_id' => $isOrg ? $organization->id : null,
                     'status' => 1
                 ]);
 
@@ -306,9 +306,9 @@ class SignDocImzoApiController extends Controller
 
                 $officeEmpWork = new UserWorkHistory();
                 $officeEmpWork->user_id = $newUser->id;
-                $officeEmpWork->org_id = $isOrg ? $organization->id : 1;
-                $officeEmpWork->dep_id = $isOrg ? $department->id : 2;
-                $officeEmpWork->post_id = $isOrg ? 1 : 3;
+                $officeEmpWork->org_id = $isOrg ? $organization->id : null;
+                $officeEmpWork->dep_id = $isOrg ? $department->id : null;
+                $officeEmpWork->post_id = $isOrg ? 1 : null;
                 $officeEmpWork->from_date = Carbon::now();
                 $officeEmpWork->to_date = $nextYear;
                 $officeEmpWork->status = 1;

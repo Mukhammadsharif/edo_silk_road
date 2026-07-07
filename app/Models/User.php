@@ -54,7 +54,22 @@ class User extends Authenticatable
     {
         return $this->belongsTo(UserPersonalInfo::class, 'id', 'user_id');
     }
+    public function personalInfo()
+    {
+        return $this->hasOne(UserPersonalInfo::class, 'user_id');
+    }
 
+    public function getNameAttribute(): string
+    {
+        $info = $this->personalInfo;
+        if ($info) {
+            $full = trim("{$info->l_name} {$info->f_name}");
+            if ($full !== '') {
+                return $full;
+            }
+        }
+        return $this->username ?? '';
+    }
     public function currentWork(): BelongsTo
     {
         return $this->belongsTo(UserWorkHistory::class, 'id', 'user_id')

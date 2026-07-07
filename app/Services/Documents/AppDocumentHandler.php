@@ -9,8 +9,14 @@ class AppDocumentHandler implements DocumentHandlerInterface
 {
     public function handle($document, $journal, $request)
     {
-        $fromDate = Carbon::createFromFormat('d.m.Y', $request->from_date)->format('Y-m-d');
-        $toDate = Carbon::createFromFormat('d.m.Y', $request->to_date)->format('Y-m-d');
+        // Даты опциональны: поля показываются только если в шаблоне есть
+        // [FROM_DATE] / [TO_DATE]. Если поля нет — сохраняем пустое значение.
+        $fromDate = $request->from_date
+            ? Carbon::createFromFormat('d.m.Y', $request->from_date)->format('Y-m-d')
+            : '';
+        $toDate = $request->to_date
+            ? Carbon::createFromFormat('d.m.Y', $request->to_date)->format('Y-m-d')
+            : '';
 
         $data = [
             'FROM_DATE' => $fromDate,

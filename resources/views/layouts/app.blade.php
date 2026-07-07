@@ -1,6 +1,7 @@
 <!doctype html>
 <html class="no-js" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 @include('layouts.head')
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <body>
 
 @guest
@@ -270,5 +271,6 @@
         transition: all .2s ease-in-out;
     }
 </style>
+@stack('scripts')
 </body>
 </html>

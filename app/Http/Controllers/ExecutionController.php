@@ -61,7 +61,7 @@ class ExecutionController extends Controller
 
         $statusNames = StatusList::where('type', 'doc_exec')->orderBy('order_number')->get();
 
-        $cr_users = User::where('status', 1)->get();
+        $cr_users = User::where('status', 1)->where('org_unit_id', $this->organizationId())->get();
 
         $statusArray = $status ? [$status] : [2,4];
 
@@ -115,6 +115,7 @@ class ExecutionController extends Controller
         }
 
         $journal_types = JournalTypes::whereDoesntHave('childs')
+            ->where('org_id', $this->organizationId())
             ->where('status', 1)
             ->whereNotIn('doc_code', ['BASE_OUTGOING'])
             ->orderBy('order_number')->get();
@@ -150,7 +151,7 @@ class ExecutionController extends Controller
 
         $statusNames = StatusList::where('type', 'doc_signer')->orderBy('order_number')->get();
 
-        $cr_users = User::where('status', 1)->get();
+        $cr_users = User::where('status', 1)->where('org_unit_id', $this->organizationId())->get();
 
         $workIds = $this->authActiveUserIds();
 
@@ -204,6 +205,7 @@ class ExecutionController extends Controller
         }
 
         $journal_types = JournalTypes::whereDoesntHave('childs')
+            ->where('org_id', $this->organizationId())
             ->where('status', 1)
             ->whereNotIn('doc_code', ['BASE_INCOMING', 'BASE_OUTGOING'])
             ->orderBy('order_number')->get();
@@ -239,7 +241,7 @@ class ExecutionController extends Controller
 
         $statusNames = StatusList::where('type', 'doc_signer')->orderBy('order_number')->get();
 
-        $cr_users = User::where('status', 1)->get();
+        $cr_users = User::where('status', 1)->where('org_unit_id', $this->organizationId())->get();
 
         $search = DocumentJournals::where('org_unit_id', $this->organizationId())
             ->whereHas('executionSteps', function ($query) use ($status, $workIds) {
@@ -291,6 +293,7 @@ class ExecutionController extends Controller
         }
 
         $journal_types = JournalTypes::whereDoesntHave('childs')
+            ->where('org_id', $this->organizationId())
             ->where('status', 1)
             ->whereNotIn('doc_code', ['BASE_INCOMING'])
             ->orderBy('order_number')->get();
@@ -328,7 +331,7 @@ class ExecutionController extends Controller
 
         $statusNames = StatusList::where('type', 'work_document')->whereNotIn('code', [1, 4, 5, 6, 7, 13])->orderBy('order_number')->get();
 
-        $cr_users = User::where('status', 1)->get();
+        $cr_users = User::where('status', 1)->where('org_unit_id', $this->organizationId())->get();
 
         $search = DocumentJournals::where('org_unit_id', $this->organizationId())
             ->whereHas('executionSteps', function ($query) use ($status, $workIds) {
@@ -396,6 +399,7 @@ class ExecutionController extends Controller
         }
 
         $journal_types = JournalTypes::whereDoesntHave('childs')
+            ->where('org_id', $this->organizationId())
             ->where('status', 1)
             ->orderBy('order_number')->get();
 
@@ -478,6 +482,7 @@ class ExecutionController extends Controller
         }
 
         $journal_types = JournalTypes::whereDoesntHave('childs')
+            ->where('org_id', $this->organizationId())
             ->where('status', 1)
             ->whereIn('id', $controls)
             ->orderBy('order_number')->get();

@@ -5,6 +5,11 @@ use App\Http\Controllers\Admin\PricingController;
 use App\Http\Controllers\Admin\SubscriptionRequestController;
 use App\Http\Controllers\Admin\TariffController;
 use App\Http\Controllers\Admin\LicenseController;
+use App\Http\Controllers\Projects\BoardController;
+use App\Http\Controllers\Projects\BoardLabelController;
+use App\Http\Controllers\Projects\BoardListController;
+use App\Http\Controllers\Projects\CardCommentController;
+use App\Http\Controllers\Projects\CardController;
 use App\Http\Controllers\LicenseActivationController;
 use App\Http\Controllers\Api\ECP\SignDocImzoMobileApiController;
 use App\Http\Controllers\DocController;
@@ -24,6 +29,7 @@ use App\Http\Controllers\Office\JournalController;
 use App\Http\Controllers\Office\JournalTypesController;
 use App\Http\Controllers\Office\OnlyOfficeController;
 use App\Http\Controllers\PdfGenerateController;
+use App\Http\Controllers\Projects\ChecklistController;
 use App\Http\Controllers\ProtocolsController;
 use App\Http\Controllers\QrCodeDocController;
 use App\Http\Controllers\SettingsController;
@@ -57,6 +63,8 @@ use App\Http\Controllers\Admin\OnecIntegrationController;
 use App\Http\Controllers\Protocol\ProtocolDocTypeController;
 use App\Http\Controllers\Protocol\ProtocolEmpHrOrdersController;
 use App\Http\Controllers\Comment\DocumentCommentController;
+
+use App\Http\Controllers\ExternalDocFlowController;
 
 Route::get('/edo', function () {
     return view('auth.login');
@@ -330,6 +338,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/doc/view', [OnlyOfficeController::class, 'docView']);
         Route::get('download-pdf/{onlyDocId}', [OnlyOfficeController::class, 'convertToPDF'])->name('download-only-office.pdf');
         Route::any('edit-doc-only/{j_id}/{hash}', [OnlyOfficeController::class, 'edit'])->name('office.doc.edit-only');
+        Route::post('onlyoffice/forcesave', [OnlyOfficeController::class, 'forceSave'])->name('office.onlyoffice.forcesave');
 
         Route::get('view-inbox-doc/{id}/{hash}', [JournalController::class, 'viewInbox'])->name('office.view-inbox-doc');
         Route::get('view-sent-doc/{id}/{hash}', [JournalController::class, 'viewSent'])->name('office.view-sent-doc');
@@ -535,6 +544,77 @@ Route::get('/telegram-link/eimzo', function(\Illuminate\Http\Request $request) {
     ]);
 })->name('telegram.link.eimzo');
 
+
+Route::middleware('auth')->group(function () {
+    Route::resource('boards', BoardController::class);
+
+    Route::post('boards/{board}/lists', [BoardListController::class, 'store'])->name('lists.store');
+    Route::patch('lists/{list}', [BoardListController::class, 'update'])->name('lists.update');
+    Route::patch('lists/{list}/move', [BoardListController::class, 'move'])->name('lists.move');
+    Route::delete('lists/{list}', [BoardListController::class, 'destroy'])->name('lists.destroy');
+
+    Route::post('lists/{list}/cards', [CardController::class, 'store'])->name('cards.store');
+    Route::get('cards/{card}', [CardController::class, 'show'])->name('cards.show');
+    Route::patch('cards/{card}', [CardController::class, 'update'])->name('cards.update');
+    Route::patch('cards/{card}/move', [CardController::class, 'move'])->name('cards.move');
+    Route::delete('cards/{card}', [CardController::class, 'destroy'])->name('cards.destroy');
+
+    Route::post('cards/{card}/comments', [CardCommentController::class, 'store'])->name('comments.store');
+    Route::delete('comments/{comment}', [CardCommentController::class, 'destroy'])->name('comments.destroy');
+
+    // Карточка целиком (с связями)
+    Route::get('cards/{card}/full', [CardController::class, 'full'])->name('cards.full');
+
+    // Участники
+    Route::post('cards/{card}/members', [CardController::class, 'addMember'])->name('cards.members.add');
+    Route::delete('cards/{card}/members/{user}', [CardController::class, 'removeMember'])->name('cards.members.remove');
+
+    // Чек-листы
+    Route::post('cards/{card}/checklists', [ChecklistController::class, 'store'])->name('checklists.store');
+    Route::delete('checklists/{checklist}', [ChecklistController::class, 'destroy'])->name('checklists.destroy');
+    Route::post('checklists/{checklist}/items', [ChecklistController::class, 'addItem'])->name('checklists.items.add');
+    Route::patch('checklist-items/{item}', [ChecklistController::class, 'toggleItem'])->name('checklist-items.toggle');
+    Route::delete('checklist-items/{item}', [ChecklistController::class, 'destroyItem'])->name('checklist-items.destroy');
+
+    // Список пользователей для назначения
+    Route::get('board-users', [CardController::class, 'boardUsers'])->name('board.users');
+
+    Route::get('boards/{board}/members', [BoardController::class, 'members'])->name('boards.members');
+    Route::post('boards/{board}/members', [BoardController::class, 'addMember'])->name('boards.members.add');
+    Route::delete('boards/{board}/members/{user}', [BoardController::class, 'removeMember'])->name('boards.members.remove');
+    Route::get('board-users-all', [CardController::class, 'allOrgUsers'])->name('board.users.all');
+    // метки доски (CRUD)
+    Route::get('boards/{board}/labels', [BoardLabelController::class, 'index'])->name('labels.index');
+    Route::post('boards/{board}/labels', [BoardLabelController::class, 'store'])->name('labels.store');
+    Route::patch('board-labels/{label}', [BoardLabelController::class, 'update'])->name('labels.update');
+    Route::delete('board-labels/{label}', [BoardLabelController::class, 'destroy'])->name('labels.destroy');
+
+    // метки на карточке (переключение)
+    Route::post('cards/{card}/labels/{label}', [CardController::class, 'attachLabel'])->name('cards.labels.attach');
+    Route::delete('cards/{card}/labels/{label}', [CardController::class, 'detachLabel'])->name('cards.labels.detach');
+
+    Route::prefix('external-docs')->name('external-docs.')->middleware('auth')->group(function () {
+        Route::get('/',                     [ExternalDocFlowController::class, 'index'])->name('index');
+        Route::get('/approvals',            [ExternalDocFlowController::class, 'approvals'])->name('approvals');
+        Route::post('/auth/password',       [ExternalDocFlowController::class, 'loginPassword'])->name('auth.password');
+        Route::post('/auth/ecp',            [ExternalDocFlowController::class, 'loginEcp'])->name('auth.ecp');
+        Route::post('/sync',                [ExternalDocFlowController::class, 'syncNow'])->name('sync');
+        Route::get('/{id}',                 [ExternalDocFlowController::class, 'show'])->whereNumber('id')->name('show');
+        Route::get('/{id}/print',           [ExternalDocFlowController::class, 'printForm'])->whereNumber('id')->name('print');
+        Route::post('/{id}/send-to-review', [ExternalDocFlowController::class, 'sendToReview'])->whereNumber('id')->name('send-review');
+        Route::post('/{id}/decide',         [ExternalDocFlowController::class, 'decide'])->whereNumber('id')->name('decide');
+        Route::post('/{id}/refresh-status', [ExternalDocFlowController::class, 'refreshStatus'])->whereNumber('id')->name('refresh-status');
+
+        // Web-прокси подписи (E-IMZO поток из карточки, работают на web-сессии)
+        Route::post('/timestamp',            [ExternalDocFlowController::class, 'timestamp'])->name('timestamp');
+        Route::post('/signature-join',       [ExternalDocFlowController::class, 'signatureJoin'])->name('signature-join');
+        Route::get('/{id}/document-base64',  [ExternalDocFlowController::class, 'documentBase64'])->whereNumber('id')->name('document-base64');
+        Route::get('/{id}/tosign-value',     [ExternalDocFlowController::class, 'toSignValue'])->whereNumber('id')->name('tosign-value');
+        Route::post('/{id}/tosign',          [ExternalDocFlowController::class, 'toSign'])->whereNumber('id')->name('tosign');
+        Route::post('/{id}/sign',            [ExternalDocFlowController::class, 'sign'])->whereNumber('id')->name('sign');
+    });
+});
+
 /**
  * Handoff из Mini App в Web — открыть OnlyOffice editor для создания документа.
  *
@@ -574,3 +654,6 @@ Route::middleware(['auth'])->group(function() {
         return redirect("/office/document/create/{$type}?prefill=" . urlencode($draft));
     })->name('telegram.handoff.create');
 });
+
+// ── Группы согласующих (Super_Admin / IT_Admin) ──
+require __DIR__.'/approval_groups.php';

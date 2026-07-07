@@ -35,11 +35,18 @@ class OnlyOfficeController extends Controller
             }
         }
 
-        $data = array_merge($request->except('doc_files'), [
+        $data = array_merge($request->except(['doc_files', 'main_file']), [
             'doc_files_json' => json_encode($savedFilePaths), // одна строка вместо массива
         ]);
 
-        $service = $this->onlyOfficeService->openWordEditor();
+        // Если загружен основной файл (main_file) — сохраняем его и открываем
+        // в OnlyOffice (вместо прямого сохранения / пустого шаблона).
+        if ($request->hasFile('main_file') && $request->file('main_file')->isValid()) {
+            $uploaded = $this->onlyOfficeService->storeUploadedMainFile($request->file('main_file'));
+            $service = $this->onlyOfficeService->openWordEditor($uploaded['url'], $uploaded['key']);
+        } else {
+            $service = $this->onlyOfficeService->openWordEditor();
+        }
 
         return view('office.document.create-only', [
             'document_params' => $service['document_params'],
@@ -90,6 +97,23 @@ class OnlyOfficeController extends Controller
     public function docView(): View
     {
         return view('office.document.doc_view');
+    }
+
+    /**
+     * Принудительное сохранение документа (forcesave) перед «Продолжить».
+     * Вызывается AJAX-ом из редактора, пока он открыт.
+     */
+    public function forceSave(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $key = $request->input('key');
+
+        if (!$key) {
+            return response()->json(['ok' => false, 'error' => 'no_key'], 400);
+        }
+
+        $result = $this->onlyOfficeService->forceSave($key);
+
+        return response()->json($result);
     }
 
     /**

@@ -100,7 +100,7 @@ class ProfileController extends Controller
     public function updateImage(Request $request){
 
         //print_r($request->all()); die;
-        $user_id = $this->authActiveUser()->user_id;
+        $user_id = Auth::id();
         $img_name = 'img_'.$user_id.'.png';
 
         request()->validate([

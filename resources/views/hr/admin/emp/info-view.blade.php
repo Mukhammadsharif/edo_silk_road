@@ -167,6 +167,10 @@
                                 <label><i data-lucide="phone"></i> {{ __('field.phone') }}</label>
                                 <input type="text" name="phone" maxlength="9" id="tel_number" class="form-control-modern" value="{{ $personal->phone }}">
                             </div>
+                            <div class="form-group-modern">
+                                <label><i data-lucide="map-pin"></i> {{ __('field.address') ?? 'Адрес проживания' }}</label>
+                                <input type="text" name="address" maxlength="500" class="form-control-modern" value="{{ $personal->address ?? '' }}">
+                            </div>
                         </div>
 
                         @if($user->status == 1)

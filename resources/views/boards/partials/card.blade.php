@@ -1,0 +1,41 @@
+@php
+    $labels = [
+      'urgent' => ['bg' => '#FCEBEB', 'fg' => '#A32D2D', 't' => 'Срочно'],
+      'review' => ['bg' => '#FAEEDA', 'fg' => '#854F0B', 't' => 'На проверке'],
+      'done'   => ['bg' => '#E1F5EE', 'fg' => '#0F6E56', 't' => 'Готово'],
+      'sign'   => ['bg' => '#EEEDFE', 'fg' => '#3C3489', 't' => 'Подпись E-IMZO'],
+    ];
+    $label = $card->label_color ? ($labels[$card->label_color] ?? null) : null;
+    $initials = \Illuminate\Support\Str::of($card->assignee?->name ?? '')
+        ->explode(' ')->map(fn($p) => \Illuminate\Support\Str::substr($p, 0, 1))
+        ->take(2)->implode('');
+@endphp
+
+<div class="kanban-card" data-card-id="{{ $card->id }}" @click="openCard(card)">
+    <div class="card-top">
+        <i class="fa fa-grip-vertical card-grip"></i>
+        <i class="fa fa-file-lines card-type-icon"></i>
+        <span class="card-title">{{ $card->title }}</span>
+    </div>
+
+    @if($label)
+        <span class="card-label" style="background:{{ $label['bg'] }};color:{{ $label['fg'] }}">{{ $label['t'] }}</span>
+    @endif
+
+    <div class="card-foot">
+        @if($card->assignee)
+            <div class="card-avatar" title="{{ $card->assignee->name }}">{{ $initials }}</div>
+        @endif
+
+        @if($card->due_date)
+            <span class="card-stat due {{ $card->isOverdue() ? 'overdue' : '' }}">
+        <i class="fa fa-calendar"></i> {{ $card->due_date->translatedFormat('d MMM') }}
+      </span>
+        @endif
+
+        <div class="card-stats-right">
+            <span class="card-stat"><i class="fa fa-paperclip"></i> {{ $card->checklists_count ?? 0 }}</span>
+            <span class="card-stat"><i class="fa fa-comment"></i> {{ $card->comments_count ?? 0 }}</span>
+        </div>
+    </div>
+</div>

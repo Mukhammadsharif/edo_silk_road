@@ -169,7 +169,7 @@
         @endif
 
         <button type="submit" name="action" value="file" id="submitBtn" class="btn-submit"
-                onclick="setFormAction('file')" style="display: none;"
+                onclick="setFormAction('web')" style="display: none;"
                 @if(!Auth::user()->currentSubscription) disabled @endif>
             <i data-lucide="save"></i>
             {{ __('action.save') }}

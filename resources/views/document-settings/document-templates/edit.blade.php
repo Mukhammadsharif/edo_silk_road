@@ -92,6 +92,7 @@
                                           style="min-height: 450px !important;">{!! $template->t_text !!}</textarea>
                             </div>
                             <small class="template-helper-text">{{ __('field.doc_text_hint') }}</small>
+                            @include('document-settings.document-templates._placeholders_hint')
                         </div>
 
                         <!-- Status Selection -->
