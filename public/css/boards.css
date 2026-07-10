@@ -1466,3 +1466,31 @@ body.theme-dark .list-title-input { background: var(--brd-card-bg); color: var(-
     }
     .board-head-visibility { margin-left: auto; }
 }
+.kanban-no-access {
+    max-width: 460px;
+    margin: 4rem auto;
+    text-align: center;
+    padding: 3rem 2rem;
+    background: #fff;
+    border: 1px solid rgba(15,23,42,0.06);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+}
+.kanban-no-access-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.kanban-no-access-icon i {
+    font-size: 2rem;
+    color: #794DFD;
+}
+.kanban-no-access h5 {
+    font-weight: 700;
+    color: #1e293b;
+}
