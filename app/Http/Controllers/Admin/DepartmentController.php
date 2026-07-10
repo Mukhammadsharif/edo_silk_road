@@ -418,39 +418,99 @@ class DepartmentController extends Controller
 
     public function orgStructure()
     {
-        return view('admin.departments.org-structure');
+        $isSuper = $this->isSuperUser();
+
+        $organizations = $isSuper
+            ? OrganizationUnits::where('status', 1)->orderBy('level')->orderBy('id')->get()
+            : collect();
+
+        $currentOrgId = (int) $this->organizationId();
+
+        return view('admin.departments.org-structure', compact('organizations', 'isSuper', 'currentOrgId'));
     }
 
-    public function orgStructureData()
+    public function orgStructureData(Request $request)
     {
-        $departments = Department::select('id', 'parent_id', 'name_uz', 'status', 'level_number')
-            ->where('status', '1')
-            ->where('org_unit_id', $this->organizationId())
+        $lang = session('locale', 'uz');
+
+        // Супер-админ выбирает организацию через селект (по умолчанию — своя).
+        // Остальные всегда видят только свою организацию.
+        if ($this->isSuperUser()) {
+            $selectedOrg = (int) $request->input('org', 0);
+            if (!$selectedOrg) {
+                $selectedOrg = (int) $this->organizationId();
+            }
+
+            $organizations = OrganizationUnits::where('status', 1)
+                ->where('id', $selectedOrg)->get();
+
+            // Fallback на свою организацию, если выбранная недоступна.
+            if ($organizations->isEmpty()) {
+                $organizations = OrganizationUnits::where('status', 1)
+                    ->where('id', $this->organizationId())->get();
+            }
+        } else {
+            $organizations = OrganizationUnits::where('status', 1)
+                ->where('id', $this->organizationId())->get();
+        }
+
+        $orgIds = $organizations->pluck('id')->map(fn ($v) => (int) $v)->all();
+
+        $departments = Department::with(['activeWorkers.personal', 'activeWorkers.position'])
+            ->where('status', 1)
+            ->whereIn('org_unit_id', $orgIds)
+            ->orderBy('order_number')
             ->get();
 
-        $nodeDataArray = $departments->map(function ($dept) {
-            $usersList = [];
+        // Множество присутствующих подразделений — чтобы «осиротевшие» дочерние
+        // (чей родитель выключен/отсутствует) не превращались в отдельные корни.
+        $presentDeptIds = $departments->pluck('id')->map(fn ($v) => (int) $v)->all();
 
-            $dep_head = $this->getDepHeadUser($dept->id);
+        $localName = function ($nameUz, $nameRu, $nameEn) use ($lang) {
+            if ($lang === 'ru') return $nameRu ?: $nameUz;
+            if ($lang === 'en') return $nameEn ?: $nameUz;
+            return $nameUz;
+        };
+
+        $nodeDataArray = [];
+
+        // ── 1. Узлы-организации (корни дерева) ──
+        // ВАЖНО: у корневого узла GoJS TreeModel ключ 'parent' должен ОТСУТСТВОВАТЬ.
+        // Значение null недопустимо и приводит к ошибке "ParentKey ... is not a number or a string: null".
+        foreach ($organizations as $org) {
+            $nodeDataArray[] = [
+                'key'       => 'o_' . $org->id,
+                'name'      => '',
+                'title'     => '',
+                'dept'      => OrganizationUnits::lang($org->id),
+                'pic'       => url('/images/profile_image1.png'),
+                'users'     => '',
+                'level'     => 0,
+                'usersHtml' => '',
+                'isOrg'     => true,
+            ];
+        }
+
+        // ── 2. Узлы-подразделения ──
+        foreach ($departments as $dept) {
+            $usersList = [];
+            $dep_head   = $this->getDepHeadUser($dept->id);
             $first_user = $dept->activeWorkers->first();
 
-            $usersHtml = '<ul style="list-style: none; margin: 0; padding: 0; max-height: 50vh; overflow-y: auto">'; // Remove default bullet points
+            $usersHtml = '<ul style="list-style: none; margin: 0; padding: 0; max-height: 50vh; overflow-y: auto">';
 
             foreach ($dept->activeWorkers as $worker) {
-                $shortName = optional($worker->personal)->shortName();
-                $positionName = optional($worker->position)->name_uz;
-
-                // Handle localization for position (as in your code)
-                $lang = session('locale', 'uz');
+                $shortName = optional($worker->personal)->shortName() ?? '';
+                $positionName = '';
                 if ($worker->position) {
-                    if ($lang === 'ru') {
-                        $positionName = $worker->position->name_ru;
-                    } elseif ($lang === 'en') {
-                        $positionName = $worker->position->name_en;
-                    }
+                    $positionName = $localName(
+                        $worker->position->name_uz ?? '',
+                        $worker->position->name_ru ?? '',
+                        $worker->position->name_en ?? ''
+                    );
                 }
 
-                $usersList[] = "{$shortName}"."{$positionName}";
+                $usersList[] = "{$shortName}{$positionName}";
 
                 $usersHtml .= "<li style='display: flex; flex-direction: row; align-items: center'>
                                     <img src='" . url('/images/profile_image1.png') . "'
@@ -463,29 +523,39 @@ class DepartmentController extends Controller
                                 </li>
                                 <br>";
             }
+            $usersHtml .= '</ul>';
 
-            $node = [
-                'key' => $dept->id,
-                'name' => $dep_head ? $dep_head->personal->shortName() : ($first_user ? $first_user->personal->shortName() : ''),
-                'title' => $dep_head ? $this->getUserPosition($dep_head) : ($first_user ? $this->getUserPosition($first_user) : ''),
-                'dept' => $dept->name_uz,
-                'pic' => url('/images/profile_image1.png'),
-                'users' => implode("\n", $usersList),
-                'level' => $dept->level_number,
-                'parent' => $dept->parent_id??null,
-                'usersHtml' => $usersHtml
-            ];
-
-            if ($dept->parent_id != 0) {
-                $node['parent'] = $dept->parent_id;
+            // Родитель: активное родительское подразделение, иначе — сама организация.
+            if ($dept->parent_id && (int) $dept->parent_id !== 0
+                && in_array((int) $dept->parent_id, $presentDeptIds, true)) {
+                $parentKey = 'd_' . $dept->parent_id;
+            } else {
+                $parentKey = 'o_' . $dept->org_unit_id;
             }
 
-            return $node;
-        });
+            $headName  = optional(optional($dep_head)->personal)->shortName()
+                ?? optional(optional($first_user)->personal)->shortName()
+                ?? '';
+            $headTitle = $dep_head ? $this->getUserPosition($dep_head)
+                : ($first_user ? $this->getUserPosition($first_user) : '');
+
+            $nodeDataArray[] = [
+                'key'       => 'd_' . $dept->id,
+                'name'      => $headName,
+                'title'     => $headTitle,
+                'dept'      => $localName($dept->name_uz, $dept->name_ru, $dept->name_en),
+                'pic'       => url('/images/profile_image1.png'),
+                'users'     => implode("\n", $usersList),
+                'level'     => $dept->level_number,
+                'parent'    => $parentKey,
+                'usersHtml' => $usersHtml,
+                'isOrg'     => false,
+            ];
+        }
 
         return response()->json([
             'class' => 'go.TreeModel',
-            'nodeDataArray' => $nodeDataArray->toArray()
+            'nodeDataArray' => $nodeDataArray,
         ]);
     }
     public function getDepHeadUser($dep_id)
