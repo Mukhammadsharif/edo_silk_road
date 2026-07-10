@@ -256,5 +256,25 @@ class User extends Authenticatable
             return url('/images/profile_image1.png');
         }
     }
+    public function kanbanSubscription()
+    {
+        return $this->hasOneThrough(
+            Subscriptions::class,
+            OrganizationUnits::class,
+            'id',
+            'org_unit_id',
+            'org_unit_id',
+            'id'
+        )
+            ->where('subscriptions.status', 1)
+            ->where('subscriptions.has_kanban_access', true)
+            ->where('subscriptions.starts_at', '<=', now())
+            ->where('subscriptions.ends_at', '>=', now());
+    }
+
+    public function hasKanbanAccess(): bool
+    {
+        return $this->kanbanSubscription()->exists();
+    }
 
 }
