@@ -465,9 +465,17 @@ class ExternalDocFlowController extends Controller
             $resp   = $client->signDocument($doc->didox_id, $data['signature']);
 
             if ($resp['success'] ?? false) {
+                // Подпись прошла — выставляем signed СРАЗУ локально, не дожидаясь,
+                // пока Didox обновит статус (перечитывание может вернуть старое значение).
+                $doc->forceFill([
+                    'list_status'  => DidoxDocument::LIST_SIGNED,
+                    'didox_status' => DidoxDocType::STATUS_SIGNED,
+                ])->save();
+
+                // Дополнительно пробуем подтянуть свежий статус из Didox (не критично).
                 try {
                     $this->sync->refreshStatus(Auth::id(), $doc->org_unit_id, $doc->didox_id);
-                } catch (Throwable $e) { /* статус подтянется кроном */ }
+                } catch (Throwable $e) { /* локальный signed уже выставлен */ }
             }
 
             return response()->json($resp, ($resp['success'] ?? false) ? 200 : 422);

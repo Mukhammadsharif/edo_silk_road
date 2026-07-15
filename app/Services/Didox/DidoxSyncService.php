@@ -119,10 +119,21 @@ class DidoxSyncService
 
         $data   = $resp['data']['data'] ?? $resp['data'] ?? [];
         $status = $this->readStatus($data);
+        $newListStatus = DidoxDocType::toListStatus($status);
+
+        // Защита от отката: если локально уже signed, а Didox после подписи ещё
+        // отдаёт промежуточный статус — не понижаем обратно на not_signed.
+        if ($doc->list_status === DidoxDocument::LIST_SIGNED
+            && $newListStatus === DidoxDocument::LIST_NOT_SIGNED) {
+            $doc->didox_status = $status;   // фактический код сохраняем
+            $doc->raw          = $data ?: $doc->raw;
+            $doc->save();
+            return $doc;
+        }
 
         $doc->didox_status = $status;
         // list_status от подписи не трогает approval_status — это независимые поля из легенды.
-        $doc->list_status  = DidoxDocType::toListStatus($status);
+        $doc->list_status  = $newListStatus;
         $doc->raw          = $data ?: $doc->raw;
         $doc->save();
 

@@ -12,6 +12,8 @@ use App\Models\Admin\UserPersonalInfo;
 use App\Models\Admin\UserWorkHistory;
 use App\Models\Document\DocumentExecutionSteps;
 use App\Models\Document\DocumentJournals;
+use App\Services\Organizations\DefaultOrgStructureSeeder;
+use App\Traits\HandlesAgreementFlow;
 use App\Models\Document\DocumentReplyComments;
 use App\Models\Document\DocumentResolutions;
 use App\Models\ECP\SignatureDocuments;
@@ -37,6 +39,8 @@ use Ramsey\Uuid\Uuid;
 
 class SignDocImzoController extends Controller
 {
+    use HandlesAgreementFlow;
+
     private array $workingDocTypes = [
         'send_to_create_res', 'send_to_agreement', 'send_to_sign',
         'from_signer_to_ag', 'from_signer_to_c_res', 'from_ag_to_res',
@@ -131,7 +135,9 @@ class SignDocImzoController extends Controller
             case 'send_to_agreement':
             case 'send_to_ag_out_doc':
                 $journal->update(['status' => 6]);
-                $this->activateSteps($steps['agreement'], 2, $urls['agreement'], $meta);
+                $this->activateInitialAgreement($journal, $steps['agreement'], function ($stepsToActivate) use ($urls, $meta) {
+                    $this->activateSteps($stepsToActivate, 2, $urls['agreement'], $meta);
+                });
                 $this->logAction($docId, 4, $meta);
                 break;
 
@@ -144,7 +150,9 @@ class SignDocImzoController extends Controller
             case 'from_signer_to_ag':
                 $this->updateStepStatus($steps['sign'], 5);
                 $journal->update(['status' => 6]);
-                $this->activateSteps($steps['agreement'], 2, $urls['agreement'], $meta);
+                $this->activateInitialAgreement($journal, $steps['agreement'], function ($stepsToActivate) use ($urls, $meta) {
+                    $this->activateSteps($stepsToActivate, 2, $urls['agreement'], $meta);
+                });
                 $this->createReplyComment($steps['sign'], $resText, 'DOC_SIGNED');
                 $this->logAction($docId, 4, $meta);
                 break;
@@ -163,7 +171,14 @@ class SignDocImzoController extends Controller
                 $this->updateStepStatus($currentAgreement, 5);
                 $this->createReplyComment($currentAgreement, $resText, 'DOC_SIGNED');
 
-                if ($steps['agreement']->count() - $signedAgreements->count() === 1) {
+                // Свежая выборка шагов согласования после подписания текущего.
+                $freshAgreement = $this->getSteps($journal, 'AGREE');
+
+                $agreementComplete = $this->advanceAgreement($journal, $freshAgreement, function ($stepsToActivate) use ($urls, $meta) {
+                    $this->activateSteps($stepsToActivate, 2, $urls['agreement'], $meta);
+                });
+
+                if ($agreementComplete) {
                     if ($isInfDoc) $journal->update(['status' => 10]);
                     $this->handleSendToResolution($journal, $steps['resolution'], $hasControl, $controllers, $urls, $meta);
                     $this->logAction($docId, 28, $meta);
@@ -643,6 +658,7 @@ class SignDocImzoController extends Controller
             $isOrg = isset($subjectName['O']);
             $organization = null;
             $department = null;
+            $defaultPosition = null;
 
             if ($isOrg) {
                 // Проверка наличия tax_number
@@ -670,7 +686,10 @@ class SignDocImzoController extends Controller
                     'meta_data' => null,
                 ]);
 
-                $department = $this->createDepartment($org_code, $organization->id);
+                // Дефолтные подразделения и должности с корректными переводами (4 формы).
+                $seeded = (new DefaultOrgStructureSeeder())->seed($organization);
+                $department = $seeded['department'];
+                $defaultPosition = $seeded['position'];
             }
 
             // Проверка наличия обязательных полей для создания пользователя
@@ -702,7 +721,7 @@ class SignDocImzoController extends Controller
             ]);
 
             $this->createUserPersonalInfo($user->id, $subjectName, $pin);
-            $this->createUserWorkHistory($user->id, $isOrg, $organization, $department);
+            $this->createUserWorkHistory($user->id, $isOrg, $organization, $department, $defaultPosition);
             $this->assignUserRole($user, $isOrg);
 
             if ($organization) {
@@ -782,7 +801,7 @@ class SignDocImzoController extends Controller
         $officeEmpPersonal->save();
     }
 
-    private function createUserWorkHistory($userId, $isOrg, $organization, $department)
+    private function createUserWorkHistory($userId, $isOrg, $organization, $department, $position = null)
     {
         $nextYear = Carbon::now()->addYear()->format('Y-m-d');
 
@@ -790,7 +809,7 @@ class SignDocImzoController extends Controller
         $officeEmpWork->user_id = $userId;
         $officeEmpWork->org_id = $isOrg ? $organization->id : null;
         $officeEmpWork->dep_id = $isOrg ? $department->id : null;
-        $officeEmpWork->post_id = $isOrg ? 1 : null;
+        $officeEmpWork->post_id = $isOrg ? ($position?->id ?? 1) : null;
         $officeEmpWork->from_date = Carbon::now();
         $officeEmpWork->to_date = $nextYear;
         $officeEmpWork->status = 1;

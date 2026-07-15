@@ -315,6 +315,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('document-report-form-store', [DocumentController::class, 'documentReportFormEntryStore'])->name('office.doc.report.form.store');
         Route::delete('document-report-form-delete/{id}', [DocumentController::class, 'documentReportFormEntryDelete'])->name('office.doc.report.form.delete');
         Route::post('store-doc', [DocumentController::class, 'store'])->name('office.doc.store');
+        Route::post('resolve-related-link', [DocumentController::class, 'resolveRelatedLink'])->name('office.doc.resolve-related-link');
         Route::get('edit-doc/{type}/{j_id}/{hash}', [DocumentController::class, 'documentEdit'])->name('office.doc.edit');
         Route::post('update-doc/{j_id}/{hash}', [DocumentController::class, 'update'])->name('office.doc.update');
         Route::get('get-journals/{j_type_id}', [DocumentController::class, 'getJournals']);

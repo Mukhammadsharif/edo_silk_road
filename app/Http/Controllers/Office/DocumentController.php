@@ -27,6 +27,7 @@ use App\Models\Journal\JournalExecutionSteps;
 use App\Models\Journal\JournalTypes;
 use App\Models\Messages\OnlyOfficeDoc;
 use App\Services\Documents\DocumentFactory;
+use App\Services\Documents\DocumentRelationService;
 use App\Services\OnlyOfficeService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -260,6 +261,15 @@ class DocumentController extends Controller
         // 5️⃣ Foydalanuvchi rollarini saqlash
         $this->assignExecutionUsers($journal->id, $request);
 
+        // Связанные документы
+        if ($request->filled('related_docs')) {
+            (new DocumentRelationService())->saveRelations(
+                $journal->id,
+                (array) $request->input('related_docs', []),
+                $this->authActiveUser()?->id
+            );
+        }
+
         // 6️⃣ Log yaratish
         $this->createLog($journal->doc_id, 1, $journal->journal->title ?? '', $document->doc_name ?? '');
 
@@ -274,6 +284,26 @@ class DocumentController extends Controller
 
         return Redirect::route($routeName, [$journal->id, $document->doc_hash])
             ->with('success', $successMessage);
+    }
+
+    /**
+     * Распознаёт вставленную ссылку на документ (для вкладки «Связанные документы»).
+     */
+    public function resolveRelatedLink(Request $request)
+    {
+        $service = new DocumentRelationService();
+        $journal = $service->resolveLink((string) $request->input('link', ''), $this->organizationId());
+
+        if (!$journal) {
+            return response()->json(['ok' => false]);
+        }
+
+        return response()->json([
+            'ok'    => true,
+            'id'    => $journal->id,
+            'label' => $service->label($journal),
+            'url'   => $service->viewUrl($journal),
+        ]);
     }
 
     public function saveFiles($document_id, $journal_id, $request)
@@ -342,13 +372,49 @@ class DocumentController extends Controller
         }
 
         if ($agreement_users) {
-            foreach ($agreement_users as $agreement_user) {
-                $this->extracted($journal_id, $agreement_user, $agreement_role->id);
-            }
+            $this->saveAgreementSteps($journal_id, $agreement_users, $agreement_role->id, $request);
         }
 
         if ($signatory_user) {
             $this->extracted($journal_id, $signatory_user, $signer_role->id);
+        }
+    }
+
+    /**
+     * Создаёт шаги согласования с учётом режима (parallel|sequential) и очереди.
+     * При sequential каждому согласующему проставляется queue_number = уровень (1..N)
+     * согласно порядку из agreement_sequence; при parallel все на уровне 1.
+     */
+    private function saveAgreementSteps($journal_id, $agreement_users, $agreement_role_id, $request): void
+    {
+        $agreementType = in_array($request->agreement_type, ['parallel', 'sequential'], true)
+            ? $request->agreement_type : 'parallel';
+
+        DocumentJournals::where('id', $journal_id)->update(['agreement_type' => $agreementType]);
+
+        $agreement_users = array_values(array_unique($agreement_users));
+
+        if ($agreementType === 'sequential') {
+            $seqRaw = (string) $request->agreement_sequence;
+            $orderedIds = array_values(array_filter(array_map('trim', explode(',', $seqRaw))));
+
+            // Сначала — согласующие в заданном порядке, затем — не попавшие в список (в конец).
+            $ordered = array_values(array_filter($orderedIds, fn ($id) => in_array($id, $agreement_users)));
+            foreach ($agreement_users as $id) {
+                if (!in_array($id, $ordered)) {
+                    $ordered[] = $id;
+                }
+            }
+
+            $level = 1;
+            foreach ($ordered as $agreement_user) {
+                $this->extracted($journal_id, $agreement_user, $agreement_role_id, $level);
+                $level++;
+            }
+        } else {
+            foreach ($agreement_users as $agreement_user) {
+                $this->extracted($journal_id, $agreement_user, $agreement_role_id, 1);
+            }
         }
     }
 
@@ -595,14 +661,21 @@ class DocumentController extends Controller
         }
 
         if ($agreement_users) {
-            foreach ($agreement_users as $agreement_user) {
-                $this->extracted($j_id, $agreement_user, $agreement_role->id);
-            }
+            $this->saveAgreementSteps($j_id, $agreement_users, $agreement_role->id, $request);
         }
 
         if ($signatory_user) $this->extracted($j_id, $signatory_user, $signer_role->id);
 
         $this->saveFiles($document->id, $j_id, $request);
+
+        // Связанные документы (добавляем к существующим)
+        if ($request->filled('related_docs')) {
+            (new DocumentRelationService())->saveRelations(
+                $j_id,
+                (array) $request->input('related_docs', []),
+                $this->authActiveUser()?->id
+            );
+        }
 
         if ($journal->journal->doc_code === 'ORDER_F' && $to_dep) {
             $doc_to_dep = DocToDeps::where('j_id', $journal->id)->first();
@@ -901,8 +974,14 @@ class DocumentController extends Controller
 
         $approval_groups = $this->buildApprovalGroups($this->organizationId());
 
+        // Текущий режим согласования и порядок (для предзаполнения UI при редактировании).
+        $journalModel = DocumentJournals::find($id);
+        $agreement_type = $journalModel->agreement_type ?? 'parallel';
+        $agreement_sequence = $agreements->sortBy('queue_number')
+            ->pluck('to_user')->map(fn ($v) => (string) $v)->values()->all();
+
         $blade = view('office.templates.edit-execution-steps', compact('resolution_users', 'signatory_users', 'agreement_users',
-            'signer', 'agreements', 'verifier', 'approval_groups'))->render();
+            'signer', 'agreements', 'verifier', 'approval_groups', 'agreement_type', 'agreement_sequence'))->render();
 
         return response()->json(['success' => true, 'blade' => $blade]);
     }
@@ -985,7 +1064,7 @@ class DocumentController extends Controller
         return $result;
     }
 
-    public function extracted($journal_id, $signatory_user, $exec_role_id): void
+    public function extracted($journal_id, $signatory_user, $exec_role_id, $queueNumber = 0): void
     {
         $signer_step = new DocumentExecutionSteps();
         $signer_step->j_id = $journal_id;
@@ -996,6 +1075,7 @@ class DocumentController extends Controller
         $signer_step->exec_role = $exec_role_id;
         $signer_step->res_exec_role = 0;
         $signer_step->status = 1;
+        $signer_step->queue_number = $queueNumber;
         $signer_step->save();
     }
 }

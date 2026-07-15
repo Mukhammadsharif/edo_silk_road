@@ -162,6 +162,8 @@
                                                 <i data-lucide="users"></i> На согласовании
                                                 @if($d->pending_approvers_count) ({{ $d->pending_approvers_count }}) @endif
                                             </span>
+                                    @elseif($d->list_status === 'signed')
+                                        <span class="didox-status st-approved"><i data-lucide="check-circle"></i> Не требовалось</span>
                                     @else
                                         <span class="didox-status st-pending"><i data-lucide="minus-circle"></i> Не отправлен</span>
                                     @endif

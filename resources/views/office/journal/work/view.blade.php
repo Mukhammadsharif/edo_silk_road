@@ -17,7 +17,7 @@
                 <div class="work-doc-page" id="pdf2">
                     <div class="work-doc-subpage" id="pdf3">
                         <div id="printPage" class="printPage">
-                        @if($journal->docStatus->doc_code !== 'OPEN')
+                            @if($journal->docStatus->doc_code !== 'OPEN')
                                 <div class="doc-confidentiality">
                                     {{ $journal->docStatus->lang($journal->docStatus->lang_id)??'-' }}
                                 </div>
@@ -73,6 +73,8 @@
                             @include('office.journal.work.templates.agreement')
 
                             @include('office.journal.work.templates.executor')
+
+                            @include('office.document.partials.related-documents')
 
                         </div>
                     </div>
@@ -147,7 +149,7 @@
         }
     }
 
-     @media screen and (max-width: 1024px) {
+    @media screen and (max-width: 1024px) {
         .work-doc-page {
             margin-left: 0 !important;
         }
