@@ -15,12 +15,14 @@ class Subscriptions extends Model
         'tariff_id',
         'starts_at',
         'ends_at',
+        'has_kanban_access',
         'status'
     ];
 
     protected $casts = [
         'starts_at' => 'date',
         'ends_at'   => 'date',
+        'has_kanban_access' => 'boolean',
     ];
 
     public function tariff()
