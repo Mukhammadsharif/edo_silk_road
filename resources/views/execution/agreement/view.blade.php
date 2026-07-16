@@ -15,7 +15,10 @@
             </div>
 
             <div class="document-content-section" id="pdf1">
-                @if(str_contains($journal->journal->doc_code, 'APP'))
+                {{-- Free-sign: PDF-viewer вместо HTML-текста (последняя версия со штампами) --}}
+                @if(!empty($isFreeSignDoc) && $isFreeSignDoc)
+                    @include('execution.confirm.templates.free-sign-page')
+                @elseif(str_contains($journal->journal->doc_code, 'APP'))
                     @include('execution.agreement.templates.app-page')
                 @elseif(str_contains($journal->journal->doc_code, 'COMMAND'))
                     @include('execution.agreement.templates.order-page')

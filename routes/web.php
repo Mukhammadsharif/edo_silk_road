@@ -340,6 +340,27 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('view-inbox-doc/{id}/{hash}', [JournalController::class, 'viewInbox'])->name('office.view-inbox-doc');
         Route::get('view-sent-doc/{id}/{hash}', [JournalController::class, 'viewSent'])->name('office.view-sent-doc');
         Route::get('view-work-doc/{id}/{hash}', [JournalController::class, 'viewWork'])->name('office.view-work-doc');
+        Route::get('view-free-sign/{id}/{hash}', [JournalController::class, 'viewFreeSign'])->name('office.work.free-sign');
+        Route::post('free-sign/{document}/save', [DocumentController::class, 'saveFromEditor'])
+            ->name('free-sign.save');
+        Route::get('free-sign/{document}/status', [DocumentController::class, 'documentStatus'])
+            ->name('free-sign.status');
+
+        // Версии PDF: история подписания, просмотр и скачивание.
+        Route::get('free-sign/{journal}/versions', [\App\Http\Controllers\FreeSign\FreeSignVersionController::class, 'index'])
+            ->name('free-sign.versions');
+        Route::get('free-sign/version/{fileId}', [\App\Http\Controllers\FreeSign\FreeSignVersionController::class, 'show'])
+            ->name('free-sign.version.show');
+        Route::get('free-sign/{journal}/download/{which?}', [\App\Http\Controllers\FreeSign\FreeSignVersionController::class, 'download'])
+            ->name('free-sign.download');
+
+        // Резолюция и исполнение внутри free-sign редактора.
+        Route::post('free-sign/{journal}/resolution', [\App\Http\Controllers\FreeSign\FreeSignResolutionController::class, 'store'])
+            ->name('free-sign.resolution.store');
+        Route::post('free-sign/reply/{step}', [\App\Http\Controllers\FreeSign\FreeSignResolutionController::class, 'reply'])
+            ->name('free-sign.reply');
+        Route::get('free-sign/performers/search', [\App\Http\Controllers\FreeSign\FreeSignResolutionController::class, 'searchPerformers'])
+            ->name('free-sign.performers.search');
 
         Route::any('work-docs-index', [JournalController::class, 'workDocs'])->name('office.work-docs');
         Route::any('inbox-docs-index', [JournalController::class, 'inboxDocs'])->name('office.inbox-docs');

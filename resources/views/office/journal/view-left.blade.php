@@ -125,14 +125,24 @@
                 </div>
             </div>
 
-            @if($journal->journal->doc_code !== 'INF_DOC')
+            {{-- ИСПРАВЛЕНО: было @if($journal->journal->doc_code !== 'INF_DOC')
+                 и обращение $directorDocument->toUser без проверки на null.
+                 ??'' защищает только результат shortName(), а не сам объект.
+
+                 $directorDocument — шаг с ролью RESOL. У штатных документов
+                 он есть всегда, но у free-sign роли произвольные: можно
+                 добавить только AGREE, тогда RESOL нет -> $directorDocument = null
+                 -> "Attempt to read property toUser on null".
+
+                 Теперь блок показывается, только если резолюция реально есть. --}}
+            @if($journal->journal->doc_code !== 'INF_DOC' && !empty($directorDocument) && $directorDocument->toUser)
                 <div class="info-item-modern">
                     <div class="info-label">
                         <i data-lucide="user-check" class="icon"></i>
                         <span>{{ __('document.to_whom') }}</span>
                     </div>
                     <div class="info-value">
-                        {{ $directorDocument->toUser->personal->shortName()??'' }}
+                        {{ optional($directorDocument->toUser->personal)->shortName() ?? '' }}
                     </div>
                 </div>
             @endif

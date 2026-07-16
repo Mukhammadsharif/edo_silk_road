@@ -14,6 +14,10 @@
 
             <!-- Document Content -->
             <div class="document-content-section" id="pdf1">
+                {{-- Free-sign: PDF-viewer вместо HTML-текста (блок подменяется) --}}
+                @if(!empty($isFreeSignDoc) && $isFreeSignDoc)
+                    @include('execution.confirm.templates.free-sign-page')
+                @else
                 <div class="work-doc-page" id="pdf2">
                     <div class="work-doc-subpage" id="pdf3">
                         <div id="printPage" class="printPage">
@@ -77,6 +81,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
 
                 {{--<a href="{{ route('download-only-office.pdf', ['onlyDocId' => $model->id]) }}" class="btn btn-primary">
                     Download PDF

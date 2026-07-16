@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Office;
 
 use App\Http\Controllers\Controller;
+use App\Services\FreeSign\FreeSignRouteService;
+use App\Models\QrCodeKeys;
 use App\Models\Admin\AppTemps;
 use App\Models\Admin\Department;
 use App\Models\Admin\Role;
@@ -18,6 +20,7 @@ use App\Models\Document\DocumentReportFormEntry;
 use App\Models\Document\Documents;
 use App\Models\DocumentTypeTemps\DocumentTypeTempMetaData;
 use App\Models\DocumentTypeTemps\DocumentTypeTemps;
+use App\Models\FreeSignDocumentField;
 use App\Models\Journal\ConfidentialTypes;
 use App\Models\Journal\DepartmentJournals;
 use App\Models\Journal\JournalAttachedOrgs;
@@ -31,11 +34,15 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 
 class DocumentController extends Controller
 {
+    /** Тип журнала «Внешаблонные документы» (free-sign). */
+    private const FREE_SIGN_JOURNAL_TYPE = 351;
+
     //
     protected OnlyOfficeService $onlyOfficeService;
 
@@ -89,9 +96,35 @@ class DocumentController extends Controller
             case 'REPORT_FORM':
                 return view('office.document.create.document_forms.report_form', compact('confidences'))->render();
 
+            /* ═══════ FREE-SIGN (внешаблонные документы) ═══════
+             | Своя форма БЕЗ блока «Текст документа» (там грузится PDF,
+             | а не создаётся текст в редакторе) и БЕЗ резолюции —
+             | у внешаблонных её нет, а обязательная валидация
+             | resolution_user не давала сохранить документ.
+             |
+             | Определяем по doc_code типа журнала 351 (см. FREE_SIGN_JOURNAL_TYPE).
+             */
+            case $this->isFreeSignDocCode($type):
+                return view('office.document.create.document_forms.free_sign', compact('confidences'))->render();
+
             default:
                 return view('office.document.create.document_forms.other_docs', compact('confidences'))->render();
         }
+    }
+
+    /**
+     * Тип журнала = внешаблонные документы (free-sign)?
+     * Сверяем doc_code с кодом типа FREE_SIGN_JOURNAL_TYPE (351).
+     */
+    private function isFreeSignDocCode(?string $type): bool
+    {
+        if (!$type) {
+            return false;
+        }
+
+        $freeSignCode = JournalTypes::where('id', self::FREE_SIGN_JOURNAL_TYPE)->value('doc_code');
+
+        return $freeSignCode && $type === $freeSignCode;
     }
 
     private function getCommonData(int $departmentId): array
@@ -201,7 +234,26 @@ class DocumentController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        //
+        /* ═══════════ FREE-SIGN (внешаблонные документы) ═══════════
+         | ИСПРАВЛЕНО ДВА БАГА:
+         |
+         | 1) Было `$this->storeFreeSign($request);` БЕЗ return —
+         |    метод отрабатывал, создавал документ, но выполнение шло
+         |    ДАЛЬШЕ и создавался ВТОРОЙ документ обычным путём.
+         |
+         | 2) Валидация 'resolution_user' => 'required' выполнялась и для
+         |    free-sign. У внешаблонных документов резолюции нет, поле
+         |    пустое -> validate() бросал ошибку -> редирект назад на форму.
+         |    Именно поэтому не получалось сохранить.
+         |
+         | Теперь: free-sign уходит в свой метод и СРАЗУ возвращает результат,
+         | не доходя до валидации резолюции.
+         */
+        if ((int) $request->journal_type === self::FREE_SIGN_JOURNAL_TYPE) {
+            return $this->storeFreeSign($request);
+        }
+
+        // Резолюция обязательна только для ШАБЛОННЫХ документов.
         $request->validate([
             'resolution_user' => 'required'
         ], [
@@ -214,11 +266,13 @@ class DocumentController extends Controller
         // 1️⃣ Asosiy hujjat yaratish
         $document = Documents::create([
             'doc_number' => $request->doc_number,
-            'doc_date' => $request->doc_date ? Carbon::createFromFormat('d.m.Y', $request->doc_date)->format('Y-m-d') : now(),
+            // Устойчивый парсинг: поле может прийти как dd.mm.yyyy (datepicker)
+            // либо Y-m-d (нативный input[type=date] / старое значение формы).
+            'doc_date' => $this->parseDocDate($request->doc_date),
             'doc_name' => $request->doc_name ?? $journal_type->title,
             'doc_hash' => $this->uniqueHash(8),
             'doc_code' => $this->uniqueDocCode(),
-            'doc_text' => $request->doc_text??'',
+            'doc_text' => $request->doc_text ?? '',   // у free-sign текста нет — пусто
             'doc_term' => $request->signing_term,
             'doc_lang' => $request->doc_lang,
         ]);
@@ -261,7 +315,310 @@ class DocumentController extends Controller
         return Redirect::route($routeName, [$journal->id, $document->doc_hash])
             ->with('success', $successMessage);
     }
+    /**
+     * Парсинг даты документа, устойчивый к формату.
+     *
+     * Поле doc_date может прийти как:
+     *   - '15.07.2026'  — bootstrap-datepicker (format: dd.mm.yyyy)
+     *   - '2026-07-15'  — нативный input[type=date] или дефолт формы
+     *
+     * Жёсткий Carbon::createFromFormat('d.m.Y', ...) на втором варианте падал:
+     * "The separation symbol could not be found / Unexpected data found".
+     */
+    private function parseDocDate(?string $value): string
+    {
+        if (!$value) {
+            return now()->format('Y-m-d');
+        }
 
+        foreach (['d.m.Y', 'Y-m-d', 'd/m/Y'] as $format) {
+            try {
+                $date = Carbon::createFromFormat($format, trim($value));
+                if ($date !== false) {
+                    return $date->format('Y-m-d');
+                }
+            } catch (\Throwable $e) {
+                // пробуем следующий формат
+            }
+        }
+
+        // Последняя попытка — пусть Carbon разберётся сам.
+        try {
+            return Carbon::parse($value)->format('Y-m-d');
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('[free-sign] не распознан doc_date, ставим сегодня', [
+                'value' => $value,
+            ]);
+            return now()->format('Y-m-d');
+        }
+    }
+
+    public function storeFreeSign(Request $request): RedirectResponse
+    {
+
+        $journal_type = JournalTypes::find($request->journal_type);
+
+        $journal_type2 = JournalTypes::find($request->journal_type2);
+        // 1️⃣ Asosiy hujjat yaratish
+        $document = Documents::create([
+            'doc_number' => $request->doc_number,
+            // Устойчивый парсинг даты (dd.mm.yyyy | Y-m-d) — см. parseDocDate().
+            'doc_date' => $this->parseDocDate($request->doc_date),
+            'doc_name' => $request->doc_name ?? $journal_type->title,
+            'doc_hash' => $this->uniqueHash(8),
+            'doc_code' => $this->uniqueDocCode(),
+            'doc_text' => $request->doc_text??'',
+            'doc_term' => $request->signing_term,
+            'doc_lang' => $request->doc_lang,
+        ]);
+
+        // 2️⃣ Asosiy jurnal yaratish
+        $journal = DocumentJournals::create([
+            'doc_id' => $document->id,
+            'j_type' => $journal_type2?->id ?? $journal_type->id,
+            'j_number' => $request->j_number ?? 1,
+            'org_unit_id' => $this->organizationId(),
+            'j_date' => now(),
+            'confid_type' => $request->confidence,
+            'created_dep' => $this->authActiveUser()->dep_id,
+            'created_user' => $this->authActiveUser()->id,
+            'status' => 1,
+        ]);
+
+        // 3️⃣ Har bir doc_code uchun handler orqali bajarish
+        $handler = DocumentFactory::make($journal_type);
+        $handler->handle($document, $journal, $request);
+
+//        // 4️⃣ Qo‘shimcha fayllarni saqlash
+        $this->saveFiles($document->id, $journal->id, $request);
+
+        // 6️⃣ Log yaratish
+        $this->createLog($journal->doc_id, 1, $journal->journal->title ?? '', $document->doc_name ?? '');
+
+        // Redirect to document view page
+        $successMessage = __('message.doc_created_success_message');
+
+        // ИСПРАВЛЕНО: было `return view('office.journal.work.free-sign')` —
+        // вьюха отдавалась НАПРЯМУЮ и БЕЗ данных ($journal, $document,
+        // $documentFile, $people, $roles...). Blade падал на Undefined variable,
+        // и пользователя выбрасывало обратно на форму создания.
+        //
+        // Правильно — редирект на viewFreeSign(), который сам соберёт всё
+        // нужное: PDF, подписантов, роли, метки, режим, статусы.
+        return redirect()
+            ->route('office.work.free-sign', [$journal->id, $document->doc_hash])
+            ->with('success', $successMessage);
+    }
+    public function saveFromEditor(Request $request, $documentId): JsonResponse
+    {
+        $data = $request->validate([
+            'sequential'         => 'required|boolean',
+            'signers'            => 'required|array|min:1',
+            'signers.*.user_id'  => 'required|integer',
+            'signers.*.role_id'  => 'required|integer',
+            'signers.*.order'    => 'nullable|integer',
+            'fields'             => 'present|array',
+            'fields.*.page'      => 'required|integer|min:1',
+            'fields.*.type'      => 'required|string|max:40',
+            'fields.*.signer_id' => 'nullable|integer',
+            'fields.*.x'         => 'required|numeric|between:0,1',
+            'fields.*.y'         => 'required|numeric|between:0,1',
+            'fields.*.width'     => 'required|numeric|between:0,1',
+            'fields.*.height'    => 'required|numeric|between:0,1',
+            'fields.*.params'    => 'nullable|array',
+        ]);
+
+        // journal_id для document_execution_steps.
+        // ВАРИАНТ А: журнал уже создан заранее и его id пришёл/хранится — подставь его.
+        // ВАРИАНТ Б: если журнала нет — создай его здесь своей логикой и получи id.
+        // Пока берём из запроса или из документа — ЗАМЕНИ на свою реальную логику.
+        $journalId = DocumentJournals::where('doc_id', $documentId)->firstOrFail()->id;
+
+        // Нормализуем подписантов под saveRouteAndFields (user_id + exec_role_id).
+        $signers = collect($data['signers'])->map(function ($s) {
+            return [
+                'user_id'      => $s['user_id'],
+                'exec_role_id' => $s['role_id'],
+            ];
+        })->toArray();
+
+        try {
+            $this->saveRouteAndFields(
+                $journalId,
+                (int) $documentId,
+                $signers,
+                $data['fields']
+            );
+        } catch (\Throwable $e) {
+            return response()->json([
+                'ok'      => false,
+                'message' => 'Ошибка сохранения: ' . $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'ok'      => true,
+            'message' => 'Маршрут и поля сохранены',
+            'saved'   => [
+                'signers' => count($signers),
+                'fields'  => count($data['fields']),
+            ],
+        ]);
+    }
+
+    public function saveRouteAndFields(int $journalId, int $documentId, array $signers, array $fields): void
+    {
+        DB::transaction(function () use ($journalId, $documentId, $signers, $fields) {
+
+            // 1. Шаги маршрута. Создаются со status=1 (спят) — активирует startRoute().
+            //
+            // ВАЖНО про to_user: в проекте шаги ищутся через
+            //   whereIn('to_user', authActiveUserIds())  → это ID из user_work_histories,
+            // а extracted() зовёт userWork($signatory_user) = UserWorkHistory::find(...).
+            // Значит to_user ДОЛЖЕН быть work_history.id, а НЕ users.id.
+            //
+            // Редактор отдаёт users.id (список людей строится по users),
+            // поэтому здесь конвертируем: users.id → активный work_history.id
+            // в текущей организации.
+            $orgId = $this->authActiveUser()->org_id ?? auth()->user()->org_unit_id;
+
+            foreach ($signers as $s) {
+                // work_history ТОЛЬКО в текущей организации.
+                //
+                // ⚠ ФОЛБЭКА НА ЧУЖУЮ ОРГАНИЗАЦИЮ БЫТЬ НЕ ДОЛЖНО:
+                // списки фильтруют через whereIn('to_user', authActiveUserIds()),
+                // а authActiveUserIds() возвращает work_history ТОЛЬКО текущей org.
+                // Если создать шаг на work_id из другой организации — шаг будет
+                // в БД, но НИКТО его не увидит: документ зависнет навсегда.
+                $workId = \App\Models\Admin\UserWorkHistory::where('user_id', $s['user_id'])
+                    ->where('org_id', $orgId)
+                    ->where('status', 1)
+                    ->value('id');
+
+                if (!$workId) {
+                    // Честно падаем, а не создаём невидимый шаг.
+                    \Illuminate\Support\Facades\Log::error('[free-sign] у подписанта НЕТ активного work_history в этой организации', [
+                        'user_id' => $s['user_id'],
+                        'org_id'  => $orgId,
+                        'hint'    => 'подписант не работает в этой организации — шаг создавать нельзя',
+                    ]);
+
+                    throw new \RuntimeException(
+                        'Подписант (user_id: ' . $s['user_id'] . ') не имеет активного рабочего места '
+                        . 'в текущей организации. Выберите другого подписанта.'
+                    );
+                }
+
+                $this->extracted($journalId, $workId, $s['exec_role_id']);
+            }
+
+            // 2. Поля (метки) — перезаписываем набор документа.
+            FreeSignDocumentField::where('document_id', $documentId)->delete();
+
+            $rows = [];
+            $now  = now();
+            foreach ($fields as $f) {
+                $rows[] = [
+                    'document_id' => $documentId,
+                    'signer_id'   => $f['signer_id'] ?? null,
+                    'type'        => $f['type'],
+                    'page'        => $f['page'],
+                    'x'           => $f['x'],
+                    'y'           => $f['y'],
+                    'width'       => $f['width'],
+                    'height'      => $f['height'],
+                    'params'      => isset($f['params']) ? json_encode($f['params']) : null,
+                    'z_index'     => $f['z_index'] ?? 0,
+                    'created_at'  => $now,
+                    'updated_at'  => $now,
+                ];
+            }
+            if (!empty($rows)) {
+                FreeSignDocumentField::insert($rows);
+            }
+
+            // 3. QR-код проверки для этого документа (doc_type='free_sign').
+            //    Штамп типа 'qr' берёт key_code отсюда.
+            QrCodeKeys::updateOrCreate(
+                ['doc_id' => $documentId, 'doc_type' => 'free_sign'],
+                ['key_code' => (string) random_int(1000, 9999), 'key_date' => now()->toDateString()]
+            );
+
+            // 4. МАРШРУТ НЕ ЗАПУСКАЕМ.
+            //    Документ остаётся в статусе 1 (Yaratilgan), шаги спят (status=1),
+            //    письма не уходят. Маршрут стартует ТОЛЬКО когда автор подпишет
+            //    (подтвердит отправку) — см. handleFreeSignDocument().
+            //
+            //    Автор в маршруте НЕ участвует: его подпись — криптографическое
+            //    подтверждение отправки, метка на PDF не ставится.
+        });
+    }
+
+    public function documentStatus($documentId): JsonResponse
+    {
+        $journal = DB::table('document_journals')
+            ->where('doc_id', $documentId)
+            ->orderByDesc('id')
+            ->first();
+
+        $journalStatus = $journal->status ?? null;
+        $journalId     = $journal->id ?? null;
+
+        // Режим: edit — документ создаётся/редактируется; view — уже в маршруте.
+        $editStatuses = [1, 3];   // Yaratilgan, Tahrirlash
+        $mode   = in_array($journalStatus, $editStatuses, true) ? 'edit' : 'view';
+        $isDone = ((int) $journalStatus === FreeSignRouteService::JOURNAL_FINISHED); // 10
+
+        // Статусы шагов: 1 = спит, 2 = активен (его очередь), 5 = подписал.
+        $signers = [];
+        if ($journalId) {
+            $steps = DB::table('document_execution_steps')
+                ->where('j_id', $journalId)
+                ->orderBy('id')
+                ->get(['to_user', 'status']);
+
+            foreach ($steps as $step) {
+                $st = (int) $step->status;
+                // to_user — work_history.id; фронт оперирует users.id (id карточек).
+                $uid = DB::table('user_work_histories')->where('id', $step->to_user)->value('user_id') ?? $step->to_user;
+                $signers[] = [
+                    'user_id' => $uid,
+                    // Завершённым считается 5 (подписал) И 6 (подтвердил исполнение).
+                    // Раньше 6 попадал в default => 'pending' — редактор показывал
+                    // «не подписано», хотя человек уже подписал.
+                    'status'  => match (true) {
+                        FreeSignRouteService::isStepCompleted($st)   => 'signed',
+                        $st === FreeSignRouteService::STEP_ACTIVE    => 'active',
+                        default                                      => 'pending',
+                    },
+                ];
+            }
+        }
+
+        return response()->json([
+            'mode'                  => $mode,
+            'is_done'               => $isDone,
+            'document_status'       => $journalStatus,
+            'document_status_label' => $this->resolveStatusLabel($journalStatus),
+            'signers'               => $signers,
+        ]);
+    }
+
+    /**
+     * Название статуса по коду (из справочника статусов).
+     * ЗАМЕНИ на свой запрос к таблице статусов с переводом по локали.
+     */
+    private function resolveStatusLabel($code): ?string
+    {
+        if ($code === null) return null;
+
+        // Заглушка-фолбэк. Подставь реальный справочник (status_lists?) с language_lines.
+        $map = [
+            1 => 'Создан', 2 => 'Отменён', 3 => 'Редактирование', 4 => 'Удалён',
+            5 => 'На подписи', 9 => 'На согласовании', 10 => 'Завершён',
+        ];
+        return $map[$code] ?? ('Статус ' . $code);
+    }
     public function saveFiles($document_id, $journal_id, $request)
     {
         $today = Carbon::today();

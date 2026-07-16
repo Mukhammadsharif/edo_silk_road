@@ -33,7 +33,7 @@
                     <div class="info-row-modern">
                         <span class="info-label-sm">{{ __('title.res_type') }}:</span>
                         <span class="badge-modern badge-aqua">
-                            {{ $directorResolution->resType->lang($directorResolution->resType->lang_id)??'' }}
+                            {{ optional($directorResolution->resType)->lang(optional($directorResolution->resType)->lang_id) ?? '' }}
                         </span>
                     </div>
                     <div class="resolution-text-modern">
@@ -59,12 +59,12 @@
                     <div class="status-item-modern">
                         <div class="status-label">
                             @if(session()->get('locale') === 'ru')
-                                {{ $directorResolution->fromUser->userPost->post_name_ru??'' }}
+                                {{ optional(optional($directorResolution->fromUser)->userPost)->post_name_ru ?? '' }}
                             @else
-                                {{ $directorResolution->fromUser->userPost->post_name??'' }}
+                                {{ optional(optional($directorResolution->fromUser)->userPost)->post_name ?? '' }}
                             @endif
                         </div>
-                        <div class="status-value font-bold">{{ $directorResolution->fromUser->personal->shortName()??'' }}</div>
+                        <div class="status-value font-bold">{{ optional(optional($directorResolution->fromUser)->personal)->shortName() ?? '' }}</div>
                     </div>
                 </div>
             </div>
@@ -95,12 +95,25 @@
                             {{ \Carbon\Carbon::parse($journal->created_at)->format('d.m.y, H:i') }}
                         </div>
                     </div>
-                    <div class="status-item-modern">
-                        <div class="status-label">
-                            {{ $directorDocument->toUser->userPost->lang($directorDocument->toUser->userPost->id)??'' }}
+                    {{-- ИСПРАВЛЕНО: блок внутри @if($directorResolution), но лезет
+                         в $directorDocument — это РАЗНЫЕ переменные:
+                           $directorResolution — запись document_resolutions
+                           $directorDocument   — шаг маршрута с ролью RESOL
+                         Резолюция может быть, а шага RESOL нет (и наоборот).
+                         У free-sign роли произвольные -> $directorDocument = null
+                         -> "Attempt to read property toUser on null". --}}
+                    @if(!empty($directorDocument) && $directorDocument->toUser)
+                        <div class="status-item-modern">
+                            <div class="status-label">
+                                @if($directorDocument->toUser->userPost)
+                                    {{ $directorDocument->toUser->userPost->lang($directorDocument->toUser->userPost->id) ?? '' }}
+                                @endif
+                            </div>
+                            <div class="status-value font-bold">
+                                {{ optional($directorDocument->toUser->personal)->shortName() ?? '' }}
+                            </div>
                         </div>
-                        <div class="status-value font-bold">{{ $directorDocument->toUser->personal->shortName()??'' }}</div>
-                    </div>
+                    @endif
                 </div>
             </div>
         @endif

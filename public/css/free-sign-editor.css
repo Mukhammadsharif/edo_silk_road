@@ -1,0 +1,793 @@
+:root {
+    --accent: #794DFD;
+    --accent-weak: #efeaff;
+    --ink: #1f2937;
+    --muted: #94a3b8;
+    --line: rgba(15, 23, 42, 0.10);
+    --panel: #fff;
+    --bg: #f1f2f6;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DARK MODE
+   Включается, когда на <body> стоит класс темы. Поддержаны оба
+   варианта записи: одиночный класс .theme-dark и пара .theme.dark.
+   Перекрашивание идёт через переопределение CSS-переменных —
+   вся вёрстка ниже опирается на них, поэтому меняем только значения.
+   ═══════════════════════════════════════════════════════════════ */
+body.theme-dark .fs-editor,
+body.theme.dark .fs-editor,
+body.theme-dark.fs-editor,
+body.theme.dark.fs-editor,
+html.theme-dark .fs-editor,
+html.theme.dark .fs-editor,
+[data-theme="dark"] .fs-editor {
+    --accent: #9d7bff;              /* чуть светлее, чтобы читался на тёмном */
+    --accent-weak: #2a2440;        /* тёмная подложка вместо светло-сиреневой */
+    --ink: #e5e7eb;                /* основной текст — светлый */
+    --muted: #8b93a7;              /* приглушённый текст */
+    --line: rgba(226, 232, 240, 0.12);
+    --panel: #1a1d29;              /* панели/тулбар/сайдбар */
+    --bg: #0f1117;                 /* фон рабочей области */
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* Локальный скоуп редактора внутри layout. Высоту хедера задай через
+--fs-header-h в Blade, если у layout есть фиксированная шапка. */
+.fs-editor {
+    --fs-header-h: 0px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    color: var(--ink);
+}
+
+.fs-editor .fse-app {
+    display: grid;
+    grid-template-columns: 1fr 340px;   /* контент | панель */
+    grid-template-rows: 52px 1fr;
+    grid-template-areas:
+                "toolbar toolbar"
+                "stage   sidebar";
+    height: calc(100vh - var(--fs-header-h, 0px));
+    width: 100%;
+    overflow: hidden;
+    background: var(--bg);
+    border-radius: 10px;
+    direction: ltr;   /* не наследуем RTL от layout — панель всегда справа */
+}
+
+.fs-editor .fse-toolbar {
+    grid-area: toolbar;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 16px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--line);
+}
+
+.fs-editor .fse-toolbar .fse-brand {
+    font-weight: 700;
+    letter-spacing: .3px;
+}
+
+.fs-editor .fse-toolbar .fse-brand span {
+    color: var(--accent);
+}
+
+.fs-editor .fse-spacer {
+    flex: 1;
+}
+
+.fs-editor .fse-tbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 34px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--ink);
+    user-select: none;
+}
+
+.fs-editor .fse-tbtn:hover {
+    background: var(--accent-weak);
+    border-color: var(--accent);
+}
+
+.fs-editor .fse-tbtn.fse-primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+
+.fs-editor .fse-toolgroup {
+    display: flex;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.fs-editor .fse-toolgroup .fse-tool {
+    width: 38px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    background: var(--panel);
+    color: var(--ink);
+    font-size: 15px;
+    border-right: 1px solid var(--line);
+}
+
+.fs-editor .fse-toolgroup .fse-tool:last-child {
+    border-right: none;
+}
+
+.fs-editor .fse-toolgroup .fse-tool.fse-active {
+    background: var(--accent);
+    color: #fff;
+}
+
+.fs-editor .fse-zoom {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.fs-editor .fse-zoom .fse-val {
+    width: 52px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.fs-editor .fse-iconbtn {
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    color: var(--ink);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1;
+    display: grid;
+    place-items: center;
+}
+
+.fs-editor .fse-stage-area {
+    grid-area: stage;
+    overflow: auto;
+    padding: 24px;
+    position: relative;
+}
+
+.fs-editor .fse-page-wrap {
+    position: relative;
+    margin: 0 auto 22px auto;
+    background: #fff;   /* сам PDF-лист всегда белый — это документ */
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
+    width: max-content;
+}
+
+.fs-editor .fse-page-wrap canvas.pdf {
+    display: block;
+    pointer-events: none;
+}
+
+.fs-editor .fse-page-wrap .konva-holder {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.fs-editor .fse-page-wrap.fse-draw-mode .konvajs-content {
+    cursor: crosshair;
+}
+
+.fs-editor .fse-page-badge {
+    position: absolute;
+    top: -11px;
+    left: 8px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    z-index: 5;
+    pointer-events: none;
+}
+
+/* ── Sidebar ── */
+.fs-editor .fse-sidebar {
+    grid-area: sidebar;
+    background: var(--panel);
+    border-left: 1px solid var(--line);
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.fs-editor .fse-side-title {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: var(--muted);
+    margin: 0 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.fs-editor .fse-side-title .fse-cnt {
+    background: var(--accent-weak);
+    color: var(--accent);
+    font-size: 11px;
+    padding: 1px 7px;
+    border-radius: 20px;
+    letter-spacing: 0;
+}
+
+/* Signer cards */
+.fs-editor .fse-signer-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.fs-editor .fse-signer-card {
+    position: relative;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    padding: 11px 12px;
+    cursor: pointer;
+    transition: .14s;
+    background: var(--panel);
+    overflow: hidden;
+}
+
+.fs-editor .fse-signer-card:hover {
+    border-color: var(--accent);
+}
+
+.fs-editor .fse-signer-card.fse-active {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-weak);
+}
+
+.fs-editor .fse-signer-card .fse-accent-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+}
+
+.fs-editor .fse-sc-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-left: 6px;
+}
+
+.fs-editor .fse-sc-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 13px;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.fs-editor .fse-sc-meta {
+    flex: 1;
+    min-width: 0;
+}
+
+.fs-editor .fse-sc-name {
+    font-size: 13.5px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fs-editor .fse-sc-role {
+    font-size: 11.5px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fs-editor .fse-sc-seq {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--bg);
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    display: grid;
+    place-items: center;
+}
+
+.fs-editor .fse-sc-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 9px;
+    padding-left: 6px;
+}
+
+.fs-editor .fse-sc-fields {
+    font-size: 11.5px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.fs-editor .fse-sc-fields b {
+    color: var(--ink);
+}
+
+.fs-editor .fse-sc-remove {
+    border: none;
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px 4px;
+}
+
+.fs-editor .fse-sc-remove:hover {
+    color: #dc2626;
+}
+
+.fs-editor .fse-sc-active-tag {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+
+.fs-editor .fse-add-signer {
+    border: 1.5px dashed var(--line);
+    border-radius: 12px;
+    padding: 11px;
+    cursor: pointer;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    transition: .14s;
+}
+
+.fs-editor .fse-add-signer:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-weak);
+}
+
+.fs-editor .fse-add-form {
+    border: 1.5px solid var(--accent);
+    border-radius: 12px;
+    padding: 12px;
+    display: none;
+}
+
+.fs-editor .fse-add-form.fse-open {
+    display: block;
+}
+
+.fs-editor .fse-add-form input, .fs-editor .fse-add-form select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    font-size: 13px;
+    margin-bottom: 8px;
+    background: var(--panel);
+    color: var(--ink);
+}
+
+.fs-editor .fse-add-form .fse-row {
+    display: flex;
+    gap: 8px;
+}
+
+.fs-editor .fse-add-form .fse-row .fse-tbtn {
+    flex: 1;
+    justify-content: center;
+}
+
+/* Palette */
+.fs-editor .fse-palette {
+    display: grid;
+    grid-template-columns:1fr 1fr;
+    gap: 8px;
+}
+
+.fs-editor .fse-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 10px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    font-size: 12px;
+    cursor: pointer;
+    background: var(--panel);
+    color: var(--ink);
+    user-select: none;
+    transition: .12s;
+}
+
+.fs-editor .fse-chip:hover {
+    border-color: var(--accent);
+    background: var(--accent-weak);
+}
+
+.fs-editor .fse-chip .fse-ic {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: var(--accent-weak);
+    color: var(--accent);
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+.fs-editor .fse-chip.fse-disabled {
+    opacity: .4;
+    pointer-events: none;
+}
+
+.fs-editor .fse-active-signer-hint {
+    font-size: 11.5px;
+    color: var(--muted);
+    margin: 0 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.fs-editor .fse-active-signer-hint .fse-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.fs-editor .fse-props {
+    margin-top: 18px;
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
+    display: none;
+}
+
+.fs-editor .fse-props.fse-active {
+    display: block;
+}
+
+.fs-editor .fse-prop-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 9px;
+    font-size: 12.5px;
+}
+
+.fs-editor .fse-prop-row label {
+    color: var(--muted);
+}
+
+.fs-editor .fse-prop-row input, .fs-editor .fse-prop-row select {
+    width: 120px;
+    padding: 5px 8px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font-size: 12.5px;
+    background: var(--panel);
+    color: var(--ink);
+}
+
+.fs-editor .fse-danger {
+    color: #dc2626;
+    border-color: #fecaca;
+}
+
+.fs-editor .fse-danger:hover {
+    background: #fef2f2;
+    border-color: #dc2626;
+}
+
+.fs-editor .fse-coords-out {
+    margin-top: 16px;
+    background: #0f172a;
+    color: #a5f3fc;
+    border-radius: 8px;
+    padding: 10px;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 10.5px;
+    max-height: 150px;
+    overflow: auto;
+    white-space: pre;
+}
+
+.fs-editor .fse-loading {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.fs-editor input[type=file] {
+    display: none;
+}
+
+.fs-editor .fse-type-popover {
+    position: fixed;
+    z-index: 1000;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .4);
+    padding: 8px;
+    width: 230px;
+    display: none;
+}
+
+.fs-editor .fse-type-popover.fse-active {
+    display: block;
+}
+
+.fs-editor .fse-type-popover .fse-tp-title {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    padding: 2px 6px 4px;
+}
+
+.fs-editor .fse-type-popover .fse-tp-sub {
+    font-size: 11px;
+    padding: 0 6px 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.fs-editor .fse-type-popover .fse-tp-sub .fse-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+}
+
+.fs-editor .fse-type-popover .fse-tp-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 8px;
+    border-radius: 7px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--ink);
+}
+
+.fs-editor .fse-type-popover .fse-tp-item:hover {
+    background: var(--accent-weak);
+    color: var(--accent);
+}
+
+.fs-editor .fse-type-popover .fse-tp-item .fse-ic {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: var(--accent-weak);
+    color: var(--accent);
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+}
+
+.fs-editor .fse-sep {
+    height: 1px;
+    background: var(--line);
+    margin: 16px 0;
+}
+
+/* ── Список кандидатов при добавлении подписанта ── */
+.fs-editor .fse-candidate-list {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 8px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+}
+
+.fs-editor .fse-candidate-list:empty {
+    display: none;
+}
+
+.fs-editor .fse-cand-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    font-size: 13px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink);
+}
+
+.fs-editor .fse-cand-item:last-child {
+    border-bottom: none;
+}
+
+.fs-editor .fse-cand-item:hover {
+    background: var(--accent-weak);
+    color: var(--accent);
+}
+
+.fs-editor .fse-cand-item .fse-cand-ava {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--accent-weak);
+    color: var(--accent);
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.fs-editor .fse-cand-empty {
+    padding: 10px;
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+}
+
+/* ── Переключатель порядка подписания ── */
+.fs-editor .fse-order-switch {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.fs-editor .fse-order-opt {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 8px;
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    font-size: 12.5px;
+    cursor: pointer;
+    user-select: none;
+    transition: .14s;
+    background: var(--panel);
+    color: var(--ink);
+}
+
+.fs-editor .fse-order-opt:hover {
+    border-color: var(--accent);
+}
+
+.fs-editor .fse-order-opt.fse-active {
+    border-color: var(--accent);
+    background: var(--accent-weak);
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.fs-editor .fse-order-opt .fse-order-ic {
+    font-size: 15px;
+    line-height: 1;
+}
+
+/* Скрываем номера очерёдности на карточках в параллельном режиме */
+.fs-editor.fse-parallel .fse-sc-seq {
+    display: none;
+}
+
+/* ═══════════════ РЕЖИМ ПРОСМОТРА / ОЖИДАНИЯ ═══════════════ */
+
+/* Баннер общего статуса вверху сайдбара */
+.fs-editor .fse-status-banner {
+    background: var(--accent-weak);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 16px;
+}
+.fs-editor .fse-status-banner.fse-done {
+    background: rgba(32, 163, 123, 0.12);
+    border-color: rgba(32, 163, 123, 0.4);
+}
+.fs-editor .fse-sb-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent);
+}
+.fs-editor .fse-status-banner.fse-done .fse-sb-title {
+    color: #159169;
+}
+.fs-editor .fse-sb-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 3px;
+}
+.fs-editor .fse-sb-bar {
+    height: 6px;
+    background: var(--line);
+    border-radius: 20px;
+    margin-top: 10px;
+    overflow: hidden;
+}
+.fs-editor .fse-sb-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 20px;
+    transition: width .4s ease;
+}
+
+/* Статус на карточке подписанта */
+.fs-editor .fse-status {
+    font-size: 11.5px;
+    font-weight: 600;
+}
+.fs-editor .fse-status-signed { color: #159169; }
+.fs-editor .fse-status-turn   { color: var(--accent); }
+.fs-editor .fse-status-wait   { color: var(--muted); }
+
+/* Карточка подписавшего — приглушённая с зелёной рамкой слева */
+.fs-editor .fse-signer-card.fse-signed {
+    border-color: rgba(32, 163, 123, 0.35);
+    background: rgba(32, 163, 123, 0.04);
+}
+/* Карточка «сейчас его очередь» — акцентная рамка + пульс */
+.fs-editor .fse-signer-card.fse-turn {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-weak);
+}
+
+/* В режиме view курсор на карточках — обычный (не кликабельны) */
+.fs-editor.fse-viewmode .fse-signer-card {
+    cursor: default;
+}
+.fs-editor.fse-viewmode .fse-signer-card:hover {
+    border-color: var(--line);
+}
+.fs-editor.fse-viewmode .fse-signer-card.fse-turn:hover {
+    border-color: var(--accent);
+}
+
+.fs-editor .fse-btn-sent {
+    background: var(--muted) !important;
+    border-color: var(--muted) !important;
+}

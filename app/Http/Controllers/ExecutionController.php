@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Admin\StatusList;
+use App\Services\FreeSign\FreeSignRouteService;
 use App\Models\Admin\UserPersonalInfo;
 use App\Models\Admin\UserRole;
 use App\Models\Admin\UserWorkHistory;
@@ -497,7 +498,7 @@ class ExecutionController extends Controller
             'date_till', 'status', 'statusNames'));
     }
 
-    public function viewSignDocument($j_id, $doc_hash): Factory|View|Application
+    public function viewSignDocument($j_id, $doc_hash): Factory|View|Application|\Illuminate\Http\RedirectResponse
     {
         //
         $authUser = $this->authActiveUser();
@@ -554,12 +555,20 @@ class ExecutionController extends Controller
 
         $html_doc = $this->documentService->getHtmlDoc($journal, $document);
 
+        // Free-sign документ? Признак — наличие расставленных меток.
+        // От этого зависит, какой ecp_doc_type отправит форма подписи.
+        $isFreeSign = app(FreeSignRouteService::class)->isFreeSign($journal->doc_id);
+
+        // Free-sign? → PDF-viewer вместо HTML (см. confirm.templates.free-sign-page)
+        [$isFreeSignDoc, $documentFile, $pdfVersion, $fsGhosts] = $this->freeSignPdfData($journal);
+
         return view('execution.sign.view', compact('authUser','journal', 'document','edoCancelMessages', 'documentFiles',
             'directorDocument','directorResolution','selectedPerformers', 'isAddResolution','selectedAddPerformers',
-            'agreement_users', 'replyDocuments', 'qrKey', 'signer', 'signType', 'documentComments', 'comment_inputs', 'html_doc', 'model'));
+            'agreement_users', 'replyDocuments', 'qrKey', 'signer', 'signType', 'documentComments', 'comment_inputs', 'html_doc', 'model', 'isFreeSign',
+            'isFreeSignDoc', 'documentFile', 'pdfVersion', 'fsGhosts'));
     }
 
-    public function viewApprovalDocument($j_id, $doc_hash): Factory|View|Application
+    public function viewApprovalDocument($j_id, $doc_hash): Factory|View|Application|\Illuminate\Http\RedirectResponse
     {
         $authUser = $this->authActiveUser();
 
@@ -621,9 +630,16 @@ class ExecutionController extends Controller
 
         $html_doc = $this->documentService->getHtmlDoc($journal, $document);
 
+        // Free-sign документ? Признак — наличие расставленных меток.
+        $isFreeSign = app(FreeSignRouteService::class)->isFreeSign($journal->doc_id);
+
+        // Free-sign? → PDF-viewer вместо HTML (см. confirm.templates.free-sign-page)
+        [$isFreeSignDoc, $documentFile, $pdfVersion, $fsGhosts] = $this->freeSignPdfData($journal);
+
         return view('execution.agreement.view', compact('authUser','journal', 'document','edoCancelMessages', 'documentFiles',
             'directorDocument','directorResolution','selectedPerformers', 'isAddResolution','selectedAddPerformers',
-            'agreement_users', 'replyDocuments', 'qrKey', 'signer', 'signType', 'current_agreement', 'documentComments', 'comment_inputs', 'html_doc', 'model'));
+            'agreement_users', 'replyDocuments', 'qrKey', 'signer', 'signType', 'current_agreement', 'documentComments', 'comment_inputs', 'html_doc', 'model', 'isFreeSign',
+            'isFreeSignDoc', 'documentFile', 'pdfVersion', 'fsGhosts'));
     }
 
     public function viewControlDocument($j_id, $doc_hash): Factory|View|Application
@@ -696,10 +712,14 @@ class ExecutionController extends Controller
 
         $html_doc = $this->documentService->getHtmlDoc($journal, $document);
 
+        // Free-sign? → PDF-viewer вместо HTML (см. confirm.templates.free-sign-page)
+        [$isFreeSignDoc, $documentFile, $pdfVersion, $fsGhosts] = $this->freeSignPdfData($journal);
+
         return view('execution.doc-control.view', compact('authUser','journal', 'document','edoCancelMessages', 'documentFiles',
             'directorDocument','directorResolution','selectedPerformers', 'isAddResolution','selectedAddPerformers',
             'agreement_users', 'replyDocuments', 'qrKey', 'signer', 'signType', 'current_agreement', 'execution_users',
-            'resolutionExecRoles', 'resolutionTypes', 'execution_step_ids', 'html_doc', 'model'));
+            'resolutionExecRoles', 'resolutionTypes', 'execution_step_ids', 'html_doc', 'model',
+            'isFreeSignDoc', 'documentFile', 'pdfVersion', 'fsGhosts'));
     }
 
     public function viewConfirmDocument($j_id, $doc_hash): Factory|View|Application
@@ -779,10 +799,14 @@ class ExecutionController extends Controller
 
         $html_doc = $this->documentService->getHtmlDoc($journal, $document);
 
+        // Free-sign? → PDF-viewer вместо HTML (см. confirm.templates.free-sign-page)
+        [$isFreeSignDoc, $documentFile, $pdfVersion, $fsGhosts] = $this->freeSignPdfData($journal);
+
         return view('execution.confirm.view', compact('authUser','journal', 'document','edoCancelMessages', 'documentFiles',
             'directorDocument','directorResolution','selectedPerformers', 'isAddResolution','selectedAddPerformers',
             'agreement_users', 'replyDocuments', 'qrKey', 'signer', 'signType', 'current_agreement', 'execution_users',
-            'resolutionExecRoles', 'resolutionTypes', 'execution_step_ids', 'documentComments', 'comment_inputs', 'html_doc', 'model'));
+            'resolutionExecRoles', 'resolutionTypes', 'execution_step_ids', 'documentComments', 'comment_inputs', 'html_doc', 'model',
+            'isFreeSignDoc', 'documentFile', 'pdfVersion', 'fsGhosts'));
     }
 
     public function viewExecDocument($j_id, $doc_hash): Factory|View|Application
@@ -862,10 +886,14 @@ class ExecutionController extends Controller
 
         $html_doc = $this->documentService->getHtmlDoc($journal, $document);
 
+        // Free-sign? → PDF-viewer вместо HTML (см. confirm.templates.free-sign-page)
+        [$isFreeSignDoc, $documentFile, $pdfVersion, $fsGhosts] = $this->freeSignPdfData($journal);
+
         return view('execution.executor.view', compact('authUser','journal', 'document', 'documentFiles',
             'directorDocument','directorResolution','selectedPerformers','selectedAddPerformers',
             'agreement_users', 'replyDocuments', 'qrKey', 'signer', 'signType', 'current_execution', 'execution_users',
-            'resolutionExecRoles', 'resolutionTypes', 'execution_step_ids', 'documentComments', 'comment_inputs', 'html_doc', 'model'));
+            'resolutionExecRoles', 'resolutionTypes', 'execution_step_ids', 'documentComments', 'comment_inputs', 'html_doc', 'model',
+            'isFreeSignDoc', 'documentFile', 'pdfVersion', 'fsGhosts'));
     }
 
     public function createResolution(Request $request, $j_id): RedirectResponse
@@ -1500,5 +1528,138 @@ class ExecutionController extends Controller
         $comment->res_text = $r_text ?? '';
         $comment->status = $status;
         $comment->save();
+    }
+
+    /**
+     * Free-sign документ? → отдаём PDF-viewer вместо HTML-текста.
+     *
+     * Признак: у документа есть расставленные метки подписи.
+     * $documentFile — ПОСЛЕДНЯЯ версия PDF (со штампами подписавших):
+     * каждая подпись создаёт новую запись document_files.
+     *
+     * @return array{0: bool, 1: \App\Models\Document\DocumentFiles|null, 2: int|null}
+     */
+    private function freeSignPdfData($journal): array
+    {
+        $isFreeSignDoc = app(FreeSignRouteService::class)->isFreeSign($journal->doc_id);
+
+        if (!$isFreeSignDoc) {
+            return [false, null, null, collect()];
+        }
+
+        // Последняя ПРОШТАМПОВАННАЯ версия (*_signed_vN.pdf).
+        // Ищем именно по метке версии, а не просто последний PDF:
+        // у документа могут быть и другие PDF-вложения (приложения),
+        // они не должны подменять основной документ.
+        $stamped = \App\Models\Document\DocumentFiles::where('j_id', $journal->id)
+            ->where('file_ext', 'pdf')
+            ->where('file_name', 'ilike', '%_signed_v%')
+            ->orderByDesc('id')
+            ->first();
+
+        // Оригинал — самый ранний PDF без метки версии.
+        $original = \App\Models\Document\DocumentFiles::where('j_id', $journal->id)
+            ->where('file_ext', 'pdf')
+            ->where('file_name', 'not ilike', '%_signed_v%')
+            ->orderBy('id')
+            ->first();
+
+        // Показываем проштампованную, если есть; иначе оригинал.
+        $documentFile = $stamped ?: $original;
+
+        // Номер версии = сколько штампов уже наложено (0 = оригинал).
+        $pdfVersion = \App\Models\Document\DocumentFiles::where('j_id', $journal->id)
+            ->where('file_ext', 'pdf')
+            ->where('file_name', 'ilike', '%_signed_v%')
+            ->count();
+
+        $ghosts = $this->freeSignGhosts($journal);
+
+        // ДИАГНОСТИКА: какой файл реально отдаём во viewer.
+        \Illuminate\Support\Facades\Log::info('[free-sign] VIEWER file', [
+            'journal_id'  => $journal->id,
+            'stamped'     => $stamped?->file_name,
+            'original'    => $original?->file_name,
+            'showing'     => $documentFile?->file_name,
+            'file_id'     => $documentFile?->id,
+            'pdf_version' => $pdfVersion,
+            'ghosts'      => $ghosts->count(),
+        ]);
+
+        return [true, $documentFile, $pdfVersion, $ghosts];
+    }
+
+    /**
+     * Метки-призраки для PDF-viewer: «здесь БУДЕТ подпись такого-то».
+     *
+     * Показываем ТОЛЬКО метки тех, кто ещё НЕ подписал — у подписавших
+     * реальный штамп уже впечатан в PDF, дублировать призраком не нужно.
+     *
+     * Координаты нормализованные (0..1) — фронт умножит на размер канваса.
+     */
+    private function freeSignGhosts($journal)
+    {
+        $palette = ['#794DFD', '#e0679a', '#3a9bdc', '#20a37b', '#e0872f', '#8b5cf6', '#0ea5a3', '#d4547e'];
+
+        // Шаги маршрута → статус подписи по users.id.
+        // to_user = work_history.id, поэтому конвертируем в users.id:
+        // метки хранят signer_id = users.id (редактор строит список по users).
+        $steps = DocumentExecutionSteps::where('j_id', $journal->id)->orderBy('id')->get();
+
+        $signed = [];   // users.id => true (уже подписал)
+        $color  = [];   // users.id => цвет
+        $name   = [];   // users.id => ФИО
+
+        foreach ($steps->values() as $i => $step) {
+            $uid = DB::table('user_work_histories')->where('id', $step->to_user)->value('user_id');
+            if (!$uid) continue;
+
+            $color[$uid] = $palette[$i % count($palette)];
+            // Завершён = 5 (подписал) ИЛИ 6 (подтвердил исполнение).
+            // Иначе призрак не исчезал бы у подписавшего RESOL.
+            $signed[$uid] = FreeSignRouteService::isStepCompleted($step->status);
+
+            $name[$uid] = DB::table('users as u')
+                ->leftJoin('user_personal_infos as pi', 'pi.user_id', '=', 'u.id')
+                ->where('u.id', $uid)
+                ->selectRaw("TRIM(CONCAT(COALESCE(pi.l_name,''),' ',COALESCE(pi.f_name,''))) as n")
+                ->value('n');
+        }
+
+        // Человекочитаемые названия типов меток.
+        $labels = [
+            'signature'       => 'Подпись ЭЦП',
+            'qr'              => 'QR-код',
+            'full_name'       => 'ФИО',
+            'position'        => 'Должность',
+            'sign_date'       => 'Дата',
+            'sign_time'       => 'Время',
+            'cert_number'     => 'Номер сертификата',
+            'cert_info'       => 'Инфо сертификата',
+            'stamp_approved'  => 'Согласовано',
+            'stamp_confirmed' => 'Утверждено',
+            'free_text'       => 'Текст',
+        ];
+
+        return \App\Models\FreeSignDocumentField::where('document_id', $journal->doc_id)
+            ->orderBy('page')
+            ->get()
+            ->filter(function ($f) use ($signed) {
+                // Подписал → его штамп уже на PDF → призрак не нужен.
+                return empty($signed[$f->signer_id]);
+            })
+            ->map(function ($f) use ($color, $name, $labels) {
+                return [
+                    'page'   => (int) $f->page,
+                    'x'      => (float) $f->x,
+                    'y'      => (float) $f->y,
+                    'w'      => (float) $f->width,
+                    'h'      => (float) $f->height,
+                    'label'  => $labels[$f->type] ?? $f->type,
+                    'color'  => $color[$f->signer_id] ?? '#794DFD',
+                    'signer' => $name[$f->signer_id] ?? '',
+                ];
+            })
+            ->values();
     }
 }
