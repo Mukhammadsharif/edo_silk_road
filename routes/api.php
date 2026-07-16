@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Bitrix\DataController;
 use App\Http\Controllers\Api\ECP\SignDocImzoApiController;
 use App\Http\Controllers\Api\ECP\SignDocImzoMobileApiController;
 use App\Http\Controllers\Api\ECP\SignLoginApiController;
+use App\Http\Controllers\Api\Integration1C\OnecTokenController;
 use App\Http\Controllers\Api\Office\ExecutionApiController;
 use App\Http\Controllers\Api\Office\JournalApiController;
 use App\Http\Controllers\Api\Protocol\ProtocolApiCommentController;
@@ -335,7 +336,15 @@ Route::prefix('onec')->middleware('auth:sanctum')->group(function () {
     Route::post('/push-list/{entity}', [OnecOutboundController::class, 'pushList']);
     Route::delete('/push/{entity}',    [OnecOutboundController::class, 'pushDelete']);
     Route::post('/export/persons',     [OnecOutboundController::class, 'exportPersons']);
+
+    // --- Токен интеграции 1С (API-аналог веб-кабинета admin.onec.generate) ---
+    Route::post('/token/generate', [OnecTokenController::class, 'generate'])->name('api.onec.token.generate');
+    Route::get('/token/current',   [OnecTokenController::class, 'current'])->name('api.onec.token.current');
 });
+
+Route::post('onec/token/refresh', [OnecTokenController::class, 'refresh'])
+    ->middleware('throttle:20,1')          // 20 попыток в минуту с IP
+    ->name('api.onec.token.refresh');
 
 Route::prefix('didox')->middleware('auth:sanctum')->group(function () {
 
