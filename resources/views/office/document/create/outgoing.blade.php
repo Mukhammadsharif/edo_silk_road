@@ -252,6 +252,8 @@
                         </div>
                     </div>
                 </div>
+
+                @include('office.document.partials.related-documents-input')
             </form>
         </div>
     </div>

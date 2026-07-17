@@ -149,6 +149,9 @@
                             <span class="didox-status st-approved"><i data-lucide="check-check"></i> Прошёл внутреннее согласование</span>
                         @elseif($doc->approval_status === 'on_review')
                             <span class="didox-status st-review"><i data-lucide="users"></i> На согласовании</span>
+                        @elseif($doc->list_status === 'signed')
+                            {{-- Подписан без запуска внутреннего согласования — оно и не требовалось --}}
+                            <span class="didox-status st-approved"><i data-lucide="check-circle"></i> Согласование не требовалось</span>
                         @else
                             <span class="didox-status st-pending"><i data-lucide="minus-circle"></i> Не отправлен на согласование</span>
                         @endif
@@ -242,113 +245,135 @@
                     @endif
 
                     <!-- Внутреннее согласование -->
-                    <div class="didox-panel">
-                        <div class="panel-head">
-                            <span class="title"><i data-lucide="users"></i> Внутреннее согласование</span>
-                        </div>
-                        <div class="panel-body">
-                            @if($doc->approvers->isEmpty())
-                                @if($candidates->isEmpty())
-                                    <div style="display:flex; align-items:center; gap:8px; color:#a16207; font-size:13px;">
-                                        <i data-lucide="alert-triangle"></i>
-                                        В вашей организации нет других сотрудников для согласования.
-                                    </div>
-                                @else
-                                    <label style="font-size:13px; font-weight:600; display:flex; align-items:center; gap:6px; margin-bottom:8px;">
-                                        <i data-lucide="user-plus"></i> Выбор согласующих ({{ $candidates->count() }})
-                                    </label>
-
-                                    <div class="didox-search-box">
-                                        <i data-lucide="search"></i>
-                                        <input type="text" id="approverSearch"
-                                               onkeyup="searchApproverFunction()" placeholder="{{ __('action.search') }}...">
-                                    </div>
-
-                                    <div id="approvers-list" style="max-height:340px; overflow-y:auto; padding-right:4px;">
-                                        @foreach($candidates as $key => $c)
-                                            <div class="select-user" @if($key >= 5) data-overflow="1" style="display:none;" @endif>
-                                                <label class="didox-approver-card">
-                                                    <input type="checkbox" name="didox_agree[]" value="{{ $c->user_id }}">
-                                                    <div class="card-inner">
-                                                        <div class="avatar"><i data-lucide="user"></i></div>
-                                                        <div class="info">
-                                                            <span class="name">{{ $c->name }}</span>
-                                                            <span class="position">{{ trim($c->department . ($c->department && $c->position ? ' — ' : '') . $c->position) ?: '—' }}</span>
-                                                        </div>
-                                                        <div class="tick"><i data-lucide="check"></i></div>
-                                                    </div>
-                                                </label>
-                                            </div>
-                                        @endforeach
-                                    </div>
-
-                                    @if($candidates->count() > 5)
-                                        <div style="font-size:12px; color:#94a3b8; margin:6px 0 10px;">
-                                            Показаны первые 5 — остальных ищите через поиск.
-                                        </div>
-                                    @endif
-
-                                    <button type="button" class="btn-modern btn-primary" id="btn-send-review" style="width:100%;">
-                                        <i data-lucide="send"></i> Отправить на согласование
-                                    </button>
-                                @endif
-                            @else
-                                @foreach($doc->approvers as $a)
-                                    <div class="approver-row">
+                    @if($doc->list_status === 'signed' && $doc->approvers->isEmpty())
+                        {{-- Документ уже подписан и согласование не запускалось — панель не нужна --}}
+                    @else
+                        <div class="didox-panel">
+                            <div class="panel-head">
+                                <span class="title"><i data-lucide="users"></i> Внутреннее согласование</span>
+                            </div>
+                            <div class="panel-body">
+                                @if($doc->list_status === 'signed')
+                                    {{-- Подписан, но согласующие были назначены ранее — только история, без выбора/действий --}}
+                                    @foreach($doc->approvers as $a)
+                                        <div class="approver-row">
                                         <span style="display:inline-flex; align-items:center; gap:8px;">
                                             <i data-lucide="user"></i> {{ $a->user->name ?? ('#'.$a->user_id) }}
                                         </span>
-                                        <span>
+                                            <span>
                                             @if($a->status === 'approved')
-                                                <span class="didox-status st-approved" title="{{ $a->signed_at ? 'Подписано ЭЦП ' . $a->signed_at->format('d.m.Y H:i') : '' }}">
+                                                    <span class="didox-status st-approved"><i data-lucide="check"></i> согласовал</span>
+                                                @elseif($a->status === 'rejected')
+                                                    <span class="didox-status st-notsigned" title="{{ $a->comment }}"><i data-lucide="x"></i> отклонил</span>
+                                                @else
+                                                    <span class="didox-status st-pending"><i data-lucide="clock"></i> не завершил</span>
+                                                @endif
+                                        </span>
+                                        </div>
+                                    @endforeach
+                                @elseif($doc->approvers->isEmpty())
+                                    @if($candidates->isEmpty())
+                                        <div style="display:flex; align-items:center; gap:8px; color:#a16207; font-size:13px;">
+                                            <i data-lucide="alert-triangle"></i>
+                                            В вашей организации нет других сотрудников для согласования.
+                                        </div>
+                                    @else
+                                        <label style="font-size:13px; font-weight:600; display:flex; align-items:center; gap:6px; margin-bottom:8px;">
+                                            <i data-lucide="user-plus"></i> Выбор согласующих ({{ $candidates->count() }})
+                                        </label>
+
+                                        <div class="didox-search-box">
+                                            <i data-lucide="search"></i>
+                                            <input type="text" id="approverSearch"
+                                                   onkeyup="searchApproverFunction()" placeholder="{{ __('action.search') }}...">
+                                        </div>
+
+                                        <div id="approvers-list" style="max-height:340px; overflow-y:auto; padding-right:4px;">
+                                            @foreach($candidates as $key => $c)
+                                                <div class="select-user" @if($key >= 5) data-overflow="1" style="display:none;" @endif>
+                                                    <label class="didox-approver-card">
+                                                        <input type="checkbox" name="didox_agree[]" value="{{ $c->user_id }}">
+                                                        <div class="card-inner">
+                                                            <div class="avatar"><i data-lucide="user"></i></div>
+                                                            <div class="info">
+                                                                <span class="name">{{ $c->name }}</span>
+                                                                <span class="position">{{ trim($c->department . ($c->department && $c->position ? ' — ' : '') . $c->position) ?: '—' }}</span>
+                                                            </div>
+                                                            <div class="tick"><i data-lucide="check"></i></div>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            @endforeach
+                                        </div>
+
+                                        @if($candidates->count() > 5)
+                                            <div style="font-size:12px; color:#94a3b8; margin:6px 0 10px;">
+                                                Показаны первые 5 — остальных ищите через поиск.
+                                            </div>
+                                        @endif
+
+                                        <button type="button" class="btn-modern btn-primary" id="btn-send-review" style="width:100%;">
+                                            <i data-lucide="send"></i> Отправить на согласование
+                                        </button>
+                                    @endif
+                                @else
+                                    @foreach($doc->approvers as $a)
+                                        <div class="approver-row">
+                                        <span style="display:inline-flex; align-items:center; gap:8px;">
+                                            <i data-lucide="user"></i> {{ $a->user->name ?? ('#'.$a->user_id) }}
+                                        </span>
+                                            <span>
+                                            @if($a->status === 'approved')
+                                                    <span class="didox-status st-approved" title="{{ $a->signed_at ? 'Подписано ЭЦП ' . $a->signed_at->format('d.m.Y H:i') : '' }}">
                                                     <i data-lucide="{{ $a->pkcs7 ? 'pen-line' : 'check' }}"></i> согласовал
                                                 </span>
-                                            @elseif($a->status === 'rejected')
-                                                <span class="didox-status st-notsigned" title="{{ $a->comment }}"><i data-lucide="x"></i> отклонил</span>
-                                            @else
-                                                <span class="didox-status st-pending"><i data-lucide="clock"></i> ожидает</span>
-                                            @endif
+                                                @elseif($a->status === 'rejected')
+                                                    <span class="didox-status st-notsigned" title="{{ $a->comment }}"><i data-lucide="x"></i> отклонил</span>
+                                                @else
+                                                    <span class="didox-status st-pending"><i data-lucide="clock"></i> ожидает</span>
+                                                @endif
                                         </span>
-                                    </div>
-                                @endforeach
+                                        </div>
+                                    @endforeach
 
-                                @if($myApproval && $myApproval->status === 'pending')
-                                    <hr style="margin:14px 0;">
+                                    @if($myApproval && $myApproval->status === 'pending')
+                                        <hr style="margin:14px 0;">
 
-                                    {{-- Решение подписывается ЭЦП согласующего.
-                                         Если на странице нет формы подписанта — рендерим свою testform
-                                         (партиал e-imzo наполнит select ключами). --}}
-                                    @if(!($canSign && $authorized && $doc->list_status !== 'signed'))
-                                        <form name="testform" onsubmit="return false;">
-                                            <div class="filter-item" style="margin-bottom:10px;">
-                                                <label><i data-lucide="key-round"></i> Ключ ЭЦП для подписи решения</label>
-                                                <label id="message" style="display:block; font-size:12px; color:#64748b;"></label>
-                                                <select name="key" class="filter-select-modern"
-                                                        style="width:100% !important;" onchange="cbChanged(this)"></select>
-                                            </div>
-                                            <label id="keyId" hidden></label>
-                                            <textarea name="pkcs7" hidden></textarea>
-                                        </form>
+                                        {{-- Решение подписывается ЭЦП согласующего.
+                                             Если на странице нет формы подписанта — рендерим свою testform
+                                             (партиал e-imzo наполнит select ключами). --}}
+                                        @if(!($canSign && $authorized && $doc->list_status !== 'signed'))
+                                            <form name="testform" onsubmit="return false;">
+                                                <div class="filter-item" style="margin-bottom:10px;">
+                                                    <label><i data-lucide="key-round"></i> Ключ ЭЦП для подписи решения</label>
+                                                    <label id="message" style="display:block; font-size:12px; color:#64748b;"></label>
+                                                    <select name="key" class="filter-select-modern"
+                                                            style="width:100% !important;" onchange="cbChanged(this)"></select>
+                                                </div>
+                                                <label id="keyId" hidden></label>
+                                                <textarea name="pkcs7" hidden></textarea>
+                                            </form>
+                                        @endif
+
+                                        <div class="filter-item">
+                                            <label><i data-lucide="message-square"></i> Ваше решение</label>
+                                            <textarea id="decide-comment" class="filter-input-modern" rows="2"
+                                                      placeholder="Комментарий (обязателен при отклонении)"></textarea>
+                                        </div>
+                                        <div class="decide-btns">
+                                            <button type="button" class="btn-modern btn-primary" data-decide="1">
+                                                <i data-lucide="pen-line"></i> Подписать и согласовать
+                                            </button>
+                                            <button type="button" class="btn-modern btn-secondary" data-decide="0">
+                                                <i data-lucide="x"></i> Подписать и отклонить
+                                            </button>
+                                        </div>
+                                        <div id="decide-progress" style="font-size:13px; color:#64748b; margin-top:8px; min-height:16px;"></div>
                                     @endif
-
-                                    <div class="filter-item">
-                                        <label><i data-lucide="message-square"></i> Ваше решение</label>
-                                        <textarea id="decide-comment" class="filter-input-modern" rows="2"
-                                                  placeholder="Комментарий (обязателен при отклонении)"></textarea>
-                                    </div>
-                                    <div class="decide-btns">
-                                        <button type="button" class="btn-modern btn-primary" data-decide="1">
-                                            <i data-lucide="pen-line"></i> Подписать и согласовать
-                                        </button>
-                                        <button type="button" class="btn-modern btn-secondary" data-decide="0">
-                                            <i data-lucide="x"></i> Подписать и отклонить
-                                        </button>
-                                    </div>
-                                    <div id="decide-progress" style="font-size:13px; color:#64748b; margin-top:8px; min-height:16px;"></div>
                                 @endif
-                            @endif
+                            </div>
                         </div>
-                    </div>
+                    @endif
 
                 </div>
             </div>

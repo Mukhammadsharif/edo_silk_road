@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\ECP;
 
 use App\Http\Controllers\Controller;
+use App\Traits\HandlesAgreementFlow;
 use App\Jobs\GenerateHrOrderPdfJob;
 use App\Models\Admin\Role;
 use App\Models\Admin\UserPersonalInfo;
@@ -30,6 +31,8 @@ use Ramsey\Uuid\Uuid;
 
 class SignDocImzoMobileApiController extends Controller
 {
+    use HandlesAgreementFlow;
+
     public string $eriSrvIp;
 
     public function __construct()
@@ -758,7 +761,9 @@ class SignDocImzoMobileApiController extends Controller
             case 'send_to_agreement':
             case 'send_to_ag_out_doc':
                 $journal->update(['status' => 6]);
-                $this->activateSteps($steps['agreement'], 2, $urls['agreement'], $meta);
+                $this->activateInitialAgreement($journal, $steps['agreement'], function ($stepsToActivate) use ($urls, $meta) {
+                    $this->activateSteps($stepsToActivate, 2, $urls['agreement'], $meta);
+                });
                 $this->logAction($docId, 4, $meta);
                 break;
 
@@ -771,7 +776,9 @@ class SignDocImzoMobileApiController extends Controller
             case 'from_signer_to_ag':
                 $this->updateStepStatus($steps['sign'], 5);
                 $journal->update(['status' => 6]);
-                $this->activateSteps($steps['agreement'], 2, $urls['agreement'], $meta);
+                $this->activateInitialAgreement($journal, $steps['agreement'], function ($stepsToActivate) use ($urls, $meta) {
+                    $this->activateSteps($stepsToActivate, 2, $urls['agreement'], $meta);
+                });
                 $this->createReplyComment($steps['sign'], $resText, 'DOC_SIGNED');
                 $this->logAction($docId, 4, $meta);
                 break;
@@ -790,7 +797,13 @@ class SignDocImzoMobileApiController extends Controller
                 $this->updateStepStatus($currentAgreement, 5);
                 $this->createReplyComment($currentAgreement, $resText, 'DOC_SIGNED');
 
-                if ($steps['agreement']->count() - $signedAgreements->count() === 1) {
+                // Свежая выборка шагов согласования после подписания текущего.
+                $freshAgreement = $this->getSteps($journal, 'AGREE');
+                $agreementComplete = $this->advanceAgreement($journal, $freshAgreement, function ($stepsToActivate) use ($urls, $meta) {
+                    $this->activateSteps($stepsToActivate, 2, $urls['agreement'], $meta);
+                });
+
+                if ($agreementComplete) {
                     if ($isInfDoc) $journal->update(['status' => 10]);
                     $this->handleSendToResolution($journal, $steps['resolution'], $hasControl, $controllers, $urls, $meta);
                     $this->logAction($docId, 28, $meta);

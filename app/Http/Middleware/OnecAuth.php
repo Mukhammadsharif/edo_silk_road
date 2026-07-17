@@ -73,7 +73,7 @@ class OnecAuth
         ], 'warning');
 
         $msg = $reason === 'expired_or_invalid_org_token'
-            ? 'Токен организации недействителен или истёк (срок жизни 1 час). Сгенерируйте новый в кабинете.'
+            ? 'Токен организации недействителен или истёк (срок жизни 1 час). Обновите его: POST /api/onec/token/refresh с refresh_token. Если refresh истёк — выпустите новый токен в кабинете.'
             : 'Неавторизованный запрос. Передайте токен в заголовке X-1C-Token или Authorization: Bearer {token}';
 
         return response()->json(['success' => false, 'message' => $msg], 401);

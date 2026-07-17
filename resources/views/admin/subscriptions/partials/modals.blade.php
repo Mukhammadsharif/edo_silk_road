@@ -158,6 +158,19 @@
                                 </label>
                                 <input type="date" name="ends_at" id="editEndsAt" class="edit-input">
                             </div>
+
+                            <!-- Kanban access toggle -->
+                            <div class="edit-field-group" style="grid-column: 1 / -1;">
+                                <label class="edit-label">
+                                    <i data-lucide="trello"></i>
+                                    Kanban doskalar
+                                </label>
+                                <label class="kanban-switch">
+                                    <input type="checkbox" name="has_kanban_access" id="editKanbanAccess" value="1">
+                                    <span class="kanban-slider"></span>
+                                    <span class="kanban-switch-text">Trello doskalarga ruxsat berish</span>
+                                </label>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -289,6 +302,19 @@
                                 Tugash sanasi
                             </label>
                             <input type="date" name="ends_at" id="createEndsAt" class="edit-input">
+                        </div>
+
+                        <!-- Kanban access toggle -->
+                        <div class="edit-field-group" style="grid-column: 1 / -1;">
+                            <label class="edit-label">
+                                <i data-lucide="trello"></i>
+                                Kanban doskalar
+                            </label>
+                            <label class="kanban-switch">
+                                <input type="checkbox" name="has_kanban_access" id="createKanbanAccess" value="1">
+                                <span class="kanban-slider"></span>
+                                <span class="kanban-switch-text">Trello doskalarga ruxsat berish</span>
+                            </label>
                         </div>
 
                     </div>
@@ -509,6 +535,38 @@
     }
     .tariff-preview-item i { width: 14px; height: 14px; color: #794DFD; }
 
+    /* ========================================
+       KANBAN ACCESS TOGGLE
+       ======================================== */
+    .kanban-switch {
+        display: flex; align-items: center; gap: 0.75rem;
+        cursor: pointer; user-select: none;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e2e8f0; border-radius: 10px;
+        transition: all 0.2s;
+    }
+    .kanban-switch:hover { border-color: #794DFD; }
+    .kanban-switch input { display: none; }
+
+    .kanban-slider {
+        position: relative;
+        width: 46px; height: 26px;
+        background: #cbd5e1; border-radius: 20px;
+        transition: background 0.25s; flex-shrink: 0;
+    }
+    .kanban-slider::before {
+        content: ''; position: absolute;
+        top: 3px; left: 3px;
+        width: 20px; height: 20px;
+        background: white; border-radius: 50%;
+        transition: transform 0.25s;
+        box-shadow: 0 2px 4px rgba(0,0,0,.2);
+    }
+    .kanban-switch input:checked + .kanban-slider { background: #794DFD; }
+    .kanban-switch input:checked + .kanban-slider::before { transform: translateX(20px); }
+
+    .kanban-switch-text { font-size: 14px; font-weight: 600; color: #475569; }
+
     /* Duration quick pick */
     .duration-quickpick {
         display: flex; align-items: center; gap: 0.75rem;
@@ -610,6 +668,7 @@
                     $('#editStatus').val(data.status);
                     $('#editStartsAt').val(data.starts_at ?? '');
                     $('#editEndsAt').val(data.ends_at ?? '');
+                    $('#editKanbanAccess').prop('checked', !!data.has_kanban_access);
                     $('#editForm').attr('action', updateUrl);
                     $('#editLoadingSpinner').hide();
                     $('#editFormWrapper').show();
@@ -640,6 +699,8 @@
                 next.setFullYear(next.getFullYear() + 1);
                 $('#createEndsAt').val(next.toISOString().split('T')[0]);
             }
+            // reset kanban toggle (default off)
+            $('#createKanbanAccess').prop('checked', false);
             // highlight active duration btn
             updateDurationHighlight();
         });
