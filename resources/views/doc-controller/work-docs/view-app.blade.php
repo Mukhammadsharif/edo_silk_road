@@ -35,17 +35,19 @@
                                         <td></td>
                                         <td>
                                             <p>
-                                                {!! $directorDocument->signQrCode($document->id, $directorDocument->to_user, $directorDocument->id) !!}
+                                                @if(!empty($directorDocument))
+                                                    {!! $directorDocument->signQrCode($document->id, $directorDocument->to_user, $directorDocument->id) !!}
+                                                @endif
                                                 <br>
-                                                @if($directorDocument->status > 2)
+                                                @if(!empty($directorDocument) && $directorDocument->status > 2)
                                                     <span
                                                         class="font-size-12">{{ date('d.m.Y', strtotime($directorDocument->updated_at)) }}</span>
                                                 @endif
                                             </p>
                                         </td>
                                         <td>
-                                            {{ $directorDocument->toUser->userPost->lang($directorDocument->toUser->userPost->id)??'' }}
-                                            <p>{{ $directorDocument->toUser->personal->shortName()??''}}</p>
+                                            {{ optional(optional(optional($directorDocument)->toUser)->userPost)->lang(optional(optional(optional($directorDocument)->toUser)->userPost)->id) ?? '' }}
+                                            <p>{{ optional(optional(optional($directorDocument)->toUser)->personal)->shortName() ?? '' }}</p>
 
 
                                             {{ $journal->fromUser->userPost->lang($journal->fromUser->userPost->id)??'' }}

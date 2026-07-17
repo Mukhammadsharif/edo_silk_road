@@ -57,7 +57,7 @@ class SignDocImzoController extends Controller
 
     public function signDocuments(Request $request): JsonResponse
     {
-        $isDemo     = Settings::get('is_demo', true);
+        $isDemo     = Settings::get('is_demo', false);
         $pkData     = $request->pk_data;
         $docId      = $request->ecp_doc_id;
         $docType    = $request->ecp_doc_type;
