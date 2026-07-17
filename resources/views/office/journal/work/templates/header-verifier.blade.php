@@ -1,3 +1,8 @@
+{{-- ИСПРАВЛЕНО: весь блок строится на $directorDocument (шаг RESOL).
+     Если его нет — падало на первой же строке:
+       "Call to a member function signQrCode() on null"
+     У штатных документов RESOL есть всегда, у free-sign роли произвольные. --}}
+@if(!empty($directorDocument))
 <div class="header-verifier-modern">
     <table class="header-table">
         <tr>
@@ -11,11 +16,13 @@
                 @endif
             </td>
             <td class="info-cell">
-                <span class="position-text">{{ $directorDocument->toUser->userPost->doclang($directorDocument->toUser->userPost->id, $document->doc_lang)??'' }}</span>
-                <span class="name-text">{{ $directorDocument->toUser->personal->shortNameLang($document->doc_lang)??''}}</span>
+                <span class="position-text">{{ optional(optional($directorDocument->toUser)->userPost)->doclang(optional(optional($directorDocument->toUser)->userPost)->id, $document->doc_lang) ?? '' }}</span>
+                <span class="name-text">{{ optional(optional($directorDocument->toUser)->personal)->shortNameLang($document->doc_lang) ?? '' }}</span>
             </td>
         </tr>
     </table>
 </div>
+
+@endif
 
 <link rel="stylesheet" href="{{ asset('css/templates/office/journal/work/templates/header-verifier.css') }}">

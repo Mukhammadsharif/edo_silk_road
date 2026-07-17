@@ -55,7 +55,10 @@
                         <hr>
                     </div>
 
-                    <form name=testform id="resForm" method="POST" action="{{ route('document.create-resolution', $journal->id) }}">
+                    {{-- ИСПРАВЛЕНО: было name=testform — конфликтовало с формой подписи
+                         (sign() читает document.testform и брал ПЕРВУЮ форму,
+                         у которой нет ecp_doc_type). Эта форма — обычный submit. --}}
+                    <form name="resolutionCreateForm" id="resForm" method="POST" action="{{ route('document.create-resolution', $journal->id) }}">
                         @csrf
                         @method('POST')
                         <div id="resDocForm" class="mt-10">
@@ -170,7 +173,12 @@
                                         <img src="{{ url('loading.gif') }}" style="display: none" width="60px" class="loadingGif">
                                     </div>
                                     <div class="form-group">
-                                        <input name="ecp_doc_type" value="work_dir_res" hidden/>
+                                        @if(!empty($isFreeSignDoc) && $isFreeSignDoc)
+                                            {{-- Free-sign: единый тип, маршрут вычисляется на сервере --}}
+                                            <input name="ecp_doc_type" value="free_sign_doc" hidden/>
+                                        @else
+                                            <input name="ecp_doc_type" value="work_dir_res" hidden/>
+                                        @endif
                                         <input name="ecp_doc_id" value="{{ $document->id }}" hidden/>
                                         <input name="ecp_confirm_id" id="ecp_confirm_id" value="5" hidden>
                                     </div>
@@ -496,7 +504,12 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <input name="ecp_doc_type" value="close_exec_doc" hidden/>
+                        @if(!empty($isFreeSignDoc) && $isFreeSignDoc)
+                                            {{-- Free-sign: единый тип, маршрут вычисляется на сервере --}}
+                                            <input name="ecp_doc_type" value="free_sign_doc" hidden/>
+                                        @else
+                                            <input name="ecp_doc_type" value="close_exec_doc" hidden/>
+                                        @endif
                         <input name="ecp_doc_id" value="{{ $document->id }}" hidden/>
                         <input name="ecp_confirm_id" id="ecp_confirm_id" value="" hidden>
                         <input name="ecp_r_text" id="ecp_r_text" hidden>

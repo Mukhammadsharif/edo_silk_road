@@ -163,7 +163,11 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        @if($agreement_users && $agreement_users->count())
+                        @if(!empty($isFreeSign) && $isFreeSign)
+                            {{-- Free-sign: единый тип, маршрут вычисляется на сервере
+                                 (цепочка AGREE→SIGN→RESOL→EXEC с пропуском отсутствующих). --}}
+                            <input name="ecp_doc_type" value="free_sign_doc" hidden/>
+                        @elseif($agreement_users && $agreement_users->count())
                             <input name="ecp_doc_type" value="from_signer_to_ag" hidden/>
                         @else
                             <input name="ecp_doc_type" value="from_signer_to_c_res" hidden/>

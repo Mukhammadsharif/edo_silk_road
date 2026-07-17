@@ -31,11 +31,18 @@
     <link rel="stylesheet" href="{{ asset('css/dark-theme.css') }}">
     <link rel="stylesheet" href="{{ asset('css/responsive.css') }}?v=1">
     <link rel="stylesheet" href="{{ asset('css/boards.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/free-sign-editor.css') }}">
+    <style>
+        /* Высота шапки твоего layout, которую надо вычесть, чтобы редактор
+           занял область контента и не уезжал под меню. Нет шапки → 0px. */
+        .fs-editor { --fs-header-h: 64px; }
+    </style>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css">'
 
     <script src="{{ asset('/assets/jquery-3.3.1.min.js') }}"></script>
     <script src="{{ asset('/assets/js/jquery.inputmask.bundle.js') }}"></script>
     <script src="{{ asset('/assets/src/js/vendor/jquery-ui.min.js') }}"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
     <style>[x-cloak]{display:none !important}</style>
 </head>

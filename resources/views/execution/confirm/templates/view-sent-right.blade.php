@@ -1,5 +1,8 @@
 <div class="view-right-modern">
-    @if($directorDocument->status > 1)
+    {{-- ИСПРАВЛЕНО: было @if($directorDocument->status > 1) — падало сразу,
+         если $directorDocument (шаг RESOL) = null. У free-sign роли
+         произвольные: можно добавить только AGREE, тогда RESOL нет. --}}
+    @if(!empty($directorDocument) && $directorDocument->status > 1)
         <div class="execution-card-modern">
             <div class="card-header-modern">
                 <i data-lucide="clipboard-check" class="text-white"></i>
@@ -44,12 +47,12 @@
                         </div>
                         <div class="col-4">
                             <p>
-                                {{ $directorDocument->toUser->userPost->lang($directorDocument->toUser->userPost->id)??'' }}
+                                {{ optional(optional($directorDocument->toUser)->userPost)->lang(optional(optional($directorDocument->toUser)->userPost)->id) ?? '' }}
                                 :
                             </p>
                             <h6 class="fw-700">
-                                {{ $directorDocument->toUser->personal->l_name??'' }}
-                                {{ $directorDocument->toUser->personal->f_name??'' }}
+                                {{ optional(optional($directorDocument->toUser)->personal)->l_name ?? '' }}
+                                {{ optional(optional($directorDocument->toUser)->personal)->f_name ?? '' }}
                             </h6>
                         </div>
                     </div>
@@ -106,7 +109,11 @@
                                          class="loadingGif">
                                 </div>
                                 <div class="form-group">
-                                    <input name="ecp_doc_type" value="sign_out_doc" hidden/>
+                                    @if(!empty($isFreeSignDoc) && $isFreeSignDoc)
+                                        <input name="ecp_doc_type" value="free_sign_doc" hidden/>
+                                    @else
+                                        <input name="ecp_doc_type" value="sign_out_doc" hidden/>
+                                    @endif
                                     <input name="ecp_r_text" value="" hidden/>
                                     <input name="ecp_doc_id" value="{{ $document->id }}" hidden/>
                                     <input name="ecp_confirm_id" value="5" hidden>

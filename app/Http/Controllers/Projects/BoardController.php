@@ -11,13 +11,25 @@ class BoardController extends Controller
     private function requireAdmin(): void
     {
         abort_unless(
-            auth()->user()?->hasRole(['Super_Admin', 'it_admin']),
+            auth()->user()?->canManageBoards(),
             403,
             'Недостаточно прав'
         );
     }
+
+    private function requireKanbanAccess(): void
+    {
+        abort_unless(
+            auth()->user()?->hasKanbanAccess(),
+            403,
+            'Модуль Kanban не подключён к вашей организации'
+        );
+    }
+
     public function index()
     {
+//        $this->requireKanbanAccess();
+
         $user = auth()->user();
 
         $query = Board::query()->where('is_archived', false);
@@ -57,11 +69,15 @@ class BoardController extends Controller
 
     public function create()
     {
+        $this->requireKanbanAccess();
+
         return view('boards.create');
     }
 
     public function store(Request $request)
     {
+        $this->requireKanbanAccess();
+
         $data = $request->validate([
             'title'       => 'required|string|max:255',
             'color'       => 'nullable|string|max:20',
@@ -83,6 +99,8 @@ class BoardController extends Controller
 
     public function show(Board $board)
     {
+//        $this->requireKanbanAccess();
+
         $user = auth()->user();
 
         if ($user->hasRole('Super_Admin')) {
@@ -124,12 +142,16 @@ class BoardController extends Controller
 
     public function edit(Board $board)
     {
+        $this->requireKanbanAccess();
+
         return view('boards.edit', compact('board'));
     }
 
     public function update(Request $request, Board $board)
     {
+        $this->requireKanbanAccess();
         $this->requireAdmin();
+
         $data = $request->validate([
             'title'       => 'sometimes|string|max:255',
             'color'       => 'nullable|string|max:20',
@@ -150,6 +172,8 @@ class BoardController extends Controller
     // участники доски (для отображения в настройках)
     public function members(Board $board)
     {
+        $this->requireKanbanAccess();
+
         return response()->json(
             $board->members()->with('personalInfo')->get(['users.id', 'username'])
                 ->map(fn ($u) => ['id' => $u->id, 'name' => $u->name])
@@ -158,7 +182,9 @@ class BoardController extends Controller
 
     public function addMember(Request $request, Board $board)
     {
+        $this->requireKanbanAccess();
         $this->requireAdmin();
+
         $userId = $request->validate(['user_id' => 'required|exists:users,id'])['user_id'];
         $board->members()->syncWithoutDetaching([$userId]);
 
@@ -172,7 +198,9 @@ class BoardController extends Controller
 
     public function removeMember(Board $board, \App\Models\User $user)
     {
+        $this->requireKanbanAccess();
         $this->requireAdmin();
+
         $board->members()->detach($user->id);
 
         // заодно снять его с карточек этой доски
@@ -190,7 +218,9 @@ class BoardController extends Controller
 
     public function destroy(Board $board)
     {
+        $this->requireKanbanAccess();
         $this->requireAdmin();
+
         $board->delete();
         return redirect()->route('boards.index');
     }
