@@ -43,7 +43,7 @@
                             <h3>{{ __('field.document_settings') }}</h3>
                         </div>
 
-                        <input value="{{ $journal->id }}" name="journal_type" id="journal_type" hidden>
+                        <input value="{{ $journal?->id }}" name="journal_type" id="journal_type" hidden>
 
                         <div class="form-group-modern">
                             <label>
@@ -133,7 +133,7 @@
                         </div>
 
                         <div class="form-row-modern">
-                             <div class="form-group-modern">
+                            <div class="form-group-modern">
                                 <label>
                                     <i data-lucide="shield"></i>
                                     {{ __('document.confidentiality') }}
@@ -244,6 +244,7 @@
                             @endif
 
                             <button type="submit" id="submitBtn" class="btn-submit" style="display: none;"
+                                    onclick="setFormAction('web')"
                                     @if(!Auth::user()->currentSubscription) disabled @endif>
                                 <i data-lucide="save"></i>
                                 {{ __('action.save') }}
@@ -251,6 +252,8 @@
                         </div>
                     </div>
                 </div>
+
+                @include('office.document.partials.related-documents-input')
             </form>
         </div>
     </div>

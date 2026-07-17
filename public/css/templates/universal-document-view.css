@@ -156,15 +156,15 @@
     text-align: center;
     font-size: var(--font-size-sm);
     font-weight: 700;
-    color: var(--color-danger);
+    /*color: var(--color-danger);*/
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: var(--spacing-xl);
     padding: var(--spacing-md);
-    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-    border: 2px solid #fca5a5;
-    border-radius: var(--radius-md);
-    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
+    /*background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);*/
+    /*border: 2px solid #fca5a5;*/
+    /*border-radius: var(--radius-md);*/
+    /*box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);*/
 }
 
 /* ========== DOCUMENT DATE ========== */
@@ -892,4 +892,63 @@
 
 .table-responsive::-webkit-scrollbar-thumb:hover {
     background: var(--color-gray-500);
+}
+
+/* ============================================================
+   PAGE SEPARATION (A4) — задача 3
+   Визуальное разделение документа на страницы A4 как в Word.
+   Работает и для APP (.print-page-modern), и для обычных
+   документов (.work-doc-subpage). Параметры легко настраиваются
+   переменными ниже.
+   ============================================================ */
+:root {
+    --a4-page-height: 297mm;                       /* высота страницы A4 */
+    --a4-break-color: rgba(59, 130, 246, 0.30);    /* цвет линии-границы страницы */
+    --a4-break-thickness: 2px;                     /* толщина линии */
+}
+
+/* Линия-граница в конце каждой страницы A4 (экран) */
+.print-page-modern,
+.work-doc-subpage {
+    background-color: var(--color-white);
+    background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent calc(var(--a4-page-height) - var(--a4-break-thickness)),
+        var(--a4-break-color) calc(var(--a4-page-height) - var(--a4-break-thickness)),
+        var(--a4-break-color) var(--a4-page-height)
+    );
+    background-repeat: repeat-y;
+    background-attachment: local;
+}
+
+/* Печать / сохранение в PDF: корректные разрывы страниц A4 */
+@media print {
+    .print-page-modern,
+    .work-doc-subpage {
+        background-image: none !important;
+        box-shadow: none !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 20mm !important;
+    }
+
+    .work-doc-page,
+    .document-card-modern,
+    .document-container-modern {
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        overflow: visible !important;
+    }
+
+    /* не разрывать таблицы, строки и абзацы посередине страницы */
+    table, tr, td, th, p,
+    .doc-text > * {
+        page-break-inside: avoid;
+    }
+
+    @page {
+        size: A4;
+        margin: 0;
+    }
 }

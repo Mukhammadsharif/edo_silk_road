@@ -25,6 +25,7 @@ use App\Jobs\SendTelegramMessageJob;
     OA\Server(url: 'https://edoline.uz', description: "Production server"),
     OA\Server(url: 'http://localhost:8082', description: "Local server"),
     OA\Server(url: 'http://172.17.110.54:8080', description: "172.17.110.54 server"),
+    OA\Server(url: 'https://onlyoffice.local:8443', description: "local dev server"),
 ]
 
 class Controller extends BaseController
@@ -319,7 +320,9 @@ class Controller extends BaseController
 
     public function organizationId()
     {
-        return $this->authActiveUser()->user->org_unit_id;
+        // Физлицо без организации: work history может отсутствовать,
+        // поэтому откатываемся на org_unit_id самого пользователя (может быть null).
+        return $this->authActiveUser()?->user?->org_unit_id ?? Auth::user()?->org_unit_id;
     }
 
     public function isOwner()

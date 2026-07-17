@@ -12,8 +12,8 @@
                         <i data-lucide="edit"></i>
                     </div>
                     <div class="page-info">
-                        <h1>{{ __('action.edit_document') }}</h1>
-                        <p>{{ __('message.edit_incoming_document') ?? 'Редактирование входящего документа' }}</p>
+                        <h1 class="text-white">{{ __('action.edit_document') }}</h1>
+                        <p class="text-white">{{ __('message.edit_incoming_document') ?? 'Редактирование входящего документа' }}</p>
                     </div>
                 </div>
                 <nav class="breadcrumb-modern">

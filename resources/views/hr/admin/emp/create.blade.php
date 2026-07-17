@@ -308,6 +308,18 @@
                                        placeholder="901234567">
                                 {!! $errors->first('phone', '<p class="text-danger" style="font-size: 13px; margin-top: 0.5rem;">:message</p>') !!}
                             </div>
+
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="map-pin"></i>
+                                    {{ __('field.address') ?? 'Адрес проживания' }}
+                                </label>
+                                <input type="text"
+                                       name="address"
+                                       maxlength="500"
+                                       class="form-control-modern"
+                                       value="{{ old('address') }}">
+                            </div>
                         </div>
 
                         <!-- Form Actions -->

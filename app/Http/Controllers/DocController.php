@@ -50,9 +50,15 @@ class DocController extends Controller
         $created_user = $request->input('created_user');
         $org_id = $request->input('org_id');
 
-        $cr_users = User::where('status', 1)->get();
-
         $isSuperUser = $this->isSuperUser();
+
+        if ($isSuperUser) {
+            $cr_users = User::where('status', 1)->get();
+        } else {
+            $cr_users = User::where('status', 1)
+                ->where('org_unit_id', $this->organizationId())
+                ->get();
+        }
 
         if($isSuperUser) {
             $search = DocumentJournals::whereNotIn('status', [1, 4, 13]);

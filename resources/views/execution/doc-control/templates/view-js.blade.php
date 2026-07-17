@@ -75,10 +75,10 @@
     editor1cfg.toolbar_mytoolbar = "{bold,italic}|{justifyleft,justifycenter,justifyright}|{fontname,fontsize}|{forecolor,backcolor}";
     let editor1 = new RichTextEditor("#div_editor1", editor1cfg);
 
+    let editor2 = null;
     let editor2cfg = {}
     editor2cfg.toolbar = "mytoolbar";
     editor2cfg.toolbar_mytoolbar = "{bold,italic,justifyleft,justifycenter,justifyright,fontsize,forecolor,backcolor}";
-    let editor2 = new RichTextEditor("#div_editor2", editor2cfg);
 </script>
 <style>
     .keyboard-selected {
@@ -288,6 +288,12 @@
             $('.modal_title').html(modal_title);
             $('.modal_btn').html(modal_btn);
             $('#confirm_id').val(btn_id);
+
+            // Инициализируем редактор только когда модалка уже в body
+            if (editor2 === null) {
+                editor2 = new RichTextEditor("#div_editor2", editor2cfg);
+            }
+
             $('#openCancelReturnModal').modal('show');
         });
 

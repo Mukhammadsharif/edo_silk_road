@@ -71,7 +71,7 @@
                                 <td style="text-align: left;">
                                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                                         <i data-lucide="building-2" style="color: #794DFD; width: 16px; height: 16px;"></i>
-                                        {{ $lic->organization->name ?? '—' }}
+                                        {{ $lic->organization->name_uz ?? '—' }}
                                     </div>
                                 </td>
                                 <td>

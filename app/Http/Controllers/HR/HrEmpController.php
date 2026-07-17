@@ -127,6 +127,7 @@ class HrEmpController extends Controller
             $createPersonal->f_name = $request->f_name_uz;
             $createPersonal->m_name = $request->m_name_uz;
             $createPersonal->phone = $request->phone;
+            $createPersonal->address = $request->address;
             $createPersonal->save();
 
             $personalName = new UserPersonalNames();
@@ -184,7 +185,7 @@ class HrEmpController extends Controller
             $createEmpExp->created_id = $this->authActiveUser()->id;
             $createEmpExp->save();
 
-            $this->userLogService->createUserLog($createWork->id, ['comment' => 'Created user']);
+            $this->userLogService->createUserLog($createUser->id, ['comment' => 'Created user']);
         }
 
         return Redirect::route('hr.emp.view', [$createUser->id, $createUser->user_hash])->with('success', __('message.task_completed_successfully'));
@@ -253,7 +254,8 @@ class HrEmpController extends Controller
                     'doc_type' => $request->doc_type,
                     'birthday' => $request->birthday,
                     'gender' => $request->gender,
-                    'phone' => $request->phone
+                    'phone' => $request->phone,
+                    'address' => $request->address
                 ]);
             }
 

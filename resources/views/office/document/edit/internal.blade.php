@@ -96,13 +96,15 @@
 
                             <!-- Date Fields -->
                             @if(str_contains($journal->journal->doc_code, 'APP_') || str_contains($journal->journal->doc_code, 'HR_ORD'))
-                                <div class="info-message">
-                                    <i data-lucide="info"></i>
-                                    <span>{{ __('action.choose_begin_end_date') }}</span>
-                                </div>
+                                @if($hasFromDate && $hasToDate)
+                                    <div class="info-message">
+                                        <i data-lucide="info"></i>
+                                        <span>{{ __('action.choose_begin_end_date') }}</span>
+                                    </div>
+                                @endif
 
                                 <div class="form-row-modern" id="appDocumentDateContainer">
-                                    @if($fromDate)
+                                    @if($hasFromDate ?? $fromDate)
                                         <div class="form-group-modern" id="fromDate">
                                             <label>
                                                 <i data-lucide="calendar"></i>
@@ -141,7 +143,7 @@
                                             </div>
                                         </div>
                                     @endif
-                                    @if($toDate)
+                                    @if($hasToDate ?? $toDate)
                                         <div class="form-group-modern" id="toDate">
                                             <label>
                                                 <i data-lucide="calendar"></i>
