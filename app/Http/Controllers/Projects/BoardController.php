@@ -11,7 +11,7 @@ class BoardController extends Controller
     private function requireAdmin(): void
     {
         abort_unless(
-            auth()->user()?->hasRole(['Super_Admin', 'it_admin']),
+            auth()->user()?->canManageBoards(),
             403,
             'Недостаточно прав'
         );

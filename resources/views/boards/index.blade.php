@@ -3,7 +3,7 @@
 @section('content')
     @if(auth()->user()->hasKanbanAccess())
 
-        <div class="container-fluid py-3" x-data="boardsIndex({{ auth()->user()->hasRole(['Super_Admin','it_admin']) ? 'true' : 'false' }})">
+        <div class="container-fluid py-3" x-data="boardsIndex({{ auth()->user()->canManageBoards() ? 'true' : 'false' }})">
 
             <div class="board-header d-flex align-items-center justify-content-between px-4 py-4 mb-4">
                 <div class="d-flex align-items-center gap-3">

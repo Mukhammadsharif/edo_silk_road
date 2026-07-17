@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\View;
@@ -32,7 +33,9 @@ class AppServiceProvider extends ServiceProvider
             \URL::forceScheme('https');
             $this->app['request']->server->set('HTTPS','on');
         }
-
+        Blade::if('boardAdmin', function () {
+            return auth()->check() && auth()->user()->canManageBoards();
+        });
         View::composer(['layouts.sidebar', 'home'], function ($view) {
             // User Short Name
             $user_short_name = Auth::user()->username;
