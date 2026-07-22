@@ -24,7 +24,7 @@
             'checklist_total' => $c->checklists->sum(fn ($cl) => $cl->items->count()),
             'checklist_done'  => $c->checklists->sum(fn ($cl) => $cl->items->where('is_done', true)->count()),
         ]),
-    ])) }}, {{ $board->id }}, {{ auth()->user()->hasRole(['Super_Admin','it_admin']) ? 'true' : 'false' }})"
+    ])) }}, {{ $board->id }}, {{ auth()->user()->canManageBoards() ? 'true' : 'false' }})"
              x-init="init(); boardVisibility = '{{ $board->visibility }}'; boardData = {
         title: @js($board->title),
         color: @js($board->color),
@@ -33,7 +33,7 @@
         visibility: @js($board->visibility)
      };
      boardLabels = {{ Js::from($board->labels->map(fn($l) => ['id'=>$l->id,'name'=>$l->name,'color'=>$l->color])) }};
-     canManageChecklists = ({{ auth()->user()->hasRole(['Super_Admin','IT_Admin']) ? 'true' : 'false' }} || {{ $board->manager_id === auth()->id() ? 'true' : 'false' }});
+     canManageChecklists = ({{ auth()->user()->canManageBoards() ? 'true' : 'false' }} || {{ $board->manager_id === auth()->id() ? 'true' : 'false' }});
      " class="container-fluid py-3">
 
             @php

@@ -19,18 +19,27 @@ use App\Models\Protocol\ProtocolDocMember;
 use App\Models\Protocol\ProtocolDocReplyComment;
 use App\Models\Protocol\ProtocolDocument;
 use App\Models\Resolution\ReplyCommentTypes;
+use App\Services\FreeSign\FreeSignRouteService;
+use App\Services\FreeSign\SignatureStampService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SignLoginController extends Controller
 {
+
     use HandlesAgreementFlow;
+  
+    private const STEP_EXEC_CONFIRMED = 6;
 
     private array $workingDocTypes = [
         'send_to_create_res', 'send_to_agreement', 'send_to_sign',
         'from_signer_to_ag', 'from_signer_to_c_res', 'from_ag_to_res',
         'sign_resolution', 'close_exec_doc',
-        'send_to_ag_out_doc', 'send_sign_out_doc', 'sign_out_doc'
+        'send_to_ag_out_doc', 'send_sign_out_doc', 'sign_out_doc',
+        // 'free_sign_doc' СЮДА НЕ ДОБАВЛЯТЬ — обрабатывается отдельно.
+        // Если добавить, уйдёт в handleInternalDocument(), где switch его
+        // не найдёт → ничего не выполнится → вернётся «успех без подписи».
     ];
 
     public function signDocuments(Request $request): JsonResponse
@@ -39,6 +48,22 @@ class SignLoginController extends Controller
         $docType   = $request->ecp_doc_type;
         $confirmId = $request->ecp_confirm_id ?? null;
         $resText   = $request->ecp_r_text;
+
+        /* Free-sign: свой маршрут по ролям + штамп меток на PDF.
+         | Проверка ДО in_array — иначе тип уйдёт в handleInternalDocument().
+         |
+         | handleFreeSignDocument() возвращает ?JsonResponse:
+         |   JsonResponse — ошибка (не твоя очередь / нет резолюции / нет журнала)
+         |   null         — успех
+         | Поэтому null нельзя вернуть напрямую: сигнатура требует JsonResponse.
+         */
+        if ($docType === 'free_sign_doc') {
+            $result = $this->handleFreeSignDocument($docId, []);
+
+            return $result instanceof JsonResponse
+                ? $result                      // ошибка от обработчика
+                : $this->successResponse();    // null = успех
+        }
 
         if (in_array($docType, $this->workingDocTypes)) {
             return $this->handleInternalDocument($docId, $docType, $resText);
@@ -50,7 +75,204 @@ class SignLoginController extends Controller
 
         return $this->errorResponse(__('message.document_deleted_system'));
     }
+    private function handleFreeSignDocument(int $docId, array $ecpData): ?JsonResponse
+    {
+        // ДИАГНОСТИКА: метод вызван? Если этой строки нет в логе —
+        // значит ecp_doc_type != 'free_sign_doc' и match ушёл в default.
+        \Illuminate\Support\Facades\Log::info('[free-sign] ENTER handleFreeSignDocument', [
+            'doc_id' => $docId,
+        ]);
 
+        $journal = DocumentJournals::where('doc_id', $docId)->first();
+        if (!$journal) {
+            \Illuminate\Support\Facades\Log::error('[free-sign] журнал не найден по doc_id', ['doc_id' => $docId]);
+            return $this->errorResponse(__('message.document_deleted_system'));
+        }
+
+        /** @var FreeSignRouteService $route */
+        $route = app(FreeSignRouteService::class);
+
+        $userIds = $this->authActiveUserIds();
+
+        /* Шаг текущего пользователя, по которому уместна подпись.
+         |
+         | Статусы шагов в проекте:
+         |   1 — спит (не его очередь)
+         |   2 — активен, ждёт действия
+         |   4 — отчёт отправлен (replyDocument)
+         |   5 — подписал / выполнил
+         |   6 — исполнение подтверждено (executeWorkDoc ставит RESOL в 6)
+         |
+         | Ищем 2, 5 и 6 — потому что у RESOL сценарий двухэтапный:
+         | сначала подписывают резолюцию (шаг → 5), потом подтверждают
+         | исполнение (шаг → 6). В обоих случаях подпись должна штамповаться.
+         |
+         | Приоритет — активному шагу (2): если он есть, это обычная
+         | очередь подписи и маршрут надо двигать дальше.
+         */
+        $step = DocumentExecutionSteps::where('j_id', $journal->id)
+            ->whereIn('to_user', $userIds)
+            ->whereIn('status', [
+                FreeSignRouteService::STEP_ACTIVE,   // 2
+                FreeSignRouteService::STEP_DONE,     // 5
+                self::STEP_EXEC_CONFIRMED,           // 6
+            ])
+            ->orderByRaw('CASE status WHEN 2 THEN 0 ELSE 1 END')  // сперва активный
+            ->first();
+
+        /* ═══════════ СЦЕНАРИЙ 1: АВТОР ПОДТВЕРЖДАЕТ ОТПРАВКУ ═══════════
+         | Условие: журнал ещё НЕ отправлен (статус 1/3).
+         |
+         | Проверяем статус журнала, а НЕ отсутствие шага: с тех пор как
+         | поиск ищет шаги в статусах [2,5,6], у автора-участника шаг мог
+         | найтись — и он ушёл бы в сценарий 2, не запустив маршрут.
+         */
+        $journalNotStarted = in_array((int) $journal->status, [1, 3], true);
+
+        if (!$step || $journalNotStarted) {
+            // ДИАГНОСТИКА: почему не нашли активный шаг / кто подписывает.
+            // Смотри storage/logs/laravel.log по метке [free-sign].
+            $allSteps = DocumentExecutionSteps::where('j_id', $journal->id)->get(['id','to_user','exec_role','status']);
+            \Illuminate\Support\Facades\Log::info('[free-sign] author-scenario check', [
+                'doc_id'          => $docId,
+                'journal_id'      => $journal->id,
+                'journal_status'  => $journal->status,
+                'created_user'    => $journal->created_user,
+                'auth_id'         => Auth::id(),
+                'auth_work_ids'   => $userIds,
+                'steps_count'     => $allSteps->count(),
+                'steps'           => $allSteps->toArray(),
+            ]);
+
+            // created_user может хранить users.id ЛИБО work_history id —
+            // проверяем оба варианта, чтобы не зависеть от схемы.
+            $isAuthor = ((int) $journal->created_user === (int) Auth::id())
+                || in_array((int) $journal->created_user, array_map('intval', $userIds), true);
+
+            $notStarted = $journalNotStarted; // Yaratilgan / Tahrirlash
+
+            if (!$isAuthor || !$notStarted) {
+                \Illuminate\Support\Facades\Log::warning('[free-sign] REJECT: not author or already started', [
+                    'is_author'   => $isAuthor,
+                    'not_started' => $notStarted,
+                    'status'      => $journal->status,
+                ]);
+                return $this->errorResponse(__('error.not_your_turn_or_already_signed'));
+            }
+
+            // Есть кого активировать?
+            $activated = $route->startRoute($journal);
+
+            \Illuminate\Support\Facades\Log::info('[free-sign] startRoute result', [
+                'activated'    => $activated,
+                'chain'        => $route->actualChain($journal),
+                'journal_now'  => $journal->fresh()->status,
+            ]);
+
+            if (!$activated) {
+                return $this->errorResponse(__('error.no_signers_in_route'));
+            }
+
+            // Уведомления первой роли.
+            $meta = [
+                'journalType' => $journal->journal->title ?? '',
+                'docName'     => $journal->doc->doc_name ?? '',
+                'fromUser'    => $this->authActiveUser()->personal->fullName() ?? '-',
+            ];
+            $urls = $this->buildUrls($journal);
+            $url  = $this->urlForRole($activated, $urls);
+
+            foreach ($route->stepsOfRole($journal, $activated) as $ns) {
+                $this->createMailCron($ns->to_user, $meta['journalType'], $meta['fromUser'], $url, $meta['docName']);
+            }
+
+            $this->logAction($docId, 5, $meta);
+
+            // Метку автора НЕ штампуем — его подпись без визуального следа.
+            return null;
+        }
+
+        /* ═══════════ СЦЕНАРИЙ 2: УЧАСТНИК МАРШРУТА ПОДПИСЫВАЕТ ═══════════ */
+
+        $stepStatus = (int) $step->status;
+
+        // 1. Двигаем маршрут ТОЛЬКО если шаг был активен (2).
+        //
+        //    Если шаг уже 5 (подписал) или 6 (исполнение подтверждено) —
+        //    маршрут уже уехал дальше, повторно completeStep() звать НЕЛЬЗЯ:
+        //    это закрыло бы роль второй раз и активировало следующую заново.
+        //    В таких случаях только доштамповываем подпись на PDF.
+        $result = ['role_done' => false, 'next_role' => null, 'finished' => false];
+
+        if ($stepStatus === FreeSignRouteService::STEP_ACTIVE) {
+            $result = $route->completeStep($journal, $step);
+        } else {
+            \Illuminate\Support\Facades\Log::info(
+                '[free-sign] шаг уже завершён — маршрут не двигаем, только штампуем', [
+                    'step_id'     => $step->id,
+                    'step_status' => $stepStatus,
+                ]
+            );
+        }
+
+        // 2. Штампуем метки этого подписанта → НОВАЯ версия PDF.
+        //    Ошибка штампа не должна ронять саму подпись.
+        try {
+            // ВАЖНО: step->to_user — это work_history.id, а метки в
+            // free_sign_document_fields хранят signer_id = users.id
+            // (редактор строит список подписантов по users).
+            // Конвертируем work_history.id → users.id.
+            $signerUserId = \App\Models\Admin\UserWorkHistory::where('id', $step->to_user)->value('user_id')
+                ?? $step->to_user;
+
+            app(SignatureStampService::class)->stampForSigner(
+                $journal->id,
+                $docId,
+                (int) $signerUserId,
+                $ecpData
+            );
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('free-sign stamp failed: ' . $e->getMessage(), [
+                'doc_id'  => $docId,
+                'user_id' => $step->to_user,
+            ]);
+        }
+
+        // 3. Уведомления следующей роли.
+        if ($result['next_role']) {
+            $meta = [
+                'journalType' => $journal->journal->title ?? '',
+                'docName'     => $journal->doc->doc_name ?? '',
+                'fromUser'    => $this->authActiveUser()->personal->fullName() ?? '-',
+            ];
+            $urls = $this->buildUrls($journal);
+            $url  = $this->urlForRole($result['next_role'], $urls);
+
+            foreach ($route->stepsOfRole($journal, $result['next_role']) as $ns) {
+                $this->createMailCron($ns->to_user, $meta['journalType'], $meta['fromUser'], $url, $meta['docName']);
+            }
+        }
+
+        $this->logAction($docId, 5, [
+            'journalType' => $journal->journal->title ?? '',
+            'docName'     => $journal->doc->doc_name ?? '',
+            'fromUser'    => $this->authActiveUser()->personal->fullName() ?? '-',
+        ]);
+
+        return null;
+    }
+
+    /** URL уведомления по коду роли (из buildUrls). */
+    private function urlForRole(string $roleCode, array $urls): string
+    {
+        return match ($roleCode) {
+            'AGREE' => $urls['agreement'] ?? '',
+            'SIGN'  => $urls['sign'] ?? '',
+            'RESOL' => $urls['resolution'] ?? '',
+            'EXEC'  => $urls['execution'] ?? '',
+            default => '',
+        };
+    }
     private function handleInternalDocument(int $docId, string $docType, ?string $resText): JsonResponse
     {
         $journal = DocumentJournals::where('doc_id', $docId)->firstOrFail();

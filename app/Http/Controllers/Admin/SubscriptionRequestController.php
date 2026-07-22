@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin\OrganizationUnits;
+use App\Models\Admin\Role;
 use App\Models\Admin\Subscriptions;
 use App\Models\Admin\Tariffs;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class SubscriptionRequestController extends Controller
@@ -115,13 +117,16 @@ class SubscriptionRequestController extends Controller
         ]);
 
         $subscription = Subscriptions::findOrFail($id);
+        $hasKanban    = $request->boolean('has_kanban_access');
 
         $subscription->tariff_id         = $request->tariff_id;
         $subscription->status            = $request->status;
         $subscription->starts_at         = $request->starts_at ?: null;
         $subscription->ends_at           = $request->ends_at ?: null;
-        $subscription->has_kanban_access = $request->boolean('has_kanban_access');
+        $subscription->has_kanban_access = $hasKanban;
         $subscription->save();
+
+        $this->syncKanbanRole($subscription->org_unit_id, $hasKanban);
 
         return redirect()->back()->with('success', __('field.subscription_updated_successfully'));
     }
@@ -140,7 +145,6 @@ class SubscriptionRequestController extends Controller
             'has_kanban_access' => 'nullable|boolean',
         ]);
 
-        // If activating directly — deactivate old active subscriptions for that org
         if ($request->status == 1) {
             Subscriptions::where('org_unit_id', $request->org_unit_id)
                 ->where('status', 1)
@@ -148,18 +152,21 @@ class SubscriptionRequestController extends Controller
                 ->update(['status' => 0]);
         }
 
+        $hasKanban = $request->boolean('has_kanban_access');
+
         Subscriptions::create([
             'org_unit_id'       => $request->org_unit_id,
             'tariff_id'         => $request->tariff_id,
             'status'            => $request->status,
             'starts_at'         => $request->starts_at,
             'ends_at'           => $request->ends_at,
-            'has_kanban_access' => $request->boolean('has_kanban_access'),
+            'has_kanban_access' => $hasKanban,
         ]);
+
+        $this->syncKanbanRole($request->org_unit_id, $hasKanban);
 
         return redirect()->back()->with('success', __('field.subscription_created_successfully'));
     }
-
     /**
      * Search organizations for Select2 (returns JSON)
      */
@@ -180,5 +187,33 @@ class SubscriptionRequestController extends Controller
             'id'   => $o->id,
             'text' => $o->name_uz . ($o->tax_number ? ' — ' . $o->tax_number : ''),
         ]));
+    }
+
+    private function syncKanbanRole(int $orgUnitId, bool $hasAccess): void
+    {
+        $roleId = config('kanban.role_id');
+
+        if (! $roleId) {
+            return; // роль не настроена — молча выходим
+        }
+
+        $role = Role::find($roleId);
+
+        if (! $role) {
+            return; // роли с таким ID нет
+        }
+
+        $users = User::query()
+            ->where('org_unit_id', $orgUnitId)
+            ->role(config('kanban.grant_to_roles')) // scope от Spatie
+            ->get();
+
+        foreach ($users as $user) {
+            if ($hasAccess) {
+                $user->assignRole($role);
+            } else {
+                $user->removeRole($role);
+            }
+        }
     }
 }

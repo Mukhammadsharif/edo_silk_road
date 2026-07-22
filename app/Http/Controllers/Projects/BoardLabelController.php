@@ -48,6 +48,10 @@ class BoardLabelController extends Controller
 
     private function requireAdmin(): void
     {
-        abort_unless(auth()->user()?->hasRole(['Super_Admin', 'IT_Admin']), 403);
+        abort_unless(
+            auth()->user()?->canManageBoards(),
+            403,
+            'Недостаточно прав'
+        );
     }
 }

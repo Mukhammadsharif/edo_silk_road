@@ -68,7 +68,11 @@
                             <div class="step-title">{{ __('field.signer') }}</div>
                             <div class="step-user">
                                 <i data-lucide="user"></i>
-                                <span>{{ $signer->toSign->personal->shortName()??'' }} - {{ $signer->toSign->userPost->lang($signer->toSign->userPost->id)??'' }}</span>
+                                <span>{{ optional(optional($signer->toSign)->personal)->shortName() ?? '' }}
+                                    @if($signer->toSign && $signer->toSign->userPost)
+                                        - {{ $signer->toSign->userPost->lang($signer->toSign->userPost->id) ?? '' }}
+                                    @endif
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -152,7 +156,13 @@
                             <div class="step-title">{{ __('field.verifier') }}</div>
                             <div class="step-user">
                                 <i data-lucide="user"></i>
-                                <span>{{ $directorDocument->toSign->personal->shortName()??'' }} - {{ $directorDocument->toUser->userPost->lang($directorDocument->toUser->userPost->id)??'' }}</span>
+                                {{-- Связи toSign/toUser могут быть null даже когда
+                                     $directorDocument есть (удалённое рабочее место). --}}
+                                <span>{{ optional(optional($directorDocument->toSign)->personal)->shortName() ?? '' }}
+                                    @if($directorDocument->toUser && $directorDocument->toUser->userPost)
+                                        - {{ $directorDocument->toUser->userPost->lang($directorDocument->toUser->userPost->id) ?? '' }}
+                                    @endif
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -190,10 +200,22 @@
                     </div>
                     <div class="step-content">
                         <div class="step-title">{{ __('status.completed') }}</div>
-                        <div class="step-user">
-                            <i data-lucide="user"></i>
-                            <span>{{ $directorDocument->toSign->personal->shortName()??'' }} - {{ $directorDocument->toUser->userPost->lang($directorDocument->toUser->userPost->id)??'' }}</span>
-                        </div>
+                        {{-- ИСПРАВЛЕНО: было обращение $directorDocument->toSign без проверки.
+                             ??'' защищает результат shortName(), но НЕ сам объект.
+                             $directorDocument — шаг с ролью RESOL: у штатных документов
+                             он есть всегда, а у free-sign роли произвольные (можно
+                             добавить только AGREE) -> null -> "Attempt to read property
+                             toSign on null". --}}
+                        @if(!empty($directorDocument) && $directorDocument->toSign)
+                            <div class="step-user">
+                                <i data-lucide="user"></i>
+                                <span>{{ optional($directorDocument->toSign->personal)->shortName() ?? '' }}
+                                    @if($directorDocument->toUser && $directorDocument->toUser->userPost)
+                                        - {{ $directorDocument->toUser->userPost->lang($directorDocument->toUser->userPost->id) ?? '' }}
+                                    @endif
+                                </span>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -224,7 +246,7 @@
                 @elseif($journal->status == 5 && isset($signer) && $signer)
                     <div class="status-item status-pending">
                         <i data-lucide="pen-tool"></i>
-                        <span><strong>{{ $signer->toSign->personal->shortName()??'' }}</strong> - {{ __('status.pending_signing') }}</span>
+                        <span><strong>{{ optional(optional($signer->toSign)->personal)->shortName() ?? '' }}</strong> - {{ __('status.pending_signing') }}</span>
                     </div>
                 @elseif($journal->status == 6 && isset($agreement_users) && $agreement_users->count())
                     <div class="status-item status-pending">
@@ -249,7 +271,7 @@
                 @elseif($journal->status == 8 && isset($directorDocument) && $directorDocument)
                     <div class="status-item status-pending">
                         <i data-lucide="file-check"></i>
-                        <span><strong>{{ $directorDocument->toSign->personal->shortName()??'' }}</strong> - {{ __('status.pending_resolution') }}</span>
+                        <span><strong>{{ optional(optional($directorDocument->toSign)->personal)->shortName() ?? '' }}</strong> - {{ __('status.pending_resolution') }}</span>
                     </div>
                 @elseif($journal->status == 9)
                     <div class="status-item status-pending">

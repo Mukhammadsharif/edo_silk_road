@@ -163,7 +163,12 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <input name="ecp_doc_type" value="from_ag_to_res" hidden/>
+                        @if(!empty($isFreeSign) && $isFreeSign)
+                            {{-- Free-sign: маршрут вычисляется на сервере. --}}
+                            <input name="ecp_doc_type" value="free_sign_doc" hidden/>
+                        @else
+                            <input name="ecp_doc_type" value="from_ag_to_res" hidden/>
+                        @endif
                         <input name="ecp_doc_id" value="{{ $document->id }}" hidden/>
                         <input name="ecp_confirm_id" id="ecp_confirm_id" hidden>
                     </div>

@@ -276,5 +276,9 @@ class User extends Authenticatable
     {
         return $this->kanbanSubscription()->exists();
     }
+    public function canManageBoards(): bool
+    {
+        return $this->hasRole(['Super_Admin', 'IT_Admin', 'Director']);
+    }
 
 }
