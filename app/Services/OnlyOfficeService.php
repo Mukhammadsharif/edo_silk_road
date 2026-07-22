@@ -89,12 +89,38 @@ class OnlyOfficeService
     }
 
     /**
-     * Открыть редактор для нового документа
+     * Сохранить загруженный пользователем основной файл (main_file) на FTP
+     * под сегодняшним путём с новым ключом. Возвращает ключ и URL для редактора.
+     *
+     * Используется, когда документ ЗАГРУЖАЕТСЯ файлом и должен открыться
+     * в OnlyOffice (а не сохраняться напрямую).
      */
-    public function openWordEditor(): array
+    public function storeUploadedMainFile($file): array
     {
         $key = uniqid() . '_' . time();
-        $documentUrl = Storage::disk('internal')->url($this->appBlankDocPath);
+        $path = $this->getTodayPath();
+        $docxPath = $path . $key . '.docx';
+
+        Storage::disk('ftp')->put($docxPath, file_get_contents($file->getRealPath()));
+
+        return [
+            'key' => $key,
+            'path' => $path,
+            'url' => $this->getDocumentUrl($docxPath),
+        ];
+    }
+
+    /**
+     * Открыть редактор для нового документа.
+     *
+     * @param string|null $documentUrl URL уже загруженного документа (если открываем загруженный файл);
+     *                                 null — открыть пустой шаблон.
+     * @param string|null $key         Ключ документа; null — сгенерировать новый.
+     */
+    public function openWordEditor(?string $documentUrl = null, ?string $key = null): array
+    {
+        $key = $key ?: (uniqid() . '_' . time());
+        $documentUrl = $documentUrl ?: Storage::disk('internal')->url($this->appBlankDocPath);
 
         $payload = $this->getBaseDocumentConfig($key, 'Yangi hujjat', $documentUrl);
         $token = $this->generateJwtToken($payload);
@@ -125,8 +151,10 @@ class OnlyOfficeService
         // Получаем документ
         $documentOnly = $this->getDocument($jId, $docType);
 
-        // Определяем URL документа
-        $documentUrl = $this->getEditDocumentUrl($documentOnly);
+        // Копируем текущий docx под НОВЫМ ключом в сегодняшний путь.
+        // Так файл today/{K2}.docx гарантированно существует с самого начала
+        // (документ не пропадёт), а редактор и сохранение работают с одним ключом.
+        $documentUrl = $this->prepareEditDocumentUrl($documentOnly, $key);
 
         $payload = $this->getBaseDocumentConfig($key, 'Hujjat tahrirlash', $documentUrl);
         $token = $this->generateJwtToken($payload);
@@ -145,6 +173,65 @@ class OnlyOfficeService
         ];
 
         return ['token' => $token, 'document_params' => $documentParams];
+    }
+
+    /**
+     * Принудительно сохранить документ в редакторе (forcesave) через
+     * OnlyOffice Command Service. Вызывается, пока редактор ещё открыт
+     * (перед отправкой формы «Продолжить»), чтобы свежая версия docx
+     * гарантированно была сохранена ДО конвертации в HTML.
+     *
+     * error=0 — сохранено; error=4 — изменений не было (docx уже актуален).
+     */
+    public function forceSave(string $key): array
+    {
+        // Тело команды. JWT-токен ВСЕГО тела кладётся в поле token
+        // (стандартный формат Command Service). Заголовок Authorization
+        // НЕ используем — некоторые сборки его отвергают.
+        $payload = ['c' => 'forcesave', 'key' => $key];
+        $token = JWT::encode($payload, $this->onlyOfficeJwtSecret, 'HS256');
+        $payload['token'] = $token;
+
+        // URL с гарантированной схемой
+        $base = $this->onlyOfficeInternalUrl;
+        if (!preg_match('#^https?://#i', $base)) {
+            $base = 'http://' . $base;
+        }
+        $url = rtrim($base, '/') . '/coauthoring/CommandService.ashx';
+
+        $options = [
+            'timeout' => 30,
+            'verify' => false,
+            'http_version' => '1.1',
+        ];
+        if (config('only-office.HTTP_PROXY')) {
+            $options['proxy'] = config('only-office.HTTP_PROXY');
+        }
+
+        try {
+            $response = Http::withHeaders(['Content-Type' => 'application/json'])
+                ->withOptions($options)
+                ->post($url, $payload);
+
+            $data = is_array($response->json()) ? $response->json() : [];
+            $error = $data['error'] ?? null;
+
+            // 0 — сохранено; 4 — изменений не было (оба варианта приемлемы)
+            $ok = in_array($error, [0, 4], true);
+
+            // Логируем всегда — для диагностики работы Command Service
+            Log::info('forcesave response', [
+                'key' => $key,
+                'url' => $url,
+                'status' => $response->status(),
+                'body' => $data,
+            ]);
+
+            return ['ok' => $ok, 'error' => $error, 'raw' => $data];
+        } catch (\Throwable $e) {
+            Log::error('forcesave request failed', ['key' => $key, 'url' => $url, 'error' => $e->getMessage()]);
+            return ['ok' => false, 'error' => 'exception'];
+        }
     }
 
     /**
@@ -182,6 +269,42 @@ class OnlyOfficeService
     }
 
     /**
+     * Подготовить документ к редактированию: скопировать текущий docx
+     * под новым ключом в сегодняшний путь и вернуть его proxy-URL.
+     *
+     * Гарантирует, что today/{newKey}.docx существует ещё до открытия
+     * редактора — поэтому при «Продолжить» конвертация в HTML всегда
+     * находит исходный файл, и документ не пропадает.
+     */
+    protected function prepareEditDocumentUrl(OnlyOfficeDoc $documentOnly, string $newKey): string
+    {
+        $oldDocxPath = $documentOnly->doc_path . $documentOnly->doc_key . '.docx';
+        $newDocxPath = $this->getTodayPath() . $newKey . '.docx';
+
+        if (Storage::disk('ftp')->exists($oldDocxPath)) {
+            try {
+                // Не копируем сам в себя (если путь/ключ совпали)
+                if ($oldDocxPath !== $newDocxPath) {
+                    $content = Storage::disk('ftp')->get($oldDocxPath);
+                    Storage::disk('ftp')->put($newDocxPath, $content);
+                }
+                return $this->getDocumentUrl($newDocxPath);
+            } catch (\Throwable $e) {
+                Log::error('Failed to copy docx for edit', [
+                    'old' => $oldDocxPath,
+                    'new' => $newDocxPath,
+                    'error' => $e->getMessage(),
+                ]);
+                // Фолбэк: открыть исходный файл напрямую
+                return $this->getDocumentUrl($oldDocxPath);
+            }
+        }
+
+        // Старого файла нет — открываем пустой шаблон
+        return Storage::disk('internal')->url($this->appBlankDocPath);
+    }
+
+    /**
      * Конвертировать DOCX в HTML
      */
     public function createWordToHtmlConverted(string $documentKey): bool
@@ -190,10 +313,31 @@ class OnlyOfficeService
         $wordFilePath = $path . $documentKey . '.docx';
         $htmlPath = $path . $documentKey . '.html';
 
+        $docxExists = Storage::disk('ftp')->exists($wordFilePath);
+        $docxSize = $docxExists ? Storage::disk('ftp')->size($wordFilePath) : 0;
+        Log::info('convert start', [
+            'key' => $documentKey,
+            'docx' => $wordFilePath,
+            'docx_exists' => $docxExists,
+            'docx_size' => $docxSize,
+            'html_already' => Storage::disk('ftp')->exists($htmlPath),
+        ]);
+
         // Проверяем, существует ли уже HTML
         if (Storage::disk('ftp')->exists($htmlPath)) {
             Log::info('HTML file already exists', ['key' => $documentKey]);
             return true;
+        }
+
+        // Защита: исходный docx обязан существовать, иначе документ «пропадёт».
+        // Не конвертируем впустую — возвращаем false, чтобы вызывающий код
+        // не переключал документ на отсутствующий HTML.
+        if (!$docxExists) {
+            Log::error('Source docx not found, skip conversion', [
+                'key' => $documentKey,
+                'path' => $wordFilePath,
+            ]);
+            return false;
         }
 
         // ВАЖНО: Используем HTTP URL через прокси
@@ -204,6 +348,15 @@ class OnlyOfficeService
 
         // Сохраняем JSON с токеном
         $this->saveConversionToken($documentKey, $documentUrl, 'html', 'docx', $path);
+
+        // Проверяем, что HTML действительно создан
+        $htmlMade = Storage::disk('ftp')->exists($htmlPath);
+        Log::info('convert done', ['key' => $documentKey, 'html_made' => $htmlMade]);
+
+        if (!$htmlMade) {
+            Log::error('HTML not produced after conversion', ['key' => $documentKey]);
+            return false;
+        }
 
         return true;
     }

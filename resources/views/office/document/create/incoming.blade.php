@@ -43,7 +43,7 @@
                             <h3>{{ __('field.main_information') }}</h3>
                         </div>
 
-                        <input value="{{ $journal->id }}" name="journal_type" id="journal_type" hidden>
+                        <input value="{{ $journal?->id }}" name="journal_type" id="journal_type" hidden>
                         <div class="form-group-modern">
                             <label>
                                 <i data-lucide="folder"></i>
@@ -236,6 +236,8 @@
                         </div>
                     </div>
                 </div>
+
+                @include('office.document.partials.related-documents-input')
             </form>
         </div>
     </div>

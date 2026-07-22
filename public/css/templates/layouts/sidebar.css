@@ -1,5 +1,5 @@
 :root {
-    --sidebar-width: 256px;
+    --sidebar-width: 270px;
     --navbar-height: 64px;
     --primary: #794DFD;
     --primary-hover: #5c36c1;
@@ -156,7 +156,7 @@
 }
 
 .menu-text {
-    font-size: 15px;
+    font-size: 13.5px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

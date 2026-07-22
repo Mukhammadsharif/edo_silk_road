@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ECP;
 
 use App\Http\Controllers\Controller;
+use App\Traits\HandlesAgreementFlow;
 use App\Jobs\GenerateHrOrderPdfJob;
 use App\Models\Admin\Role;
 use App\Models\Admin\UserPersonalInfo;
@@ -26,6 +27,9 @@ use Illuminate\Support\Facades\Auth;
 
 class SignLoginController extends Controller
 {
+
+    use HandlesAgreementFlow;
+  
     private const STEP_EXEC_CONFIRMED = 6;
 
     private array $workingDocTypes = [
@@ -311,7 +315,9 @@ class SignLoginController extends Controller
             case 'send_to_agreement':
             case 'send_to_ag_out_doc':
                 $journal->update(['status' => 6]);
-                $this->activateSteps($steps['agreement'], 2, $urls['agreement'], $meta);
+                $this->activateInitialAgreement($journal, $steps['agreement'], function ($stepsToActivate) use ($urls, $meta) {
+                    $this->activateSteps($stepsToActivate, 2, $urls['agreement'], $meta);
+                });
                 $this->logAction($docId, 4, $meta);
                 break;
 
@@ -324,7 +330,9 @@ class SignLoginController extends Controller
             case 'from_signer_to_ag':
                 $this->updateStepStatus($steps['sign'], 5);
                 $journal->update(['status' => 6]);
-                $this->activateSteps($steps['agreement'], 2, $urls['agreement'], $meta);
+                $this->activateInitialAgreement($journal, $steps['agreement'], function ($stepsToActivate) use ($urls, $meta) {
+                    $this->activateSteps($stepsToActivate, 2, $urls['agreement'], $meta);
+                });
                 $this->createReplyComment($steps['sign'], $resText, 'DOC_SIGNED');
                 $this->logAction($docId, 4, $meta);
                 break;
@@ -340,7 +348,13 @@ class SignLoginController extends Controller
                 $this->updateStepStatus($currentAgreement, 5);
                 $this->createReplyComment($currentAgreement, $resText, 'DOC_SIGNED');
 
-                if ($steps['agreement']->count() - $signedAgreements->count() === 1) {
+                // Свежая выборка шагов согласования после подписания текущего.
+                $freshAgreement = $this->getSteps($journal, 'AGREE');
+                $agreementComplete = $this->advanceAgreement($journal, $freshAgreement, function ($stepsToActivate) use ($urls, $meta) {
+                    $this->activateSteps($stepsToActivate, 2, $urls['agreement'], $meta);
+                });
+
+                if ($agreementComplete) {
                     $this->handleSendToResolution($journal, $steps['resolution'], $hasControl, $controllers, $urls, $meta);
                     $this->logAction($docId, 28, $meta);
                 } else {

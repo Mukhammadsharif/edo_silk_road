@@ -38,7 +38,7 @@
                             </div>
                             <div class="org-switcher-info">
                                 <span class="org-switcher-label">{{ __('field.organization') ?? 'Tashkilot' }}</span>
-                                <span class="org-switcher-name">{{ $activeOrganization->name_uz ?? '—' }}</span>
+                                <span class="org-switcher-name">{{ $activeOrganization?->name_uz ?? '—' }}</span>
                             </div>
                         </div>
                         <i data-lucide="chevron-down" class="org-switcher-chevron" style="width: 16px; height: 16px;"></i>
@@ -146,6 +146,35 @@
                 </div>
             @endif
 
+{{--            --}}{{-- Внешний документооборот (Didox) --}}
+{{--            <div class="menu-item {{ str_contains(url()->current(), '/external-docs') && !str_contains(url()->current(), 'approvals') ? 'active' : '' }}">--}}
+{{--                <a href="{{ route('external-docs.index') }}" class="menu-header">--}}
+{{--                    <div style="display: flex; align-items: center; gap:15px; flex: 1;">--}}
+{{--                        <i data-lucide="files" style="width: 22px; height: 22px;"></i>--}}
+{{--                        <span class="menu-text">Внешний документооборот</span>--}}
+{{--                    </div>--}}
+{{--                </a>--}}
+{{--            </div>--}}
+
+{{--            --}}{{-- Мне на согласование (Didox) — с каунтером ожидающих --}}
+{{--            @php--}}
+{{--                $didoxPendingCount = \App\Models\Didox\DidoxDocumentApprover::where('user_id', auth()->id())--}}
+{{--                    ->where('status', 'pending')--}}
+{{--                    ->whereHas('document', fn ($q) => $q->where('org_unit_id', auth()->user()->org_unit_id))--}}
+{{--                    ->count();--}}
+{{--            @endphp--}}
+{{--            <div class="menu-item {{ str_contains(url()->current(), '/external-docs/approvals') ? 'active' : '' }}">--}}
+{{--                <a href="{{ route('external-docs.approvals') }}" class="menu-header">--}}
+{{--                    <div style="display: flex; align-items: center; gap:15px; flex: 1;">--}}
+{{--                        <i data-lucide="badge-check" style="width: 22px; height: 22px;"></i>--}}
+{{--                        <span class="menu-text">Didox</span>--}}
+{{--                    </div>--}}
+{{--                    @if($didoxPendingCount > 0)--}}
+{{--                        <span class="badge badge-pill badge-danger">{{ $didoxPendingCount }}</span>--}}
+{{--                    @endif--}}
+{{--                </a>--}}
+{{--            </div>--}}
+
             {{-- ═══════════════ ИНТЕГРАЦИЯ С 1С ═══════════════
                  Виден директору, IT-админу и Super_Admin --}}
             @php
@@ -153,7 +182,7 @@
                     || in_array('Director', $userRoleNames, true)
                     || in_array('IT_Admin', $userRoleNames, true);
             @endphp
-            @if($canSeeOnec)
+            @if($canSeeOnec && $isSuperAdmin)
                 <div class="menu-item {{ str_contains(url()->current(), '/admin/onec') ? 'active' : '' }}">
                     <a href="{{ route('admin.onec.index') }}" class="menu-header">
                         <div style="display: flex; align-items: center; gap:15px; flex: 1;">
@@ -320,11 +349,21 @@
                     <span class="menu-text">Litsenziyalar</span>
                 </a>
             </div>
-        @elseif($isOwner)
+            {{--        @elseif($isOwner)--}}
+            {{--            <div class="menu-item">--}}
+            {{--                <a href="{{ route('license.activate') }}" class="menu-header">--}}
+            {{--                    <i data-lucide="shield-check" style="width: 22px; height: 22px;"></i>--}}
+            {{--                    <span class="menu-text">Litsenziya</span>--}}
+            {{--                </a>--}}
+            {{--            </div>--}}
+        @endif
+
+        {{-- Obuna: faqat tashkilot egasi (owner) uchun. --}}
+        @if($isOwner)
             <div class="menu-item">
-                <a href="{{ route('license.activate') }}" class="menu-header">
-                    <i data-lucide="shield-check" style="width: 22px; height: 22px;"></i>
-                    <span class="menu-text">Litsenziya</span>
+                <a href="{{ route('pricing') }}" class="menu-header">
+                    <i data-lucide="badge-check" style="width: 22px; height: 22px;"></i>
+                    <span class="menu-text">{{ __('field.subscription') ?? 'Obuna' }}</span>
                 </a>
             </div>
         @endif
@@ -340,8 +379,7 @@
             </div>
         </div>
 
-        {{--        @if(!$isOwner && $isOrganizationDemo && !$request)--}}
-        @if(!$isOwner && $isOrganizationDemo)
+        @if((!$isOwner && $isOrganizationDemo) || !Auth::user()->org_unit_id)
             <div class="request">
                 <div class="rocket-icon">
                     <i data-lucide="rocket" style="width: 30px; height: 30px;"></i>
@@ -386,7 +424,7 @@
             </div>
             <div class="sidebar-user-info">
                 <p class="sidebar-user-name">{{ $user->userPersonal->shortName()??'' }}</p>
-                <p class="sidebar-user-role">{{ $user->currentWork->position->lang($user->currentWork->position->id)??'User' }}</p>
+                <p class="sidebar-user-role">{{ $user->currentWork?->position?->lang($user->currentWork->position->id) ?? 'User' }}</p>
             </div>
         </div>
     </nav>

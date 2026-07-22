@@ -17,6 +17,10 @@
         {
             "url": "http://172.17.110.54:8080",
             "description": "172.17.110.54 server"
+        },
+        {
+            "url": "https://onlyoffice.local:8443",
+            "description": "local dev server"
         }
     ],
     "paths": {
@@ -1800,6 +1804,259 @@
                     },
                     "502": {
                         "description": "Ошибка 1С"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/onec/token/generate": {
+            "post": {
+                "tags": [
+                    "1C Token"
+                ],
+                "summary": "Сгенерировать токен интеграции 1С",
+                "description": "Выпускает новый токен интеграции 1С для организации и помечает истёкшими предыдущие активные токены этой организации (один активный за раз). Токен живёт 60 минут. Director / IT_Admin получают токен только для своей организации и дополнительно письмом на email. Super_Admin может указать org_unit_id любой организации; без указания берётся его активная организация.",
+                "operationId": "9d9dd79e9ff51ac9ae069548a1059ba9",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "org_unit_id": {
+                                        "description": "Только для Super_Admin. Для остальных ролей игнорируется — токен всегда для своей организации.",
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Токен выпущен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "onec_9ZqK3v..."
+                                        },
+                                        "expires_at": {
+                                            "type": "string",
+                                            "example": "2026-07-15 13:45:00"
+                                        },
+                                        "ttl_minutes": {
+                                            "type": "integer",
+                                            "example": 60
+                                        },
+                                        "refresh_token": {
+                                            "description": "Долгоживущий ключ: 1С обновляет им access-токен без участия человека",
+                                            "type": "string",
+                                            "example": "onecr_8Kd2p..."
+                                        },
+                                        "refresh_expires_at": {
+                                            "type": "string",
+                                            "example": "2026-08-14 13:45:00"
+                                        },
+                                        "org_unit_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "org_name": {
+                                            "type": "string",
+                                            "example": "ДЕМО Организация"
+                                        },
+                                        "emailed": {
+                                            "description": "Отправлено ли письмо с токеном на email пользователя (только не для Super_Admin)",
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не аутентифицирован"
+                    },
+                    "403": {
+                        "description": "Нет доступа к интеграции с 1С"
+                    },
+                    "422": {
+                        "description": "Организация не определена или org_unit_id не существует"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/onec/token/refresh": {
+            "post": {
+                "tags": [
+                    "1C Token"
+                ],
+                "summary": "Обновить токен интеграции 1С по refresh-токену",
+                "description": "Обменивает refresh-токен на новую пару access+refresh. Аутентификация — сам refresh-токен, сессия пользователя НЕ нужна: 1С продлевает доступ самостоятельно, без участия человека. Refresh ротируется: старый становится недействительным сразу после обмена, повторное предъявление гасит все токены организации (защита от утечки). Окно обновления не продлевается — по истечении refresh_expires_at нужен ручной выпуск в кабинете.",
+                "operationId": "b7207f85c9ece586de2c0792b6eb5eb4",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "refresh_token"
+                                ],
+                                "properties": {
+                                    "refresh_token": {
+                                        "description": "Refresh-токен, полученный при выпуске или прошлом обновлении",
+                                        "type": "string",
+                                        "example": "onecr_8Kd2p..."
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Выпущена новая пара токенов",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "onec_9ZqK3v..."
+                                        },
+                                        "expires_at": {
+                                            "type": "string",
+                                            "example": "2026-07-15 14:45:00"
+                                        },
+                                        "ttl_minutes": {
+                                            "type": "integer",
+                                            "example": 60
+                                        },
+                                        "refresh_token": {
+                                            "description": "НОВЫЙ refresh-токен: сохраните его, прежний уже недействителен",
+                                            "type": "string",
+                                            "example": "onecr_Lm4Xt..."
+                                        },
+                                        "refresh_expires_at": {
+                                            "type": "string",
+                                            "example": "2026-08-14 13:45:00"
+                                        },
+                                        "org_unit_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Refresh-токен неизвестен, истёк или уже использован — нужен новый выпуск в кабинете"
+                    },
+                    "422": {
+                        "description": "refresh_token не передан"
+                    },
+                    "429": {
+                        "description": "Слишком много попыток обновления"
+                    }
+                }
+            }
+        },
+        "/api/onec/token/current": {
+            "get": {
+                "tags": [
+                    "1C Token"
+                ],
+                "summary": "Текущий активный токен интеграции 1С",
+                "description": "Возвращает активный (не истёкший) токен организации, если он есть. Полезно, чтобы не выпускать новый токен без необходимости.",
+                "operationId": "cf422fcfe725f874e83edc2af4556363",
+                "parameters": [
+                    {
+                        "name": "org_unit_id",
+                        "in": "query",
+                        "description": "Только для Super_Admin. Для остальных — своя организация.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Состояние токена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "has_active": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "onec_9ZqK3v..."
+                                        },
+                                        "expires_at": {
+                                            "type": "string",
+                                            "example": "2026-07-15 13:45:00"
+                                        },
+                                        "refresh_expires_at": {
+                                            "type": "string",
+                                            "example": "2026-08-14 13:45:00"
+                                        },
+                                        "refreshable": {
+                                            "description": "Можно ли продлить доступ по refresh-токену без ручного выпуска",
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "org_unit_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не аутентифицирован"
+                    },
+                    "403": {
+                        "description": "Нет доступа к интеграции с 1С"
+                    },
+                    "422": {
+                        "description": "Организация не определена"
                     }
                 },
                 "security": [
@@ -6177,6 +6434,10 @@
         {
             "name": "1C Outbound",
             "description": "Отправка данных EDOLINE → 1С"
+        },
+        {
+            "name": "1C Token",
+            "description": "Выпуск токена интеграции 1С через API"
         },
         {
             "name": "Protocols",

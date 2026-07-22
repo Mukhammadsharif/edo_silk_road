@@ -278,6 +278,7 @@ class UserController extends Controller
             $createPersonal->user_id = $createUser->id;
             $createPersonal->l_name = $request->l_name;
             $createPersonal->f_name = $request->f_name;
+            $createPersonal->address = $request->address;
             $createPersonal->save();
 
             $nextYear = Carbon::now()->addYear()->format('Y-m-d');
@@ -361,7 +362,8 @@ class UserController extends Controller
                     'doc_type' => $request->doc_type,
                     'birthday' => $request->birthday,
                     'gender' => $request->gender,
-                    'phone' => $request->phone
+                    'phone' => $request->phone,
+                    'address' => $request->address
                 ]);
             }
 

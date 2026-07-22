@@ -97,9 +97,9 @@ class RoleMenu extends Model
 
         $workIds = UserWorkHistory::where('user_id', Auth::id())->pluck('id')->toArray();;
 
-        //$authActiveUser = UserWorkHistory::where('user_id', Auth::id())->where('status', 1)->orderBy('id', 'DESC')->first();
-
         $controls = JournalTypeControls::where('status', 1)->pluck('journal_type_id')->toArray();
+
+        $isSuperUser = in_array('Super_Admin', self::authActiveUserRoleNames());
 
         if ($roleMenu && !str_contains($roleMenu->menuList->code, 'PRT_')) {
             $code = $roleMenu->menuList->code??'*';
@@ -119,8 +119,11 @@ class RoleMenu extends Model
                     ->whereHas('journal', function ($query) {
                         $query->where('doc_code', 'BASE_OUTGOING');
                     })->count(),
-                'ALL_DOCS' => DocumentJournals::whereNotIn('status', [1, 4])->count(),
-                'ALL_PRT_DOCS' => ProtocolDocument::whereNotIn('status', [1])->where('status', '!=', 6)->count(),
+                'ALL_DOCS' => $isSuperUser ?
+                    DocumentJournals::whereNotIn('status', [1, 4])->count() :
+                    DocumentJournals::whereNotIn('status', [1, 4])->where('org_unit_id', self::authActiveUser()->user->org_unit_id)->count(),
+                'ALL_PRT_DOCS' => $isSuperUser ? ProtocolDocument::whereNotIn('status', [1])->where('status', '!=', 6)->count()
+                                : ProtocolDocument::whereNotIn('status', [1])->where('org_id', self::authActiveUser()->user->org_unit_id)->where('status', '!=', 6)->count(),
                 'DOC_EXEC' => DocumentExecutionSteps::whereIn('to_user', $workIds)
                     ->whereHas('role', function ($query) { $query->where('doc_code', 'EXEC'); })
                     ->whereIn('status', [2, 4])
@@ -232,6 +235,26 @@ class RoleMenu extends Model
             ->where('status', 1)
             ->orderBy('id', 'DESC')
             ->first();
+    }
+
+    public static function authActiveUserRoles()
+    {
+        // return object
+        $role_ids = UserRole::where('model_id', self::authActiveUser()->user_id??0)->pluck('role_id')->toArray();
+
+        return Role::whereIn('id', $role_ids)->get();
+    }
+
+    public static function authActiveUserRoleNames(): array
+    {
+        // return array
+        $auth_roles = array();
+
+        foreach (self::authActiveUserRoles() as $key => $item) {
+            $auth_roles[$key] = $item->name;
+        }
+
+        return $auth_roles;
     }
 
 }

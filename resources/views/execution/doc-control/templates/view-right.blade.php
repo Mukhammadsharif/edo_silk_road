@@ -160,7 +160,7 @@
                                                 </span>
                                             </button>
 
-                                            <button type="button" class="btn-modern btn-warning penCancelReturnModal"
+                                            <button type="button" class="btn-modern btn-warning openCancelReturnModal"
                                                     data-id="3">
                                                 <span class="size10">
                                                     <i data-lucide="arrow-big-left"></i>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Office;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\ApprovalGroup;
 use App\Services\FreeSign\FreeSignRouteService;
 use App\Models\QrCodeKeys;
 use App\Models\Admin\AppTemps;
@@ -29,6 +30,7 @@ use App\Models\Journal\JournalExecutionSteps;
 use App\Models\Journal\JournalTypes;
 use App\Models\Messages\OnlyOfficeDoc;
 use App\Services\Documents\DocumentFactory;
+use App\Services\Documents\DocumentRelationService;
 use App\Services\OnlyOfficeService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -61,7 +63,7 @@ class DocumentController extends Controller
         $auth = $this->authActiveUser();
 
         // Fetch common data
-        $data = $this->getCommonData($auth->dep_id);
+        $data = $this->getCommonData($auth?->dep_id);
         $data['type'] = $type;
 
         // Fetch type-specific data
@@ -80,7 +82,20 @@ class DocumentController extends Controller
 
         switch ($type) {
             case str_starts_with($type, 'APP_'):
-                return view('office.document.create.document_forms.app', compact('confidences'))->render();
+                // Динамически показываем поля дат только если в шаблоне
+                // подтипа есть плейсхолдеры [FROM_DATE] / [TO_DATE].
+                $journalType = JournalTypes::where('org_id', $this->organizationId())
+                    ->where('doc_code', $type)
+                    ->first();
+                $tText = '';
+                if ($journalType) {
+                    $tpl = DocumentTypeTemps::where('doc_type_id', $journalType->id)->first();
+                    $tText = $tpl->t_text ?? '';
+                }
+                $hasFromDate = str_contains($tText, '[FROM_DATE]');
+                $hasToDate = str_contains($tText, '[TO_DATE]');
+
+                return view('office.document.create.document_forms.app', compact('confidences', 'hasFromDate', 'hasToDate'))->render();
 
             case 'HR_ORD_MT':
                 $labourApps = DocumentJournals::select('document_journals.*')
@@ -313,6 +328,15 @@ class DocumentController extends Controller
         // 5️⃣ Foydalanuvchi rollarini saqlash
         $this->assignExecutionUsers($journal->id, $request);
 
+        // Связанные документы
+        if ($request->filled('related_docs')) {
+            (new DocumentRelationService())->saveRelations(
+                $journal->id,
+                (array) $request->input('related_docs', []),
+                $this->authActiveUser()?->id
+            );
+        }
+
         // 6️⃣ Log yaratish
         $this->createLog($journal->doc_id, 1, $journal->journal->title ?? '', $document->doc_name ?? '');
 
@@ -364,6 +388,26 @@ class DocumentController extends Controller
             ]);
             return now()->format('Y-m-d');
         }
+    }
+  
+    /**
+     * Распознаёт вставленную ссылку на документ (для вкладки «Связанные документы»).
+     */
+    public function resolveRelatedLink(Request $request)
+    {
+        $service = new DocumentRelationService();
+        $journal = $service->resolveLink((string) $request->input('link', ''), $this->organizationId());
+
+        if (!$journal) {
+            return response()->json(['ok' => false]);
+        }
+
+        return response()->json([
+            'ok'    => true,
+            'id'    => $journal->id,
+            'label' => $service->label($journal),
+            'url'   => $service->viewUrl($journal),
+        ]);
     }
 
     public function storeFreeSign(Request $request): RedirectResponse
@@ -642,6 +686,7 @@ class DocumentController extends Controller
         ];
         return $map[$code] ?? ('Статус ' . $code);
     }
+
     public function saveFiles($document_id, $journal_id, $request)
     {
         $today = Carbon::today();
@@ -708,13 +753,49 @@ class DocumentController extends Controller
         }
 
         if ($agreement_users) {
-            foreach ($agreement_users as $agreement_user) {
-                $this->extracted($journal_id, $agreement_user, $agreement_role->id);
-            }
+            $this->saveAgreementSteps($journal_id, $agreement_users, $agreement_role->id, $request);
         }
 
         if ($signatory_user) {
             $this->extracted($journal_id, $signatory_user, $signer_role->id);
+        }
+    }
+
+    /**
+     * Создаёт шаги согласования с учётом режима (parallel|sequential) и очереди.
+     * При sequential каждому согласующему проставляется queue_number = уровень (1..N)
+     * согласно порядку из agreement_sequence; при parallel все на уровне 1.
+     */
+    private function saveAgreementSteps($journal_id, $agreement_users, $agreement_role_id, $request): void
+    {
+        $agreementType = in_array($request->agreement_type, ['parallel', 'sequential'], true)
+            ? $request->agreement_type : 'parallel';
+
+        DocumentJournals::where('id', $journal_id)->update(['agreement_type' => $agreementType]);
+
+        $agreement_users = array_values(array_unique($agreement_users));
+
+        if ($agreementType === 'sequential') {
+            $seqRaw = (string) $request->agreement_sequence;
+            $orderedIds = array_values(array_filter(array_map('trim', explode(',', $seqRaw))));
+
+            // Сначала — согласующие в заданном порядке, затем — не попавшие в список (в конец).
+            $ordered = array_values(array_filter($orderedIds, fn ($id) => in_array($id, $agreement_users)));
+            foreach ($agreement_users as $id) {
+                if (!in_array($id, $ordered)) {
+                    $ordered[] = $id;
+                }
+            }
+
+            $level = 1;
+            foreach ($ordered as $agreement_user) {
+                $this->extracted($journal_id, $agreement_user, $agreement_role_id, $level);
+                $level++;
+            }
+        } else {
+            foreach ($agreement_users as $agreement_user) {
+                $this->extracted($journal_id, $agreement_user, $agreement_role_id, 1);
+            }
         }
     }
 
@@ -736,6 +817,8 @@ class DocumentController extends Controller
 
         $fromDate = null;
         $toDate = null;
+        $hasFromDate = null;
+        $hasToDate = null;
         $labourApps = null;
 
         $organizations = DocumentOrganizations::where('for_doc_type', $journal->journal->id)->get();
@@ -760,6 +843,13 @@ class DocumentController extends Controller
 
                 $fromDate = $json_data['FROM_DATE']??'';
                 $toDate = $json_data['TO_DATE']??'';
+
+                // Показываем поля дат динамически — по наличию плейсхолдеров
+                // [FROM_DATE] / [TO_DATE] в шаблоне подтипа.
+                $tpl = DocumentTypeTemps::where('doc_type_id', $journal->j_type)->first();
+                $tText = $tpl->t_text ?? '';
+                $hasFromDate = str_contains($tText, '[FROM_DATE]');
+                $hasToDate = str_contains($tText, '[TO_DATE]');
             }
 
             if (str_contains($journal->journal->doc_code, 'HR_ORD')){
@@ -778,10 +868,10 @@ class DocumentController extends Controller
         }
 
         return view('office.document.edit.'.$type, compact('journals', 'departments', 'confidences', 'type', 'authUser',
-            'journal', 'document', 'documentFiles', 'fromDate', 'toDate', 'organizations', 'departmentJournals', 'labourApps'));
+            'journal', 'document', 'documentFiles', 'fromDate', 'toDate', 'hasFromDate', 'hasToDate', 'organizations', 'departmentJournals', 'labourApps'));
     }
 
-	public function edit($document_key, $j_id, $hash)
+    public function edit($document_key, $j_id, $hash)
     {
         $authUser = $this->authActiveUser();
 
@@ -839,8 +929,12 @@ class DocumentController extends Controller
         ]);
 
         if (str_contains($journal->journal->doc_code, 'APP')){
-            $fromDate = Carbon::createFromFormat('d.m.Y', $request->from_date)->format('Y-m-d');
-            $toDate = Carbon::createFromFormat('d.m.Y', $request->to_date)->format('Y-m-d');
+            $fromDate = $request->from_date
+                ? Carbon::createFromFormat('d.m.Y', $request->from_date)->format('Y-m-d')
+                : '';
+            $toDate = $request->to_date
+                ? Carbon::createFromFormat('d.m.Y', $request->to_date)->format('Y-m-d')
+                : '';
 
             $data = ['FROM_DATE' => $fromDate, 'TO_DATE' => $toDate];
 
@@ -849,8 +943,12 @@ class DocumentController extends Controller
                 'meta_data' => json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
             ]);
         } elseif (str_contains($journal->journal->doc_code, 'HR_ORD')) {
-            $fromDate = Carbon::createFromFormat('d.m.Y', $request->from_date)->format('Y-m-d');
-            $toDate = Carbon::createFromFormat('d.m.Y', $request->to_date)->format('Y-m-d');
+            $fromDate = $request->from_date
+                ? Carbon::createFromFormat('d.m.Y', $request->from_date)->format('Y-m-d')
+                : '';
+            $toDate = $request->to_date
+                ? Carbon::createFromFormat('d.m.Y', $request->to_date)->format('Y-m-d')
+                : '';
             $documentId = $request->app_id;
 
             $appMetaData = DocumentTypeTempMetaData::where('doc_id', $documentId)->first();
@@ -903,12 +1001,26 @@ class DocumentController extends Controller
 
             if (isset($documentKey) && $documentKey) {
                 $onlyOfficeDoc = OnlyOfficeDoc::where('doc_type', 'DOC')->where('doc_id', $document->id)->first();
-                $onlyOfficeDoc->update([
-                    'doc_key' => $documentKey,
-                    'doc_path' => $ood_path,
-                ]);
 
-                $this->onlyOfficeService->createWordToHtmlConverted($documentKey);
+                if ($onlyOfficeDoc) {
+                    // Сначала конвертируем новый docx в HTML. Только если HTML
+                    // успешно создан — переключаем документ на новый ключ.
+                    // Иначе оставляем прежнюю версию, чтобы документ не пропал.
+                    $converted = $this->onlyOfficeService->createWordToHtmlConverted($documentKey);
+
+                    if ($converted) {
+                        $onlyOfficeDoc->update([
+                            'doc_key' => $documentKey,
+                            'doc_path' => $ood_path,
+                        ]);
+                    } else {
+                        \Log::error('Document conversion failed on update, keeping previous version', [
+                            'doc_id' => $document->id,
+                            'new_key' => $documentKey,
+                            'old_key' => $onlyOfficeDoc->doc_key,
+                        ]);
+                    }
+                }
             }
         }
 
@@ -930,14 +1042,21 @@ class DocumentController extends Controller
         }
 
         if ($agreement_users) {
-            foreach ($agreement_users as $agreement_user) {
-                $this->extracted($j_id, $agreement_user, $agreement_role->id);
-            }
+            $this->saveAgreementSteps($j_id, $agreement_users, $agreement_role->id, $request);
         }
 
         if ($signatory_user) $this->extracted($j_id, $signatory_user, $signer_role->id);
 
         $this->saveFiles($document->id, $j_id, $request);
+
+        // Связанные документы (добавляем к существующим)
+        if ($request->filled('related_docs')) {
+            (new DocumentRelationService())->saveRelations(
+                $j_id,
+                (array) $request->input('related_docs', []),
+                $this->authActiveUser()?->id
+            );
+        }
 
         if ($journal->journal->doc_code === 'ORDER_F' && $to_dep) {
             $doc_to_dep = DocToDeps::where('j_id', $journal->id)->first();
@@ -1092,9 +1211,9 @@ class DocumentController extends Controller
             $agreement_roles_ids = JournalExecutionStepRoles::where('j_exec_step_id', $agreement_step->id)->pluck('role_id')->toArray();
             $user_roles = UserRole::whereIn('role_id', $agreement_roles_ids)->pluck('model_id')->toArray();
             $agreement_users = UserWorkHistory::where('user_work_histories.org_id', $this->organizationId())->
-                whereIn('user_work_histories.user_id', $user_roles)->whereHas('user', function ($query) {
-                    $query->where('status', 1);
-                })->where('user_work_histories.status', 1)
+            whereIn('user_work_histories.user_id', $user_roles)->whereHas('user', function ($query) {
+                $query->where('status', 1);
+            })->where('user_work_histories.status', 1)
                 ->whereNotIn('user_work_histories.user_id', $super_admins_array)
                 ->join('user_personal_infos', 'user_personal_infos.user_id', '=', 'user_work_histories.user_id')
                 ->orderBy('user_personal_infos.sort')
@@ -1102,7 +1221,9 @@ class DocumentController extends Controller
                 ->get();
         }
 
-        $blade = view('office.templates.execution-steps', compact('resolution_users', 'signatory_users', 'agreement_users'))->render();
+        $approval_groups = $this->buildApprovalGroups($this->organizationId());
+
+        $blade = view('office.templates.execution-steps', compact('resolution_users', 'signatory_users', 'agreement_users', 'approval_groups'))->render();
 
         return response()->json(['success' => true, 'blade' => $blade]);
     }
@@ -1211,13 +1332,37 @@ class DocumentController extends Controller
             $query->where('doc_code', 'AGREE');
         })->get();
 
+        // ── Гарантия сохранности согласующих при редактировании документа ──
+        // update() удаляет все AGREE-шаги и заново создаёт их ТОЛЬКО из to_agree[].
+        // Значит в списке должны присутствовать (и быть отмечены) ВСЕ уже
+        // назначенные согласующие — даже если сейчас у них нет роли AGREE
+        // (например, они попали в документ через группу согласующих) или их
+        // нет в отфильтрованном списке по иным причинам. Иначе после сохранения
+        // такие согласующие молча пропадают.
+        $assignedAgreeIds = $agreements->pluck('to_user')->map(fn ($v) => (int) $v)->unique();
+        $presentIds = $agreement_users->pluck('id')->map(fn ($v) => (int) $v)->all();
+        $missingIds = $assignedAgreeIds->reject(fn ($id) => in_array($id, $presentIds, true))->values();
+
+        if ($missingIds->isNotEmpty()) {
+            $extraUsers = UserWorkHistory::whereIn('id', $missingIds->all())->get();
+            $agreement_users = $agreement_users->concat($extraUsers);
+        }
+
         $verifier = DocumentExecutionSteps::where('j_id', $id)->whereHas('role', function ($query) {
             $query->where('doc_code', 'RESOL');
         })->first();
 
 
+        $approval_groups = $this->buildApprovalGroups($this->organizationId());
+
+        // Текущий режим согласования и порядок (для предзаполнения UI при редактировании).
+        $journalModel = DocumentJournals::find($id);
+        $agreement_type = $journalModel->agreement_type ?? 'parallel';
+        $agreement_sequence = $agreements->sortBy('queue_number')
+            ->pluck('to_user')->map(fn ($v) => (string) $v)->values()->all();
+
         $blade = view('office.templates.edit-execution-steps', compact('resolution_users', 'signatory_users', 'agreement_users',
-            'signer', 'agreements', 'verifier'))->render();
+            'signer', 'agreements', 'verifier', 'approval_groups', 'agreement_type', 'agreement_sequence'))->render();
 
         return response()->json(['success' => true, 'blade' => $blade]);
     }
@@ -1247,7 +1392,60 @@ class DocumentController extends Controller
         return "{$randomString}_{$timestamp}";
     }
 
-    public function extracted($journal_id, $signatory_user, $exec_role_id): void
+    /**
+     * Готовые группы согласующих для организации.
+     * Участники резолвятся в актуальные work_history id этой организации,
+     * чтобы значения совпадали с value чекбоксов to_agree[].
+     *
+     * @return array [ ['id'=>.., 'name'=>.., 'members'=>[ ['id'=>work_id,'name'=>..,'position'=>..], ... ] ], ... ]
+     */
+    private function buildApprovalGroups($orgId): array
+    {
+        $groups = ApprovalGroup::where('org_unit_id', $orgId)->where('status', 1)
+            ->orderBy('name')->get();
+
+        $result = [];
+
+        foreach ($groups as $group) {
+            $memberUserIds = $group->memberUserIds();
+            if (empty($memberUserIds)) {
+                continue;
+            }
+
+            $members = UserWorkHistory::where('user_work_histories.org_id', $orgId)
+                ->where('user_work_histories.status', 1)
+                ->whereIn('user_work_histories.user_id', $memberUserIds)
+                ->whereHas('user', function ($q) {
+                    $q->where('status', 1);
+                })
+                ->join('user_personal_infos', 'user_personal_infos.user_id', '=', 'user_work_histories.user_id')
+                ->orderBy('user_personal_infos.sort')
+                ->select('user_work_histories.*')
+                ->get()
+                ->unique('user_id');
+
+            $memberData = [];
+            foreach ($members as $m) {
+                $memberData[] = [
+                    'id'       => $m->id, // work_history id — совпадает с value чекбокса to_agree[]
+                    'name'     => optional($m->personal)->fullName() ?? '-',
+                    'position' => optional($m->userPost)->lang(optional($m->userPost)->id) ?? '',
+                ];
+            }
+
+            if (!empty($memberData)) {
+                $result[] = [
+                    'id'      => $group->id,
+                    'name'    => $group->name,
+                    'members' => $memberData,
+                ];
+            }
+        }
+
+        return $result;
+    }
+
+    public function extracted($journal_id, $signatory_user, $exec_role_id, $queueNumber = 0): void
     {
         $signer_step = new DocumentExecutionSteps();
         $signer_step->j_id = $journal_id;
@@ -1258,7 +1456,7 @@ class DocumentController extends Controller
         $signer_step->exec_role = $exec_role_id;
         $signer_step->res_exec_role = 0;
         $signer_step->status = 1;
+        $signer_step->queue_number = $queueNumber;
         $signer_step->save();
     }
 }
-

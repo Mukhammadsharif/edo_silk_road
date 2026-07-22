@@ -64,6 +64,8 @@ use App\Http\Controllers\Protocol\ProtocolDocTypeController;
 use App\Http\Controllers\Protocol\ProtocolEmpHrOrdersController;
 use App\Http\Controllers\Comment\DocumentCommentController;
 
+use App\Http\Controllers\ExternalDocFlowController;
+
 Route::get('/edo', function () {
     return view('auth.login');
 });
@@ -313,6 +315,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('document-report-form-store', [DocumentController::class, 'documentReportFormEntryStore'])->name('office.doc.report.form.store');
         Route::delete('document-report-form-delete/{id}', [DocumentController::class, 'documentReportFormEntryDelete'])->name('office.doc.report.form.delete');
         Route::post('store-doc', [DocumentController::class, 'store'])->name('office.doc.store');
+        Route::post('resolve-related-link', [DocumentController::class, 'resolveRelatedLink'])->name('office.doc.resolve-related-link');
         Route::get('edit-doc/{type}/{j_id}/{hash}', [DocumentController::class, 'documentEdit'])->name('office.doc.edit');
         Route::post('update-doc/{j_id}/{hash}', [DocumentController::class, 'update'])->name('office.doc.update');
         Route::get('get-journals/{j_type_id}', [DocumentController::class, 'getJournals']);
@@ -336,6 +339,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/doc/view', [OnlyOfficeController::class, 'docView']);
         Route::get('download-pdf/{onlyDocId}', [OnlyOfficeController::class, 'convertToPDF'])->name('download-only-office.pdf');
         Route::any('edit-doc-only/{j_id}/{hash}', [OnlyOfficeController::class, 'edit'])->name('office.doc.edit-only');
+        Route::post('onlyoffice/forcesave', [OnlyOfficeController::class, 'forceSave'])->name('office.onlyoffice.forcesave');
 
         Route::get('view-inbox-doc/{id}/{hash}', [JournalController::class, 'viewInbox'])->name('office.view-inbox-doc');
         Route::get('view-sent-doc/{id}/{hash}', [JournalController::class, 'viewSent'])->name('office.view-sent-doc');
@@ -610,6 +614,27 @@ Route::middleware('auth')->group(function () {
     // метки на карточке (переключение)
     Route::post('cards/{card}/labels/{label}', [CardController::class, 'attachLabel'])->name('cards.labels.attach');
     Route::delete('cards/{card}/labels/{label}', [CardController::class, 'detachLabel'])->name('cards.labels.detach');
+
+    Route::prefix('external-docs')->name('external-docs.')->middleware('auth')->group(function () {
+        Route::get('/',                     [ExternalDocFlowController::class, 'index'])->name('index');
+        Route::get('/approvals',            [ExternalDocFlowController::class, 'approvals'])->name('approvals');
+        Route::post('/auth/password',       [ExternalDocFlowController::class, 'loginPassword'])->name('auth.password');
+        Route::post('/auth/ecp',            [ExternalDocFlowController::class, 'loginEcp'])->name('auth.ecp');
+        Route::post('/sync',                [ExternalDocFlowController::class, 'syncNow'])->name('sync');
+        Route::get('/{id}',                 [ExternalDocFlowController::class, 'show'])->whereNumber('id')->name('show');
+        Route::get('/{id}/print',           [ExternalDocFlowController::class, 'printForm'])->whereNumber('id')->name('print');
+        Route::post('/{id}/send-to-review', [ExternalDocFlowController::class, 'sendToReview'])->whereNumber('id')->name('send-review');
+        Route::post('/{id}/decide',         [ExternalDocFlowController::class, 'decide'])->whereNumber('id')->name('decide');
+        Route::post('/{id}/refresh-status', [ExternalDocFlowController::class, 'refreshStatus'])->whereNumber('id')->name('refresh-status');
+
+        // Web-прокси подписи (E-IMZO поток из карточки, работают на web-сессии)
+        Route::post('/timestamp',            [ExternalDocFlowController::class, 'timestamp'])->name('timestamp');
+        Route::post('/signature-join',       [ExternalDocFlowController::class, 'signatureJoin'])->name('signature-join');
+        Route::get('/{id}/document-base64',  [ExternalDocFlowController::class, 'documentBase64'])->whereNumber('id')->name('document-base64');
+        Route::get('/{id}/tosign-value',     [ExternalDocFlowController::class, 'toSignValue'])->whereNumber('id')->name('tosign-value');
+        Route::post('/{id}/tosign',          [ExternalDocFlowController::class, 'toSign'])->whereNumber('id')->name('tosign');
+        Route::post('/{id}/sign',            [ExternalDocFlowController::class, 'sign'])->whereNumber('id')->name('sign');
+    });
 });
 
 /**
@@ -651,3 +676,6 @@ Route::middleware(['auth'])->group(function() {
         return redirect("/office/document/create/{$type}?prefill=" . urlencode($draft));
     })->name('telegram.handoff.create');
 });
+
+// ── Группы согласующих (Super_Admin / IT_Admin) ──
+require __DIR__.'/approval_groups.php';

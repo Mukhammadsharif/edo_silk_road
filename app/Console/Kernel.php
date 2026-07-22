@@ -28,6 +28,7 @@ class Kernel extends ConsoleKernel
         // Key generate for Qr Code
         $schedule->command('qr_code_key_gen:cron')->dailyAt('22:50');*/
 
+        $schedule->command('didox:sync-incoming')->everyTenMinutes()->withoutOverlapping();
     }
 
     protected function commands()

@@ -23,7 +23,8 @@ class DocumentExecutionSteps extends Model
         'to_user',
         'exec_role',
         'res_exec_role',
-        'status'
+        'status',
+        'queue_number',
     ];
 
     public function toUser(): BelongsTo

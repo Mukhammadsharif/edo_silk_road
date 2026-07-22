@@ -19,6 +19,7 @@ class UserPersonalInfo extends Model
         'f_name',
         'l_name',
         'm_name',
+        'address',
         'doc_sign_type',
         'sort',
         'lang_code',

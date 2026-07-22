@@ -79,6 +79,10 @@
                                     <input type="text" name="f_name" class="form-control{{($errors->first('f_name') ? " form-control-warning" : "")}}" value="{{ old('f_name') }}">
                                     {!! $errors->first('f_name', '<p class="text-danger">:message</p>') !!}
                                 </div>
+                                <div class="col-sm-3">
+                                    <label>{{ __('field.address') ?? 'Адрес проживания' }}</label>
+                                    <input type="text" name="address" maxlength="500" class="form-control" value="{{ old('address') }}">
+                                </div>
                             </div>
 
                             <div class="form-group row">

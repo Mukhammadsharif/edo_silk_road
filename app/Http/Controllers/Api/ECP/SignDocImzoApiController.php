@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\ECP;
 
 use App\Helpers\Settings;
 use App\Http\Controllers\Controller;
+use App\Traits\HandlesAgreementFlow;
 use App\Jobs\GenerateHrOrderPdfJob;
 use App\Models\Admin\Department;
 use App\Models\Admin\OrganizationUnits;
@@ -12,6 +13,7 @@ use App\Models\Admin\UserPersonalInfo;
 use App\Models\Admin\UserWorkHistory;
 use App\Models\Document\DocumentExecutionSteps;
 use App\Models\Document\DocumentJournals;
+use App\Services\Organizations\DefaultOrgStructureSeeder;
 use App\Models\Document\DocumentReplyComments;
 use App\Models\Document\DocumentResolutions;
 use App\Models\ECP\SignatureDocuments;
@@ -37,6 +39,8 @@ use Ramsey\Uuid\Uuid;
 
 class SignDocImzoApiController extends Controller
 {
+    use HandlesAgreementFlow;
+
     private array $workingDocTypes = [
         'send_to_create_res', 'send_to_agreement', 'send_to_sign',
         'from_signer_to_ag', 'from_signer_to_c_res', 'from_ag_to_res',
@@ -239,6 +243,7 @@ class SignDocImzoApiController extends Controller
             if (!$user) {
                 $subjectName = $jsonDecodeBack['subjectCertificateInfo']['subjectName'];
                 $isOrg = (bool)$subjectName['O'];
+                $defaultPosition = null;
 
                 if ($isOrg) {
                     $org_code = $this->uniqueHash(6);
@@ -256,21 +261,10 @@ class SignDocImzoApiController extends Controller
                         'meta_data' => null,
                     ]);
 
-                    $jsonFile1 = base_path('database/seeders/data/departments.json');
-                    $jsonData1 = json_decode(File::get($jsonFile1), true);
-                    $item1 = $jsonData1['departments'][0];
-                    $department = Department::create([
-                        'code' => $item1['code'].'_'.$org_code,
-                        'org_unit_id' => $organization->id,
-                        'name_uz' => $item1['name_uz'],
-                        'name_kr' => $item1['name_kr'],
-                        'name_ru' => $item1['name_ru'],
-                        'name_en' => $item1['name_en'],
-                        'parent_id' => $item1['parent_id'],
-                        'order_number' => $item1['order_number'],
-                        'level_number' => $item1['level_number'],
-                        'status' => $item1['status'],
-                    ]);
+                    // Дефолтные подразделения и должности с корректными переводами (4 формы).
+                    $seeded = (new DefaultOrgStructureSeeder())->seed($organization);
+                    $department = $seeded['department'];
+                    $defaultPosition = $seeded['position'];
                 }
 
                 $newUser = User::create([
@@ -278,7 +272,7 @@ class SignDocImzoApiController extends Controller
                     'email' => strtolower($subjectName['Name']).'_'.strtolower($subjectName['SURNAME']).'@gmail.com',
                     'password' => Hash::make($jsonDecodeBack['subjectCertificateInfo']['serialNumber']),
                     'user_hash' => $this->uniqueId(),
-                    'org_unit_id' => $isOrg ? $organization->id : 1,
+                    'org_unit_id' => $isOrg ? $organization->id : null,
                     'status' => 1
                 ]);
 
@@ -306,9 +300,9 @@ class SignDocImzoApiController extends Controller
 
                 $officeEmpWork = new UserWorkHistory();
                 $officeEmpWork->user_id = $newUser->id;
-                $officeEmpWork->org_id = $isOrg ? $organization->id : 1;
-                $officeEmpWork->dep_id = $isOrg ? $department->id : 2;
-                $officeEmpWork->post_id = $isOrg ? 1 : 3;
+                $officeEmpWork->org_id = $isOrg ? $organization->id : null;
+                $officeEmpWork->dep_id = $isOrg ? $department->id : null;
+                $officeEmpWork->post_id = $isOrg ? ($defaultPosition?->id ?? 1) : null;
                 $officeEmpWork->from_date = Carbon::now();
                 $officeEmpWork->to_date = $nextYear;
                 $officeEmpWork->status = 1;
@@ -400,7 +394,9 @@ class SignDocImzoApiController extends Controller
             case 'send_to_agreement':
             case 'send_to_ag_out_doc':
                 $journal->update(['status' => 6]);
-                $this->activateSteps($steps['agreement'], 2, $urls['agreement'], $meta);
+                $this->activateInitialAgreement($journal, $steps['agreement'], function ($stepsToActivate) use ($urls, $meta) {
+                    $this->activateSteps($stepsToActivate, 2, $urls['agreement'], $meta);
+                });
                 $this->logAction($docId, 4, $meta);
                 break;
 
@@ -413,7 +409,9 @@ class SignDocImzoApiController extends Controller
             case 'from_signer_to_ag':
                 $this->updateStepStatus($steps['sign'], 5);
                 $journal->update(['status' => 6]);
-                $this->activateSteps($steps['agreement'], 2, $urls['agreement'], $meta);
+                $this->activateInitialAgreement($journal, $steps['agreement'], function ($stepsToActivate) use ($urls, $meta) {
+                    $this->activateSteps($stepsToActivate, 2, $urls['agreement'], $meta);
+                });
                 $this->createReplyComment($steps['sign'], $resText, 'DOC_SIGNED');
                 $this->logAction($docId, 4, $meta);
                 break;
@@ -432,7 +430,13 @@ class SignDocImzoApiController extends Controller
                 $this->updateStepStatus($currentAgreement, 5);
                 $this->createReplyComment($currentAgreement, $resText, 'DOC_SIGNED');
 
-                if ($steps['agreement']->count() - $signedAgreements->count() === 1) {
+                // Свежая выборка шагов согласования после подписания текущего.
+                $freshAgreement = $this->getSteps($journal, 'AGREE');
+                $agreementComplete = $this->advanceAgreement($journal, $freshAgreement, function ($stepsToActivate) use ($urls, $meta) {
+                    $this->activateSteps($stepsToActivate, 2, $urls['agreement'], $meta);
+                });
+
+                if ($agreementComplete) {
                     if ($isInfDoc) $journal->update(['status' => 10]);
                     $this->handleSendToResolution($journal, $steps['resolution'], $hasControl, $controllers, $urls, $meta);
                     $this->logAction($docId, 28, $meta);

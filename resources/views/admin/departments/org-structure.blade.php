@@ -1,12 +1,30 @@
 @extends('layouts.app')
 
 @section('content')
+    <link href="{{ asset('css/templates/select2.css') }}" rel="stylesheet">
     <div style="padding: 1.5rem; background: #f8fafc; min-height: 100vh;">
 
         <!-- Simple Header -->
-        <div style="margin-bottom: 1.5rem;">
-            <h1 style="margin: 0 0 0.5rem 0; font-size: 24px; font-weight: 700; color: #1e293b;">{{ __('field.org_structure') }}</h1>
-            <p style="margin: 0; font-size: 14px; color: #64748b;">{{ __('field.interactive_schema') }}</p>
+        <div style="margin-bottom: 1.5rem; display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+            <div>
+                <h1 style="margin: 0 0 0.5rem 0; font-size: 24px; font-weight: 700; color: #1e293b;">{{ __('field.org_structure') }}</h1>
+                <p style="margin: 0; font-size: 14px; color: #64748b;">{{ __('field.interactive_schema') }}</p>
+            </div>
+
+            @if(!empty($isSuper) && $organizations->count())
+                <div style="min-width: 320px;">
+                    <label style="display:flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:#64748b; margin-bottom:6px;">
+                        <span style="color:#794DFD;">●</span> {{ __('field.organization') }}
+                    </label>
+                    <select id="orgSelect" class="form-control-modern select2">
+                        @foreach($organizations as $org)
+                            <option value="{{ $org->id }}" {{ (int)$currentOrgId === (int)$org->id ? 'selected' : '' }}>
+                                {{ \App\Models\Admin\OrganizationUnits::lang($org->id) }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            @endif
         </div>
 
         <!-- Main Card -->
@@ -89,18 +107,6 @@
             color: #94a3b8;
             font-size: 14px;
         }
-
-        #myDiagramDiv::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 180px;
-            height: 80px;
-            background: #f8fafc; /* yoki container bg rangi */
-            z-index: 999;
-            pointer-events: none;
-        }
     </style>
 
     <script src="{{ asset('/js/go.js') }}"></script>
@@ -112,6 +118,8 @@
             noEmp: @json(__('field.no_emp_in_dep')),
             department: @json(__('field.department')),
         };
+
+        window.__defaultOrg = @json((int) ($currentOrgId ?? 0));
 
         const light = {
             colors: {
@@ -180,7 +188,8 @@
                     // Picture
                     $(go.Picture,
                         { row: 1, rowSpan: 2, column: 0, width: 50, height: 50, margin: 4 },
-                        new go.Binding("source", "pic")
+                        new go.Binding("source", "pic"),
+                        new go.Binding("visible", "isOrg", function (v) { return !v; })
                     ),
 
                     // Name
@@ -218,13 +227,33 @@
             // Set background
             myDiagram.div.style.backgroundColor = light.colors.background;
 
-            // Load data
-            fetch("/org-structure-data")
-                .then(response => response.json())
-                .then(model => {
-                    myDiagram.model = go.Model.fromJson(model);
-                    myDiagram.commandHandler.zoomToFit();
-                });
+            // Load data (reusable — вызывается при инициализации и при смене организации)
+            window.loadOrgStructure = function (orgId) {
+                const url = "/org-structure-data" + (orgId ? ("?org=" + encodeURIComponent(orgId)) : "");
+                fetch(url)
+                    .then(response => response.json())
+                    .then(model => {
+                        myDiagram.model = go.Model.fromJson(model);
+                        myDiagram.commandHandler.zoomToFit();
+                        updateSidebar(null);
+                    });
+            };
+
+            window.loadOrgStructure(window.__defaultOrg || '');
+
+            // Селект организации (для супер-админа).
+            // ВНИМАНИЕ: внутри init() переменная $ = go.GraphObject.make (не jQuery!),
+            // поэтому обращаемся к jQuery явно через window.jQuery.
+            const orgSel = document.getElementById('orgSelect');
+            if (orgSel) {
+                const jq = window.jQuery;
+                if (jq && jq.fn && jq.fn.select2) {
+                    jq(orgSel).select2({ width: '100%' });
+                    jq(orgSel).on('change', function () { window.loadOrgStructure(this.value); });
+                } else {
+                    orgSel.addEventListener('change', function () { window.loadOrgStructure(this.value); });
+                }
+            }
 
             // Clear sidebar on background click
             myDiagram.addDiagramListener("BackgroundSingleClicked", function (e) {
