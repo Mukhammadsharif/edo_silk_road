@@ -61,4 +61,10 @@ return [
     | и хранится в subscriptions.didox_role_id.
     */
     'role_name' => env('DIDOX_ROLE_NAME', 'Didox'),
+
+    /*
+    | Роль согласующего Didox — видит категорию «Внешний ЭДО» только с пунктом
+    | «Согласование». Выдаётся при отправке документа на внутреннее согласование.
+    */
+    'approver_role_name' => env('DIDOX_APPROVER_ROLE_NAME', 'Didox_Approver'),
 ];

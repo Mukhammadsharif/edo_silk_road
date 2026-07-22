@@ -136,7 +136,9 @@
             <div class="filters-card-modern" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; padding:16px 20px;">
                 <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
                     <span id="list-status-badge">
-                        @if($doc->list_status === 'signed')
+                        @if($doc->isRejected())
+                            <span class="didox-status st-notsigned"><i data-lucide="ban"></i> Отказано в Didox</span>
+                        @elseif($doc->list_status === 'signed')
                             <span class="didox-status st-signed"><i data-lucide="check-circle"></i> Подписан</span>
                         @elseif($doc->list_status === 'on_internal_review')
                             <span class="didox-status st-review"><i data-lucide="clock"></i> На внутреннем согласовании</span>
@@ -170,29 +172,72 @@
 
             <div class="didox-card-grid">
 
-                <!-- Печатная форма -->
-                <div class="didox-panel">
-                    <div class="panel-head">
-                        <span class="title"><i data-lucide="printer"></i> Печатная форма</span>
-                        <button type="button" class="btn-modern btn-secondary" id="btn-load-print"
-                                onclick="if(typeof loadPrintForm==='function')loadPrintForm()">
-                            <i data-lucide="refresh-cw"></i> Обновить
-                        </button>
-                    </div>
-                    <div class="panel-body" id="print-form-holder">
-                        <div id="print-placeholder">
-                            <i data-lucide="loader-2" class="spin" style="width:48px;height:48px;"></i>
-                            <p>Загрузка печатной формы...</p>
+                <div class="didox-doc-col" style="min-width:0; display:flex; flex-direction:column; gap:1rem;">
+                    <!-- Печатная форма -->
+                    <div class="didox-panel">
+                        <div class="panel-head">
+                            <span class="title"><i data-lucide="printer"></i> Печатная форма</span>
+                            <button type="button" class="btn-modern btn-secondary" id="btn-load-print"
+                                    onclick="if(typeof loadPrintForm==='function')loadPrintForm()">
+                                <i data-lucide="refresh-cw"></i> Обновить
+                            </button>
+                        </div>
+                        <div class="panel-body" id="print-form-holder">
+                            <div id="print-placeholder">
+                                <i data-lucide="loader-2" class="spin" style="width:48px;height:48px;"></i>
+                                <p>Загрузка печатной формы...</p>
+                            </div>
                         </div>
                     </div>
+
+                    {{-- Файл документа и вложения — под основным документом --}}
+                    @if(!empty($attachments))
+                        <div class="filters-card-modern" style="padding:16px 20px;">
+                            <div style="font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                                <i data-lucide="paperclip" style="width:18px;height:18px;"></i>
+                                Файл документа и вложения
+                            </div>
+
+                            @foreach($attachments as $att)
+                                <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 0; border-bottom:1px solid #eef2f7;">
+                                <span style="display:flex; align-items:center; gap:8px; font-size:14px; min-width:0;">
+                                    <i data-lucide="file-text" style="width:18px;height:18px; flex-shrink:0;"></i>
+                                    <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ $att['name'] }}</span>
+                                    @if($att['main'])
+                                        <span style="font-size:11px; color:#7c3aed; flex-shrink:0;">(основной)</span>
+                                    @endif
+                                </span>
+                                    <a href="{{ route('external-docs.file', [$doc->id, $att['id']]) }}" target="_blank"
+                                       class="btn-modern" style="font-size:13px; flex-shrink:0;">
+                                        <i data-lucide="external-link" style="width:15px;height:15px;"></i> Открыть
+                                    </a>
+                                </div>
+                            @endforeach
+
+                            {{-- Инлайн-просмотр: прямой storage-URL Didox (раздел показан только
+                                 когда реальный файл есть — резолвится в контроллере). --}}
+                            <iframe src="{{ $attachments[0]['file_url'] }}"
+                                    title="Файл документа"
+                                    style="width:100%; height:640px; border:0; border-radius:8px; margin-top:12px; background:#f8fafc;"></iframe>
+                        </div>
+                    @endif
                 </div>
+                {{-- /левая колонка --}}
 
                 <!-- Действия -->
                 <div class="didox-actions-stack" style="display:flex; flex-direction:column; gap:1.5rem;">
 
+                    @if($doc->isRejected())
+                        <div class="didox-panel">
+                            <div class="panel-body" style="display:flex; align-items:center; gap:8px; color:#b91c1c; font-size:14px;">
+                                <i data-lucide="ban"></i> Документ отклонён в Didox — действия недоступны.
+                            </div>
+                        </div>
+                    @endif
+
                     <!-- Подписать в Didox: только ответственные лица, и только для ВХОДЯЩИХ
                          (поток подписания входящего с объединением подписей неприменим к исходящим) -->
-                    @if($canSign && (int)($doc->owner ?? 0) === 0)
+                    @if($canSign && (int)($doc->owner ?? 0) === 0 && !$doc->isRejected())
                         <div class="didox-panel">
                             <div class="panel-head">
                                 <span class="title"><i data-lucide="pen-tool"></i> Подписать документ в Didox</span>
@@ -245,8 +290,8 @@
                     @endif
 
                     <!-- Внутреннее согласование -->
-                    @if($doc->list_status === 'signed' && $doc->approvers->isEmpty())
-                        {{-- Документ уже подписан и согласование не запускалось — панель не нужна --}}
+                    @if(($doc->list_status === 'signed' || $doc->isRejected()) && $doc->approvers->isEmpty())
+                        {{-- Документ уже подписан/отклонён и согласование не запускалось — панель не нужна --}}
                     @else
                         <div class="didox-panel">
                             <div class="panel-head">
@@ -271,7 +316,7 @@
                                         </span>
                                         </div>
                                     @endforeach
-                                @elseif($doc->approvers->isEmpty())
+                                @elseif($doc->approvers->isEmpty() && !$doc->isRejected())
                                     @if($candidates->isEmpty())
                                         <div style="display:flex; align-items:center; gap:8px; color:#a16207; font-size:13px;">
                                             <i data-lucide="alert-triangle"></i>

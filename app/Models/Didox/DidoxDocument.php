@@ -14,6 +14,7 @@ class DidoxDocument extends Model
     public const LIST_SIGNED            = 'signed';             // 🟢 Подписан в Didox
     public const LIST_ON_INTERNAL       = 'on_internal_review'; // 🟡 На внутреннем согласовании
     public const LIST_NOT_SIGNED        = 'not_signed';         // 🔴 Не подписан
+    public const LIST_REJECTED          = 'rejected';           // ⛔ Отказано в Didox
 
     /* --- approval_status: поле в карточке (внутреннее согласование) --- */
     public const APPROVAL_APPROVED      = 'approved';   // 🟢 Прошёл внутреннее согласование
@@ -63,5 +64,22 @@ class DidoxDocument extends Model
     public function docTypeLabel(): string
     {
         return DidoxDocType::LABELS[$this->doc_type] ?? $this->doc_type ?? '—';
+    }
+
+    /**
+     * Документ отклонён/недействителен в самом Didox — действия (подпись,
+     * отправка на согласование) недоступны.
+     */
+    public function isRejected(): bool
+    {
+        if ($this->list_status === self::LIST_REJECTED) {
+            return true;
+        }
+
+        return in_array((int) $this->didox_status, [
+            DidoxDocType::STATUS_REJECTED,
+            DidoxDocType::STATUS_NOT_VALID,
+            DidoxDocType::STATUS_CANCELLED_TAX,
+        ], true);
     }
 }
