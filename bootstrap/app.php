@@ -7,6 +7,8 @@ use App\Http\Middleware\Localization;
 use Illuminate\Support\Facades\Route;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -55,5 +57,23 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        // Все ошибки на api/* отдаём как JSON, а не HTML / редирект на страницу логина.
+        // Иначе при протухшем токене мобильное приложение получает HTML со статусом 200
+        // (редирект на /login), который нельзя распарсить и по которому не понять,
+        // что пора разлогинить пользователя.
+        $exceptions->shouldRenderJsonWhen(function (Request $request, Throwable $e) {
+            return $request->is('api/*') || $request->expectsJson();
+        });
+
+        // Единообразный JSON-ответ при ошибке аутентификации в API.
+        // Статус 401 (Unauthenticated) — семантически верный для истёкшего/недействительного
+        // токена. Если мобильное приложение завязано на 403 — поменяйте код здесь.
+        $exceptions->render(function (AuthenticationException $e, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Unauthenticated.',
+                    'code'    => 'token_invalid_or_expired',
+                ], 401);
+            }
+        });
     })->create();

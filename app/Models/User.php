@@ -276,6 +276,16 @@ class User extends Authenticatable
     {
         return $this->kanbanSubscription()->exists();
     }
+
+    /**
+     * Доступ к Didox определяется наличием роли «Didox» у пользователя
+     * (роль выдаётся супер-админом через подписку или при назначении
+     * согласующим Didox). Отдельная таблица/колонка не нужна.
+     */
+    public function hasDidoxAccess(): bool
+    {
+        return $this->hasRole(config('didox.role_name', 'Didox'));
+    }
     public function canManageBoards(): bool
     {
         return $this->hasRole(['Super_Admin', 'IT_Admin', 'Director']);

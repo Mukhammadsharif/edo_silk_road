@@ -498,6 +498,9 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/subscription-requests/search-organizations', [SubscriptionRequestController::class, 'searchOrganizations'])
         ->name('admin.subscription-requests.search-organizations');
 
+    Route::get('/subscription-requests/org-users/{orgId}', [SubscriptionRequestController::class, 'orgUsers'])
+        ->whereNumber('orgId')->name('admin.subscription-requests.org-users');
+
     Route::get('/subscription-requests', [SubscriptionRequestController::class, 'index'])
         ->name('admin.subscription-requests');
 
@@ -615,8 +618,8 @@ Route::middleware('auth')->group(function () {
     Route::post('cards/{card}/labels/{label}', [CardController::class, 'attachLabel'])->name('cards.labels.attach');
     Route::delete('cards/{card}/labels/{label}', [CardController::class, 'detachLabel'])->name('cards.labels.detach');
 
-    Route::prefix('external-docs')->name('external-docs.')->middleware('auth')->group(function () {
-        Route::get('/',                     [ExternalDocFlowController::class, 'index'])->name('index');
+    Route::prefix('external-docs')->name('external-docs.')->middleware(['auth', \App\Http\Middleware\EnsureDidoxAccess::class])->group(function () {
+        Route::get('/index',                     [ExternalDocFlowController::class, 'index'])->name('index');
         Route::get('/approvals',            [ExternalDocFlowController::class, 'approvals'])->name('approvals');
         Route::post('/auth/password',       [ExternalDocFlowController::class, 'loginPassword'])->name('auth.password');
         Route::post('/auth/ecp',            [ExternalDocFlowController::class, 'loginEcp'])->name('auth.ecp');
