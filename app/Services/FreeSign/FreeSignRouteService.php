@@ -26,6 +26,21 @@ class FreeSignRouteService
     /** Каноническая цепочка ролей (document_execution_roles.doc_code). */
     public const CHAIN = ['AGREE', 'SIGN', 'RESOL', 'EXEC'];
 
+    /**
+     * Состояние последней активации RESOL (для уведомлений в контроллере):
+     * true = документ ушёл контролёрам (журнал 7), уведомлять надо ИХ
+     * по urls['control'], а не участников шага RESOL.
+     */
+    public bool $wentToControl = false;
+
+    /** Контролёры последней активации (UserWorkHistory, id = work_history.id). */
+    public Collection $controllers;
+
+    public function __construct()
+    {
+        $this->controllers = collect();
+    }
+
     public const STEP_IDLE   = 1;   // спит, не его очередь
     public const STEP_ACTIVE = 2;   // активен, ждёт действия
     public const STEP_REPORT = 4;   // отчёт отправлен (replyDocument)
@@ -145,29 +160,68 @@ class FreeSignRouteService
         $steps = $this->stepsOfRole($journal, $roleCode);
 
         if ($roleCode === 'RESOL') {
-            $hasControl = JournalTypeControls::where('journal_type_id', $journal->j_type)
-                ->where('status', 1)
-                ->exists();
+            /* ═══════════ КОНТРОЛЬ ИСПОЛНЕНИЯ (Ijro nazorati) ═══════════
+             | Штатная механика (см. handleSendToResolution + createResolution):
+             |   - журнал → 7 (Ijro nazoratida), шаг RESOL СПИТ
+             |   - контролёрам шагов НЕ создаётся — только уведомления;
+             |     они видят документ в списке «Контроль» (forControlIndex
+             |     фильтрует по j_type из journal_type_controls, БЕЗ шагов)
+             |   - контролёр во viewControlDocument (уже free-sign-адаптирован)
+             |     готовит проект резолюции через штатный createResolution():
+             |     EXEC-шаги (status 1, to_user = work_history.id — наша же
+             |     семантика), document_resolutions, журнал → 8, RESOL → 2
+             |   - дальше директор подписывает — наш handleFreeSignDocument
+             |     видит hasResolution=true и completeStep() ведёт к EXEC
+             |
+             | ЗАЩИТА ОТ ЗАВИСАНИЯ: если контроль включён, но контролёров
+             | в организации НЕТ (или документ физлица без организации) —
+             | статус 7 сделал бы документ невидимым навсегда («Резолюция»
+             | исключает 7 через whereNotIn). Тогда контроль пропускаем.
+             */
+            $this->wentToControl = false;
+            $this->controllers   = collect();
+
+            /* Решение «нужен ли контроль» — ДВУХУРОВНЕВОЕ:
+             |
+             | 1. Явный выбор документа (free_sign_journal_controls, v41 —
+             |    отдельная таблица, document_journals не трогаем):
+             |      запись enabled=true  -> контроль нужен
+             |      запись enabled=false -> НЕ нужен, даже если у типа включён
+             | 2. Записи нет (старые документы, до чекбокса) -> fallback на
+             |    настройку ТИПА (journal_type_controls) — поведение v39.
+             */
+            $explicitChoice = \App\Models\FreeSignJournalControl::choiceFor($journal->id);
+
+            $hasControl = $explicitChoice !== null
+                ? $explicitChoice
+                : JournalTypeControls::where('journal_type_id', $journal->j_type)
+                    ->where('status', 1)
+                    ->exists();
 
             if ($hasControl) {
-                /* ⚠ ВНИМАНИЕ: статус 7 (Ijro nazoratida) = документ УШЁЛ КОНТРОЛЁРАМ.
-                 | Шаг резолюции спит (STEP_IDLE) и ждёт, пока контролёр его активирует.
-                 |
-                 | ПРОБЛЕМА для free-sign: контролёров в нашем маршруте НЕТ —
-                 | их активирует штатный handleSendToResolution(), который мы не зовём.
-                 | Плюс список «Резолюция» исключает статус 7:
-                 |     ->whereNotIn('status', [1, 4, 5, 6, 7, 13])
-                 | => документ станет НЕВИДИМЫМ и зависнет навсегда.
-                 |
-                 | Поэтому для free-sign контроль ПРОПУСКАЕМ: сразу отдаём резолюции
-                 | (статус 8), чтобы документ был виден и двигался дальше.
-                 | Если контроль нужен — надо отдельно активировать контролёров.
-                 */
-                \Illuminate\Support\Facades\Log::info('[free-sign] RESOL: у типа журнала включён контроль, '
-                    . 'но в free-sign нет контролёров — пропускаем контроль, '
-                    . 'отдаём сразу резолюции (статус 8)', [
-                    'j_id'   => $journal->id,
-                    'j_type' => $journal->j_type,
+                $this->controllers = $this->controllersFor($journal);
+
+                if ($this->controllers->isNotEmpty()) {
+                    $this->wentToControl = true;
+
+                    $journal->update(['status' => 7]);                              // Ijro nazoratida
+                    $steps->each(fn ($s) => $s->update(['status' => self::STEP_IDLE])); // RESOL спит
+
+                    \Illuminate\Support\Facades\Log::info('[free-sign] RESOL → на контроль (статус 7)', [
+                        'j_id'        => $journal->id,
+                        'j_type'      => $journal->j_type,
+                        'controllers' => $this->controllers->pluck('id')->toArray(),
+                    ]);
+
+                    return $steps;
+                }
+
+                \Illuminate\Support\Facades\Log::warning('[free-sign] RESOL: контроль включён, '
+                    . 'но контролёров (Ijro nazorati / Control_Emp) в организации нет — '
+                    . 'пропускаем контроль во избежание зависания, отдаём резолюции (статус 8)', [
+                    'j_id'        => $journal->id,
+                    'j_type'      => $journal->j_type,
+                    'org_unit_id' => $journal->org_unit_id,
                 ]);
             }
 
@@ -189,6 +243,38 @@ class FreeSignRouteService
         ]);
 
         return $steps;
+    }
+
+    /**
+     * Контролёры организации журнала.
+     *
+     * Логика 1-в-1 повторяет SignDocImzoController::getControllers(),
+     * но берёт организацию из ЖУРНАЛА (org_unit_id), а не из auth-пользователя:
+     * активация RESOL происходит в момент подписи последним подписантом,
+     * и полагаться на его контекст ненадёжно.
+     *
+     * ВНИМАНИЕ по ID: у UserWorkHistory организация — это org_id,
+     * у DocumentJournals — org_unit_id (см. getControllers/forControlIndex,
+     * там organizationId() подставляется в оба поля).
+     *
+     * @return Collection<UserWorkHistory> пусто, если роли/людей/организации нет
+     */
+    public function controllersFor(DocumentJournals $journal): Collection
+    {
+        if (!$journal->org_unit_id) {
+            return collect();   // физлицо — контролёров быть не может
+        }
+
+        $role = \App\Models\Admin\Role::whereIn('name', ['Ijro nazorati', 'Control_Emp'])->first();
+
+        if (!$role) {
+            return collect();
+        }
+
+        return \App\Models\Admin\UserWorkHistory::where('org_id', $journal->org_unit_id)
+            ->where('status', 1)
+            ->whereHas('user.userRoles', fn ($q) => $q->where('role_id', $role->id))
+            ->get();
     }
 
     /* ───────────── Вспомогательные ───────────── */

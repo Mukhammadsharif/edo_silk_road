@@ -429,7 +429,26 @@ class ExecutionController extends Controller
 
         $statusNames = StatusList::where('type', 'work_document')->where('code', '!=', 1)->orderBy('order_number')->get();
 
-        $search = DocumentJournals::where('org_unit_id', $this->organizationId())->where('status', '!=', 1)->whereIn('j_type', $controls);
+        /* ═══ v41: контроль стал ОПЦИЕЙ ДОКУМЕНТА (free-sign) ═══
+         | Выбор хранится в ОТДЕЛЬНОЙ таблице free_sign_journal_controls
+         | (document_journals не трогаем). Видимость в списке «Контроль»:
+         |   запись enabled=true  -> показываем ВСЕГДА (даже если тип
+         |          не в controls) — иначе статус 7 = невидим = зависание
+         |   запись enabled=false -> НЕ показываем (явно отключён)
+         |   записи нет           -> как раньше, по типу (штатные/старые)
+         | Подзапросы (не pluck) — чтобы не грузить id в память.
+         */
+        $fsControlOn  = \App\Models\FreeSignJournalControl::query()->select('j_id')->where('enabled', true);
+        $fsControlOff = \App\Models\FreeSignJournalControl::query()->select('j_id')->where('enabled', false);
+
+        $search = DocumentJournals::where('org_unit_id', $this->organizationId())
+            ->where('status', '!=', 1)
+            ->where(function ($q) use ($controls, $fsControlOn, $fsControlOff) {
+                $q->whereIn('id', $fsControlOn)
+                  ->orWhere(function ($q2) use ($controls, $fsControlOff) {
+                      $q2->whereIn('j_type', $controls)->whereNotIn('id', $fsControlOff);
+                  });
+            });
 
         $today = Carbon::now()->format('Y-m-d');
 

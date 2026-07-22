@@ -105,7 +105,20 @@ class DocumentController extends Controller
              | Определяем по doc_code типа журнала 351 (см. FREE_SIGN_JOURNAL_TYPE).
              */
             case $this->isFreeSignDocCode($type):
-                return view('office.document.create.document_forms.free_sign', compact('confidences'))->render();
+                // Есть ли в организации контролёры (Ijro nazorati / Control_Emp)?
+                // От этого зависит доступность чекбокса «Контроль исполнения».
+                // Та же логика, что FreeSignRouteService::controllersFor(),
+                // но по организации ТЕКУЩЕГО пользователя (журнала ещё нет).
+                $fsControlRole = Role::whereIn('name', ['Ijro nazorati', 'Control_Emp'])->first();
+                $fsHasControllers = $fsControlRole && $this->organizationId()
+                    ? UserWorkHistory::where('org_id', $this->organizationId())
+                        ->where('status', 1)
+                        ->whereHas('user.userRoles', fn ($q) => $q->where('role_id', $fsControlRole->id))
+                        ->exists()
+                    : false;
+
+                return view('office.document.create.document_forms.free_sign',
+                    compact('confidences', 'fsHasControllers'))->render();
 
             default:
                 return view('office.document.create.document_forms.other_docs', compact('confidences'))->render();
@@ -383,6 +396,16 @@ class DocumentController extends Controller
             'created_dep' => $this->authActiveUser()->dep_id,
             'created_user' => $this->authActiveUser()->id,
             'status' => 1,
+        ]);
+
+        // Контроль исполнения — ИНДИВИДУАЛЬНЫЙ выбор для документа
+        // (чекбокс формы free_sign). Пишем в ОТДЕЛЬНУЮ таблицу
+        // free_sign_journal_controls — document_journals и её модель
+        // НЕ трогаем. Запись создаётся ВСЕГДА (true/false явно);
+        // отсутствие записи = старый документ -> fallback на настройку типа.
+        \App\Models\FreeSignJournalControl::create([
+            'j_id'    => $journal->id,
+            'enabled' => $request->boolean('exec_control'),
         ]);
 
         // 3️⃣ Har bir doc_code uchun handler orqali bajarish
