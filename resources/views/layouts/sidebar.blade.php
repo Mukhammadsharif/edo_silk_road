@@ -80,6 +80,74 @@
             @endif
 
 
+            {{-- ═══════════════════════════════════════════════════════════════
+                 ВНЕШНИЙ ЭДО (Didox): категория + Входящие / Исходящие / Согласование.
+                 Видимость по правам: ответственный Didox видит всё; у кого есть
+                 документы на согласование — категория + только «Согласование».
+                 ═══════════════════════════════════════════════════════════════ --}}
+            @php
+                $extUser  = auth()->user();
+                $extFull  = $extUser && $extUser->hasDidoxAccess(); // роль Didox (ответственный)
+                $extPending = $extUser
+                    ? \App\Models\Didox\DidoxDocumentApprover::where('user_id', $extUser->id)
+                        ->where('status', 'pending')
+                        ->whereHas('document', fn ($q) => $q->where('org_unit_id', $extUser->org_unit_id))
+                        ->count()
+                    : 0;
+                $extApproval = $extFull || $extPending > 0 || ($extUser && $extUser->hasRole('Didox_Approver'));
+
+                $extLoc = session()->get('locale', app()->getLocale());
+                $extT = [
+                    'uz' => ['t' => 'Tashqi EDO', 'in' => 'Kiruvchi', 'out' => 'Chiquvchi', 'ag' => 'Kelishuv'],
+                    'ru' => ['t' => 'Внешний ЭДО', 'in' => 'Входящие', 'out' => 'Исходящие', 'ag' => 'Согласование'],
+                    'en' => ['t' => 'External EDF', 'in' => 'Incoming', 'out' => 'Outgoing', 'ag' => 'Approval'],
+                ];
+                $extL = $extT[$extLoc] ?? $extT['uz'];
+            @endphp
+
+            @if($extFull || $extApproval)
+                <div class="menu-item {{ str_contains(url()->current(), '/external-docs/index') ? 'active' : '' }}">
+                    <div class="menu-header">
+                        <div style="display: flex; align-items: center; gap:15px; flex: 1;">
+                            <i data-lucide="files" style="width: 22px; height: 22px;"></i>
+                            <span class="menu-text">{{ $extL['t'] }}</span>
+                        </div>
+                        @if($extPending > 0)
+                            <span class="badge badge-pill badge-danger" style="margin-right:6px;">{{ $extPending }}</span>
+                        @endif
+                        <i data-lucide="chevron-right" class="chevron"></i>
+                    </div>
+
+                    <div class="submenu">
+                        @if($extFull)
+                            <div class="submenu-item">
+                                <a href="{{ url('/external-docs/index') }}">
+                                    <i data-lucide="download" style="width: 18px; height: 18px;"></i>
+                                    <span>{{ $extL['in'] }}</span>
+                                </a>
+                            </div>
+                            <div class="submenu-item">
+                                <a href="{{ url('/external-docs/outgoing') }}">
+                                    <i data-lucide="upload" style="width: 18px; height: 18px;"></i>
+                                    <span>{{ $extL['out'] }}</span>
+                                </a>
+                            </div>
+                        @endif
+                        @if($extApproval)
+                            <div class="submenu-item">
+                                <a href="{{ url('/external-docs/approvals') }}">
+                                    <i data-lucide="badge-check" style="width: 18px; height: 18px;"></i>
+                                    <span>{{ $extL['ag'] }}</span>
+                                    @if($extPending > 0)
+                                        <span class="badge badge-pill badge-danger">{{ $extPending }}</span>
+                                    @endif
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
+
             <div class="menu-item ">
                 <div class="menu-header">
                     <div style="display: flex; align-items: center; gap:15px; flex: 1;">
@@ -145,35 +213,6 @@
                     </a>
                 </div>
             @endif
-
-{{--            --}}{{-- Внешний документооборот (Didox) --}}
-{{--            <div class="menu-item {{ str_contains(url()->current(), '/external-docs') && !str_contains(url()->current(), 'approvals') ? 'active' : '' }}">--}}
-{{--                <a href="{{ route('external-docs.index') }}" class="menu-header">--}}
-{{--                    <div style="display: flex; align-items: center; gap:15px; flex: 1;">--}}
-{{--                        <i data-lucide="files" style="width: 22px; height: 22px;"></i>--}}
-{{--                        <span class="menu-text">Внешний документооборот</span>--}}
-{{--                    </div>--}}
-{{--                </a>--}}
-{{--            </div>--}}
-
-{{--            --}}{{-- Мне на согласование (Didox) — с каунтером ожидающих --}}
-{{--            @php--}}
-{{--                $didoxPendingCount = \App\Models\Didox\DidoxDocumentApprover::where('user_id', auth()->id())--}}
-{{--                    ->where('status', 'pending')--}}
-{{--                    ->whereHas('document', fn ($q) => $q->where('org_unit_id', auth()->user()->org_unit_id))--}}
-{{--                    ->count();--}}
-{{--            @endphp--}}
-{{--            <div class="menu-item {{ str_contains(url()->current(), '/external-docs/approvals') ? 'active' : '' }}">--}}
-{{--                <a href="{{ route('external-docs.approvals') }}" class="menu-header">--}}
-{{--                    <div style="display: flex; align-items: center; gap:15px; flex: 1;">--}}
-{{--                        <i data-lucide="badge-check" style="width: 22px; height: 22px;"></i>--}}
-{{--                        <span class="menu-text">Didox</span>--}}
-{{--                    </div>--}}
-{{--                    @if($didoxPendingCount > 0)--}}
-{{--                        <span class="badge badge-pill badge-danger">{{ $didoxPendingCount }}</span>--}}
-{{--                    @endif--}}
-{{--                </a>--}}
-{{--            </div>--}}
 
             {{-- ═══════════════ ИНТЕГРАЦИЯ С 1С ═══════════════
                  Виден директору, IT-админу и Super_Admin --}}

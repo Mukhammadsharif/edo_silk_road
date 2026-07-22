@@ -9,48 +9,54 @@ use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 
 /**
- * Доступ к модулю Didox через роли и меню (без отдельной таблицы/сидера).
+ * Доступ к модулю Didox через роли (меню в сайдбаре — статические, показываются
+ * по правам). Без отдельной таблицы и без миграций.
  *
- * Роль «Didox» и её меню (EXT_DOC + DIDOX) создаются лениво при первом
- * использовании — миграция для этого не нужна. Роль выдаётся:
- *   - ответственным сотрудникам организации при включении Didox в подписке
- *     (супер-админ выбирает роль: директор / канцелярия / …);
- *   - согласующим Didox при отправке документа на внутреннее согласование.
+ * Две роли-флага:
+ *   - «Didox» — ответственные сотрудники: видят всю категорию «Внешний ЭДО»
+ *     (Входящие / Исходящие / Согласование). Выдаётся при включении Didox в
+ *     подписке организации.
+ *   - «Didox_Approver» — согласующие: видят категорию только с пунктом
+ *     «Согласование». Выдаётся при отправке документа на внутреннее согласование.
  *
- * При выдаче роли сбрасывается кэш меню, чтобы раздел появился сразу.
+ * При выдаче/снятии роли сбрасывается кэш меню, чтобы раздел появился сразу.
  */
 class DidoxAccessService
 {
-    /**
-     * Лениво возвращает роль «Didox», гарантируя привязку меню EXT_DOC + DIDOX.
-     * Создаёт роль и role_menus при первом вызове — без миграции.
-     */
+    /** Полная роль Didox (ответственные). Лениво создаётся, без меню в БД. */
     public function didoxRole(): Role
     {
-        $name = config('didox.role_name', 'Didox');
+        $role = Role::findOrCreate(config('didox.role_name', 'Didox'), 'web');
 
-        /** @var Role $role */
-        $role = Role::findOrCreate($name, 'web');
-
-        $order = 90;
-        foreach (['EXT_DOC', 'DIDOX'] as $code) {
-            $menu = MenuList::where('code', $code)->first();
-            if (! $menu) {
-                continue; // меню ещё не заведено — пропускаем
-            }
-
-            RoleMenu::firstOrCreate(
-                ['role_id' => $role->id, 'menu_id' => $menu->id],
-                ['menu_type' => 1, 'parent_id' => 0, 'order_number' => $order, 'status' => 1]
-            );
-            $order++;
-        }
+        // Старый динамический подход (меню EXT_DOC/DIDOX в menu_lists) заменён
+        // статическим блоком сайдбара — чистим, чтобы не дублировалось.
+        $this->cleanupLegacyDynamicMenus();
 
         return $role;
     }
 
+    /** Роль согласующего Didox (только «Согласование»). */
+    public function approverRole(): Role
+    {
+        return Role::findOrCreate(config('didox.approver_role_name', 'Didox_Approver'), 'web');
+    }
+
     /**
-     * Выдать роль Didox списку пользователей (согласующие Didox), если её ещё нет.
+     * Удаляет старые динамические меню Didox (EXT_DOC / DIDOX) из role_menus и
+     * menu_lists — теперь раздел рисуется статически в сайдбаре по правам.
+     */
+    private function cleanupLegacyDynamicMenus(): void
+    {
+        $menuIds = MenuList::whereIn('code', ['EXT_DOC', 'DIDOX'])->pluck('id')->all();
+        if (! $menuIds) {
+            return;
+        }
+        RoleMenu::whereIn('menu_id', $menuIds)->delete();
+        MenuList::whereIn('id', $menuIds)->delete();
+    }
+
+    /**
+     * Выдать роль согласующего Didox списку пользователей, если её ещё нет.
      *
      * @param array<int|string> $userIds
      */
@@ -61,7 +67,7 @@ class DidoxAccessService
             return;
         }
 
-        $role = $this->didoxRole();
+        $role = $this->approverRole();
 
         foreach ($userIds as $uid) {
             $user = User::find($uid);

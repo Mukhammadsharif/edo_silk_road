@@ -620,12 +620,14 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('external-docs')->name('external-docs.')->middleware(['auth', \App\Http\Middleware\EnsureDidoxAccess::class])->group(function () {
         Route::get('/index',                     [ExternalDocFlowController::class, 'index'])->name('index');
+        Route::get('/outgoing',             [ExternalDocFlowController::class, 'outgoing'])->name('outgoing');
         Route::get('/approvals',            [ExternalDocFlowController::class, 'approvals'])->name('approvals');
         Route::post('/auth/password',       [ExternalDocFlowController::class, 'loginPassword'])->name('auth.password');
         Route::post('/auth/ecp',            [ExternalDocFlowController::class, 'loginEcp'])->name('auth.ecp');
         Route::post('/sync',                [ExternalDocFlowController::class, 'syncNow'])->name('sync');
         Route::get('/{id}',                 [ExternalDocFlowController::class, 'show'])->whereNumber('id')->name('show');
         Route::get('/{id}/print',           [ExternalDocFlowController::class, 'printForm'])->whereNumber('id')->name('print');
+        Route::get('/{id}/file/{didoxId?}', [ExternalDocFlowController::class, 'file'])->whereNumber('id')->name('file');
         Route::post('/{id}/send-to-review', [ExternalDocFlowController::class, 'sendToReview'])->whereNumber('id')->name('send-review');
         Route::post('/{id}/decide',         [ExternalDocFlowController::class, 'decide'])->whereNumber('id')->name('decide');
         Route::post('/{id}/refresh-status', [ExternalDocFlowController::class, 'refreshStatus'])->whereNumber('id')->name('refresh-status');

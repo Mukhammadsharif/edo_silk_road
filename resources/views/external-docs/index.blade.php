@@ -79,6 +79,7 @@
                                 <option value="signed" {{ $listStatus === 'signed' ? 'selected' : '' }}>Подписан</option>
                                 <option value="on_internal_review" {{ $listStatus === 'on_internal_review' ? 'selected' : '' }}>На внутреннем согласовании</option>
                                 <option value="not_signed" {{ $listStatus === 'not_signed' ? 'selected' : '' }}>Не подписан</option>
+                                <option value="rejected" {{ $listStatus === 'rejected' ? 'selected' : '' }}>Отказано</option>
                             </select>
                         </div>
 
@@ -131,7 +132,9 @@
                             <tr onclick="window.location='{{ route('external-docs.show', $d->id) }}'">
                                 <td class="number-cell">{{ $documents->firstItem() + $key }}</td>
                                 <td>
-                                    @if($d->list_status === 'signed')
+                                    @if($d->isRejected())
+                                        <span class="didox-status st-notsigned"><i data-lucide="ban"></i> Отказано</span>
+                                    @elseif($d->list_status === 'signed')
                                         <span class="didox-status st-signed"><i data-lucide="check-circle"></i> Подписан</span>
                                     @elseif($d->list_status === 'on_internal_review')
                                         <span class="didox-status st-review"><i data-lucide="clock"></i> На согласовании</span>

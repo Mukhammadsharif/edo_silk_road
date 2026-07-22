@@ -16,7 +16,13 @@ class EnsureDidoxAccess
     {
         $user = $request->user();
 
-        if (! $user || (! $user->hasRole('Super_Admin') && ! $user->hasDidoxAccess())) {
+        $allowed = $user && (
+                $user->hasRole('Super_Admin')
+                || $user->hasDidoxAccess()
+                || $user->hasRole(config('didox.approver_role_name', 'Didox_Approver'))
+            );
+
+        if (! $allowed) {
             abort(403, 'Didox moduli tashkilotingiz uchun yoqilmagan.');
         }
 
