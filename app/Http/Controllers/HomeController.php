@@ -277,25 +277,15 @@ class HomeController extends Controller
         $count = 0;
 
         if ($menu) {
-            if ($menu->child) {
+            if ($menu->child && $menu->child->count() > 0) {
                 foreach ($menu->child as $child) {
                     $count += $child->menuCount($child->id);
                 }
+            } else {
+                // Лист-меню (без дочерних) — считаем его собственный счётчик,
+                // напр. DIDOX. Иначе JS обнуляет бейдж после загрузки.
+                $count = $menu->menuCount($menu->id);
             }
-            /*if (in_array($menu->menuList->code, ['KOL_ORG', 'KOL_ORG_S'])) {
-                $element = $menu->getKolOrg($menu->menu_id);
-
-                if ($element && $element->child) {
-                    $method = ($menu->menuList->code === 'KOL_ORG') ? 'menuCountMem' : 'menuCount';
-                    $count = $this->recursiveMenuCount($element, $method);
-                }
-            }
-
-            else if ($menu->child) {
-                foreach ($menu->child as $child) {
-                    $count += $child->menuCount($child->id);
-                }
-            }*/
         }
 
         return response()->json(['count' => $count, 'success' => $count ? 200 : 201]);

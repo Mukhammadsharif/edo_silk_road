@@ -171,6 +171,26 @@
                                     <span class="kanban-switch-text">Trello doskalarga ruxsat berish</span>
                                 </label>
                             </div>
+
+                            <!-- Didox access toggle -->
+                            <div class="edit-field-group" style="grid-column: 1 / -1;">
+                                <label class="edit-label">
+                                    <i data-lucide="files"></i>
+                                    Didox (tashqi hujjat aylanmasi)
+                                </label>
+                                <label class="kanban-switch">
+                                    <input type="checkbox" name="has_didox_access" id="editDidoxAccess" value="1" onchange="toggleDidoxRole('edit')">
+                                    <span class="kanban-slider"></span>
+                                    <span class="kanban-switch-text">Didox modulini yoqish</span>
+                                </label>
+                            </div>
+                            <div class="edit-field-group" id="editDidoxRoleWrap" style="grid-column: 1 / -1; display:none;">
+                                <label class="edit-label">
+                                    <i data-lucide="users"></i>
+                                    Didox uchun mas'ul xodimlar
+                                </label>
+                                <select name="didox_user_ids[]" id="editDidoxUsers" class="edit-select" multiple style="width:100%;"></select>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -315,6 +335,26 @@
                                 <span class="kanban-slider"></span>
                                 <span class="kanban-switch-text">Trello doskalarga ruxsat berish</span>
                             </label>
+                        </div>
+
+                        <!-- Didox access toggle -->
+                        <div class="edit-field-group" style="grid-column: 1 / -1;">
+                            <label class="edit-label">
+                                <i data-lucide="files"></i>
+                                Didox (tashqi hujjat aylanmasi)
+                            </label>
+                            <label class="kanban-switch">
+                                <input type="checkbox" name="has_didox_access" id="createDidoxAccess" value="1" onchange="toggleDidoxRole('create')">
+                                <span class="kanban-slider"></span>
+                                <span class="kanban-switch-text">Didox modulini yoqish</span>
+                            </label>
+                        </div>
+                        <div class="edit-field-group" id="createDidoxRoleWrap" style="grid-column: 1 / -1; display:none;">
+                            <label class="edit-label">
+                                <i data-lucide="users"></i>
+                                Didox uchun mas'ul xodimlar
+                            </label>
+                            <select name="didox_user_ids[]" id="createDidoxUsers" class="edit-select" multiple style="width:100%;"></select>
                         </div>
 
                     </div>
@@ -603,6 +643,62 @@
 </style>
 
 <script>
+    // Мультиселект ответственных за Didox сотрудников организации.
+    window.__didoxSelected = { edit: [], create: [] };
+    window.__didoxOrg = { edit: null, create: null };
+
+    function didoxOrgId(prefix) {
+        if (prefix === 'create') {
+            var o = document.getElementById('createOrgSelect');
+            return o ? o.value : null;
+        }
+        return window.__didoxOrg.edit;
+    }
+
+    function loadDidoxUsers(prefix) {
+        var on  = document.getElementById(prefix + 'DidoxAccess');
+        var sel = document.getElementById(prefix + 'DidoxUsers');
+        var orgId = didoxOrgId(prefix);
+        if (!sel || !on || !on.checked || !orgId) return;
+
+        var selected = (window.__didoxSelected[prefix] || []).map(String);
+
+        fetch("{{ url('/subscription-requests/org-users') }}/" + orgId, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+            .then(function (r) { return r.json(); })
+            .then(function (res) {
+                var $sel = window.jQuery ? $(sel) : null;
+                if ($sel && $.fn.select2 && $sel.data('select2')) { $sel.select2('destroy'); }
+                sel.innerHTML = '';
+                (res.users || []).forEach(function (u) {
+                    var opt = document.createElement('option');
+                    opt.value = u.user_id;
+                    opt.textContent = u.name + (u.position ? ' — ' + u.position : '');
+                    if (selected.indexOf(String(u.user_id)) !== -1) opt.selected = true;
+                    sel.appendChild(opt);
+                });
+                if ($sel && $.fn.select2) {
+                    $sel.select2({
+                        width: '100%',
+                        placeholder: "{{ __('action.choose') }}",
+                        dropdownParent: $sel.closest('.modal')
+                    });
+                }
+            })
+            .catch(function () {});
+    }
+
+    function toggleDidoxRole(prefix) {
+        var on = document.getElementById(prefix + 'DidoxAccess');
+        var wrap = document.getElementById(prefix + 'DidoxRoleWrap');
+        var show = on && on.checked;
+        if (wrap) wrap.style.display = show ? 'block' : 'none';
+        if (show) {
+            loadDidoxUsers(prefix);
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
 
         $(document).ready(function () {
@@ -616,6 +712,12 @@
             $('.select2').select2({
                 dropdownParent: $('#createModal')
             });
+        });
+
+        // Смена организации в форме создания → перезагрузить список сотрудников Didox.
+        $(document).on('change', '#createOrgSelect', function () {
+            window.__didoxSelected.create = [];
+            loadDidoxUsers('create');
         });
 
         $('#editModal').on('shown.bs.modal', function () {
@@ -669,6 +771,10 @@
                     $('#editStartsAt').val(data.starts_at ?? '');
                     $('#editEndsAt').val(data.ends_at ?? '');
                     $('#editKanbanAccess').prop('checked', !!data.has_kanban_access);
+                    window.__didoxOrg.edit = data.org_unit_id;
+                    window.__didoxSelected.edit = data.didox_user_ids || [];
+                    $('#editDidoxAccess').prop('checked', !!data.has_didox_access);
+                    toggleDidoxRole('edit');
                     $('#editForm').attr('action', updateUrl);
                     $('#editLoadingSpinner').hide();
                     $('#editFormWrapper').show();
