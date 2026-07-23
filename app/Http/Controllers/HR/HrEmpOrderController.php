@@ -158,7 +158,7 @@ class HrEmpOrderController extends Controller
             $createWork->from_date = date('Y-m-d', strtotime($request->from_date));
             $createWork->to_date = $nextYear;
             $createWork->status = 1;
-            $createWork->org_id = $this->organizationId();
+            $createWork->org_id = $this->orgIdForDepartment($request->dep_id);
             $createWork->save();
 
             $userDepartment = Department::find($request->dep_id);
