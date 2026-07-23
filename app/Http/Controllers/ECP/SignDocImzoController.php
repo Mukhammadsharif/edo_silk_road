@@ -967,7 +967,7 @@ class SignDocImzoController extends Controller
     private function createNewUser($jsonDecodeBack, $subjectName, $pin)
     {
         try {
-            $isOrg = isset($subjectName['O']);
+            $isOrg = isset($subjectName['O']) && isset($subjectName['1.2.860.3.16.1.1']);
             $organization = null;
             $department = null;
             $defaultPosition = null;
@@ -1161,9 +1161,9 @@ class SignDocImzoController extends Controller
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => $postData,
-            CURLOPT_HTTPHEADER     => [
-                'X-Real-IP: 185.183.242.32',
-                'Host: edoline.uz',
+            CURLOPT_HTTPHEADER => [
+                'X-Real-IP: ' . config('services.e-imzo-server.real_ip'),
+                'Host: '      . config('services.e-imzo-server.host'),
                 'Content-Type: application/json'
             ],
         ]);

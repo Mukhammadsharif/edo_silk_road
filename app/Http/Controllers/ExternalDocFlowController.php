@@ -137,6 +137,135 @@ class ExternalDocFlowController extends Controller
         ]);
     }
 
+    /** Подтипы произвольного документа (Didox Subtype). */
+    private const FREE_SUBTYPES = [
+        1 => 'Акт сверки', 2 => 'Письмо', 3 => 'Договор', 4 => 'Счёт на оплату',
+        5 => 'Акт выполненных работ', 6 => 'Другое', 7 => 'Заявка',
+        8 => 'Спецификация', 9 => 'Доп. соглашение', 10 => 'Акт приёма-передачи',
+    ];
+
+    /**
+     * GET /external-docs/create — форма создания произвольного исходящего документа.
+     */
+    public function createForm(): View
+    {
+        $org        = $this->currentOrg();
+        $authorized = $this->tokens->hasFreshToken(Auth::id(), $org->id);
+
+        return view('external-docs.create', [
+            'org'        => $org,
+            'authorized' => $authorized,
+            'sellerName' => $org->name_ru ?: ($org->name_uz ?: $org->name_en),
+            'subtypes'   => self::FREE_SUBTYPES,
+        ]);
+    }
+
+    /**
+     * POST /external-docs/create — создаёт произвольный документ (doctype 000)
+     * черновиком в Didox и сохраняет как исходящий. Дальше по нему доступны
+     * внутреннее согласование и подписание (отправка контрагенту).
+     */
+    public function storeOutgoing(Request $request)
+    {
+        $org = $this->currentOrg();
+
+        $data = $request->validate([
+            'document_no'    => 'required|string|max:100',
+            'document_date'  => 'required|date',
+            'document_name'  => 'required|string|max:255',
+            'subtype'        => 'required|integer|in:' . implode(',', array_keys(self::FREE_SUBTYPES)),
+            'contract_no'    => 'nullable|string|max:100',
+            'contract_date'  => 'nullable|date',
+            'seller_address' => 'required|string|max:500',
+            'buyer_tin'      => 'required|string|max:20',
+            'buyer_name'     => 'required|string|max:255',
+            'buyer_address'  => 'required|string|max:500',
+            'document_file'  => 'required|file|mimetypes:application/pdf|max:10240',
+        ]);
+
+        $token = $this->resolveOrgToken($org->id);
+        if (! $token) {
+            return back()->withInput()->with('error', 'Нет активной авторизации Didox. Войдите в Didox на странице списка.');
+        }
+
+        $pdfBase64 = base64_encode(file_get_contents($request->file('document_file')->getRealPath()));
+
+        $sellerName = $org->name_ru ?: ($org->name_uz ?: $org->name_en ?: '');
+
+        $payload = [
+            'data' => [
+                'Document' => [
+                    'DocumentNo'   => $data['document_no'],
+                    'DocumentDate' => $data['document_date'],
+                    'DocumentName' => $data['document_name'],
+                ],
+                'Subtype'     => (int) $data['subtype'],
+                'ContractDoc' => [
+                    'ContractNo'   => $data['contract_no'] ?? '',
+                    'ContractDate' => $data['contract_date'] ?? '',
+                ],
+                'SellerTin' => (string) $org->tax_number,
+                'Seller'    => [
+                    'Name'       => $sellerName,
+                    'BranchCode' => '',
+                    'BranchName' => '',
+                    'Address'    => $data['seller_address'],
+                ],
+                'BuyerTin' => $data['buyer_tin'],
+                'Buyer'    => [
+                    'Name'       => $data['buyer_name'],
+                    'Address'    => $data['buyer_address'],
+                    'BranchCode' => '',
+                    'BranchName' => '',
+                ],
+            ],
+            'document' => 'data:application/pdf;base64,' . $pdfBase64,
+        ];
+
+        try {
+            $client = app(DidoxClient::class)->withUserKey($token);
+            $resp   = $client->createDocument(DidoxDocType::FREE, $payload);
+        } catch (Throwable $e) {
+            return back()->withInput()->with('error', 'Ошибка Didox: ' . $e->getMessage());
+        }
+
+        if (! ($resp['success'] ?? false)) {
+            $err = $resp['error'] ?? 'неизвестная ошибка';
+            return back()->withInput()->with('error', 'Didox отклонил документ: ' . (is_string($err) ? $err : json_encode($err, JSON_UNESCAPED_UNICODE)));
+        }
+
+        $body     = $resp['data'] ?? [];
+        $didoxId  = $body['_id']
+            ?? $body['documentid']
+            ?? ($body['pending_document']['document_json']['documentid'] ?? null);
+
+        if (! $didoxId) {
+            return back()->withInput()->with('error', 'Didox не вернул идентификатор документа.');
+        }
+
+        $doc = DidoxDocument::create([
+            'org_unit_id'     => $org->id,
+            'owner'           => DidoxDocument::OWNER_OUTGOING,
+            'didox_id'        => $didoxId,
+            'doc_type'        => DidoxDocType::FREE,
+            'doc_number'      => $data['document_no'],
+            'doc_date'        => $data['document_date'],
+            'seller_tin'      => (string) $org->tax_number,
+            'buyer_tin'       => $data['buyer_tin'],
+            'owner_tin'       => (string) $org->tax_number,
+            'partner_tin'     => $data['buyer_tin'],
+            'didox_status'    => DidoxDocType::STATUS_DRAFT,
+            'list_status'     => DidoxDocument::LIST_NOT_SIGNED,
+            'approval_status' => DidoxDocument::APPROVAL_NOT_SENT,
+            'raw'             => $body,
+            'received_at'     => now(),
+        ]);
+
+        return redirect()
+            ->route('external-docs.show', $doc->id)
+            ->with('success', 'Документ создан в Didox. Отправьте на согласование или подпишите для отправки контрагенту.');
+    }
+
     /** GET /external-docs/{id} — карточка (только своя организация). */
     public function show(int $id): View
     {
@@ -575,6 +704,39 @@ class ExternalDocFlowController extends Controller
             $seen[$x['id']] = true;
             return true;
         }));
+    }
+
+    /**
+     * GET /external-docs/{id}/outgoing-sign-data — base64 значения data.json
+     * ИСХОДЯЩЕГО документа для подписи (раздел 6 документации Didox:
+     * GET /v1/documents/{id}?owner=1 → json → base64 → create_pkcs7 → sign).
+     */
+    public function outgoingSignData(int $id): JsonResponse
+    {
+        $doc = $this->findOrgDocument($id);
+
+        try {
+            $token  = $this->tokens->getFreshToken(Auth::id(), $doc->org_unit_id);
+            $client = app(DidoxClient::class)->withUserKey($token);
+            $resp   = $client->document($doc->didox_id, ['owner' => 1]);
+
+            if (! ($resp['success'] ?? false)) {
+                return response()->json(['success' => false, 'message' => 'Не удалось получить документ из Didox.'], 422);
+            }
+
+            $data = $resp['data'] ?? [];
+            $json = $data['json'] ?? ($data['data']['json'] ?? null);
+
+            if (! is_array($json)) {
+                return response()->json(['success' => false, 'message' => 'В ответе Didox нет json документа.'], 422);
+            }
+
+            $b64 = base64_encode(json_encode($json, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+
+            return response()->json(['success' => true, 'data' => $b64]);
+        } catch (Throwable $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+        }
     }
 
     /**

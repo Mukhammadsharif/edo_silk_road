@@ -325,6 +325,20 @@ class Controller extends BaseController
         return $this->authActiveUser()?->user?->org_unit_id ?? Auth::user()?->org_unit_id;
     }
 
+    /**
+     * Организация, которой принадлежит отдел.
+     *
+     * Использовать при СОЗДАНИИ записей user_work_histories: org_id должен
+     * соответствовать организации сотрудника (берётся из отдела), а не
+     * организации текущего администратора. Иначе authActiveUser() не найдёт
+     * активную запись (фильтр user_id + org_id + status=1) и страницы упадут.
+     */
+    public function orgIdForDepartment($depId)
+    {
+        return \App\Models\Admin\Department::where('id', $depId)->value('org_unit_id')
+            ?? $this->organizationId();
+    }
+
     public function isOwner()
     {
         $organizations_owners_array = OrganizationUnits::where('status', 1)->pluck('owner_user_id')->toArray();

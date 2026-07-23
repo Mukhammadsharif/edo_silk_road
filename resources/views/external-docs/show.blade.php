@@ -235,17 +235,21 @@
                         </div>
                     @endif
 
-                    <!-- Подписать в Didox: только ответственные лица, и только для ВХОДЯЩИХ
-                         (поток подписания входящего с объединением подписей неприменим к исходящим) -->
-                    @if($canSign && (int)($doc->owner ?? 0) === 0 && !$doc->isRejected())
+                    @php $isOutgoing = (int)($doc->owner ?? 0) === 1; @endphp
+                        <!-- Подписать в Didox: ответственные лица.
+                         Входящий — подпись с объединением; исходящий — подпись = отправка контрагенту. -->
+                    @if($canSign && !$doc->isRejected())
                         <div class="didox-panel">
                             <div class="panel-head">
-                                <span class="title"><i data-lucide="pen-tool"></i> Подписать документ в Didox</span>
+                                <span class="title"><i data-lucide="pen-tool"></i>
+                                    {{ $isOutgoing ? 'Подписать и отправить контрагенту' : 'Подписать документ в Didox' }}
+                                </span>
                             </div>
                             <div class="panel-body">
                                 @if($doc->list_status === 'signed')
                                     <div style="display:flex; align-items:center; gap:8px; color:#15803d; font-size:14px;">
-                                        <i data-lucide="check-circle"></i> Документ подписан в Didox.
+                                        <i data-lucide="check-circle"></i>
+                                        {{ $isOutgoing ? 'Документ подписан и отправлен контрагенту.' : 'Документ подписан в Didox.' }}
                                     </div>
                                 @elseif(!$authorized)
                                     <div style="display:flex; align-items:center; gap:8px; color:#a16207; font-size:13px;">
@@ -256,8 +260,13 @@
                                     </div>
                                 @else
                                     <p style="font-size:13px; color:#64748b; margin-bottom:12px;">
-                                        Подписание Юр. ЭЦП через E-IMZO: выберите ключ — документ будет
-                                        подписан и отправлен в Didox.
+                                        @if($isOutgoing)
+                                            Подписание Юр. ЭЦП через E-IMZO: выберите ключ — документ будет
+                                            подписан и <b>отправлен контрагенту</b> через Didox.
+                                        @else
+                                            Подписание Юр. ЭЦП через E-IMZO: выберите ключ — документ будет
+                                            подписан и отправлен в Didox.
+                                        @endif
                                     </p>
 
                                     {{-- Форма по образцу проекта: партиал e-imzo сам грузит ключи в select[name=key] --}}
@@ -270,8 +279,9 @@
                                         </div>
 
                                         <button type="button" class="btn-modern btn-primary" id="btn-sign" style="width:100%;"
-                                                onclick="signDidox()">
-                                            <i data-lucide="pen-line"></i> Подписать в Didox
+                                                onclick="{{ $isOutgoing ? 'signDidoxOutgoing()' : 'signDidox()' }}">
+                                            <i data-lucide="pen-line"></i>
+                                            {{ $isOutgoing ? 'Подписать и отправить' : 'Подписать в Didox' }}
                                         </button>
 
                                         {{-- Скрытые поля, которые читает e-imzo/наш signDidox --}}
@@ -703,6 +713,59 @@
                     } else {
                         progress('');
                         toastOrAlert('Ошибка подписания: ' + e.message, 'error');
+                    }
+                    btn.disabled = false;
+                }
+            };
+
+            /* Подписание ИСХОДЯЩЕГО документа (раздел 6 документации Didox):
+             *  1. GET outgoing-sign-data — base64 значения json документа
+             *  2. create_pkcs7 из этого base64
+             *  3. timestamp
+             *  4. sign — Didox отправляет документ контрагенту
+             */
+            window.signDidoxOutgoing = async function () {
+                const form = document.testform;
+                if (!form || !form.key || !form.key.value) {
+                    toastOrAlert('Выберите ключ ЭЦП.', 'warning');
+                    return;
+                }
+
+                const btn = document.getElementById('btn-sign');
+                btn.disabled = true;
+
+                try {
+                    progress('Шаг 1/4: получаем данные документа...');
+                    const dataResp = await fetch('{{ route('external-docs.outgoing-sign-data', $doc->id) }}', {
+                        headers: { 'Accept': 'application/json' }
+                    }).then(r => r.json());
+                    if (!dataResp.success) throw new Error('sign-data: ' + (dataResp.message || 'нет данных'));
+                    const jsonB64 = dataResp.data;
+                    if (!jsonB64) throw new Error('sign-data: пустой ответ');
+
+                    progress('Шаг 2/4: подписываем через E-IMZO...');
+                    const { pkcs7, signatureHex } = await window.eimzoSignBase64(jsonB64);
+
+                    progress('Шаг 3/4: прикрепляем timestamp...');
+                    const ts = await jsonPost('{{ route('external-docs.timestamp') }}', { pkcs7: pkcs7, signatureHex: signatureHex });
+                    if (!ts.success) throw new Error('timestamp: ' + JSON.stringify(ts.error ?? ts.message));
+                    const signature = ts.data?.timeStampTokenB64;
+                    if (!signature) throw new Error('timestamp: пустой timeStampTokenB64');
+
+                    progress('Шаг 4/4: отправляем контрагенту...');
+                    const signed = await jsonPost('{{ route('external-docs.sign', $doc->id) }}', { signature: signature });
+                    if (!signed.success) throw new Error('sign: ' + JSON.stringify(signed.error ?? signed.message));
+
+                    progress('Готово!');
+                    toastOrAlert('Документ подписан и отправлен контрагенту.', 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } catch (e) {
+                    if (isDidoxAuthError(e.message)) {
+                        progress('');
+                        didoxAuthExpired(document.getElementById('sign-progress'));
+                    } else {
+                        progress('');
+                        toastOrAlert('Ошибка отправки: ' + e.message, 'error');
                     }
                     btn.disabled = false;
                 }

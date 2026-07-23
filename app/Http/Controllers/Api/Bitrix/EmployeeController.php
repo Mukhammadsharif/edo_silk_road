@@ -166,6 +166,7 @@ class EmployeeController extends Controller
                     // Create new employee
                     $workUser = new UserWorkHistory();
                     $workUser->user_id = $bitrixUser->local_id;
+                    $workUser->org_id = $this->orgIdForDepartment($bitrixDepartment->local_id);
                     $workUser->dep_id = $bitrixDepartment->local_id;
                     $workUser->post_id = $bitrixPosition->local_id;
                     $workUser->from_date = Carbon::parse($employee['employmentDate'])->format('Y-m-d');

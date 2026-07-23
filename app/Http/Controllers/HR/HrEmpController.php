@@ -152,7 +152,7 @@ class HrEmpController extends Controller
             $createWork->from_date = Carbon::now();
             $createWork->to_date = $nextYear;
             $createWork->status = 1;
-            $createWork->org_id = $this->organizationId();
+            $createWork->org_id = $this->orgIdForDepartment($request->dep_id);
             $createWork->save();
 
             // Xodim buyruqlari
