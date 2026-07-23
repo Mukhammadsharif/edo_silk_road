@@ -823,9 +823,9 @@ class SignDocImzoApiController extends Controller
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => $postData,
-            CURLOPT_HTTPHEADER     => [
-                'X-Real-IP: 185.183.242.32',
-                'Host: edoline.uz',
+            CURLOPT_HTTPHEADER => [
+                'X-Real-IP: ' . config('services.e-imzo-server.real_ip'),
+                'Host: '      . config('services.e-imzo-server.host'),
                 'Content-Type: application/json'
             ],
         ]);
