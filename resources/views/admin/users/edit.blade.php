@@ -193,7 +193,7 @@
                                     <i data-lucide="user-check"></i>
                                     {{ __('field.user_current_position') }}
                                 </div>
-                                <div class="info-value">{{ $user->currentWork->position ? $user->currentWork->position->name_uz??'' : '' }}</div>
+                                <div class="info-value">{{ $user->currentWork?->position ? $user->currentWork->position->name_uz??'' : '' }}</div>
                             </div>
 
                             <div class="info-block">

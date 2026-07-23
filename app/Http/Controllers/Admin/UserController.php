@@ -50,7 +50,7 @@ class UserController extends Controller
         if ($isSuperUser) {
             $search = User::orderBy('id', 'DESC');
         } else {
-            $search = User::where('org_unit_id', $this->organizationId())->orderBy('id', 'DESC');
+            $search = User::inOrganization($this->organizationId())->orderBy('id', 'DESC');
         }
 
         if (!in_array($this->admin, $this->authActiveUserRoleNames())) {
@@ -401,7 +401,7 @@ class UserController extends Controller
                     $userOrgId = $user->org_unit_id;
 
                     // Считаем других активных юзеров с IT_Admin в этой же org
-                    $orgUserIds = User::where('org_unit_id', $userOrgId)
+                    $orgUserIds = User::inOrganization($userOrgId)
                         ->where('status', 1)
                         ->where('id', '!=', $user->id)
                         ->pluck('id')

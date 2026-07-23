@@ -165,9 +165,9 @@
                                 <td class="td-department">
                                     <div class="department-cell">
                                         <span
-                                            class="department-name">{{ $item->currentWork->department ? $item->currentWork->department->lang($item->currentWork->department->id)??'-' : '' }}</span>
+                                            class="department-name">{{ $item->currentWork?->department ? $item->currentWork->department->lang($item->currentWork->department->id)??'-' : '' }}</span>
                                         <span
-                                            class="position-name">{{ $item->currentWork->position ? $item->currentWork->position->lang($item->currentWork->position->id)??'-' : '' }}</span>
+                                            class="position-name">{{ $item->currentWork?->position ? $item->currentWork->position->lang($item->currentWork->position->id)??'-' : '' }}</span>
                                     </div>
                                 </td>
                                 <td class="td-status">

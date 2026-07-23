@@ -77,7 +77,7 @@ class HomeController extends Controller
             $activeEmpCount = $users->where('status', 1)->count();
             $deletedEmpCount = $users->where('status', 3)->count();
         } else {
-            $users = User::where('org_unit_id', $this->organizationId());
+            $users = User::inOrganization($this->organizationId());
             $totalEmpCount = $users->count();
             $activeEmpCount = $users->where('status', 1)->count();
             $deletedEmpCount = $users->where('status', 3)->count();

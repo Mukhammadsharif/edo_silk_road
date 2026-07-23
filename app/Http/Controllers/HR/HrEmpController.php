@@ -43,7 +43,7 @@ class HrEmpController extends Controller
 
         $s_role = $request->input('s_role');
 
-        $search = User::where('org_unit_id', $this->organizationId())->orderBy('id', 'DESC');
+        $search = User::inOrganization($this->organizationId())->orderBy('id', 'DESC');
 
         if (trim(''.$s_text.'')) {
             $search->whereHas('userPersonal', function ($query) use ($s_text) {
