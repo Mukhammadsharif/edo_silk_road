@@ -61,7 +61,7 @@ class SignDocImzoController extends Controller
 
     public function signDocuments(Request $request): JsonResponse
     {
-        $isDemo     = Settings::get('is_demo', false);
+        $isDemo     = Settings::get('is_demo', true);
         $pkData     = $request->pk_data;
         $docId      = $request->ecp_doc_id;
         $docType    = $request->ecp_doc_type;
@@ -406,10 +406,16 @@ class SignDocImzoController extends Controller
                 'fromUser'    => $this->authActiveUser()->personal->fullName() ?? '-',
             ];
             $urls = $this->buildUrls($journal);
-            $url  = $this->urlForRole($activated, $urls);
 
-            foreach ($route->stepsOfRole($journal, $activated) as $ns) {
-                $this->createMailCron($ns->to_user, $meta['journalType'], $meta['fromUser'], $url, $meta['docName']);
+            if ($route->wentToControl) {
+                // Документ ушёл на контроль (журнал 7): уведомляем КОНТРОЛЁРОВ,
+                // участники RESOL спят и ждут проекта резолюции от контролёра.
+                $this->sendNotifications($route->controllers->pluck('id')->toArray(), $urls['control'], $meta);
+            } else {
+                $url = $this->urlForRole($activated, $urls);
+                foreach ($route->stepsOfRole($journal, $activated) as $ns) {
+                    $this->createMailCron($ns->to_user, $meta['journalType'], $meta['fromUser'], $url, $meta['docName']);
+                }
             }
 
             $this->logAction($docId, 5, $meta);
@@ -495,10 +501,17 @@ class SignDocImzoController extends Controller
                 'fromUser'    => $this->authActiveUser()->personal->fullName() ?? '-',
             ];
             $urls = $this->buildUrls($journal);
-            $url  = $this->urlForRole($result['next_role'], $urls);
 
-            foreach ($route->stepsOfRole($journal, $result['next_role']) as $ns) {
-                $this->createMailCron($ns->to_user, $meta['journalType'], $meta['fromUser'], $url, $meta['docName']);
+            if ($result['next_role'] === 'RESOL' && $route->wentToControl) {
+                // RESOL активировался ЧЕРЕЗ контроль (журнал 7): уведомляем
+                // контролёров, а не резолюционера — его шаг спит до проекта
+                // резолюции от контролёра (штатный createResolution).
+                $this->sendNotifications($route->controllers->pluck('id')->toArray(), $urls['control'], $meta);
+            } else {
+                $url = $this->urlForRole($result['next_role'], $urls);
+                foreach ($route->stepsOfRole($journal, $result['next_role']) as $ns) {
+                    $this->createMailCron($ns->to_user, $meta['journalType'], $meta['fromUser'], $url, $meta['docName']);
+                }
             }
         }
 

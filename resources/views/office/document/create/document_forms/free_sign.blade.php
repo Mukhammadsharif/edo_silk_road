@@ -189,6 +189,62 @@
         </div>
     </div>
 
+    {{-- ═══════════ КОНТРОЛЬ ИСПОЛНЕНИЯ (опция документа) ═══════════
+         Индивидуальный выбор для КАЖДОГО документа. Хранится в ОТДЕЛЬНОЙ
+         таблице free_sign_journal_controls (модель FreeSignJournalControl),
+         document_journals не трогаем. Семантика:
+           отмечен  -> enabled = true  -> после подписания документ
+                       уходит контролёру (Ijro nazorati), тот готовит
+                       проект резолюции
+           снят     -> enabled = false -> сразу резолюционеру
+         Настройка типа (journal_type_controls) для НОВЫХ free-sign
+         документов больше не решает — только этот чекбокс.
+         exec_control здесь — только ИМЯ ПОЛЯ ФОРМЫ ($request->boolean).
+
+         $fsHasControllers передаётся из DocumentController (рендер формы):
+         если в организации нет людей с ролью Ijro nazorati / Control_Emp,
+         чекбокс выключен — иначе документ ушёл бы «в никуда»
+         (FreeSignRouteService всё равно пропустит контроль с warning,
+         но честнее не давать выбрать заведомо нерабочую опцию).
+    --}}
+    <div class="form-group-modern">
+        <label class="fs-control-toggle {{ empty($fsHasControllers) ? 'is-disabled' : '' }}">
+            <input type="checkbox" name="exec_control" value="1"
+                   @if(empty($fsHasControllers)) disabled @endif>
+            <span class="fs-control-toggle__box"><i data-lucide="check"></i></span>
+            <span class="fs-control-toggle__text">
+                <strong>{{ __('field.exec_control') ?? 'Контроль исполнения (Ijro nazorati)' }}</strong>
+                @if(!empty($fsHasControllers))
+                    <small>Перед резолюцией документ проверит контролёр
+                           и подготовит проект резолюции</small>
+                @else
+                    <small>В организации нет сотрудников с ролью контролёра
+                           (Ijro nazorati / Control_Emp) — опция недоступна</small>
+                @endif
+            </span>
+        </label>
+    </div>
+
+    <style>
+        .fs-control-toggle { display:flex; align-items:flex-start; gap:12px; cursor:pointer;
+            padding:14px 16px; border:1px solid rgba(15,23,42,0.06); border-radius:12px;
+            background:#fff; transition:border-color .15s; }
+        .fs-control-toggle:hover { border-color:rgba(121,77,253,0.35); }
+        .fs-control-toggle.is-disabled { cursor:not-allowed; opacity:.6; }
+        .fs-control-toggle.is-disabled:hover { border-color:rgba(15,23,42,0.06); }
+        .fs-control-toggle input { position:absolute; opacity:0; pointer-events:none; }
+        .fs-control-toggle__box { flex:0 0 auto; width:22px; height:22px; margin-top:1px;
+            border:2px solid #cbd5e1; border-radius:6px; display:flex; align-items:center;
+            justify-content:center; transition:all .15s; }
+        .fs-control-toggle__box i { width:14px; height:14px; color:#fff; opacity:0; }
+        .fs-control-toggle input:checked + .fs-control-toggle__box {
+            background:#794DFD; border-color:#794DFD; }
+        .fs-control-toggle input:checked + .fs-control-toggle__box i { opacity:1; }
+        .fs-control-toggle__text { display:flex; flex-direction:column; gap:2px; }
+        .fs-control-toggle__text strong { font-size:14px; color:#1e293b; font-weight:600; }
+        .fs-control-toggle__text small { font-size:12.5px; color:#94a3b8; line-height:1.45; }
+    </style>
+
     <!-- Form Actions -->
     <div class="form-actions">
         @if(!Auth::user()->currentSubscription)
