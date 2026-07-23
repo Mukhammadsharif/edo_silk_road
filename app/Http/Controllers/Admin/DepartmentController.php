@@ -107,7 +107,7 @@ class DepartmentController extends Controller
 
         $organizations = OrganizationUnits::where('status', 1)->where('id', '!=', $id)->get();
 
-        $users = User::where('org_unit_id', $id)->where('status', 1)->get();
+        $users = User::inOrganization($id)->where('status', 1)->get();
 
         return view('admin.organizations.edit', compact('model', 'organizations', 'parentOrganizations', 'users'));
     }
@@ -282,31 +282,37 @@ class DepartmentController extends Controller
                 $level = $parent_department->level_number + 1;
             }
 
+            // Что изменилось — фиксируем ДО обновления.
+            $parentChanged = (int) $request->parent_id !== (int) $model->parent_id;
+            $orgChanged    = (int) $request->org_unit_id !== (int) $model->org_unit_id;
 
-            if ($request->parent_id != $model->parent_id) {
-                $model->update([
-                    'name_uz' => $request->name_uz,
-                    'name_kr' => $request->name_kr,
-                    'name_ru' => $request->name_ru,
-                    'name_en' => $request->name_en,
-                    'parent_id' => $request->parent_id,
-                    'level_number' => $level,
-                    'order_number' => $request->order_number,
-                    'status' => $request->status,
-                    'org_unit_id' => $request->org_unit_id,
-                ]);
+            // Сохраняем всегда, а не только при смене родительского отдела —
+            // иначе правки названий (uz/kr/ru/en), порядка и статуса молча терялись,
+            // хотя пользователю показывалось сообщение об успехе.
+            $model->update([
+                'name_uz'      => $request->name_uz,
+                'name_kr'      => $request->name_kr,
+                'name_ru'      => $request->name_ru,
+                'name_en'      => $request->name_en,
+                'parent_id'    => $request->parent_id,
+                'level_number' => $level,
+                'order_number' => $request->order_number,
+                'status'       => $request->status,
+                'org_unit_id'  => $request->org_unit_id,
+            ]);
 
-                if ($model->childs) {
-                    foreach ($model->childs as $child) {
-                        $child->update([
-                            'org_unit_id' => $request->org_unit_id,
-                        ]);
-                    }
+            // Отдел переехал в другую организацию — переносим и дочерние отделы,
+            // иначе поддерево осталось бы в старой организации.
+            if ($orgChanged || $parentChanged) {
+                foreach ($model->childs as $child) {
+                    $child->update([
+                        'org_unit_id' => $request->org_unit_id,
+                    ]);
                 }
             }
 
+            // Отключение отдела гасит дочерние.
             if ($request->status == 2) {
-                $model->update(['status' => $request->status]);
                 Department::where('parent_id', $id)->update(['status' => $request->status]);
             }
         }

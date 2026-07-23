@@ -45,7 +45,7 @@ class UserApiController extends Controller
             // Возвращаем только пользователей своей организации
             $orgUnitId = Auth::user()->org_unit_id;
 
-            $users = User::where('org_unit_id', $orgUnitId)
+            $users = User::inOrganization($orgUnitId)
                 ->with([
                     'userPersonal',
                     'currentWork',

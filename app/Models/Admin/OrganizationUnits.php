@@ -208,7 +208,7 @@ class OrganizationUnits extends Model
             return false;
         }
 
-        $currentUsersCount = User::where('org_unit_id', $this->id)->count();
+        $currentUsersCount = User::inOrganization($this->id)->count();
 
         return $currentUsersCount < $subscription->tariff->max_users;
     }
@@ -237,7 +237,7 @@ class OrganizationUnits extends Model
             return null;
         }
 
-        $currentUsers = User::where('org_unit_id', $this->id)->count();
+        $currentUsers = User::inOrganization($this->id)->count();
 
         $currentDocuments = DB::table('document_journals')
             ->where('org_unit_id', $this->id)
