@@ -17,6 +17,7 @@ final class DidoxDocType
     public const ACT                = '005'; // Акт выполненных работ
     public const EMPOWERMENT        = '006'; // Доверенность
     public const EMPOWERMENT_NEW    = '062'; // Доверенность (новая)
+
     public const CONTRACT           = '007'; // Договор (ГНК)
     public const FREE               = '000'; // Произвольный документ
     public const FREE_MULTI         = '010'; // Многосторонний произвольный
@@ -65,6 +66,9 @@ final class DidoxDocType
     {
         return match ($didoxStatus) {
             self::STATUS_SIGNED => DidoxDocument::LIST_SIGNED,
+            self::STATUS_REJECTED,
+            self::STATUS_NOT_VALID,
+            self::STATUS_CANCELLED_TAX => DidoxDocument::LIST_REJECTED,
             default             => DidoxDocument::LIST_NOT_SIGNED,
         };
     }

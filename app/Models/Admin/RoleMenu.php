@@ -123,7 +123,7 @@ class RoleMenu extends Model
                     DocumentJournals::whereNotIn('status', [1, 4])->count() :
                     DocumentJournals::whereNotIn('status', [1, 4])->where('org_unit_id', self::authActiveUser()->user->org_unit_id)->count(),
                 'ALL_PRT_DOCS' => $isSuperUser ? ProtocolDocument::whereNotIn('status', [1])->where('status', '!=', 6)->count()
-                                : ProtocolDocument::whereNotIn('status', [1])->where('org_id', self::authActiveUser()->user->org_unit_id)->where('status', '!=', 6)->count(),
+                    : ProtocolDocument::whereNotIn('status', [1])->where('org_id', self::authActiveUser()->user->org_unit_id)->where('status', '!=', 6)->count(),
                 'DOC_EXEC' => DocumentExecutionSteps::whereIn('to_user', $workIds)
                     ->whereHas('role', function ($query) { $query->where('doc_code', 'EXEC'); })
                     ->whereIn('status', [2, 4])
@@ -140,41 +140,46 @@ class RoleMenu extends Model
                     ->whereHas('role', function ($query) { $query->where('doc_code', 'RESOL'); })
                     ->whereIn('status', [2, 6])
                     ->count(),
+                'DIDOX' => \App\Models\Didox\DidoxDocumentApprover::where('user_id', Auth::id())
+                    ->where('status', 'pending')
+                    ->whereHas('document', function ($query) {
+                        $query->where('org_unit_id', self::authActiveUser()->user->org_unit_id ?? 0);
+                    })->count(),
                 'PRT_HR_S' => ProtocolDocument::whereHas('docType', function ($query){
                     $query->where('doc_code', 'PRT_HR');
                 })->whereIn('status', [1,2,4,5])->count(),
                 'PRT_HR' => ProtocolDocMember::whereHas('document', function ($query) {
                     $query->whereHas('docType', function ($query1) {
-                            $query1->where('doc_code', 'PRT_HR');
-                        });
-                    })->where('role_id', '!=', 4)
+                        $query1->where('doc_code', 'PRT_HR');
+                    });
+                })->where('role_id', '!=', 4)
                     ->whereIn('user_id', $workIds)
                     ->where('status', 2)->count(),
                 'PRT_CR' => ProtocolDocMember::whereHas('document', function ($query) {
                     $query->whereHas('docType', function ($query1) {
-                            $query1->where('doc_code', 'PRT_CR');
-                        });
-                    })->where('role_id', '!=', 4)
+                        $query1->where('doc_code', 'PRT_CR');
+                    });
+                })->where('role_id', '!=', 4)
                     ->whereIn('user_id', $workIds)
                     ->where('status', 2)->count(),
                 'PRT_AL' => ProtocolDocMember::whereHas('document', function ($query) {
                     $query->whereHas('docType', function ($query1) {
-                            $query1->where('doc_code', 'PRT_AL');
-                        });
-                    })->where('role_id', '!=', 4)
+                        $query1->where('doc_code', 'PRT_AL');
+                    });
+                })->where('role_id', '!=', 4)
                     ->whereIn('user_id', $workIds)
                     ->where('status', 2)->count(),
                 'PRT_INS' => ProtocolDocMember::whereHas('document', function ($query) {
                     $query->whereHas('docType', function ($query1) {
-                            $query1->where('doc_code', 'PRT_INS');
-                        });
-                    })->where('role_id', '!=', 4)->whereIn('user_id', $workIds)
+                        $query1->where('doc_code', 'PRT_INS');
+                    });
+                })->where('role_id', '!=', 4)->whereIn('user_id', $workIds)
                     ->where('status', 2)->count(),
                 'PRT_CN' => ProtocolDocMember::whereHas('document', function ($query) {
                     $query->whereHas('docType', function ($query1) {
-                            $query1->where('doc_code', 'PRT_CN');
-                        });
-                    })->where('role_id', '!=', 4)->whereIn('user_id', $workIds)
+                        $query1->where('doc_code', 'PRT_CN');
+                    });
+                })->where('role_id', '!=', 4)->whereIn('user_id', $workIds)
                     ->where('status', 2)->count(),
                 'PRT_HR_EMP' => ProtocolDocMember::where('role_id', 4)->whereIn('user_id', $workIds)
                     ->where('status', 2)->count(),

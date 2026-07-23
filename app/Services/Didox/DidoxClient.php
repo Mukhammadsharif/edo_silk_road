@@ -167,6 +167,47 @@ class DidoxClient
         return $this->handle($this->http()->get("/v1/documents/{$id}/documentBase64"), 'documents/base64');
     }
 
+    /** GET /v1/documents/{id}/file/true — печатная форма документа (PDF) в base64. */
+    public function documentPdfBase64(string $id): array
+    {
+        return $this->handle($this->http()->get("/v1/documents/{$id}/file/true"), 'documents/file');
+    }
+
+    /**
+     * GET /v1/documents/{id}/attachment — возвращает подписанную ссылку
+     * (storage-URL) на файл документа. По этой ссылке отдельным GET качается
+     * бинарный PDF (см. fetchFile).
+     */
+    public function attachmentUrl(string $id): ?string
+    {
+        $resp = $this->handle($this->http()->get("/v1/documents/{$id}/attachment"), 'documents/attachment');
+        if (! ($resp['success'] ?? false)) {
+            return null;
+        }
+
+        $data = $resp['data'];
+        $url  = is_string($data) ? $data : ($data['url'] ?? $data['data'] ?? $data['link'] ?? null);
+        $url  = is_string($url) ? trim($url, " \t\n\r\0\x0B\"'") : null;
+
+        return ($url && str_starts_with($url, 'http')) ? $url : null;
+    }
+
+    /**
+     * Скачивает файл документа по полной ссылке (storage-URL или raw.json.url).
+     * Возвращает бинарные данные PDF или null.
+     */
+    public function fetchFile(string $url): ?string
+    {
+        $resp = Http::timeout($this->timeout)
+            ->withHeaders(array_filter([
+                'Partner-Authorization' => $this->partnerToken,
+                'user-key'              => $this->userKey,
+            ]))
+            ->get($url);
+
+        return $resp->successful() ? $resp->body() : null;
+    }
+
     /** POST /v1/documents/:docType/create/:locale — создать черновик. */
     public function createDocument(string $docType, array $payload, ?string $locale = null): array
     {

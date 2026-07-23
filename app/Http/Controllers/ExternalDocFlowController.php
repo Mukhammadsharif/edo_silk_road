@@ -86,6 +86,7 @@ class ExternalDocFlowController extends Controller
         $authorized = $tinFilled && $this->tokens->hasFreshToken(Auth::id(), $org->id);
 
         $query = DidoxDocument::where('org_unit_id', $org->id)
+            ->where('owner', DidoxDocument::OWNER_INCOMING)
             ->withCount(['approvers as pending_approvers_count' => fn ($q) => $q->where('status', 'pending')]);
 
         if ($listStatus !== '') {
@@ -102,6 +103,37 @@ class ExternalDocFlowController extends Controller
             'authorized' => $authorized,
             'canSign'    => $this->isResponsible(),
             'typeLabels' => DidoxDocType::LABELS,
+            'mode'       => 'incoming',
+        ]);
+    }
+
+    /** GET /external-docs/outgoing — исходящие документы организации. */
+    public function outgoing(Request $request): View
+    {
+        $org        = $this->currentOrg();
+        $listStatus = (string) $request->query('list_status', '');
+        $tinFilled  = trim((string) $org->tax_number) !== '';
+        $authorized = $tinFilled && $this->tokens->hasFreshToken(Auth::id(), $org->id);
+
+        $query = DidoxDocument::where('org_unit_id', $org->id)
+            ->where('owner', DidoxDocument::OWNER_OUTGOING)
+            ->withCount(['approvers as pending_approvers_count' => fn ($q) => $q->where('status', 'pending')]);
+
+        if ($listStatus !== '') {
+            $query->where('list_status', $listStatus);
+        }
+
+        $documents = $query->orderByDesc('received_at')->paginate(20)->withQueryString();
+
+        return view('external-docs.index', [
+            'documents'  => $documents,
+            'org'        => $org,
+            'tinFilled'  => $tinFilled,
+            'listStatus' => $listStatus,
+            'authorized' => $authorized,
+            'canSign'    => $this->isResponsible(),
+            'typeLabels' => DidoxDocType::LABELS,
+            'mode'       => 'outgoing',
         ]);
     }
 
@@ -146,7 +178,42 @@ class ExternalDocFlowController extends Controller
             'candidates' => $candidates,
             'myApproval' => $myApproval,
             'typeLabels' => DidoxDocType::LABELS,
+            'attachments' => $this->realAttachments($doc),
         ]);
+    }
+
+    /**
+     * Реальные файлы документа для показа в карточке: резолвит storage-URL через
+     * /attachment и оставляет только те, где файл реально есть (Didox отдаёт
+     * заглушку nopreview.pdf, когда файла нет). Если ничего не осталось —
+     * раздел «Файл документа и вложения» в карточке не показывается.
+     *
+     * @return array<int,array<string,mixed>>
+     */
+    private function realAttachments(DidoxDocument $doc): array
+    {
+        $candidates = $this->attachments($doc);
+        if (! $candidates) {
+            return [];
+        }
+
+        $token = $this->resolveOrgToken($doc->org_unit_id);
+        if (! $token) {
+            return []; // без авторизации Didox проверить нельзя — раздел не показываем
+        }
+
+        $client = app(DidoxClient::class)->withUserKey($token);
+
+        $out = [];
+        foreach ($candidates as $att) {
+            $url = $client->attachmentUrl($att['id']);
+            if ($url && ! str_contains($url, 'nopreview')) {
+                $att['file_url'] = $url;
+                $out[] = $att;
+            }
+        }
+
+        return $out;
     }
 
     /**
@@ -393,6 +460,121 @@ class ExternalDocFlowController extends Controller
         } catch (Throwable $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
         }
+    }
+
+    /**
+     * GET /external-docs/{id}/file/{didoxId?} — отдаёт PDF самого документа или
+     * его вложения (проксируя запрос в Didox с токеном организации, т.к. прямая
+     * ссылка на файл подписана/истекает и требует авторизации).
+     */
+    public function file(int $id, ?string $didoxId = null)
+    {
+        $doc = $this->findOrgDocument($id);
+
+        // Защита: разрешаем только сам документ и вложения из raw.
+        $target = $didoxId ?: $doc->didox_id;
+        $entry  = collect($this->attachments($doc))->firstWhere('id', $target);
+        abort_if(! $entry, 404, 'Файл не найден.');
+
+        $token = $this->resolveOrgToken($doc->org_unit_id);
+        abort_if(! $token, 404, 'Нет активной авторизации Didox.');
+
+        $client = app(DidoxClient::class)->withUserKey($token);
+
+        // Основной путь: получаем подписанный storage-URL Didox и РЕДИРЕКТИМ на него —
+        // браузер качает PDF напрямую из Didox (storage-universal-*.didox.uz),
+        // файл не проходит через наш сервер.
+        $storageUrl = $client->attachmentUrl($target);
+        if ($storageUrl && ! str_contains($storageUrl, 'nopreview')) {
+            return redirect()->away($storageUrl);
+        }
+
+        // Фолбэк (если /attachment недоступен): проксируем PDF через сервер.
+        $pdf = null;
+
+        if (! empty($entry['url'])) {
+            $bin = $client->fetchFile($entry['url']);
+            if (is_string($bin) && str_starts_with($bin, '%PDF')) {
+                $pdf = $bin;
+            }
+        }
+
+        if ($pdf === null) {
+            $resp = $client->documentPdfBase64($target);
+            if ($resp['success'] ?? false) {
+                $data = $resp['data'];
+                $b64  = is_string($data) ? $data : ($data['data'] ?? $data['file'] ?? $data['base64'] ?? null);
+                if (is_string($b64) && $b64 !== '') {
+                    $b64 = preg_replace('#^data:application/pdf;base64,#', '', trim($b64));
+                    $decoded = base64_decode($b64, true);
+                    if ($decoded !== false && str_starts_with($decoded, '%PDF')) {
+                        $pdf = $decoded;
+                    }
+                }
+            }
+        }
+
+        abort_if($pdf === null, 404, 'Файл недоступен.');
+
+        return response($pdf, 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="document.pdf"',
+        ]);
+    }
+
+    /**
+     * Список файлов документа: сам документ + вложения/связанные из raw.
+     * Возвращает [['id' => didoxId, 'name' => имя, 'main' => bool], ...].
+     */
+    private function attachments(DidoxDocument $doc): array
+    {
+        $raw = is_array($doc->raw) ? $doc->raw : [];
+        $out = [];
+
+        // Основной файл документа.
+        $json   = $raw['json'] ?? [];
+        $mainId = $json['documentid'] ?? $doc->didox_id;
+        if ($mainId) {
+            $out[] = [
+                'id'   => $mainId,
+                'name' => $json['filename'] ?? ('Документ ' . ($doc->doc_number ?? '')),
+                'url'  => $json['url'] ?? null,
+                'main' => true,
+            ];
+        }
+
+        // Вложения / связанные / дополнительные документы (структуры Didox бывают разные).
+        $buckets = [
+            $raw['attachments']            ?? [],
+            $raw['relatedDocuments']       ?? [],
+            $raw['document']['additional'] ?? [],
+        ];
+        foreach ($buckets as $bucket) {
+            foreach ((array) $bucket as $a) {
+                if (! is_array($a)) {
+                    continue;
+                }
+                $aid = $a['documentid'] ?? $a['_id'] ?? $a['id'] ?? null;
+                if ($aid) {
+                    $out[] = [
+                        'id'   => $aid,
+                        'name' => $a['filename'] ?? $a['name'] ?? 'Вложение',
+                        'url'  => $a['url'] ?? null,
+                        'main' => false,
+                    ];
+                }
+            }
+        }
+
+        // Уникализируем по id.
+        $seen = [];
+        return array_values(array_filter($out, function ($x) use (&$seen) {
+            if (isset($seen[$x['id']])) {
+                return false;
+            }
+            $seen[$x['id']] = true;
+            return true;
+        }));
     }
 
     /**

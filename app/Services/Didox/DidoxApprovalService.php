@@ -54,6 +54,11 @@ class DidoxApprovalService
             $doc->save();
         });
 
+        // Согласующим Didox автоматически выдаём роль/меню Didox,
+        // если у них его ещё не было — чтобы раздел «Мне на согласование»
+        // (DIDOX) появился в сайдбаре.
+        (new DidoxAccessService())->grantToUsers($userIds);
+
         // Точка расширения: пуш в общий движок согласования EDOLINE
         // (DocumentJournals + DocumentExecutionSteps), если потребуется
         // единый список задач у согласующих.

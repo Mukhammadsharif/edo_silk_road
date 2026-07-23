@@ -91,8 +91,11 @@ class SubscriptionRequestController extends Controller
     {
         $subscription = Subscriptions::with(['organization', 'tariff'])->findOrFail($id);
 
+        $didoxService = new \App\Services\Didox\DidoxAccessService();
+
         return response()->json([
             'id'                => $subscription->id,
+            'org_unit_id'       => $subscription->org_unit_id,
             'org_name'          => $subscription->organization->name_uz ?? 'Noma\'lum',
             'tariff_id'         => $subscription->tariff_id,
             'tariff_name'       => $subscription->tariff->name ?? '',
@@ -100,6 +103,8 @@ class SubscriptionRequestController extends Controller
             'starts_at'         => $subscription->starts_at?->format('Y-m-d'),
             'ends_at'           => $subscription->ends_at?->format('Y-m-d'),
             'has_kanban_access' => $subscription->has_kanban_access,
+            'has_didox_access'  => $didoxService->isEnabledForOrg($subscription->org_unit_id),
+            'didox_user_ids'    => $didoxService->responsibleUserIds($subscription->org_unit_id),
         ]);
     }
 
@@ -114,10 +119,15 @@ class SubscriptionRequestController extends Controller
             'starts_at'         => 'nullable|date',
             'ends_at'           => 'nullable|date|after_or_equal:starts_at',
             'has_kanban_access' => 'nullable|boolean',
+            'has_didox_access'  => 'nullable|boolean',
+            'didox_user_ids'    => 'nullable|array',
+            'didox_user_ids.*'  => 'integer',
         ]);
 
         $subscription = Subscriptions::findOrFail($id);
         $hasKanban    = $request->boolean('has_kanban_access');
+        $hasDidox     = $request->boolean('has_didox_access');
+        $didoxUserIds = $hasDidox ? (array) $request->input('didox_user_ids', []) : [];
 
         $subscription->tariff_id         = $request->tariff_id;
         $subscription->status            = $request->status;
@@ -127,6 +137,8 @@ class SubscriptionRequestController extends Controller
         $subscription->save();
 
         $this->syncKanbanRole($subscription->org_unit_id, $hasKanban);
+        // Didox — через роли/меню, назначаем конкретным сотрудникам.
+        $this->syncDidoxRole($subscription->org_unit_id, $hasDidox, $didoxUserIds);
 
         return redirect()->back()->with('success', __('field.subscription_updated_successfully'));
     }
@@ -143,6 +155,9 @@ class SubscriptionRequestController extends Controller
             'starts_at'         => 'required|date',
             'ends_at'           => 'required|date|after:starts_at',
             'has_kanban_access' => 'nullable|boolean',
+            'has_didox_access'  => 'nullable|boolean',
+            'didox_user_ids'    => 'nullable|array',
+            'didox_user_ids.*'  => 'integer',
         ]);
 
         if ($request->status == 1) {
@@ -152,9 +167,11 @@ class SubscriptionRequestController extends Controller
                 ->update(['status' => 0]);
         }
 
-        $hasKanban = $request->boolean('has_kanban_access');
+        $hasKanban    = $request->boolean('has_kanban_access');
+        $hasDidox     = $request->boolean('has_didox_access');
+        $didoxUserIds = $hasDidox ? (array) $request->input('didox_user_ids', []) : [];
 
-        Subscriptions::create([
+        $subscription = Subscriptions::create([
             'org_unit_id'       => $request->org_unit_id,
             'tariff_id'         => $request->tariff_id,
             'status'            => $request->status,
@@ -164,8 +181,33 @@ class SubscriptionRequestController extends Controller
         ]);
 
         $this->syncKanbanRole($request->org_unit_id, $hasKanban);
+        // Didox — назначаем конкретным сотрудникам организации.
+        $this->syncDidoxRole($request->org_unit_id, $hasDidox, $didoxUserIds);
 
         return redirect()->back()->with('success', __('field.subscription_created_successfully'));
+    }
+
+    /**
+     * Активные сотрудники организации для мультиселекта «ответственные за Didox».
+     */
+    public function orgUsers($orgId)
+    {
+        $users = \App\Models\Admin\UserWorkHistory::where('org_id', (int) $orgId)
+            ->where('status', 1)
+            ->whereHas('user', function ($q) {
+                $q->where('status', 1);
+            })
+            ->get()
+            ->unique('user_id')
+            ->map(function ($u) {
+                return [
+                    'user_id'  => $u->user_id,
+                    'name'     => optional($u->personal)->fullName() ?? '-',
+                    'position' => optional($u->userPost)->lang(optional($u->userPost)->id) ?? '',
+                ];
+            })->values();
+
+        return response()->json(['success' => true, 'users' => $users]);
     }
     /**
      * Search organizations for Select2 (returns JSON)
@@ -215,5 +257,14 @@ class SubscriptionRequestController extends Controller
                 $user->removeRole($role);
             }
         }
+    }
+
+    /**
+     * Синхронизация доступа к Didox для организации (конкретные сотрудники).
+     */
+    private function syncDidoxRole(int $orgUnitId, bool $hasAccess, array $userIds = []): void
+    {
+        (new \App\Services\Didox\DidoxAccessService())
+            ->syncForOrgUsers($orgUnitId, $hasAccess, $userIds);
     }
 }
