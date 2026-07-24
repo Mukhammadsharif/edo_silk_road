@@ -43,7 +43,7 @@ use Illuminate\Support\Facades\Storage;
 class DocumentController extends Controller
 {
     /** Тип журнала «Внешаблонные документы» (free-sign). */
-    private const FREE_SIGN_JOURNAL_TYPE = 351;
+    private const FREE_SIGN_JOURNAL_TYPE = 407;
 
     //
     protected OnlyOfficeService $onlyOfficeService;
@@ -389,7 +389,7 @@ class DocumentController extends Controller
             return now()->format('Y-m-d');
         }
     }
-  
+
     /**
      * Распознаёт вставленную ссылку на документ (для вкладки «Связанные документы»).
      */
