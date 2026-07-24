@@ -718,23 +718,48 @@ class DocumentController extends Controller
         if (empty($savedFiles)) return;
 
         foreach ($savedFiles as $fileData) {
-            $tempPath = storage_path('app/' . $fileData['path']);
-            if (!file_exists($tempPath)) continue;
+            // doc_files_json приходит из запроса, поэтому путь нельзя брать на веру.
+            // Ожидаем только временные файлы OnlyOffice: temp_uploads/<имя>.
+            $relative = is_array($fileData) ? (string) ($fileData['path'] ?? '') : '';
+            if ($relative === '' || !str_starts_with($relative, 'temp_uploads/') || str_contains($relative, '..')) {
+                continue;
+            }
+
+            $tempPath = storage_path('app/' . $relative);
+
+            // is_file(), а не file_exists(): последний возвращает true и для
+            // КАТАЛОГА, после чего file_get_contents() падал с
+            // "Read of N bytes failed with errno=21 Is a directory".
+            if (!is_file($tempPath) || !is_readable($tempPath)) {
+                continue;
+            }
+
+            // Дополнительная защита от выхода за пределы temp_uploads.
+            $real = realpath($tempPath);
+            $base = realpath(storage_path('app/temp_uploads'));
+            if ($real === false || $base === false || !str_starts_with($real, $base . DIRECTORY_SEPARATOR)) {
+                continue;
+            }
+
+            $contents = @file_get_contents($real);
+            if ($contents === false) {
+                continue;
+            }
 
             $documentFile = new DocumentFiles();
             $documentFile->j_id      = $journal_id;
             $documentFile->doc_id    = $document_id;
             $documentFile->from_user = $this->authActiveUser()->id;
-            $documentFile->file_name = $fileData['original'];
-            $documentFile->file_hash = $this->uniqueHash(16) . '.' . $fileData['ext'];
+            $documentFile->file_name = $fileData['original'] ?? basename($real);
+            $documentFile->file_hash = $this->uniqueHash(16) . '.' . ($fileData['ext'] ?? pathinfo($real, PATHINFO_EXTENSION));
             $documentFile->file_path = $path;
-            $documentFile->file_ext  = $fileData['ext'];
-            $documentFile->file_size = $fileData['size'];
-            Storage::disk('ftp_13')->put($path . $documentFile->file_hash, file_get_contents($tempPath));
+            $documentFile->file_ext  = $fileData['ext'] ?? pathinfo($real, PATHINFO_EXTENSION);
+            $documentFile->file_size = $fileData['size'] ?? filesize($real);
+            Storage::disk('ftp_13')->put($path . $documentFile->file_hash, $contents);
             $documentFile->save();
 
-            // Удаляем временный файл
-            Storage::disk('local')->delete($fileData['path']);
+            // Удаляем временный файл (по уже проверенному относительному пути)
+            Storage::disk('local')->delete($relative);
         }
     }
 
