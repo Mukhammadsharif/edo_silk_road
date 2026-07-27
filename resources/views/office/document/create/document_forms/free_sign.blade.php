@@ -143,6 +143,7 @@
         <label>
             <i data-lucide="paperclip"></i>
             {{ __('action.attach_file') }}
+            <span style="color:#ef4444;">*</span>
         </label>
 
         <div id="file-inputs-container">
@@ -157,7 +158,9 @@
                     </div>
                     <div class="file-text">
                         <p class="file-name">{{ __('action.choose') }}</p>
-                        <span class="file-hint">PDF, DOC, DOCX, XLS, XLSX (max 10MB)</span>
+                        {{-- free-sign: PDF ОБЯЗАТЕЛЕН — редактор размечает
+                             именно его; DOC/XLS можно приложить дополнительно --}}
+                        <span class="file-hint">PDF — обязательно; DOC, DOCX, XLS, XLSX — приложения (max 10MB)</span>
                     </div>
                 </div>
 
@@ -165,6 +168,18 @@
                     <i data-lucide="plus"></i>
                 </button>
             </div>
+        </div>
+
+        {{-- Ошибка «файл не выбран / нет PDF»: серверная (валидация
+             storeFreeSign) и клиентская (JS ниже показывает этот же блок) --}}
+        <div id="fs-file-required-error"
+             style="display:{{ $errors->has('doc_files') ? 'flex' : 'none' }};
+                    align-items:center; gap:8px; margin-top:10px; padding:10px 14px;
+                    border:1px solid rgba(239,68,68,0.35); border-radius:10px;
+                    background:rgba(239,68,68,0.06); color:#ef4444; font-size:13px;">
+            <i data-lucide="alert-circle" style="width:16px;height:16px;flex:0 0 auto;"></i>
+            <span id="fs-file-required-text">{{ $errors->first('doc_files')
+                ?: 'Приложите PDF-файл — без него сохранить внешаблонный документ нельзя' }}</span>
         </div>
     </div>
 
@@ -254,12 +269,17 @@
             </div>
         @endif
 
-        {{-- Кнопка видима сразу: у free-sign нет dropzone, который её показывал.
-             Раньше style="display:none" + показ по загрузке .doc — из-за этого
-             для внешаблонных сохранить было нечем. --}}
+        {{-- Кнопка видима сразу, но ЗАБЛОКИРОВАНА, пока не выбран PDF
+             (главная защита: не зависит от того, КАК отправляется форма —
+             submit-событием, программным form.submit() из setFormAction
+             или как-то ещё). Разблокирует JS ниже по change файловых
+             инпутов. data-fs-sub-locked: если кнопка выключена из-за
+             отсутствия ПОДПИСКИ — выбор PDF её НЕ включает. --}}
         <button type="submit" name="action" value="file" id="submitBtn" class="btn-submit"
                 onclick="setFormAction('file')"
-                @if(!Auth::user()->currentSubscription) disabled @endif>
+                data-fs-sub-locked="{{ Auth::user()->currentSubscription ? 0 : 1 }}"
+                title="Приложите PDF-файл"
+                disabled>
             <i data-lucide="save"></i>
             {{ __('action.save') }}
         </button>
@@ -279,7 +299,142 @@
 @include('templates.calendar.modern-calendar-script')
 
 <script>
-    // Dropzone-логики нет: блок «Текст документа» для free-sign убран.
     // Иконки перерисовываем — форма подгружается динамически (AJAX loadForm).
     if (typeof lucide !== 'undefined') lucide.createIcons();
+
+    /* ═══════ БЕЗ ОБЯЗАТЕЛЬНЫХ ПОЛЕЙ НЕ СОХРАНИТЬ (v44) ═══════
+     | Обязательные: название (doc_name), дата (doc_date), PDF-файл.
+     | doc_number и чекбокс контроля — опциональны, селекты всегда
+     | имеют значение.
+     |
+     | Почему НЕ html-required и НЕ submit-событие: родительская форма
+     | и setFormAction() вне партиала; программный form.submit()
+     | обходит И нативную валидацию браузера, И submit-обработчики.
+     | Поэтому:
+     | 1. КНОПКА ЗАБЛОКИРОВАНА, пока все обязательные поля не заполнены.
+     | 2. Capture-перехват клика (раньше inline onclick) — страховка:
+     |    глушит setFormAction, подсвечивает незаполненное.
+     | Vanilla JS. Третий рубеж — серверная проверка в storeFreeSign.
+     */
+    (function () {
+        var btn = document.getElementById('submitBtn');
+        var errBox = document.getElementById('fs-file-required-error');
+        if (!btn || !errBox) return;
+
+        var subLocked = btn.getAttribute('data-fs-sub-locked') === '1';
+        var root = btn.closest('.modern-form-body') || document;
+
+        function formState() {
+            var nameEl = root.querySelector('input[name="doc_name"]');
+            var dateEl = root.querySelector('input[name="doc_date"]');
+            var inputs = root.querySelectorAll('input[name="doc_files[]"]');
+            var hasAny = false, hasPdf = false;
+            for (var k = 0; k < inputs.length; k++) {
+                var fs = inputs[k].files || [];
+                if (fs.length) hasAny = true;
+                for (var i = 0; i < fs.length; i++) {
+                    if (/\.pdf$/i.test(fs[i].name)) hasPdf = true;
+                }
+            }
+            return {
+                nameEl: nameEl, dateEl: dateEl,
+                nameOk: !!(nameEl && nameEl.value.trim() !== ''),
+                dateOk: !!(dateEl && dateEl.value.trim() !== ''),
+                hasAny: hasAny, hasPdf: hasPdf
+            };
+        }
+
+        function missingList(st) {
+            var m = [];
+            if (!st.nameOk)  m.push('название документа');
+            if (!st.dateOk)  m.push('дату документа');
+            if (!st.hasPdf)  m.push(st.hasAny
+                ? 'PDF-файл (среди выбранных файлов его нет — именно он размечается в редакторе)'
+                : 'PDF-файл');
+            return m;
+        }
+
+        function mark(el, bad) {
+            if (!el) return;
+            el.classList.toggle('is-invalid', bad);
+            el.style.borderColor = bad ? '#ef4444' : '';
+        }
+
+        function refresh() {
+            var st = formState();
+            var ok = st.nameOk && st.dateOk && st.hasPdf;
+            if (!subLocked) {               // подписочную блокировку не трогаем
+                btn.disabled = !ok;
+                btn.title = ok ? '' : 'Заполните: ' + missingList(st).join(', ');
+                btn.style.opacity = ok ? '' : '.55';
+                btn.style.cursor = ok ? '' : 'not-allowed';
+            }
+            // Подсветку снимаем сразу, как поле заполнили; ставим её
+            // только по клику (в guard'е) — чтобы форма не открывалась красной.
+            if (st.nameOk) mark(st.nameEl, false);
+            if (st.dateOk) mark(st.dateEl, false);
+            if (ok) errBox.style.display = 'none';
+        }
+
+        // Одно делегирование на корень партиала: текстовые поля ('input'),
+        // селекты/календарь/файлы ('change'). Инпуты от кнопки «+» и
+        // значение от календаря-попапа подхватываются автоматически.
+        root.addEventListener('input', refresh);
+        root.addEventListener('change', refresh);
+
+        /* Страховка: перехват клика в CAPTURE-фазе — раньше inline
+           onclick и нативного сабмита. Вешаем на document ОДИН раз
+           (window-флаг): партиал перезагружается AJAX'ом, актуальность
+           проверяем по наличию #fs-file-required-error в текущем DOM. */
+        if (!window.__fsPdfClickGuard) {
+            window.__fsPdfClickGuard = true;
+            document.addEventListener('click', function (e) {
+                var b = e.target && e.target.closest ? e.target.closest('#submitBtn') : null;
+                if (!b) return;
+                var box = document.getElementById('fs-file-required-error');
+                if (!box) return;   // партиал сейчас не free-sign — не вмешиваемся
+
+                var r = b.closest('.modern-form-body') || document;
+                var nameEl = r.querySelector('input[name="doc_name"]');
+                var dateEl = r.querySelector('input[name="doc_date"]');
+                var inputs = r.querySelectorAll('input[name="doc_files[]"]');
+                var hasAny = false, hasPdf = false;
+                for (var k = 0; k < inputs.length; k++) {
+                    var fs = inputs[k].files || [];
+                    if (fs.length) hasAny = true;
+                    for (var i = 0; i < fs.length; i++) {
+                        if (/\.pdf$/i.test(fs[i].name)) hasPdf = true;
+                    }
+                }
+                var nameOk = !!(nameEl && nameEl.value.trim() !== '');
+                var dateOk = !!(dateEl && dateEl.value.trim() !== '');
+                if (nameOk && dateOk && hasPdf) return;   // всё заполнено — пропускаем
+
+                e.preventDefault();
+                e.stopImmediatePropagation();   // глушим inline setFormAction('file')
+
+                // Подсвечиваем незаполненное.
+                if (nameEl) { nameEl.classList.toggle('is-invalid', !nameOk); nameEl.style.borderColor = nameOk ? '' : '#ef4444'; }
+                if (dateEl) { dateEl.classList.toggle('is-invalid', !dateOk); dateEl.style.borderColor = dateOk ? '' : '#ef4444'; }
+
+                var m = [];
+                if (!nameOk) m.push('название документа');
+                if (!dateOk) m.push('дату документа');
+                if (!hasPdf) m.push(hasAny
+                    ? 'PDF-файл (среди выбранных файлов его нет — именно он размечается в редакторе)'
+                    : 'PDF-файл');
+
+                var txt = document.getElementById('fs-file-required-text');
+                if (txt) txt.textContent = 'Заполните: ' + m.join(', ');
+                box.style.display = 'flex';
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+
+                // Скроллим к первому незаполненному, а не к блоку ошибки.
+                var first = (!nameOk && nameEl) || (!dateOk && dateEl) || box;
+                first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, true);
+        }
+
+        refresh();   // начальное состояние (дата предзаполнена, имя и PDF — нет)
+    })();
 </script>
