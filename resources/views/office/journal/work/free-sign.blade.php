@@ -405,14 +405,27 @@
                             <textarea name="ecp_r_text" class="form-control" rows="2"></textarea>
                         </div>
 
-                        {{-- Селект ключей ДОЛЖЕН быть в DOM: sign() читает testform.key.value,
-                             а E-IMZO заполняет его через cbChanged/uiLoadKey. --}}
-                        <div class="form-group">
-                            <label><i data-lucide="key-round"></i> {{ __('action.select_ecp_key') }}</label>
-                            <label id="message"></label>
-                            <select name="key" class="form-control form-control-primary"
-                                    style="width:100% !important;" onchange="cbChanged(this)"></select>
-                        </div>
+                        @if(($signType->doc_sign_type ?? 1) === 2)
+                            {{-- ═══ РЕЖИМ ЛОГИН (doc_sign_type = 2), как на штатных
+                                 страницах подписи: нажал — подписал, без пароля
+                                 (в штатном loginSignForm поля пароля тоже нет).
+                                 Отправка на свой эндпоинт free-sign.login-sign
+                                 (штатный login.sign.doc не знает free_sign_doc). ═══ --}}
+                            <div class="alert alert-light" style="font-size:12.5px; border:1px solid rgba(15,23,42,0.06);">
+                                <i data-lucide="log-in" style="width:14px;height:14px;"></i>
+                                Ваш тип подписи — через логин: нажмите «{{ __('action.to_sign') }} (LOGIN)»,
+                                и документ будет подписан от вашего имени
+                            </div>
+                        @else
+                            {{-- Селект ключей ДОЛЖЕН быть в DOM: sign() читает testform.key.value,
+                                 а E-IMZO заполняет его через cbChanged/uiLoadKey. --}}
+                            <div class="form-group">
+                                <label><i data-lucide="key-round"></i> {{ __('action.select_ecp_key') }}</label>
+                                <label id="message"></label>
+                                <select name="key" class="form-control form-control-primary"
+                                        style="width:100% !important;" onchange="cbChanged(this)"></select>
+                            </div>
+                        @endif
 
                         <input name="ecp_doc_type" value="free_sign_doc" hidden/>
                         <input name="ecp_doc_id" value="{{ $document->id }}" hidden/>
@@ -424,21 +437,70 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-dismiss="modal">{{ __('action.close') }}</button>
-                    <button type="button" class="btn btn-success" onclick="sign()">
-                        <span class="confirm_type">{{ __('action.to_sign') }}</span> (ERI)
-                    </button>
+                    @if(($signType->doc_sign_type ?? 1) === 2)
+                        <button type="button" class="btn btn-success" id="fsLoginSignBtn" onclick="fsLoginSign()">
+                            <span class="confirm_type">{{ __('action.to_sign') }}</span> (LOGIN)
+                        </button>
+                    @else
+                        <button type="button" class="btn btn-success" onclick="sign()">
+                            <span class="confirm_type">{{ __('action.to_sign') }}</span> (ERI)
+                        </button>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
 @endif
 
-@if(!empty($canSign) && $canSign)
+@if(!empty($canSign) && $canSign && ($signType->doc_sign_type ?? 1) !== 2)
     {{-- E-IMZO подключаем В КОНЦЕ content, как штатные страницы подписи
          (execution/sign/view.blade.php). КРИТИЧНО: e-imzo.blade.php делает
          window.onload = AppLoad — если подключить его в @push('scripts'),
-         onload уже отработает, селект ключей не заполнится, sign() выйдет молча. --}}
+         onload уже отработает, селект ключей не заполнится, sign() выйдет молча.
+         Для doc_sign_type=2 (логин) НЕ подключаем вовсе: ключи не нужны,
+         и у пользователя может не быть установленного E-IMZO клиента. --}}
     @include('e-imzo.e-imzo')
+@endif
+
+@if(!empty($canSign) && $canSign && ($signType->doc_sign_type ?? 1) === 2)
+    <script type="text/javascript">
+        /* Подпись логином (doc_sign_type = 2): нажал — подписал, без
+           пароля (как штатный loginSignForm). Свой эндпоинт
+           free-sign.login-sign, формат ответа и UX — как у штатного
+           (success 200 -> перезагрузка). Защита от даблклика — disable. */
+        function fsLoginSign() {
+            var $btn = $('#fsLoginSignBtn').prop('disabled', true);
+            $('.loadingGif').show();
+
+            $.ajax({
+                url: "{{ route('free-sign.login-sign') }}",
+                method: 'POST',
+                data: {
+                    _token:       $('meta[name="csrf-token"]').attr('content') || $('input[name="_token"]').val(),
+                    ecp_doc_id:   $('#fsSignForm input[name="ecp_doc_id"]').val(),
+                    ecp_doc_type: 'free_sign_doc',
+                    ecp_r_text:   $('#fsSignForm textarea[name="ecp_r_text"]').val()
+                }
+            }).done(function (response) {
+                $('.loadingGif').hide();
+                if (response && response.success === 200) {
+                    // Без alert: страница просто перезагружается, статусы
+                    // и штамп на PDF видны сразу.
+                    location.reload();
+                } else {
+                    $btn.prop('disabled', false);
+                    alert((response && response.message) || 'Ошибка подписи');
+                }
+            }).fail(function () {
+                $('.loadingGif').hide();
+                $btn.prop('disabled', false);
+                alert('Ошибка сети — попробуйте ещё раз');
+            });
+        }
+    </script>
+@endif
+
+@if(!empty($canSign) && $canSign)
 
     <script type="text/javascript">
         // Модалки переносим в body — иначе backdrop перекрывает (паттерн проекта).

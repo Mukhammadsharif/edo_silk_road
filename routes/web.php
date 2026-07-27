@@ -357,7 +357,8 @@ Route::group(['middleware' => ['auth']], function() {
             ->name('free-sign.version.show');
         Route::get('free-sign/{journal}/download/{which?}', [\App\Http\Controllers\FreeSign\FreeSignVersionController::class, 'download'])
             ->name('free-sign.download');
-
+        Route::post('free-sign/login-sign', [\App\Http\Controllers\ECP\SignDocImzoController::class, 'loginSignFreeSign'])
+            ->name('free-sign.login-sign');
         // Резолюция и исполнение внутри free-sign редактора.
         Route::post('free-sign/{journal}/resolution', [\App\Http\Controllers\FreeSign\FreeSignResolutionController::class, 'store'])
             ->name('free-sign.resolution.store');

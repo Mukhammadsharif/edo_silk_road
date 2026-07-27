@@ -57,7 +57,7 @@ class SignDocImzoController extends Controller
 
     public function signDocuments(Request $request): JsonResponse
     {
-        $isDemo     = Settings::get('is_demo', true);
+        $isDemo     = Settings::get('is_demo', false);
         $pkData     = $request->pk_data;
         $docId      = $request->ecp_doc_id;
         $docType    = $request->ecp_doc_type;
@@ -759,6 +759,79 @@ class SignDocImzoController extends Controller
         $name = $docName ?? (is_array($logType) ? ($logType['docName'] ?? '') : '');
 
         parent::createLog($docId, $actionId, $type, $name);
+    }
+
+    /* ═══════════ ПОДПИСЬ ЛОГИНОМ ДЛЯ FREE-SIGN (v46) ═══════════
+     | Аналог штатной подписи через логин (loginSignForm -> login.sign.doc):
+     | нажал — подписал, БЕЗ повторного ввода пароля (как в штатном
+     | loginSignForm, где поля пароля нет: авторизованная сессия и есть
+     | подтверждение). Эндпоинт СВОЙ: штатный обработчик не знает
+     | free_sign_doc, а весь маршрутный флоу free-sign и так наш —
+     | handleFreeSignDocument() (автор-сценарий, шаги, контроль
+     | исполнения, уведомления, штамп).
+     |
+     | В штампе subjectName = ФИО, serialNumber пуст — строка
+     | «Сертификат: ...» в StampRenderer опускается сама.
+     |
+     | СЕРВЕРНАЯ проверка типа: doc_sign_type должен быть 2 — форме
+     | не верим, тип мог сменить админ между рендером и отправкой.
+     */
+    public function loginSignFreeSign(Request $request): JsonResponse
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return $this->errorResponse(__('auth.failed'));
+        }
+
+        // Тип подписи пользователя (users.id! — не work_history.id).
+        $personal = \App\Models\Admin\UserPersonalInfo::where('user_id', $user->id)->first();
+
+        if ((int) ($personal->doc_sign_type ?? 1) !== 2) {
+            return $this->errorResponse(
+                'Ваш тип подписи — ЭЦП (E-IMZO). Подпишите документ электронным ключом.'
+            );
+        }
+
+        $docId = (int) $request->input('ecp_doc_id');
+        if (!$docId) {
+            return $this->errorResponse(__('message.document_deleted_system'));
+        }
+
+        // Синтетические «данные сертификата» для штампа.
+        $ecpData = [
+            'signingTime'  => now()->toIso8601String(),
+            'serialNumber' => '',                                  // криптосертификата нет
+            'subjectName'  => $personal->fullName() ?? ($user->name ?? ''),
+            'signMethod'   => 'LOGIN',
+        ];
+
+        \Illuminate\Support\Facades\Log::info('[free-sign] LOGIN-подпись', [
+            'doc_id'  => $docId,
+            'user_id' => $user->id,
+        ]);
+
+        /* КОНТРАКТ handleFreeSignDocument (как в signDocuments):
+         |   JsonResponse -> ОШИБКА, отдаём её как есть
+         |   null         -> УСПЕХ: пишем данные подписи и отдаём success
+         | (в v45/v46 здесь стоял `?? errorResponse('документ не найден')` —
+         |  из-за него УСПЕШНАЯ подпись показывала ошибку «документ не
+         |  найден», хотя шаг закрывался и штамп ставился)
+         */
+        $result = $this->handleFreeSignDocument($docId, $ecpData);
+
+        if ($result instanceof JsonResponse) {
+            return $result;
+        }
+
+        // Журнал подписей (user_signature_keys + signature_documents):
+        // serialNumber='LOGIN' — чтобы в журнале было видно, что подпись
+        // логином; на штампе PDF остаётся '' из $ecpData (строка
+        // «Сертификат: ...» опускается).
+        $this->saveSignatureData($docId, 'free_sign_doc', array_merge($ecpData, [
+            'serialNumber' => 'LOGIN',
+        ]));
+
+        return $this->successResponse();
     }
 
     private function successResponse(): JsonResponse
