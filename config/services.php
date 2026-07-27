@@ -41,7 +41,9 @@ return [
     ],
 
     'e-imzo-server' => [
-        'url' => env('E_IMZO_SERVER_URL', 'http://10.10.20.14:8080'),
+        'url'     => env('E_IMZO_SERVER_URL', 'http://10.1.1.94:8888'),
+        'real_ip' => env('E_IMZO_SERVER_REAL_IP', '91.240.14.157'),
+        'host'    => env('E_IMZO_SERVER_HOST', 'localhost'),
     ],
 
     'e-imzo-mobile' => [

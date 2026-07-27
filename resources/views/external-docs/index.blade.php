@@ -30,7 +30,8 @@
                         <i data-lucide="globe"></i>
                     </div>
                     <div class="header-text">
-                        <h1>Внешний документооборот</h1>
+                        @php $extTitle = ($mode ?? 'incoming') === 'outgoing' ? 'Исходящие (внешний ЭДО)' : 'Входящие (внешний ЭДО)'; @endphp
+                        <h1>{{ $extTitle }}</h1>
                         <p>{{ $org->name_ru ?? $org->name_uz }} · ИНН {{ $org->tax_number ?: 'не заполнен' }}</p>
                     </div>
                 </div>
@@ -39,13 +40,21 @@
                     @include('templates.alert')
                 </div>
 
+                @if(($mode ?? 'incoming') === 'outgoing')
+                    <div class="header-right" style="display:flex; align-items:center;">
+                        <a href="{{ route('external-docs.create') }}" class="btn-modern btn-primary">
+                            <i data-lucide="file-plus-2"></i> Создать документ
+                        </a>
+                    </div>
+                @endif
+
                 <nav class="breadcrumb-modern" style="margin-top: 1.5rem;">
                     <a href="{{ route('home') }}" class="breadcrumb-item">
                         <i data-lucide="home"></i>
                         <span>{{ __('menu.home') }}</span>
                     </a>
                     <i data-lucide="chevron-right" class="breadcrumb-separator"></i>
-                    <span class="breadcrumb-item active">Внешний документооборот</span>
+                    <span class="breadcrumb-item active">{{ $extTitle }}</span>
                 </nav>
             </div>
         </div>
@@ -67,7 +76,8 @@
                     </div>
                 </div>
 
-                <form action="{{ route('external-docs.index') }}" method="get" class="filters-form-modern">
+                @php $extRoute = ($mode ?? 'incoming') === 'outgoing' ? 'external-docs.outgoing' : 'external-docs.index'; @endphp
+                <form action="{{ route($extRoute) }}" method="get" class="filters-form-modern">
                     <div class="advanced-filters-modern">
                         <div class="filter-item">
                             <label>
@@ -87,7 +97,7 @@
                             <button type="submit" class="btn-modern btn-primary">
                                 <i data-lucide="search"></i> {{ __('action.search') }}
                             </button>
-                            <a href="{{ route('external-docs.index') }}" class="btn-modern btn-secondary">
+                            <a href="{{ route($extRoute) }}" class="btn-modern btn-secondary">
                                 <i data-lucide="refresh-ccw"></i> {{ __('action.clear') }}
                             </a>
                             @if($tinFilled && !$authorized && $canSign)

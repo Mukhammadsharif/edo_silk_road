@@ -72,7 +72,7 @@
                                 <i data-lucide="briefcase"></i>
                                 <span>{{ __('field.department') }}</span>
                             </div>
-                            <div class="info-value">{{ $user->currentWork->department ?
+                            <div class="info-value">{{ $user->currentWork?->department ?
                                         $user->currentWork->department->lang($user->currentWork->department->id) :'-' }}</div>
                         </div>
 
@@ -81,7 +81,7 @@
                                 <i data-lucide="user-check"></i>
                                 <span>{{ __('field.user_posts') }}</span>
                             </div>
-                            <div class="info-value">{{ $user->currentWork->position ?
+                            <div class="info-value">{{ $user->currentWork?->position ?
                                 $user->currentWork->position->lang($user->currentWork->position->id) : '-' }}</div>
                         </div>
 

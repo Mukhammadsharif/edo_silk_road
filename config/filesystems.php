@@ -88,11 +88,24 @@ return [
             'host'     => env('FTP_HOST'),
             'username' => env('FTP_USERNAME'),
             'password' => env('FTP_PASSWORD'),
-            'root'     => '/files',
-            'port'     => 21,
-            'passive'  => true,
-            'ssl'      => false,
-            'timeout'  => 30,
+            // Своя переменная: диск 'ftp' выше использует FTP_ROOT с другим
+            // дефолтом ('/'), поэтому одной переменной их не настроить независимо.
+            // FTP_ROOT оставлен как запасной вариант для совместимости.
+            //
+            // Если FTP-аккаунт логинится сразу внутрь каталога файлов, здесь
+            // нужно указать '/', иначе Flysystem падает с
+            // UnableToResolveConnectionRoot: /files
+            'root'     => env('FTP_FILES_ROOT', env('FTP_ROOT', '/files')),
+            'port'     => (int) env('FTP_PORT', 21),
+            'passive'  => (bool) env('FTP_PASSIVE', true),
+            'ssl'      => (bool) env('FTP_SSL', false),
+            'timeout'  => (int) env('FTP_TIMEOUT', 30),
+
+            // Без throw=true Storage::put() при сбое FTP молча вернёт false,
+            // код продолжится и создаст запись в document_files для файла,
+            // которого на FTP нет: пользователь видит «сохранено», а при
+            // открытии получает ошибку. Лучше явная ошибка, чем потеря файла.
+            'throw'    => (bool) env('FTP_THROW', true),
         ],
     ],
 

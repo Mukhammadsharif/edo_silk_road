@@ -71,7 +71,7 @@ class HrEmpOrderController extends Controller
                     $orgUnitId = $this->organizationId();
 
                     // Другие активные IT_Admin в этой же org
-                    $otherOrgUserIds = User::where('org_unit_id', $orgUnitId)
+                    $otherOrgUserIds = User::inOrganization($orgUnitId)
                         ->where('status', 1)
                         ->where('id', '!=', $targetUser->id)
                         ->pluck('id')
@@ -135,10 +135,16 @@ class HrEmpOrderController extends Controller
         if ($request->dep_id) {
             $nextYear = Carbon::now()->addYear()->format('Y-m-d');
 
-            // Деактивируем только work_history В ТЕКУЩЕЙ организации.
+            // Организация нового назначения определяется отделом из приказа.
+            // Гасить старые записи нужно в ЭТОЙ ЖЕ организации, иначе (когда
+            // админ работает из другой org) старая запись оставалась активной
+            // и в интерфейсе продолжала показываться прежняя должность.
+            $targetOrgId = $this->orgIdForDepartment($request->dep_id);
+
+            // Деактивируем work_history только в организации назначения.
             // Если юзер числится в нескольких org — другие НЕ должны отключаться.
             $deactivateLastWorkUser = UserWorkHistory::where('user_id', $request->user_id)
-                ->where('org_id', $this->organizationId())
+                ->where('org_id', $targetOrgId)
                 ->where('status', 1)
                 ->get();
             if ($deactivateLastWorkUser) {
@@ -158,7 +164,7 @@ class HrEmpOrderController extends Controller
             $createWork->from_date = date('Y-m-d', strtotime($request->from_date));
             $createWork->to_date = $nextYear;
             $createWork->status = 1;
-            $createWork->org_id = $this->organizationId();
+            $createWork->org_id = $targetOrgId;
             $createWork->save();
 
             $userDepartment = Department::find($request->dep_id);

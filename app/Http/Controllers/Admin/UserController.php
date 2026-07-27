@@ -50,7 +50,7 @@ class UserController extends Controller
         if ($isSuperUser) {
             $search = User::orderBy('id', 'DESC');
         } else {
-            $search = User::where('org_unit_id', $this->organizationId())->orderBy('id', 'DESC');
+            $search = User::inOrganization($this->organizationId())->orderBy('id', 'DESC');
         }
 
         if (!in_array($this->admin, $this->authActiveUserRoleNames())) {
@@ -285,6 +285,7 @@ class UserController extends Controller
 
             $createWork = new UserWorkHistory();
             $createWork->user_id = $createUser->id;
+            $createWork->org_id = $this->orgIdForDepartment($request->dep_id);
             $createWork->dep_id = $request->dep_id;
             $createWork->post_id = $request->post_id;
             $createWork->from_date = Carbon::now();
@@ -400,7 +401,7 @@ class UserController extends Controller
                     $userOrgId = $user->org_unit_id;
 
                     // Считаем других активных юзеров с IT_Admin в этой же org
-                    $orgUserIds = User::where('org_unit_id', $userOrgId)
+                    $orgUserIds = User::inOrganization($userOrgId)
                         ->where('status', 1)
                         ->where('id', '!=', $user->id)
                         ->pluck('id')
@@ -454,14 +455,31 @@ class UserController extends Controller
         $user = User::where('id', $id)->where('user_hash', $hash)->first();
         if ($user) {
 
-            UserWorkHistory::where('user_id', $id)->where('status', 1)->update(['status' => 2]);
+            // Организация, в рамках которой меняется должность.
+            // Берём из отдела (надёжный источник, не зависит от организации админа),
+            // иначе — из текущей активной записи, иначе — из самого пользователя.
+            $orgId = $this->orgIdForDepartment($request->dep_id)
+                ?? UserWorkHistory::where('user_id', $id)->where('status', 1)
+                ->orderBy('id', 'DESC')->value('org_id')
+                ?? $user->org_unit_id;
 
-            UserWorkHistory::where('user_id', $id)->orderBy('id', 'DESC')->take(1)->update(['to_date' => date('Y-m-d', strtotime(now()))]);
+            // Закрываем активные записи ТОЛЬКО в этой организации,
+            // чтобы не сбросить должности пользователя в других организациях.
+            UserWorkHistory::where('user_id', $id)
+                ->where('status', 1)
+                ->where('org_id', $orgId)
+                ->update(['status' => 2]);
+
+            UserWorkHistory::where('user_id', $id)
+                ->where('org_id', $orgId)
+                ->orderBy('id', 'DESC')->take(1)
+                ->update(['to_date' => date('Y-m-d', strtotime(now()))]);
 
             $nextYear = Carbon::now()->addYear()->format('Y-m-d');
 
             $createWork = new UserWorkHistory();
             $createWork->user_id = $id;
+            $createWork->org_id = $orgId;   // без org_id запись не находится по текущей организации
             $createWork->dep_id = $request->dep_id;
             $createWork->post_id = $request->post_id;
             $createWork->from_date = $request->user_position_from_date;

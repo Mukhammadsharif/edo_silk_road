@@ -11,6 +11,7 @@ use App\Models\Admin\UserWorkHistory;
 use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
@@ -70,10 +71,25 @@ class User extends Authenticatable
         }
         return $this->username ?? '';
     }
-    public function currentWork(): BelongsTo
+    /**
+     * Текущее место работы сотрудника (отдел + должность).
+     *
+     * Было объявлено как belongsTo(UserWorkHistory, 'id', 'user_id') без фильтра
+     * по статусу. Из-за этого:
+     *   1) возвращалась в том числе ЗАКРЫТАЯ запись (status = 2), поэтому после
+     *      приказа о переводе везде оставалась старая должность;
+     *   2) при eager loading (with('currentWork')) belongsTo строит словарь по
+     *      owner key и оставляет ПОСЛЕДНЮЮ строку выборки — с сортировкой DESC
+     *      это самая СТАРАЯ запись.
+     *
+     * hasOne + status = 1 + сортировка по убыванию id даёт актуальную запись
+     * одинаково и при ленивой, и при жадной загрузке.
+     */
+    public function currentWork(): HasOne
     {
-        return $this->belongsTo(UserWorkHistory::class, 'id', 'user_id')
-            ->orderBy('id', 'DESC');
+        return $this->hasOne(UserWorkHistory::class, 'user_id', 'id')
+            ->where('user_work_histories.status', 1)
+            ->orderByDesc('user_work_histories.id');
     }
 
     public function userWorkIDs()
@@ -289,6 +305,29 @@ class User extends Authenticatable
     public function canManageBoards(): bool
     {
         return $this->hasRole(['Super_Admin', 'IT_Admin', 'Director']);
+    }
+
+    /**
+     * Сотрудники организации.
+     *
+     * ВАЖНО: users.org_unit_id — это ТЕКУЩАЯ ВЫБРАННАЯ организация (указатель,
+     * который меняет переключатель организаций), а не членство. Сотрудник может
+     * работать в нескольких организациях одновременно — членство хранится в
+     * user_work_histories (user_id + org_id + status=1).
+     *
+     * Поэтому для списков сотрудников и подсчёта слотов нужно использовать
+     * этот scope, иначе при переключении на другую организацию сотрудник
+     * «исчезает» из первой и её слот освобождается.
+     */
+    public function scopeInOrganization($query, $orgId)
+    {
+        return $query->whereExists(function ($q) use ($orgId) {
+            $q->selectRaw('1')
+                ->from('user_work_histories')
+                ->whereColumn('user_work_histories.user_id', 'users.id')
+                ->where('user_work_histories.org_id', $orgId)
+                ->where('user_work_histories.status', 1);
+        });
     }
 
 }

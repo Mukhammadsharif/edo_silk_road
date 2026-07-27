@@ -622,6 +622,8 @@ Route::middleware('auth')->group(function () {
     Route::prefix('external-docs')->name('external-docs.')->middleware(['auth', \App\Http\Middleware\EnsureDidoxAccess::class])->group(function () {
         Route::get('/index',                     [ExternalDocFlowController::class, 'index'])->name('index');
         Route::get('/outgoing',             [ExternalDocFlowController::class, 'outgoing'])->name('outgoing');
+        Route::get('/create',               [ExternalDocFlowController::class, 'createForm'])->name('create');
+        Route::post('/create',              [ExternalDocFlowController::class, 'storeOutgoing'])->name('store');
         Route::get('/approvals',            [ExternalDocFlowController::class, 'approvals'])->name('approvals');
         Route::post('/auth/password',       [ExternalDocFlowController::class, 'loginPassword'])->name('auth.password');
         Route::post('/auth/ecp',            [ExternalDocFlowController::class, 'loginEcp'])->name('auth.ecp');
@@ -637,6 +639,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/timestamp',            [ExternalDocFlowController::class, 'timestamp'])->name('timestamp');
         Route::post('/signature-join',       [ExternalDocFlowController::class, 'signatureJoin'])->name('signature-join');
         Route::get('/{id}/document-base64',  [ExternalDocFlowController::class, 'documentBase64'])->whereNumber('id')->name('document-base64');
+        Route::get('/{id}/outgoing-sign-data', [ExternalDocFlowController::class, 'outgoingSignData'])->whereNumber('id')->name('outgoing-sign-data');
         Route::get('/{id}/tosign-value',     [ExternalDocFlowController::class, 'toSignValue'])->whereNumber('id')->name('tosign-value');
         Route::post('/{id}/tosign',          [ExternalDocFlowController::class, 'toSign'])->whereNumber('id')->name('tosign');
         Route::post('/{id}/sign',            [ExternalDocFlowController::class, 'sign'])->whereNumber('id')->name('sign');

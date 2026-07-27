@@ -121,9 +121,9 @@ class RoleMenu extends Model
                     })->count(),
                 'ALL_DOCS' => $isSuperUser ?
                     DocumentJournals::whereNotIn('status', [1, 4])->count() :
-                    DocumentJournals::whereNotIn('status', [1, 4])->where('org_unit_id', self::authActiveUser()->user->org_unit_id)->count(),
+                    DocumentJournals::whereNotIn('status', [1, 4])->where('org_unit_id', (self::authActiveUser()?->user?->org_unit_id ?? Auth::user()?->org_unit_id))->count(),
                 'ALL_PRT_DOCS' => $isSuperUser ? ProtocolDocument::whereNotIn('status', [1])->where('status', '!=', 6)->count()
-                    : ProtocolDocument::whereNotIn('status', [1])->where('org_id', self::authActiveUser()->user->org_unit_id)->where('status', '!=', 6)->count(),
+                    : ProtocolDocument::whereNotIn('status', [1])->where('org_id', (self::authActiveUser()?->user?->org_unit_id ?? Auth::user()?->org_unit_id))->where('status', '!=', 6)->count(),
                 'DOC_EXEC' => DocumentExecutionSteps::whereIn('to_user', $workIds)
                     ->whereHas('role', function ($query) { $query->where('doc_code', 'EXEC'); })
                     ->whereIn('status', [2, 4])
@@ -143,7 +143,7 @@ class RoleMenu extends Model
                 'DIDOX' => \App\Models\Didox\DidoxDocumentApprover::where('user_id', Auth::id())
                     ->where('status', 'pending')
                     ->whereHas('document', function ($query) {
-                        $query->where('org_unit_id', self::authActiveUser()->user->org_unit_id ?? 0);
+                        $query->where('org_unit_id', (self::authActiveUser()?->user?->org_unit_id ?? Auth::user()?->org_unit_id) ?? 0);
                     })->count(),
                 'PRT_HR_S' => ProtocolDocument::whereHas('docType', function ($query){
                     $query->where('doc_code', 'PRT_HR');
@@ -183,7 +183,7 @@ class RoleMenu extends Model
                     ->where('status', 2)->count(),
                 'PRT_HR_EMP' => ProtocolDocMember::where('role_id', 4)->whereIn('user_id', $workIds)
                     ->where('status', 2)->count(),
-                'DOC_CONTROL' => DocumentJournals::where('org_unit_id', self::authActiveUser()->user->org_unit_id)->whereIn('status', [7, 11])->whereIn('j_type', $controls)->count(),
+                'DOC_CONTROL' => DocumentJournals::where('org_unit_id', (self::authActiveUser()?->user?->org_unit_id ?? Auth::user()?->org_unit_id))->whereIn('status', [7, 11])->whereIn('j_type', $controls)->count(),
                 'MESS' => DB::table('messages')
                     ->leftJoin('message_users', 'messages.id', '=', 'message_users.message_id')
                     ->leftJoin('message_forwards', 'messages.id', '=', 'message_forwards.message_id')
