@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Office;
 
 use App\Http\Controllers\Controller;
-use App\Models\Document\DocumentExecutionSteps;
 use App\Services\FreeSign\FreeSignRouteService;
 use App\Models\Admin\StatusList;
 use App\Models\Admin\UserPersonalInfo;
 use App\Models\Comment\DocumentComment;
 use App\Models\Comment\DocumentCommentUser;
+use App\Models\Document\DocumentExecutionSteps;
 use App\Models\Document\DocumentFiles;
 use App\Models\Document\DocumentJournals;
 use App\Models\Document\DocumentOrganizations;
@@ -199,7 +199,7 @@ class JournalController extends Controller
 
         $journal = JournalTypes::where('org_id', $this->organizationId())->where('doc_code', 'BASE_INCOMING')->first();
 
-        $doc_organizations = DocumentOrganizations::where('for_doc_type', $journal?->id)->where('status', 1)->get();
+        $doc_organizations = DocumentOrganizations::where('for_doc_type', $journal->id)->where('status', 1)->get();
 
         return view('office.journal.inbox.index',
             compact('models', 'doc_name', 'doc_org', 'status', 'date_from', 'date_till','statusNames', 'default_status',
@@ -280,7 +280,7 @@ class JournalController extends Controller
 
         $journal = JournalTypes::where('org_id', $this->organizationId())->where('doc_code', 'BASE_OUTGOING')->first();
 
-        $doc_organizations = DocumentOrganizations::where('for_doc_type', $journal?->id)->where('status', 1)->get();
+        $doc_organizations = DocumentOrganizations::where('for_doc_type', $journal->id)->where('status', 1)->get();
 
         return view('office.journal.sent.index',
             compact('models', 'doc_name', 'doc_org', 'status', 'date_from', 'date_till','statusNames', 'default_status',
@@ -398,9 +398,9 @@ class JournalController extends Controller
             $join->on('document_comments.id', '=', 'document_comment_users.comment_id')->where('document_comments.doc_type', 1);
         })->whereIn('document_comment_users.user_id', $this->authActiveUserIds())->where('document_comment_users.is_read', 1)
             ->update([
-                'document_comment_users.is_read' => 2,
-                'document_comment_users.is_read_date' => Carbon::now()
-            ]);
+            'document_comment_users.is_read' => 2,
+            'document_comment_users.is_read_date' => Carbon::now()
+        ]);
 
         $model = OnlyOfficeDoc::where('doc_type', 'DOC')->where('doc_id', $journal->doc_id)->first();
 
@@ -776,7 +776,7 @@ class JournalController extends Controller
         return view('office.journal.inbox.view', compact('authUser','journal', 'document', 'documentFiles',
             'directorDocument','directorResolution','selectedPerformers', 'selectedAddPerformers',
             'agreement_users', 'replyDocuments', 'qrKey', 'signer', 'signType', 'execution_step_ids', 'documentComments', 'comment_inputs',
-            'type'));
+             'type'));
     }
 
     public function viewSent($id, $hash): Factory|View|Application

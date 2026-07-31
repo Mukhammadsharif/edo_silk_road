@@ -12,8 +12,6 @@ use App\Models\Admin\UserPersonalInfo;
 use App\Models\Admin\UserWorkHistory;
 use App\Models\Document\DocumentExecutionSteps;
 use App\Models\Document\DocumentJournals;
-use App\Services\Organizations\DefaultOrgStructureSeeder;
-use App\Traits\HandlesAgreementFlow;
 use App\Models\Document\DocumentReplyComments;
 use App\Models\Document\DocumentResolutions;
 use App\Models\ECP\SignatureDocuments;
@@ -41,8 +39,6 @@ use Ramsey\Uuid\Uuid;
 
 class SignDocImzoController extends Controller
 {
-    use HandlesAgreementFlow;
-
     private array $workingDocTypes = [
         'send_to_create_res', 'send_to_agreement', 'send_to_sign',
         'from_signer_to_ag', 'from_signer_to_c_res', 'from_ag_to_res',
@@ -61,7 +57,7 @@ class SignDocImzoController extends Controller
 
     public function signDocuments(Request $request): JsonResponse
     {
-        $isDemo     = Settings::get('is_demo', true);
+        $isDemo     = Settings::get('is_demo', false);
         $pkData     = $request->pk_data;
         $docId      = $request->ecp_doc_id;
         $docType    = $request->ecp_doc_type;
@@ -158,9 +154,7 @@ class SignDocImzoController extends Controller
             case 'send_to_agreement':
             case 'send_to_ag_out_doc':
                 $journal->update(['status' => 6]);
-                $this->activateInitialAgreement($journal, $steps['agreement'], function ($stepsToActivate) use ($urls, $meta) {
-                    $this->activateSteps($stepsToActivate, 2, $urls['agreement'], $meta);
-                });
+                $this->activateSteps($steps['agreement'], 2, $urls['agreement'], $meta);
                 $this->logAction($docId, 4, $meta);
                 break;
 
@@ -173,9 +167,7 @@ class SignDocImzoController extends Controller
             case 'from_signer_to_ag':
                 $this->updateStepStatus($steps['sign'], 5);
                 $journal->update(['status' => 6]);
-                $this->activateInitialAgreement($journal, $steps['agreement'], function ($stepsToActivate) use ($urls, $meta) {
-                    $this->activateSteps($stepsToActivate, 2, $urls['agreement'], $meta);
-                });
+                $this->activateSteps($steps['agreement'], 2, $urls['agreement'], $meta);
                 $this->createReplyComment($steps['sign'], $resText, 'DOC_SIGNED');
                 $this->logAction($docId, 4, $meta);
                 break;
@@ -194,14 +186,7 @@ class SignDocImzoController extends Controller
                 $this->updateStepStatus($currentAgreement, 5);
                 $this->createReplyComment($currentAgreement, $resText, 'DOC_SIGNED');
 
-                // Свежая выборка шагов согласования после подписания текущего.
-                $freshAgreement = $this->getSteps($journal, 'AGREE');
-
-                $agreementComplete = $this->advanceAgreement($journal, $freshAgreement, function ($stepsToActivate) use ($urls, $meta) {
-                    $this->activateSteps($stepsToActivate, 2, $urls['agreement'], $meta);
-                });
-
-                if ($agreementComplete) {
+                if ($steps['agreement']->count() - $signedAgreements->count() === 1) {
                     if ($isInfDoc) $journal->update(['status' => 10]);
                     $this->handleSendToResolution($journal, $steps['resolution'], $hasControl, $controllers, $urls, $meta);
                     $this->logAction($docId, 28, $meta);
@@ -776,6 +761,79 @@ class SignDocImzoController extends Controller
         parent::createLog($docId, $actionId, $type, $name);
     }
 
+    /* ═══════════ ПОДПИСЬ ЛОГИНОМ ДЛЯ FREE-SIGN (v46) ═══════════
+     | Аналог штатной подписи через логин (loginSignForm -> login.sign.doc):
+     | нажал — подписал, БЕЗ повторного ввода пароля (как в штатном
+     | loginSignForm, где поля пароля нет: авторизованная сессия и есть
+     | подтверждение). Эндпоинт СВОЙ: штатный обработчик не знает
+     | free_sign_doc, а весь маршрутный флоу free-sign и так наш —
+     | handleFreeSignDocument() (автор-сценарий, шаги, контроль
+     | исполнения, уведомления, штамп).
+     |
+     | В штампе subjectName = ФИО, serialNumber пуст — строка
+     | «Сертификат: ...» в StampRenderer опускается сама.
+     |
+     | СЕРВЕРНАЯ проверка типа: doc_sign_type должен быть 2 — форме
+     | не верим, тип мог сменить админ между рендером и отправкой.
+     */
+    public function loginSignFreeSign(Request $request): JsonResponse
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return $this->errorResponse(__('auth.failed'));
+        }
+
+        // Тип подписи пользователя (users.id! — не work_history.id).
+        $personal = \App\Models\Admin\UserPersonalInfo::where('user_id', $user->id)->first();
+
+        if ((int) ($personal->doc_sign_type ?? 1) !== 2) {
+            return $this->errorResponse(
+                'Ваш тип подписи — ЭЦП (E-IMZO). Подпишите документ электронным ключом.'
+            );
+        }
+
+        $docId = (int) $request->input('ecp_doc_id');
+        if (!$docId) {
+            return $this->errorResponse(__('message.document_deleted_system'));
+        }
+
+        // Синтетические «данные сертификата» для штампа.
+        $ecpData = [
+            'signingTime'  => now()->toIso8601String(),
+            'serialNumber' => '',                                  // криптосертификата нет
+            'subjectName'  => $personal->fullName() ?? ($user->name ?? ''),
+            'signMethod'   => 'LOGIN',
+        ];
+
+        \Illuminate\Support\Facades\Log::info('[free-sign] LOGIN-подпись', [
+            'doc_id'  => $docId,
+            'user_id' => $user->id,
+        ]);
+
+        /* КОНТРАКТ handleFreeSignDocument (как в signDocuments):
+         |   JsonResponse -> ОШИБКА, отдаём её как есть
+         |   null         -> УСПЕХ: пишем данные подписи и отдаём success
+         | (в v45/v46 здесь стоял `?? errorResponse('документ не найден')` —
+         |  из-за него УСПЕШНАЯ подпись показывала ошибку «документ не
+         |  найден», хотя шаг закрывался и штамп ставился)
+         */
+        $result = $this->handleFreeSignDocument($docId, $ecpData);
+
+        if ($result instanceof JsonResponse) {
+            return $result;
+        }
+
+        // Журнал подписей (user_signature_keys + signature_documents):
+        // serialNumber='LOGIN' — чтобы в журнале было видно, что подпись
+        // логином; на штампе PDF остаётся '' из $ecpData (строка
+        // «Сертификат: ...» опускается).
+        $this->saveSignatureData($docId, 'free_sign_doc', array_merge($ecpData, [
+            'serialNumber' => 'LOGIN',
+        ]));
+
+        return $this->successResponse();
+    }
+
     private function successResponse(): JsonResponse
     {
         return response()->json([
@@ -970,7 +1028,6 @@ class SignDocImzoController extends Controller
             $isOrg = isset($subjectName['O']) && isset($subjectName['1.2.860.3.16.1.1']);
             $organization = null;
             $department = null;
-            $defaultPosition = null;
 
             if ($isOrg) {
                 // Проверка наличия tax_number
@@ -998,10 +1055,7 @@ class SignDocImzoController extends Controller
                     'meta_data' => null,
                 ]);
 
-                // Дефолтные подразделения и должности с корректными переводами (4 формы).
-                $seeded = (new DefaultOrgStructureSeeder())->seed($organization);
-                $department = $seeded['department'];
-                $defaultPosition = $seeded['position'];
+                $department = $this->createDepartment($org_code, $organization->id);
             }
 
             // Проверка наличия обязательных полей для создания пользователя
@@ -1028,12 +1082,12 @@ class SignDocImzoController extends Controller
                 'email' => strtolower($subjectName['Name']) . '_' . strtolower($subjectName['SURNAME']) . '@edoline.uz',
                 'password' => Hash::make($jsonDecodeBack['subjectCertificateInfo']['serialNumber']),
                 'user_hash' => $this->uniqueId(),
-                'org_unit_id' => $isOrg ? $organization->id : null,
+                'org_unit_id' => $isOrg ? $organization->id : 1,
                 'status' => 1
             ]);
 
             $this->createUserPersonalInfo($user->id, $subjectName, $pin);
-            $this->createUserWorkHistory($user->id, $isOrg, $organization, $department, $defaultPosition);
+            $this->createUserWorkHistory($user->id, $isOrg, $organization, $department);
             $this->assignUserRole($user, $isOrg);
 
             if ($organization) {
@@ -1113,15 +1167,15 @@ class SignDocImzoController extends Controller
         $officeEmpPersonal->save();
     }
 
-    private function createUserWorkHistory($userId, $isOrg, $organization, $department, $position = null)
+    private function createUserWorkHistory($userId, $isOrg, $organization, $department)
     {
         $nextYear = Carbon::now()->addYear()->format('Y-m-d');
 
         $officeEmpWork = new UserWorkHistory();
         $officeEmpWork->user_id = $userId;
-        $officeEmpWork->org_id = $isOrg ? $organization->id : null;
-        $officeEmpWork->dep_id = $isOrg ? $department->id : null;
-        $officeEmpWork->post_id = $isOrg ? ($position?->id ?? 1) : null;
+        $officeEmpWork->org_id = $isOrg ? $organization->id : 1;
+        $officeEmpWork->dep_id = $isOrg ? $department->id : 2;
+        $officeEmpWork->post_id = $isOrg ? 1 : 3;
         $officeEmpWork->from_date = Carbon::now();
         $officeEmpWork->to_date = $nextYear;
         $officeEmpWork->status = 1;
