@@ -127,6 +127,21 @@
 
             <!-- Users Table Card -->
             <div class="table-card-modern">
+                {{-- Ручное создание пользователя — только супер-админу.
+                     Остальные принимают сотрудников через заявки на вступление. --}}
+                @if($isSuperUser)
+                    <div class="filters-header">
+                        <div class="filters-title">
+                            <i data-lucide="users"></i>
+                            <span>{{ __('menu.users') }}</span>
+                        </div>
+                        <a href="{{ route('users.create') }}" class="btn-modern btn-primary" style="width: auto;">
+                            <i data-lucide="user-plus"></i>
+                            {{ __('action.create') }}
+                        </a>
+                    </div>
+                @endif
+
                 <div class="table-wrapper-modern">
                     <table class="modern-table">
                         <thead>

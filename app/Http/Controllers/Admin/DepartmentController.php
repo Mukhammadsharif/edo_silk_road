@@ -25,11 +25,22 @@ class DepartmentController extends Controller
             return  redirect()->route('departments.index', ['id' => $this->organizationId()]);
         }
 
-        $s_text = $request->input('s_text');
+        $s_text   = $request->input('s_text');
+        $s_status = $request->input('s_status');
 
         $parentOrganizations = OrganizationUnits::where('parent_id', 0)->where('status', 1)->get();
 
-        $search = OrganizationUnits::where('status', 1);
+        $search = OrganizationUnits::query();
+
+        /* Статусы организации: 1 Faol, 2 Faol emas, 3 O'chirilgan.
+         | По умолчанию показываем активные и неактивные — удалённые скрыты.
+         | Явный выбор в фильтре имеет приоритет: выбрав «O'chirilgan»,
+         | супер-админ увидит удалённые и сможет их восстановить. */
+        if ($s_status) {
+            $search->where('status', $s_status);
+        } else {
+            $search->whereIn('status', [1, 2]);
+        }
 
         if (trim((string) $s_text)) {
             $search->where(function ($q) use ($s_text) {
@@ -45,10 +56,11 @@ class DepartmentController extends Controller
         $organizations = $search->paginate(25);
 
         $organizations->appends([
-            's_text' => $s_text
+            's_text'   => $s_text,
+            's_status' => $s_status,
         ]);
 
-        return view('admin.organizations.index', compact('parentOrganizations', 'organizations', 's_text'))
+        return view('admin.organizations.index', compact('parentOrganizations', 'organizations', 's_text', 's_status'))
             ->with('i', (request()->input('page', 1) - 1) * 25);
     }
 
@@ -152,6 +164,95 @@ class DepartmentController extends Controller
         return redirect()->route('organizations.index')
             ->with('success', __('message.dep_updated'));
     }
+
+    /**
+     * DELETE /admin/organizations/destroy/{id} — удаление организации (только Super_Admin).
+     *
+     * Удаление МЯГКОЕ: status = 3 (O'chirilgan). Физически строку не трогаем —
+     * на организацию завязаны документы, журналы, подписки, хранилище и токены
+     * Didox, и каскадное удаление уничтожило бы историю документооборота.
+     * Удалённую организацию видно через фильтр «O'chirilgan» и можно вернуть.
+     *
+     * Блокируем удаление, если внутри ещё есть активные сотрудники или живые
+     * дочерние организации — иначе люди остались бы прикреплены к несуществующей
+     * структуре. Сначала переведите их, потом удаляйте.
+     */
+    public function organizationsDestroy($id)
+    {
+        if (!$this->isSuperUser()) {
+            return response()->json([
+                'status'  => 403,
+                'message' => "Ruxsat yo'q.",
+            ], 403);
+        }
+
+        $model = OrganizationUnits::find($id);
+
+        if (!$model) {
+            return response()->json(['status' => 404, 'message' => __('field.not_found')], 404);
+        }
+
+        // Активные сотрудники организации.
+        $usersCount = UserWorkHistory::where('org_id', $model->id)
+            ->where('status', 1)
+            ->distinct('user_id')
+            ->count('user_id');
+
+        if ($usersCount > 0) {
+            return response()->json([
+                'status'  => 422,
+                'message' => "Tashkilotda {$usersCount} ta faol xodim bor. Avval ularni boshqa tashkilotga o'tkazing.",
+            ], 422);
+        }
+
+        // Живые дочерние организации.
+        $childrenCount = OrganizationUnits::where('parent_id', $model->id)
+            ->whereIn('status', [1, 2])
+            ->count();
+
+        if ($childrenCount > 0) {
+            return response()->json([
+                'status'  => 422,
+                'message' => "Tashkilotda {$childrenCount} ta quyi tashkilot bor. Avval ularni o'chiring.",
+            ], 422);
+        }
+
+        $model->update(['status' => 3]);
+
+        return response()->json([
+            'status'  => 200,
+            'message' => "Tashkilot o'chirildi.",
+        ]);
+    }
+
+    /**
+     * POST /admin/organizations/restore/{id} — вернуть удалённую организацию (Super_Admin).
+     * Возвращает status = 1 (Faol). Дочерние не трогаем: они восстанавливаются
+     * отдельно и осознанно.
+     */
+    public function organizationsRestore($id)
+    {
+        if (!$this->isSuperUser()) {
+            return response()->json([
+                'status'  => 403,
+                'message' => "Ruxsat yo'q.",
+            ], 403);
+        }
+
+        $model = OrganizationUnits::find($id);
+
+        if (!$model) {
+            return response()->json(['status' => 404, 'message' => __('field.not_found')], 404);
+        }
+
+        $model->update(['status' => 1]);
+
+        return response()->json([
+            'status'  => 200,
+            'message' => 'Tashkilot tiklandi.',
+        ]);
+    }
+
     public function departmentsIndex(Request $request, $id)
     {
         //

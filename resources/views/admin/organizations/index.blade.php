@@ -55,7 +55,7 @@
                 <form action="{{ route('organizations.index') }}" method="post" class="filters-form-modern">
                     @csrf
                     <div class="filters-grid">
-                        <div class="filter-item" style="grid-column: span 2;">
+                        <div class="filter-item">
                             <label>
                                 <i data-lucide="search"></i>
                                 {{ __('action.search') }}
@@ -65,6 +65,19 @@
                                    value="{{ $s_text ?? '' }}"
                                    class="form-control-modern"
                                    placeholder="{{ __('field.search_placeholder_tin_and_name') }}">
+                        </div>
+
+                        <div class="filter-item">
+                            <label>
+                                <i data-lucide="activity"></i>
+                                {{ __('field.status') }}
+                            </label>
+                            <select name="s_status" class="form-control-modern">
+                                <option value="">{{ __('field.status_all') }}</option>
+                                <option value="1" {{ ($s_status ?? '') == '1' ? 'selected' : '' }}>{{ __('status.active') }}</option>
+                                <option value="2" {{ ($s_status ?? '') == '2' ? 'selected' : '' }}>{{ __('status.inactive') }}</option>
+                                <option value="3" {{ ($s_status ?? '') == '3' ? 'selected' : '' }}>{{ __('status.delete') }}</option>
+                            </select>
                         </div>
 
                         <div class="filter-actions">
@@ -116,11 +129,11 @@
                             <i data-lucide="list"></i>
                             <span>{{ __('menu.organizations') }} {{ __('menu.list') }}</span>
                         </div>
-{{--                        <a href="{{ route('organizations.create') }}" class="btn-modern btn-primary"--}}
-{{--                           style="width: auto;">--}}
-{{--                            <i data-lucide="circle-plus"></i>--}}
-{{--                            {{ __('action.create') }}--}}
-{{--                        </a>--}}
+                        <a href="{{ route('organizations.create') }}" class="btn-modern btn-primary"
+                           style="width: auto;">
+                            <i data-lucide="circle-plus"></i>
+                            {{ __('action.create') }}
+                        </a>
                     </div>
 
                     <div class="table-wrapper-modern">
@@ -155,7 +168,7 @@
                             </thead>
                             <tbody>
                             @forelse($organizations as $key => $item)
-                                <tr class="table-row-modern">
+                                <tr class="table-row-modern" id="rowID{{ $item->id }}">
                                     <td class="td-number">{{ $organizations->firstItem() + $key }}</td>
                                     <td class="td-doc-name">
                                         <a href="{{ route('departments.index', ['id' => $item->id]) }}"
@@ -199,19 +212,39 @@
                                                     <i data-lucide="check-circle"></i>
                                                     {{ __('field.active') }}
                                                 </span>
-                                        @else
+                                        @elseif($item->status == 3)
                                             <span class="status-badge-modern badge-danger">
+                                                    <i data-lucide="trash-2"></i>
+                                                    {{ __('status.delete') }}
+                                                </span>
+                                        @else
+                                            <span class="status-badge-modern badge-warning">
                                                     <i data-lucide="x-circle"></i>
                                                     {{ __('status.inactive') }}
                                                 </span>
                                         @endif
                                     </td>
                                     <td class="td-action">
-                                        <a href="{{ route('organizations.edit', $item->id) }}"
-                                           class="action-btn view-btn">
-                                            <i data-lucide="square-pen"></i>
-                                            {{ __('action.edit') }}
-                                        </a>
+                                        <div style="display:flex; gap:6px; align-items:center; justify-content:center;">
+                                            <a href="{{ route('organizations.edit', $item->id) }}"
+                                               class="action-btn view-btn" title="{{ __('action.edit') }}">
+                                                <i data-lucide="square-pen"></i>
+                                            </a>
+
+                                            @if($item->status == 3)
+                                                <button type="button" value="{{ $item->id }}"
+                                                        class="action-btn edit-btn restore_btn"
+                                                        title="Tiklash">
+                                                    <i data-lucide="rotate-ccw"></i>
+                                                </button>
+                                            @else
+                                                <button type="button" value="{{ $item->id }}"
+                                                        class="action-btn delete-btn delete_btn"
+                                                        title="{{ __('action.delete') }}">
+                                                    <i data-lucide="trash-2"></i>
+                                                </button>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
@@ -238,4 +271,111 @@
             </div>
         </div>
     </div>
+
+    {{-- Delete Modal --}}
+    <div class="modal fade" id="DeleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modern-modal">
+                <div class="modal-header modern-modal-header">
+                    <div class="modal-icon-wrapper danger">
+                        <i data-lucide="alert-triangle"></i>
+                    </div>
+                    <h4>{{ __('action.delete') }}</h4>
+                    <button type="button" class="close-modal" data-dismiss="modal" aria-label="Close">
+                        <i data-lucide="x"></i>
+                    </button>
+                </div>
+                <div class="modal-body modern-modal-body">
+                    <p><i data-lucide="message-circle"></i> Tanlangan tashkilot o`chiriladi. Keyinchalik "O`chirilgan" filtri orqali tiklash mumkin.</p>
+                    <input type="hidden" id="deleteing_id">
+                </div>
+                <div class="modal-footer modern-modal-footer">
+                    <button type="button" class="btn-modern btn-secondary" data-dismiss="modal">
+                        <i data-lucide="x"></i>
+                        {{ __('action.close') }}
+                    </button>
+                    <button type="button" class="btn-modern btn-danger yes_delete_btn">
+                        <i data-lucide="trash-2"></i>
+                        {{ __('action.yes_delete') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ asset('/ajax/jquery.min.js') }}"></script>
+
+    <script>
+        /* Удаление организации: мягкое (status = 3), с подтверждением.
+           Бэкенд блокирует удаление, если внутри есть активные сотрудники
+           или дочерние организации — текст ошибки показываем как есть. */
+        $(document).on('click', '.delete_btn', function () {
+            $('#deleteing_id').val($(this).val());
+            $('#DeleteModal').modal('show');
+        });
+
+        $(document).on('click', '.yes_delete_btn', function (e) {
+            e.preventDefault();
+
+            let btn = $(this);
+            let id  = $('#deleteing_id').val();
+
+            btn.html("<i data-lucide='loader-2' class='spinner'></i> O`chirilmoqda...");
+
+            $.ajaxSetup({
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
+            });
+
+            $.ajax({
+                type: "DELETE",
+                url: "{{ url('admin/organizations/destroy') }}/" + id,
+                dataType: "json",
+                success: function (response) {
+                    btn.html("<i data-lucide='trash-2'></i> {{ __('action.yes_delete') }}");
+                    $('#DeleteModal').modal('hide');
+
+                    if (response.status === 200) {
+                        $("#rowID" + id).addClass("table-danger").fadeOut(1200, function () {
+                            this.remove();
+                        });
+                        showSuccessMessageInTopCenter('top-center');
+                    } else {
+                        alert(response.message || 'Xatolik');
+                    }
+                },
+                error: function (xhr) {
+                    btn.html("<i data-lucide='trash-2'></i> {{ __('action.yes_delete') }}");
+                    $('#DeleteModal').modal('hide');
+                    let msg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Xatolik';
+                    alert(msg);
+                }
+            });
+        });
+
+        /* Восстановление удалённой организации (виден только в фильтре «O`chirilgan»). */
+        $(document).on('click', '.restore_btn', function () {
+            let id = $(this).val();
+
+            $.ajaxSetup({
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
+            });
+
+            $.ajax({
+                type: "POST",
+                url: "{{ url('admin/organizations/restore') }}/" + id,
+                dataType: "json",
+                success: function (response) {
+                    if (response.status === 200) {
+                        location.reload();
+                    } else {
+                        alert(response.message || 'Xatolik');
+                    }
+                },
+                error: function (xhr) {
+                    let msg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Xatolik';
+                    alert(msg);
+                }
+            });
+        });
+    </script>
 @endsection

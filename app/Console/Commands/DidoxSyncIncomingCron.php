@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 use Throwable;
 
 /**
- * Периодическая синхронизация входящих документов Didox.
+ * Периодическая синхронизация документов Didox (входящих и исходящих).
  *
  * Проходит по всем живым токенам в didox_tokens и подтягивает входящие
  * для каждой пары (user, tin). Токены протухшие (>360 мин) пропускаются —
@@ -20,14 +20,16 @@ use Throwable;
  *
  * Ручной запуск:
  *   php artisan didox:sync-incoming
- *   php artisan didox:sync-incoming --tin=207119963
+ *   php artisan didox:sync-incoming --org=12
+ *   php artisan didox:sync-incoming --direction=outgoing
  */
 class DidoxSyncIncomingCron extends Command
 {
     protected $signature = 'didox:sync-incoming
-                            {--org= : Синхронизировать только указанную организацию (id)}';
+                            {--org= : Синхронизировать только указанную организацию (id)}
+                            {--direction=both : Что синхронизировать: incoming | outgoing | both}';
 
-    protected $description = 'Sync incoming Didox documents into didox_documents (vkladka Vneshniy dokumentooborot)';
+    protected $description = 'Sync Didox documents (incoming/outgoing) into didox_documents';
 
     public function __construct(private DidoxSyncService $sync)
     {
@@ -51,12 +53,26 @@ class DidoxSyncIncomingCron extends Command
             return self::SUCCESS;
         }
 
+        $direction = (string) $this->option('direction');
+        if (!in_array($direction, ['incoming', 'outgoing', 'both'], true)) {
+            $this->error('Недопустимое значение --direction. Допустимо: incoming, outgoing, both.');
+            return self::FAILURE;
+        }
+
         $totalSynced = 0;
         $failed      = 0;
 
         foreach ($tokens as $t) {
             try {
-                $synced = $this->sync->pullIncoming($t->user_id, $t->org_unit_id);
+                $synced = 0;
+
+                if ($direction === 'incoming' || $direction === 'both') {
+                    $synced += $this->sync->pullIncoming($t->user_id, $t->org_unit_id);
+                }
+                if ($direction === 'outgoing' || $direction === 'both') {
+                    $synced += $this->sync->pullOutgoing($t->user_id, $t->org_unit_id);
+                }
+
                 $totalSynced += $synced;
                 $this->line("  [OK] org={$t->org_unit_id} tin={$t->tin} user={$t->user_id}: {$synced} документ(ов)");
             } catch (Throwable $e) {

@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\Telegram\TelegramDocumentCreateController;
 use App\Http\Controllers\Api\Telegram\TelegramEimzoLinkController;
 use App\Http\Controllers\Api\Telegram\TelegramMiniAppAuthController;
 use App\Http\Controllers\Api\Telegram\TelegramProfileController;
+use App\Http\Controllers\Api\Telegram\TelegramTranslationController;
 use App\Http\Controllers\Api\Integration1C\OnecInboundController;
 use App\Http\Controllers\Api\Integration1C\OnecOutboundController;
 use App\Http\Controllers\Api\User\ProfileApiController;
@@ -296,6 +297,10 @@ Route::prefix('telegram')->group(function () {
         return response()->json(['token' => $record->auth_token]);
     });
 
+    // Переводы интерфейса Mini App (публичный: нужен до авторизации,
+    // чтобы экраны загрузки/ошибки были уже локализованы)
+    Route::get('/translations', [TelegramTranslationController::class, 'index']);
+
     // Документы (используют собственную auth через Bearer token)
     Route::get('/counts', [TelegramDocumentController::class, 'counts']);
     Route::get('/status-options', [TelegramDocumentController::class, 'statusOptions']);
@@ -367,6 +372,7 @@ Route::prefix('didox')->middleware('auth:sanctum')->group(function () {
     Route::prefix('documents')->group(function () {
         // Локальный список входящих (вкладка «Внешний документооборот»)
         Route::get('/incoming',                [DidoxDocumentController::class, 'incoming']);
+        Route::get('/outgoing',                [DidoxDocumentController::class, 'outgoing']);
         Route::post('/sync/pull',              [DidoxDocumentController::class, 'syncPull']);
 
         // Сквозной доступ к Didox
