@@ -208,7 +208,12 @@ class OrganizationUnits extends Model
             return false;
         }
 
-        $currentUsersCount = User::inOrganization($this->id)->count();
+        // В лимит входят только активные (1) и неактивные (2) пользователи.
+        // Удалённые (3, O'chirilgan) место в тарифе НЕ занимают — иначе
+        // после удаления сотрудника нельзя было бы принять нового.
+        $currentUsersCount = User::inOrganization($this->id)
+            ->whereIn('users.status', [1, 2])
+            ->count();
 
         return $currentUsersCount < $subscription->tariff->max_users;
     }
@@ -237,7 +242,10 @@ class OrganizationUnits extends Model
             return null;
         }
 
-        $currentUsers = User::inOrganization($this->id)->count();
+        // Та же логика, что в canAddUser(): удалённые (3) в лимит не входят.
+        $currentUsers = User::inOrganization($this->id)
+            ->whereIn('users.status', [1, 2])
+            ->count();
 
         $currentDocuments = DB::table('document_journals')
             ->where('org_unit_id', $this->id)

@@ -73,6 +73,12 @@ class UserController extends Controller
 
         if ($s_status){
             $search->where('status', $s_status);
+        } else {
+            /* По умолчанию (фильтр «Holat barchasi» не выбран) показываем
+             | ТОЛЬКО активных (1) и неактивных (2) — удалённых (3, O'chirilgan)
+             | скрываем. Явный выбор статуса в фильтре имеет приоритет:
+             | выбрав «O'chirilgan», админ по-прежнему увидит удалённых. */
+            $search->whereIn('status', [1, 2]);
         }
 
         if ($s_role){
