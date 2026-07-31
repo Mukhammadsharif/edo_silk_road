@@ -329,7 +329,12 @@
             setTimeout(function () { b.remove(); }, 6000);
         }
 
-        /* Синхронизация входящих (кнопка «Обновить из Didox»), без jQuery. */
+        /* Направление синхронизации — по текущему разделу:
+           «Входящие» тянут owner=0, «Исходящие» — owner=1 (в том числе
+           документы, созданные прямо в кабинете Didox). */
+        var didoxSyncDirection = '{{ ($mode ?? 'incoming') === 'outgoing' ? 'outgoing' : 'incoming' }}';
+
+        /* Синхронизация с Didox (кнопка «Обновить из Didox»), без jQuery. */
         function didoxSyncNow(btn) {
             if (btn) { btn.disabled = true; }
             didoxNotify('Синхронизация с Didox...', 'info');
@@ -338,7 +343,7 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
-                body: JSON.stringify({}),
+                body: JSON.stringify({ direction: didoxSyncDirection }),
             })
                 .then(function (r) { return r.json(); })
                 .then(function (data) {

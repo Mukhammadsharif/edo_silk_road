@@ -132,14 +132,36 @@ class DidoxDocumentController extends Controller
 
     /* ---------------- Синхронизация входящих (наша сторона) ---------------- */
 
-    /** POST /api/didox/documents/sync/pull — подтянуть входящие в локальный список. */
+    /**
+     * POST /api/didox/documents/sync/pull — подтянуть документы в локальный список.
+     *
+     * direction: incoming (по умолчанию) | outgoing | both.
+     * outgoing нужен, чтобы в разделе «Исходящие» появились документы,
+     * созданные прямо в кабинете Didox, а не только через EDOLINE.
+     */
     public function syncPull(Request $request): JsonResponse
     {
-        $data = $request->validate(['filters' => ['nullable', 'array']]);
+        $data = $request->validate([
+            'filters'   => ['nullable', 'array'],
+            'direction' => ['nullable', 'in:incoming,outgoing,both'],
+        ]);
+
+        $filters   = $data['filters'] ?? [];
+        $direction = $data['direction'] ?? 'incoming';
+        $userId    = $request->user()->id;
+        $orgId     = $this->currentOrgId($request);
 
         try {
-            $count = $this->sync->pullIncoming($request->user()->id, $this->currentOrgId($request), $data['filters'] ?? []);
-            return response()->json(['success' => true, 'synced' => $count]);
+            $count = 0;
+
+            if ($direction === 'incoming' || $direction === 'both') {
+                $count += $this->sync->pullIncoming($userId, $orgId, $filters);
+            }
+            if ($direction === 'outgoing' || $direction === 'both') {
+                $count += $this->sync->pullOutgoing($userId, $orgId, $filters);
+            }
+
+            return response()->json(['success' => true, 'synced' => $count, 'direction' => $direction]);
         } catch (Throwable $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
         }
@@ -150,7 +172,27 @@ class DidoxDocumentController extends Controller
     {
         $data = $request->validate(['list_status' => ['nullable', 'string']]);
 
-        $query = DidoxDocument::where('org_unit_id', $this->currentOrgId($request));
+        $query = DidoxDocument::where('org_unit_id', $this->currentOrgId($request))
+            ->where('owner', DidoxDocument::OWNER_INCOMING);
+
+        if (!empty($data['list_status'])) {
+            $query->where('list_status', $data['list_status']);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data'    => $query->orderByDesc('received_at')->paginate(20),
+        ]);
+    }
+
+    /** GET /api/didox/documents/outgoing — локальный список исходящих. */
+    public function outgoing(Request $request): JsonResponse
+    {
+        $data = $request->validate(['list_status' => ['nullable', 'string']]);
+
+        $query = DidoxDocument::where('org_unit_id', $this->currentOrgId($request))
+            ->where('owner', DidoxDocument::OWNER_OUTGOING);
+
         if (!empty($data['list_status'])) {
             $query->where('list_status', $data['list_status']);
         }

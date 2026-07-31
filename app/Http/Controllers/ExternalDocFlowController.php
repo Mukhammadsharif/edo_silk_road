@@ -462,13 +462,31 @@ class ExternalDocFlowController extends Controller
     }
 
     /** POST /external-docs/sync — кнопка «Обновить» (pull для активной организации). */
-    public function syncNow(): JsonResponse
+    public function syncNow(Request $request): JsonResponse
     {
         $org = $this->currentOrg();
 
+        /*
+         | direction приходит со страницы: раздел «Входящие» синхронизирует
+         | owner=0, «Исходящие» — owner=1. Значение по умолчанию incoming
+         | сохраняет прежнее поведение для старых вызовов без параметра.
+         */
+        $data = $request->validate([
+            'direction' => ['nullable', 'in:incoming,outgoing,both'],
+        ]);
+        $direction = $data['direction'] ?? 'incoming';
+
         try {
-            $count = $this->sync->pullIncoming(Auth::id(), $org->id);
-            return response()->json(['success' => true, 'synced' => $count]);
+            $count = 0;
+
+            if ($direction === 'incoming' || $direction === 'both') {
+                $count += $this->sync->pullIncoming(Auth::id(), $org->id);
+            }
+            if ($direction === 'outgoing' || $direction === 'both') {
+                $count += $this->sync->pullOutgoing(Auth::id(), $org->id);
+            }
+
+            return response()->json(['success' => true, 'synced' => $count, 'direction' => $direction]);
         } catch (Throwable $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
         }

@@ -251,56 +251,132 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', __('field.request_rejected_successfully'));
     }
 
+    /**
+     * GET /admin/users/create — форма ручного создания пользователя.
+     *
+     * Супер-админ выбирает организацию сам (и видит все); остальным
+     * организация подставляется своя и не редактируется. Отделы грузятся
+     * AJAX'ом по выбранной организации, должности — по отделу.
+     */
     public function create()
     {
-        //
-        $departments = Department::where('status', 1)->where('parent_id', 0)->get();
+        $isSuperUser = $this->isSuperUser();
+
+        if ($isSuperUser) {
+            $organizations = OrganizationUnits::whereIn('status', [1, 2])
+                ->orderBy('name_uz')
+                ->get();
+            $currentOrgId = null;
+            $departments  = collect();
+        } else {
+            $currentOrgId  = $this->organizationId();
+            $organizations = OrganizationUnits::where('id', $currentOrgId)->get();
+            $departments   = Department::where('org_unit_id', $currentOrgId)
+                ->where('status', 1)
+                ->get();
+        }
+
+        $roles = Role::where('status', 1)->get();
 
         return view('admin.users.create',
-            compact('departments', 'departments'));
+            compact('organizations', 'departments', 'roles', 'isSuperUser', 'currentOrgId'));
     }
 
+    /**
+     * POST /admin/users — создание пользователя вручную.
+     *
+     * Отличия от прежней версии: организация выбирается явно, логин и пароль
+     * задаются руками (раньше был случайный логин и пароль 123456 у всех),
+     * можно сразу выдать роли, и проверяется лимит пользователей по подписке
+     * организации — тот же, что действует при приёме заявок.
+     */
     public function store(Request $request)
     {
-        //
+        $isSuperUser = $this->isSuperUser();
+
         $request->validate([
-            'email' => 'required|email|unique:users',
-            'l_name' => 'required|max:50',
-            'f_name' => 'required|max:50',
-            'dep_id' => 'required',
-            'post_id' => 'required',
+            'org_id'    => 'required|integer',
+            'dep_id'    => 'required|integer',
+            'post_id'   => 'required|integer',
+            'l_name'    => 'required|max:50',
+            'f_name'    => 'required|max:50',
+            'm_name'    => 'nullable|max:50',
+            'email'     => 'required|email|unique:users,email',
+            'username'  => 'required|string|max:50|unique:users,username',
+            'password'  => 'required|string|min:6|confirmed',
+            'address'   => 'nullable|max:500',
+            'phone'     => 'nullable|max:50',
+            'role_ids'  => 'nullable|array',
+            'role_ids.*'=> 'integer',
         ]);
 
+        // Не супер-админ создаёт только в своей организации, что бы ни пришло в форме.
+        $orgId = $isSuperUser ? (int) $request->org_id : $this->organizationId();
+
+        $organization = OrganizationUnits::find($orgId);
+        if (!$organization) {
+            return back()->withInput()->with('error', __('field.not_found'));
+        }
+
+        // Отдел должен принадлежать выбранной организации — иначе сотрудник
+        // окажется в чужой структуре (частый источник расхождений org/dep).
+        $department = Department::where('id', $request->dep_id)
+            ->where('org_unit_id', $orgId)
+            ->first();
+
+        if (!$department) {
+            return back()->withInput()
+                ->with('error', "Tanlangan bo'lim ushbu tashkilotga tegishli emas.");
+        }
+
+        // Лимит по подписке: тот же расчёт, что и при приёме заявок в организацию.
+        if (!$organization->canAddUser()) {
+            return back()->withInput()
+                ->with('error', __('field.user_limit_reached')
+                    ?? "Foydalanuvchi limiti to'lgan yoki faol obuna mavjud emas.");
+        }
+
         $createUser = new User();
-        $createUser->username = 'login'.random_int(100000, 999999);
-        $createUser->email = $request->email;
+        $createUser->username  = $request->username;
+        $createUser->email     = $request->email;
         $createUser->user_hash = $this->uniqueId();
-        $createUser->password = Hash::make(123456);
-        $createUser->status = 1;
+        $createUser->password  = Hash::make($request->password);
+        $createUser->status    = 1;
         $createUser->save();
 
-        if ($createUser) {
-            $createPersonal = new UserPersonalInfo();
-            $createPersonal->user_id = $createUser->id;
-            $createPersonal->l_name = $request->l_name;
-            $createPersonal->f_name = $request->f_name;
-            $createPersonal->address = $request->address;
-            $createPersonal->save();
+        $createPersonal = new UserPersonalInfo();
+        $createPersonal->user_id = $createUser->id;
+        $createPersonal->l_name  = $request->l_name;
+        $createPersonal->f_name  = $request->f_name;
+        $createPersonal->m_name  = $request->m_name;
+        $createPersonal->address = $request->address;
+        $createPersonal->phone   = $request->phone;
+        $createPersonal->save();
 
-            $nextYear = Carbon::now()->addYear()->format('Y-m-d');
+        $nextYear = Carbon::now()->addYear()->format('Y-m-d');
 
-            $createWork = new UserWorkHistory();
-            $createWork->user_id = $createUser->id;
-            $createWork->org_id = $this->orgIdForDepartment($request->dep_id);
-            $createWork->dep_id = $request->dep_id;
-            $createWork->post_id = $request->post_id;
-            $createWork->from_date = Carbon::now();
-            $createWork->to_date = $nextYear;
-            $createWork->status = 1;
-            $createWork->save();
+        $createWork = new UserWorkHistory();
+        $createWork->user_id   = $createUser->id;
+        $createWork->org_id    = $orgId;
+        $createWork->dep_id    = $department->id;
+        $createWork->post_id   = $request->post_id;
+        $createWork->from_date = Carbon::now();
+        $createWork->to_date   = $nextYear;
+        $createWork->status    = 1;
+        $createWork->save();
 
-            $this->userLogService->createUserLog($createUser->id, ['comment' => 'Created user']);
+        if ($request->role_ids) {
+            $roles = Role::whereIn('id', $request->role_ids)->get();
+            foreach ($roles as $role) {
+                $createUser->assignRole([$role->id]);
+            }
         }
+
+        $this->userLogService->createUserLog($createUser->id, [
+            'comment' => 'Created user manually',
+            'org_id'  => $orgId,
+            'roles'   => $request->role_ids,
+        ]);
 
         return Redirect::route('users.index')->with('success', __('field.user_created_successfully'));
     }

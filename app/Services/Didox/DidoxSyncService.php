@@ -26,29 +26,53 @@ class DidoxSyncService
     ) {}
 
     /**
-     * Подтянуть входящие из Didox для указанного ИНН и сохранить локально.
-     * Проходит по страницам (limit=100) до конца списка, но не более $maxPages.
-     * Возвращает количество созданных/обновлённых записей.
+     * Подтянуть ВХОДЯЩИЕ документы (owner=0) из Didox и сохранить локально.
      */
     public function pullIncoming(int $userId, int $orgUnitId, array $filters = [], int $maxPages = 20): int
+    {
+        return $this->pull($userId, $orgUnitId, DidoxDocument::OWNER_INCOMING, $filters, $maxPages);
+    }
+
+    /**
+     * Подтянуть ИСХОДЯЩИЕ документы (owner=1) из Didox и сохранить локально.
+     *
+     * Важно: сюда попадают и документы, созданные прямо в кабинете Didox
+     * (не через EDOLINE). Именно они раньше не появлялись в разделе
+     * «Исходящие», потому что синхронизация тянула только входящие.
+     * Документы, созданные у нас (storeOutgoing), уже лежат в таблице
+     * с тем же didox_id — updateOrCreate их обновит, а не задублирует.
+     */
+    public function pullOutgoing(int $userId, int $orgUnitId, array $filters = [], int $maxPages = 20): int
+    {
+        return $this->pull($userId, $orgUnitId, DidoxDocument::OWNER_OUTGOING, $filters, $maxPages);
+    }
+
+    /**
+     * Общая постраничная выгрузка списка документов Didox по направлению.
+     * Проходит страницы (limit=100) до конца списка, но не более $maxPages.
+     * Возвращает количество созданных/обновлённых записей.
+     *
+     * @param int $owner DidoxDocument::OWNER_INCOMING | OWNER_OUTGOING
+     */
+    public function pull(int $userId, int $orgUnitId, int $owner, array $filters = [], int $maxPages = 20): int
     {
         $ownerTin = $this->tokens->resolveOrgTin($orgUnitId);
         $token    = $this->tokens->getFreshToken($userId, $orgUnitId);
         $client   = $this->client->withUserKey($token);
 
+        $direction = $owner === DidoxDocument::OWNER_OUTGOING ? 'outgoing' : 'incoming';
         $limit = (int) ($filters['limit'] ?? 100);
         $page  = (int) ($filters['page'] ?? 1);
         $count = 0;
 
-        // owner=0 → только входящие документы (вкладка «Внешний документооборот»).
         for ($i = 0; $i < $maxPages; $i++, $page++) {
-            $query = array_merge($filters, ['owner' => 0, 'limit' => $limit, 'page' => $page]);
+            $query = array_merge($filters, ['owner' => $owner, 'limit' => $limit, 'page' => $page]);
 
             $resp = $client->documents($query);
 
             if (empty($resp['success'])) {
-                Log::channel('didox')->error('[Didox] pullIncoming failed', [
-                    'org' => $orgUnitId, 'tin' => $ownerTin, 'page' => $page,
+                Log::channel('didox')->error('[Didox] pull failed', [
+                    'org' => $orgUnitId, 'tin' => $ownerTin, 'direction' => $direction, 'page' => $page,
                     'error' => $resp['error'] ?? null,
                 ]);
                 break;
@@ -62,7 +86,9 @@ class DidoxSyncService
             }
 
             foreach ($items as $item) {
-                $this->upsertFromList($orgUnitId, $ownerTin, $item);
+                // owner передаём явно: в списке v2 Didox его может не быть,
+                // а без него запись не попадёт в фильтр раздела.
+                $this->upsertFromList($orgUnitId, $ownerTin, $item, $owner);
                 $count++;
             }
 
@@ -72,7 +98,9 @@ class DidoxSyncService
             }
         }
 
-        Log::channel('didox')->info('[Didox] pullIncoming done', ['org' => $orgUnitId, 'tin' => $ownerTin, 'saved' => $count]);
+        Log::channel('didox')->info('[Didox] pull done', [
+            'org' => $orgUnitId, 'tin' => $ownerTin, 'direction' => $direction, 'saved' => $count,
+        ]);
 
         return $count;
     }
@@ -163,7 +191,7 @@ class DidoxSyncService
      *   карточка (GET /v1/documents/:id): _id/documentid, status, documentno, sellertin/buyertin
      * Метод устойчив к обоим форматам.
      */
-    private function upsertFromList(int $orgUnitId, string $ownerTin, array $item): DidoxDocument
+    private function upsertFromList(int $orgUnitId, string $ownerTin, array $item, ?int $forceOwner = null): DidoxDocument
     {
         $didoxId = Arr::get($item, 'doc_id')          // список v2
             ?? Arr::get($item, '_id')                 // карточка/webhook
@@ -176,24 +204,65 @@ class DidoxSyncService
 
         $status = $this->readStatus($item);
 
-        return DidoxDocument::updateOrCreate(
-            ['didox_id' => (string) $didoxId],
-            [
-                'owner'        => Arr::get($item, 'owner'), // 0 входящий / 1 исходящий
-                'doc_type'     => Arr::get($item, 'doctype') ?? Arr::get($item, 'doc_type'),
-                'doc_number'   => Arr::get($item, 'name') ?? Arr::get($item, 'doc_number') ?? Arr::get($item, 'documentno'),
-                'doc_date'     => $this->readDate($item),
-                'partner_tin'  => Arr::get($item, 'partnerTin') ?? Arr::get($item, 'partner_tin'),
-                'seller_tin'   => Arr::get($item, 'sellertin') ?? Arr::get($item, 'seller_tin'),
-                'buyer_tin'    => Arr::get($item, 'buyertin') ?? Arr::get($item, 'buyer_tin'),
-                'org_unit_id'  => $orgUnitId,
-                'owner_tin'    => $ownerTin,
-                'didox_status' => $status,
-                'list_status'  => DidoxDocType::toListStatus($status),
-                'raw'          => $item,
-                'received_at'  => now(),
-            ]
-        );
+        $doc      = DidoxDocument::firstOrNew(['didox_id' => (string) $didoxId]);
+        $isNew    = !$doc->exists;
+
+        $doc->fill([
+            // Направление: приоритет у явно переданного (из pull), иначе из ответа.
+            'owner'        => $forceOwner ?? Arr::get($item, 'owner'), // 0 входящий / 1 исходящий
+            'doc_type'     => Arr::get($item, 'doctype') ?? Arr::get($item, 'doc_type'),
+            'doc_number'   => Arr::get($item, 'name') ?? Arr::get($item, 'doc_number') ?? Arr::get($item, 'documentno'),
+            'doc_date'     => $this->readDate($item),
+            'partner_tin'  => Arr::get($item, 'partnerTin') ?? Arr::get($item, 'partner_tin'),
+            'seller_tin'   => Arr::get($item, 'sellertin') ?? Arr::get($item, 'seller_tin'),
+            'buyer_tin'    => Arr::get($item, 'buyertin') ?? Arr::get($item, 'buyer_tin'),
+            'org_unit_id'  => $orgUnitId,
+            'owner_tin'    => $ownerTin,
+            'didox_status' => $status,
+            'list_status'  => $this->resolveListStatus($doc, $status, $isNew),
+            'raw'          => $item,
+        ]);
+
+        // received_at — момент появления документа у нас. У существующих не трогаем,
+        // иначе каждая синхронизация перемешивала бы список (сортировка идёт по нему).
+        if ($isNew) {
+            $doc->received_at = now();
+        }
+
+        $doc->save();
+
+        return $doc;
+    }
+
+    /**
+     * Локальный list_status при синхронизации: статус Didox — источник истины,
+     * но два локальных состояния он «не видит» и не должен затирать:
+     *
+     *   on_internal_review — документ отправлен на внутреннее согласование
+     *                        в EDOLINE; для Didox он всё ещё «не подписан»;
+     *   signed             — мы уже подписали, а Didox в этот момент может
+     *                        отдавать промежуточный статус (та же защита,
+     *                        что и в refreshStatus).
+     */
+    private function resolveListStatus(DidoxDocument $doc, ?int $status, bool $isNew): string
+    {
+        $fresh = DidoxDocType::toListStatus($status);
+
+        if ($isNew) {
+            return $fresh;
+        }
+
+        $keepOnNotSigned = [
+            DidoxDocument::LIST_ON_INTERNAL,
+            DidoxDocument::LIST_SIGNED,
+        ];
+
+        if ($fresh === DidoxDocument::LIST_NOT_SIGNED
+            && in_array($doc->getOriginal('list_status'), $keepOnNotSigned, true)) {
+            return $doc->getOriginal('list_status');
+        }
+
+        return $fresh;
     }
 
     private function extractList(mixed $data): array
