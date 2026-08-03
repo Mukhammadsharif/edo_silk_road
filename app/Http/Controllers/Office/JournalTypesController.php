@@ -207,6 +207,17 @@ class JournalTypesController extends Controller
         $journal_type->status = $request->status == 0;
         $journal_type->save();
 
+        /* Метка «Внешаблонные документы (free-sign)» (v59): запись в
+         | free_sign_journal_types — модуль free-sign распознаёт тип
+         | по ней, независимо от id и от случайно сгенерированного
+         | doc_code. Снятие метки — в update().
+         */
+        if ($request->boolean('is_free_sign')) {
+            \App\Models\FreeSignJournalType::firstOrCreate([
+                'journal_type_id' => $journal_type->id,
+            ]);
+        }
+
         $app = JournalTypes::where('parent_id', $parent_id)->where('doc_code', 'ILIKE', '%'.'APP'.'%')->first();
 
         if ($app){
@@ -251,8 +262,11 @@ class JournalTypesController extends Controller
             "Hujjat ijrochilari: xodim, bo'lim boshligi, departament direktori tanlanadi",
         ];
 
+        // Метка «Внешаблонные документы (free-sign)» — из маркер-таблицы (v59).
+        $isFreeSignType = \App\Models\FreeSignJournalType::isType((int) $id);
+
         return view('document-settings.document.edit',compact('model', 'journalTypes', 'languages', 'execution_roles', 'roles',
-            'journal_exec_steps', 'unselected_exec_steps', 'listGroupItemColors', 'listGroupDescriptions'));
+            'journal_exec_steps', 'unselected_exec_steps', 'listGroupItemColors', 'listGroupDescriptions', 'isFreeSignType'));
     }
 
     public function update(Request $request, $id)
@@ -276,6 +290,18 @@ class JournalTypesController extends Controller
                 'order_number' => $request->order_number,
                 'status' => $request->status == 'active' ? 1 : 0
             ]);
+
+            /* Синхронизация метки «Внешаблонные документы» (v59):
+             | отмечена -> запись в free_sign_journal_types есть,
+             | снята    -> записи нет. Идемпотентно.
+             */
+            if ($request->boolean('is_free_sign')) {
+                \App\Models\FreeSignJournalType::firstOrCreate([
+                    'journal_type_id' => $journalType->id,
+                ]);
+            } else {
+                \App\Models\FreeSignJournalType::where('journal_type_id', $journalType->id)->delete();
+            }
         }
 
         $journal = AppTemps::where('journal_id', $journalType->id)->first();

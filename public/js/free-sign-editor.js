@@ -1,9 +1,12 @@
 document.addEventListener('DOMContentLoaded', function () {
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
+    /* v50: в ПАЛИТРЕ остаётся только QR-код (palette: true). Остальные
+       типы НЕ удалены из списка — они нужны для отрисовки и штамповки
+       полей СТАРЫХ документов, где такие метки уже расставлены. */
     const ELEMENT_TYPES = [
         {key: 'signature', label: 'Подпись ЭЦП', icon: '✒️', kind: 'box', def: {w: 0.20, h: 0.06}},
-        {key: 'qr', label: 'QR-код', icon: '▦', kind: 'box', def: {w: 0.09, h: 0.09}},
+        {key: 'qr', label: 'QR-код', icon: '▦', kind: 'box', def: {w: 0.09, h: 0.09}, palette: true},
         {key: 'full_name', label: 'ФИО', icon: '👤', kind: 'text', def: {w: 0.24, h: 0.035}},
         {key: 'position', label: 'Должность', icon: '🏷️', kind: 'text', def: {w: 0.24, h: 0.03}},
         {key: 'sign_date', label: 'Дата', icon: '📅', kind: 'text', def: {w: 0.16, h: 0.03}},
@@ -27,6 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const state = {
         pdfDoc: null, scale: 1.0, pages: [], elements: [], selectedId: null, seq: 1, tool: 'select', pendingArea: null,
         sequential: (DEMO.sequential !== undefined ? !!DEMO.sequential : true),  // true=по очереди, false=параллельно
+        resolutionRequired: (DEMO.resolutionRequired !== undefined ? !!DEMO.resolutionRequired : true),  // v49: обязательная резолюция
         mode: DEMO.mode || 'edit',   // 'edit' — расстановка, 'view' — ожидание подписей
         // Mock-статусы подписи для режима view. Позже придут с backend по polling.
         // status: 'pending' | 'signed', signedAt — когда подписал.
@@ -118,6 +122,69 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             signerList.appendChild(card);
         });
+
+        updateResolToggle();   // v49: тумблер «обязательная резолюция»
+    }
+
+    /* ═══ v49: тумблер «обязательное заполнение резолюции» ═══
+     | Показывается, только если среди подписантов есть роль RESOL
+     | (DEMO.resolRoleId). При включённом контроле исполнения
+     | (DEMO.controlEnabled) заблокирован: проект резолюции готовит
+     | контролёр, тумблер не имеет смысла. Значение уходит в payload
+     | сохранения (resolution_required) -> saveFromEditor.
+     */
+    function ensureResolToggle() {
+        let box = document.getElementById('fsResolReqBox');
+        if (box) return box;
+
+        box = document.createElement('div');
+        box.id = 'fsResolReqBox';
+        box.style.cssText = 'display:none;margin:10px 0;padding:10px 12px;'
+            + 'border:1px solid rgba(15,23,42,.08);border-radius:10px;'
+            + 'background:#fff;font-size:12.5px;line-height:1.45;';
+        box.innerHTML =
+            '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:0;font-weight:600;color:#1e293b;">'
+            + '<input type="checkbox" id="fsResolReq" style="accent-color:#794DFD;width:16px;height:16px;flex:0 0 auto;">'
+            + '<span>Обязательное заполнение резолюции</span>'
+            + '</label>'
+            + '<div id="fsResolReqHint" style="color:#94a3b8;margin-top:4px;"></div>';
+        signerList.parentNode.insertBefore(box, signerList.nextSibling);
+
+        box.querySelector('#fsResolReq').addEventListener('change', function () {
+            state.resolutionRequired = this.checked;
+            updateResolToggle();
+        });
+        return box;
+    }
+
+    function updateResolToggle() {
+        const box  = ensureResolToggle();
+        const rid  = DEMO.resolRoleId != null ? String(DEMO.resolRoleId) : null;
+        const hasResol = !!rid && state.signers.some(s => String(s.roleId) === rid);
+
+        box.style.display = hasResol ? '' : 'none';
+        if (!hasResol) return;
+
+        const cb   = box.querySelector('#fsResolReq');
+        const hint = box.querySelector('#fsResolReqHint');
+        const isView = state.mode === 'view';
+
+        cb.checked = !!state.resolutionRequired;
+
+        if (DEMO.controlEnabled) {
+            cb.disabled = true;
+            hint.textContent = 'Недоступно: включён контроль исполнения — проект резолюции готовит контролёр';
+        } else if (isView) {
+            cb.disabled = true;
+            hint.textContent = cb.checked
+                ? 'Резолюционер подписывает только после создания резолюции'
+                : 'Резолюционер может подписать без резолюции';
+        } else {
+            cb.disabled = false;
+            hint.textContent = cb.checked
+                ? 'Резолюционер не сможет подписать, пока не создаст резолюцию (исполнители, срок, текст)'
+                : 'Резолюционер сможет подписать без резолюции — документ завершится без исполнителей';
+        }
     }
 
     function plural(n) {
@@ -230,7 +297,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /* ── Палитра ── */
     const paletteEl = document.getElementById('palette');
-    ELEMENT_TYPES.forEach(t => {
+    ELEMENT_TYPES.filter(t => t.palette).forEach(t => {   // v50: только QR
         const chip = document.createElement('div');
         chip.className = 'fse-chip';
         chip.innerHTML = `<span class="fse-ic">${t.icon}</span><span>${t.label}</span>`;
@@ -241,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function () {
     /* ── Поповер типов ── */
     const tpList = document.getElementById('tpList');
     const typePopover = document.getElementById('typePopover');
-    ELEMENT_TYPES.forEach(t => {
+    ELEMENT_TYPES.filter(t => t.palette).forEach(t => {   // v50: только QR (и в поповере рисования рамки)
         const item = document.createElement('div');
         item.className = 'fse-tp-item';
         item.innerHTML = `<span class="fse-ic">${t.icon}</span><span>${t.label}</span>`;
@@ -712,6 +779,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function buildPayload() {
         return {
             sequential: state.sequential,
+            resolution_required: state.resolutionRequired,   // v49
             signers: state.signers.map((s, i) => ({
                 user_id: s.id,
                 role_id: s.roleId ?? null,

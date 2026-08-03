@@ -40,8 +40,12 @@ use Illuminate\Support\Facades\Storage;
 
 class DocumentController extends Controller
 {
-    /** Тип журнала «Внешаблонные документы» (free-sign). */
-    private const FREE_SIGN_JOURNAL_TYPE = 407;
+    /* v58: хардкода id типа больше НЕТ (был const FREE_SIGN_JOURNAL_TYPE=351),
+     | и конвенции по doc_code тоже нет (doc_code у типов свободный/разный).
+     | Тип «Внешаблонные документы» создаётся для КАЖДОЙ компании отдельно —
+     | признак = ЗАПИСЬ в нашей таблице-маркере free_sign_journal_types
+     | (модель FreeSignJournalType; супер-админ помечает тип INSERT'ом).
+     */
 
     //
     protected OnlyOfficeService $onlyOfficeService;
@@ -102,7 +106,7 @@ class DocumentController extends Controller
              | у внешаблонных её нет, а обязательная валидация
              | resolution_user не давала сохранить документ.
              |
-             | Определяем по doc_code типа журнала 351 (см. FREE_SIGN_JOURNAL_TYPE).
+             | Определяем через таблицу-маркер free_sign_journal_types (v58) — ни id, ни doc_code не важны.
              */
             case $this->isFreeSignDocCode($type):
                 // Есть ли в организации контролёры (Ijro nazorati / Control_Emp)?
@@ -127,17 +131,33 @@ class DocumentController extends Controller
 
     /**
      * Тип журнала = внешаблонные документы (free-sign)?
-     * Сверяем doc_code с кодом типа FREE_SIGN_JOURNAL_TYPE (351).
+     * $type — это doc_code выбранного типа (приходит из формы).
+     *
+     * v58: doc_code у типов СВОБОДНЫЙ и разный у компаний — по нему
+     * ничего не сравниваем. Резолвим org-scoped: doc_code -> id типов
+     * ТЕКУЩЕЙ организации -> проверка в таблице-маркере
+     * free_sign_journal_types (наша, супер-админ помечает тип).
      */
     private function isFreeSignDocCode(?string $type): bool
     {
-        if (!$type) {
+        if (!$type || !$this->organizationId()) {
             return false;
         }
 
-        $freeSignCode = JournalTypes::where('id', self::FREE_SIGN_JOURNAL_TYPE)->value('doc_code');
+        $typeIds = JournalTypes::where('org_id', $this->organizationId())
+            ->where('doc_code', $type)
+            ->pluck('id');
 
-        return $freeSignCode && $type === $freeSignCode;
+        return \App\Models\FreeSignJournalType::anyMarked($typeIds);
+    }
+
+    /**
+     * Тот же вопрос, но по id типа (например, из $request->journal_type):
+     * прямая проверка в таблице-маркере.
+     */
+    private function isFreeSignJournalTypeId($typeId): bool
+    {
+        return \App\Models\FreeSignJournalType::isType($typeId ? (int) $typeId : null);
     }
 
     private function getCommonData(int $departmentId): array
@@ -262,7 +282,7 @@ class DocumentController extends Controller
          | Теперь: free-sign уходит в свой метод и СРАЗУ возвращает результат,
          | не доходя до валидации резолюции.
          */
-        if ((int) $request->journal_type === self::FREE_SIGN_JOURNAL_TYPE) {
+        if ($this->isFreeSignJournalTypeId($request->journal_type)) {
             return $this->storeFreeSign($request);
         }
 
@@ -474,27 +494,43 @@ class DocumentController extends Controller
     public function saveFromEditor(Request $request, $documentId): JsonResponse
     {
         $data = $request->validate([
-            'sequential'         => 'required|boolean',
-            'signers'            => 'required|array|min:1',
-            'signers.*.user_id'  => 'required|integer',
-            'signers.*.role_id'  => 'required|integer',
-            'signers.*.order'    => 'nullable|integer',
-            'fields'             => 'present|array',
-            'fields.*.page'      => 'required|integer|min:1',
-            'fields.*.type'      => 'required|string|max:40',
-            'fields.*.signer_id' => 'nullable|integer',
-            'fields.*.x'         => 'required|numeric|between:0,1',
-            'fields.*.y'         => 'required|numeric|between:0,1',
-            'fields.*.width'     => 'required|numeric|between:0,1',
-            'fields.*.height'    => 'required|numeric|between:0,1',
-            'fields.*.params'    => 'nullable|array',
+            'sequential'          => 'required|boolean',
+            'resolution_required' => 'nullable|boolean',   // v49: тумблер «обязательная резолюция»
+            'signers'             => 'required|array|min:1',
+            'signers.*.user_id'   => 'required|integer',
+            'signers.*.role_id'   => 'required|integer',
+            'signers.*.order'     => 'nullable|integer',
+            'fields'              => 'present|array',
+            'fields.*.page'       => 'required|integer|min:1',
+            'fields.*.type'       => 'required|string|max:40',
+            'fields.*.signer_id'  => 'nullable|integer',
+            'fields.*.x'          => 'required|numeric|between:0,1',
+            'fields.*.y'          => 'required|numeric|between:0,1',
+            'fields.*.width'      => 'required|numeric|between:0,1',
+            'fields.*.height'     => 'required|numeric|between:0,1',
+            'fields.*.params'     => 'nullable|array',
         ]);
 
         // journal_id для document_execution_steps.
-        // ВАРИАНТ А: журнал уже создан заранее и его id пришёл/хранится — подставь его.
-        // ВАРИАНТ Б: если журнала нет — создай его здесь своей логикой и получи id.
-        // Пока берём из запроса или из документа — ЗАМЕНИ на свою реальную логику.
-        $journalId = DocumentJournals::where('doc_id', $documentId)->firstOrFail()->id;
+        $journal   = DocumentJournals::where('doc_id', $documentId)->firstOrFail();
+        $journalId = $journal->id;
+
+        /* v49: тумблер «обязательное заполнение резолюции» — в нашу таблицу
+         | free_sign_journal_controls. ВАЖНО про старые документы (до v41,
+         | записи нет): создавая запись, колонку enabled выставляем ПО
+         | НАСТРОЙКЕ ТИПА — иначе default false молча выключил бы контроль,
+         | который для документа работал через null-fallback на тип.
+         */
+        if (array_key_exists('resolution_required', $data) && $data['resolution_required'] !== null) {
+            $ctl = \App\Models\FreeSignJournalControl::firstOrNew(['j_id' => $journalId]);
+            if (!$ctl->exists) {
+                $ctl->enabled = \App\Models\Journal\JournalTypeControls::where('journal_type_id', $journal->j_type)
+                    ->where('status', 1)
+                    ->exists();
+            }
+            $ctl->resolution_required = (bool) $data['resolution_required'];
+            $ctl->save();
+        }
 
         // Нормализуем подписантов под saveRouteAndFields (user_id + exec_role_id).
         $signers = collect($data['signers'])->map(function ($s) {
@@ -717,48 +753,23 @@ class DocumentController extends Controller
         if (empty($savedFiles)) return;
 
         foreach ($savedFiles as $fileData) {
-            // doc_files_json приходит из запроса, поэтому путь нельзя брать на веру.
-            // Ожидаем только временные файлы OnlyOffice: temp_uploads/<имя>.
-            $relative = is_array($fileData) ? (string) ($fileData['path'] ?? '') : '';
-            if ($relative === '' || !str_starts_with($relative, 'temp_uploads/') || str_contains($relative, '..')) {
-                continue;
-            }
-
-            $tempPath = storage_path('app/' . $relative);
-
-            // is_file(), а не file_exists(): последний возвращает true и для
-            // КАТАЛОГА, после чего file_get_contents() падал с
-            // "Read of N bytes failed with errno=21 Is a directory".
-            if (!is_file($tempPath) || !is_readable($tempPath)) {
-                continue;
-            }
-
-            // Дополнительная защита от выхода за пределы temp_uploads.
-            $real = realpath($tempPath);
-            $base = realpath(storage_path('app/temp_uploads'));
-            if ($real === false || $base === false || !str_starts_with($real, $base . DIRECTORY_SEPARATOR)) {
-                continue;
-            }
-
-            $contents = @file_get_contents($real);
-            if ($contents === false) {
-                continue;
-            }
+            $tempPath = storage_path('app/' . $fileData['path']);
+            if (!file_exists($tempPath)) continue;
 
             $documentFile = new DocumentFiles();
             $documentFile->j_id      = $journal_id;
             $documentFile->doc_id    = $document_id;
             $documentFile->from_user = $this->authActiveUser()->id;
-            $documentFile->file_name = $fileData['original'] ?? basename($real);
-            $documentFile->file_hash = $this->uniqueHash(16) . '.' . ($fileData['ext'] ?? pathinfo($real, PATHINFO_EXTENSION));
+            $documentFile->file_name = $fileData['original'];
+            $documentFile->file_hash = $this->uniqueHash(16) . '.' . $fileData['ext'];
             $documentFile->file_path = $path;
-            $documentFile->file_ext  = $fileData['ext'] ?? pathinfo($real, PATHINFO_EXTENSION);
-            $documentFile->file_size = $fileData['size'] ?? filesize($real);
-            Storage::disk('ftp_13')->put($path . $documentFile->file_hash, $contents);
+            $documentFile->file_ext  = $fileData['ext'];
+            $documentFile->file_size = $fileData['size'];
+            Storage::disk('ftp_13')->put($path . $documentFile->file_hash, file_get_contents($tempPath));
             $documentFile->save();
 
-            // Удаляем временный файл (по уже проверенному относительному пути)
-            Storage::disk('local')->delete($relative);
+            // Удаляем временный файл
+            Storage::disk('local')->delete($fileData['path']);
         }
     }
 

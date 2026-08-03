@@ -16,13 +16,13 @@
                             <div class="performer-info">
                                 <div class="performer-name">{{ $item->toUser->personal->fullName()??'' }}</div>
                                 <div class="performer-position">
-                                    {{ $item->toDep->lang($item->toDep->id)??'' }},
-                                    {{ $item->toUser->userPost->lang($item->toUser->userPost->id)??'' }}
+                                    {{ $item->toDep?->lang($item->toDep?->id) ?? '' }},
+                                    {{ $item->toUser?->userPost?->lang($item->toUser?->userPost?->id) ?? '' }}
                                 </div>
                             </div>
                             <div class="performer-role">
                                 <span class="role-badge">
-                                    {{ $item->resExecRole->lang($item->resExecRole->lang_id)??'' }}
+                                    {{ $item->resExecRole?->lang($item->resExecRole?->lang_id) ?? '' }}
                                 </span>
                             </div>
                         </div>
@@ -46,7 +46,7 @@
                     <div class="status-item-modern">
                         <div class="status-label">{{ __('status.exec_status') }}</div>
                         <span class="status-badge-modern {{ $journal->statusWork->badgeClass??'' }}">
-                            {{ $journal->statusWork->lang($journal->statusWork->id)??'unk' }}
+                            {{ $journal->statusWork?->lang($journal->statusWork?->id) ?? 'unk' }}
                         </span>
                     </div>
                     <div class="status-item-modern">
@@ -80,7 +80,7 @@
                     <div class="status-item-modern">
                         <div class="status-label">{{ __('status.exec_status') }}</div>
                         <span class="status-badge-modern {{ $journal->statusWork->badgeClass??'' }}">
-                            {{ $journal->statusWork->lang($journal->statusWork->id)??'unk' }}
+                            {{ $journal->statusWork?->lang($journal->statusWork?->id) ?? 'unk' }}
                         </span>
                     </div>
                     <div class="status-item-modern">
@@ -128,13 +128,13 @@
                             <div class="performer-info">
                                 <div class="performer-name">{{ $item->toUser->personal->fullName()??'' }}</div>
                                 <div class="performer-position">
-                                    {{ $item->toDep->lang($item->toDep->id)??'' }},
-                                    {{ $item->toUser->userPost->lang($item->toUser->userPost->id)??'' }}
+                                    {{ $item->toDep?->lang($item->toDep?->id) ?? '' }},
+                                    {{ $item->toUser?->userPost?->lang($item->toUser?->userPost?->id) ?? '' }}
                                 </div>
                             </div>
                             <div class="performer-role">
                                 <span class="role-badge">
-                                    {{ $item->resExecRole->lang($item->resExecRole->lang_id)??'' }}
+                                    {{ $item->resExecRole?->lang($item->resExecRole?->lang_id) ?? '' }}
                                 </span>
                             </div>
                         </div>
@@ -156,7 +156,7 @@
                         <div class="sl-left fw-600 f-16">{{ $doc->fromUser->personal->shortName()??'' }}</div>
                         <div class="sl-right">
                             <p class="text-muted">
-                                {{ $doc->fromUser->department->lang($doc->fromUser->department->id)??'' }}
+                                {{ $doc->fromUser?->department?->lang($doc->fromUser?->department?->id) ?? '' }}
                             </p>
                             <p class="mt-2">
                                 {!! $doc->res_text??'' !!}
@@ -245,7 +245,7 @@
                             @if(isset($execution_step_ids) && !in_array($doc->doc_exec_step_id, $execution_step_ids))
                                 <div class="mt-10">
                                     <span class="badge badge-pill {{ $doc->statusReply->badgeClass??'' }}">
-                                        {{ $doc->statusReply->lang($doc->statusReply->id)??'unk' }}
+                                        {{ $doc->statusReply?->lang($doc->statusReply?->id) ?? 'unk' }}
                                     </span>
                                     @if($doc && $doc->status == 5 && $journal->workEcpInfo($document->id, $doc->from_user)
                                             && $journal->workEcpInfo($document->id, $doc->from_user)->docInfo)
@@ -287,7 +287,7 @@
                 <i data-lucide="download"></i> {{ __('action.download') }}
             </button>
             <input id="downloadName"
-                   value="{{ $journal->journal->lang($journal->journal->lang_id)??'-' }} - {{ $journal->fromUser->personal->shortName()??'' }}"
+                   value="{{ $journal->journal->lang($journal->journal->lang_id)??'-' }} - {{ $journal->fromUser?->personal?->shortName() ?? '' }}"
                    hidden/>
 
             @if(in_array('IT_Admin', $authrole) && $journal->status != 13)
