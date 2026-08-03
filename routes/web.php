@@ -632,6 +632,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/sync',                [ExternalDocFlowController::class, 'syncNow'])->name('sync');
         Route::get('/{id}',                 [ExternalDocFlowController::class, 'show'])->whereNumber('id')->name('show');
         Route::get('/{id}/print',           [ExternalDocFlowController::class, 'printForm'])->whereNumber('id')->name('print');
+        // Печатная форма и вложения байтами с НАШЕГО домена — для инлайн-рендера
+        // через pdf.js и склейки в один файл (storage-ссылки Didox без CORS).
+        Route::get('/{id}/print-pdf',       [ExternalDocFlowController::class, 'printPdf'])->whereNumber('id')->name('print-pdf');
+        Route::get('/{id}/attachment-raw/{didoxId?}', [ExternalDocFlowController::class, 'attachmentRaw'])->whereNumber('id')->name('attachment-raw');
         Route::get('/{id}/file/{didoxId?}', [ExternalDocFlowController::class, 'file'])->whereNumber('id')->name('file');
         Route::post('/{id}/send-to-review', [ExternalDocFlowController::class, 'sendToReview'])->whereNumber('id')->name('send-review');
         Route::post('/{id}/decide',         [ExternalDocFlowController::class, 'decide'])->whereNumber('id')->name('decide');

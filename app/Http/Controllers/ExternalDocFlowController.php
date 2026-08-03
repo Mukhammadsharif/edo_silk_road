@@ -670,6 +670,160 @@ class ExternalDocFlowController extends Controller
     }
 
     /**
+     * GET /external-docs/{id}/print-pdf — печатная форма документа в виде PDF.
+     *
+     * Зачем отдельно от printForm() (тот отдаёт HTML): карточка рендерит документ
+     * через pdf.js, а тот читает файл как ArrayBuffer обычным fetch. Прямые
+     * storage-ссылки Didox отвечают без CORS-заголовков, поэтому байты обязаны
+     * идти С НАШЕГО домена.
+     */
+    public function printPdf(int $id)
+    {
+        $doc = $this->findOrgDocument($id);
+
+        $pdf = $this->printFormPdfBytes($doc);
+        abort_if($pdf === null, 404, 'Печатная форма в PDF недоступна.');
+
+        return $this->pdfResponse($pdf, 'print-form-' . ($doc->doc_number ?: $doc->id) . '.pdf');
+    }
+
+    /**
+     * GET /external-docs/{id}/attachment-raw/{didoxId?} — байты файла документа
+     * или вложения через наш сервер (в отличие от file(), который редиректит на
+     * Didox). Нужно для инлайн-рендера в карточке и для склейки в один файл.
+     */
+    public function attachmentRaw(int $id, ?string $didoxId = null)
+    {
+        $doc    = $this->findOrgDocument($id);
+        $target = $didoxId ?: $doc->didox_id;
+
+        // Защита: разрешаем только сам документ и вложения из raw.
+        $entry = collect($this->attachments($doc))->firstWhere('id', $target);
+        abort_if(! $entry, 404, 'Файл не найден.');
+
+        $pdf = $this->attachmentPdfBytes($doc, $entry);
+        abort_if($pdf === null, 404, 'Файл недоступен.');
+
+        return $this->pdfResponse($pdf, ($entry['name'] ?: 'attachment') . '.pdf');
+    }
+
+    /** Единый ответ с PDF: инлайн, с безопасным именем файла. */
+    private function pdfResponse(string $bytes, string $filename)
+    {
+        $safe = preg_replace('/[^\w\.\- ]+/u', '_', $filename);
+        if (! str_ends_with(mb_strtolower($safe), '.pdf')) {
+            $safe .= '.pdf';
+        }
+
+        return response($bytes, 200, [
+            'Content-Type'           => 'application/pdf',
+            'Content-Disposition'    => 'inline; filename="' . $safe . '"',
+            'X-Content-Type-Options' => 'nosniff',
+            'Cache-Control'          => 'private, max-age=300',
+        ]);
+    }
+
+    /**
+     * Печатная форма как PDF: сначала штатный view/{id}/pdf/{locale},
+     * при неудаче — file/true (та же форма, другой эндпоинт Didox).
+     */
+    private function printFormPdfBytes(DidoxDocument $doc): ?string
+    {
+        $token = $this->resolveOrgToken($doc->org_unit_id);
+        if (! $token) {
+            return null; // без авторизации Didox остаётся только HTML-кэш
+        }
+
+        $client = app(DidoxClient::class)->withUserKey($token);
+
+        $attempts = [
+            fn () => $client->pdf($doc->didox_id),
+            fn () => $client->documentPdfBase64($doc->didox_id),
+        ];
+
+        foreach ($attempts as $call) {
+            try {
+                $resp = $call();
+            } catch (Throwable $e) {
+                continue;
+            }
+
+            if (! ($resp['success'] ?? false)) {
+                continue;
+            }
+
+            $pdf = $this->extractPdfBytes($resp['data'] ?? null);
+            if ($pdf !== null) {
+                return $pdf;
+            }
+        }
+
+        return null;
+    }
+
+    /** Байты вложения: подписанный storage-URL → raw.url → file/true. */
+    private function attachmentPdfBytes(DidoxDocument $doc, array $entry): ?string
+    {
+        $token = $this->resolveOrgToken($doc->org_unit_id);
+        if (! $token) {
+            return null;
+        }
+
+        $client = app(DidoxClient::class)->withUserKey($token);
+
+        $urls = array_filter([
+            $entry['file_url'] ?? null,
+            $client->attachmentUrl($entry['id']),
+            $entry['url'] ?? null,
+        ]);
+
+        foreach ($urls as $url) {
+            if (str_contains($url, 'nopreview')) {
+                continue;
+            }
+            $bin = $client->fetchFile($url);
+            if (is_string($bin) && str_starts_with($bin, '%PDF')) {
+                return $bin;
+            }
+        }
+
+        try {
+            $resp = $client->documentPdfBase64($entry['id']);
+            if ($resp['success'] ?? false) {
+                return $this->extractPdfBytes($resp['data'] ?? null);
+            }
+        } catch (Throwable $e) {
+            // ниже вернём null
+        }
+
+        return null;
+    }
+
+    /**
+     * Didox отдаёт PDF то бинарём, то base64, то json-обёрткой —
+     * приводим к сырым байтам или null.
+     */
+    private function extractPdfBytes(mixed $data): ?string
+    {
+        if (is_array($data)) {
+            $data = $data['data'] ?? $data['file'] ?? $data['base64'] ?? $data['pdf'] ?? null;
+        }
+
+        if (! is_string($data) || $data === '') {
+            return null;
+        }
+
+        if (str_starts_with($data, '%PDF')) {
+            return $data;
+        }
+
+        $clean   = preg_replace('#^data:application/pdf;base64,#', '', trim($data));
+        $decoded = base64_decode($clean, true);
+
+        return ($decoded !== false && str_starts_with($decoded, '%PDF')) ? $decoded : null;
+    }
+
+    /**
      * Список файлов документа: сам документ + вложения/связанные из raw.
      * Возвращает [['id' => didoxId, 'name' => имя, 'main' => bool], ...].
      */
