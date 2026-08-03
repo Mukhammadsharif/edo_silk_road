@@ -13,6 +13,13 @@
             </div>
 
             <div class="document-content-section" id="pdf1">
+                {{-- v60: free-sign — PDF-viewer ВМЕСТО всего А4-шаблона
+                     (как в execution/confirm/view.blade.php): шапка,
+                     реквизиты, verifier и штамп-блоки старого шаблона
+                     не рендерятся — на PDF всё уже проштамповано. --}}
+                @if(!empty($isFreeSignDoc) && $isFreeSignDoc)
+                    @include('execution.confirm.templates.free-sign-page')
+                @else
                 <div class="work-doc-page" id="pdf2">
                     <div class="work-doc-subpage" id="pdf3">
                         <div id="printPage" class="printPage">
@@ -79,6 +86,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
             </div>
 
             @include('templates.mini_editor_js')

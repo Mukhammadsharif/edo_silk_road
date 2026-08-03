@@ -150,6 +150,41 @@
                                 </div>
                             </div>
 
+                            {{-- ═══ МЕТКА «Внешаблонные документы (free-sign)» ═══
+                                 Предзаполняется из free_sign_journal_types ($isFreeSignType,
+                                 передаёт edit()). В update(): отмечена -> firstOrCreate,
+                                 снята -> delete записи. Тип распознаётся модулем free-sign
+                                 независимо от id и doc_code (v59). --}}
+                            <div class="form-group-modern">
+                                <label class="fs-type-toggle">
+                                    <input type="checkbox" name="is_free_sign" value="1"
+                                           {{ !empty($isFreeSignType) ? 'checked' : '' }}>
+                                    <span class="fs-type-toggle__box"><i data-lucide="check"></i></span>
+                                    <span class="fs-type-toggle__text">
+                                        <strong>Внешаблонные документы (free-sign)</strong>
+                                        <small>Загрузка готовых PDF с разметкой подписей</small>
+                                    </span>
+                                </label>
+                            </div>
+
+                            <style>
+                                .fs-type-toggle { display:flex; align-items:flex-start; gap:12px; cursor:pointer;
+                                    padding:14px 16px; border:1px solid rgba(15,23,42,0.06); border-radius:12px;
+                                    background:#fff; transition:border-color .15s; margin:0; }
+                                .fs-type-toggle:hover { border-color:rgba(121,77,253,0.35); }
+                                .fs-type-toggle input { position:absolute; opacity:0; pointer-events:none; }
+                                .fs-type-toggle__box { flex:0 0 auto; width:22px; height:22px; margin-top:1px;
+                                    border:2px solid #cbd5e1; border-radius:6px; display:flex; align-items:center;
+                                    justify-content:center; transition:all .15s; }
+                                .fs-type-toggle__box i { width:14px; height:14px; color:#fff; opacity:0; }
+                                .fs-type-toggle input:checked + .fs-type-toggle__box {
+                                    background:#794DFD; border-color:#794DFD; }
+                                .fs-type-toggle input:checked + .fs-type-toggle__box i { opacity:1; }
+                                .fs-type-toggle__text { display:flex; flex-direction:column; gap:2px; }
+                                .fs-type-toggle__text strong { font-size:14px; color:#1e293b; font-weight:600; }
+                                .fs-type-toggle__text small { font-size:12.5px; color:#94a3b8; line-height:1.45; }
+                            </style>
+
                             <!-- Order Number -->
                             <div class="form-group-modern">
                                 <label>
