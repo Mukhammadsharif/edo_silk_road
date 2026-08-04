@@ -265,27 +265,8 @@ class JournalTypesController extends Controller
         // Метка «Внешаблонные документы (free-sign)» — из маркер-таблицы (v59).
         $isFreeSignType = \App\Models\FreeSignJournalType::isType((int) $id);
 
-        /* Фиксированный маршрут (v61): справочники для секции целей шага
-         | и текущие цели. Сотрудники — организации ТИПА ($model->org_id).
-         */
-        $fsPositions = \App\Models\Admin\UserPosition::orderBy('id')->get();
-
-        $fsEmployees = \App\Models\Admin\UserWorkHistory::where('org_id', $model->org_id)
-            ->where('status', 1)
-            ->whereHas('user', fn ($q) => $q->where('status', 1))
-            ->with('personal')
-            ->get();
-
-        $fsStepTargets = \App\Models\JournalExecutionStepTarget::whereIn(
-            'j_exec_step_id', $journal_exec_steps->pluck('id')
-        )->get()->groupBy('j_exec_step_id');
-
-        // Шаблон OnlyOffice типа (v63).
-        $typeTemplate = \App\Models\JournalTypeTemplate::where('journal_type_id', $id)->first();
-
         return view('document-settings.document.edit',compact('model', 'journalTypes', 'languages', 'execution_roles', 'roles',
-            'journal_exec_steps', 'unselected_exec_steps', 'listGroupItemColors', 'listGroupDescriptions', 'isFreeSignType',
-            'fsPositions', 'fsEmployees', 'fsStepTargets', 'typeTemplate'));
+            'journal_exec_steps', 'unselected_exec_steps', 'listGroupItemColors', 'listGroupDescriptions', 'isFreeSignType'));
     }
 
     public function update(Request $request, $id)
@@ -320,36 +301,6 @@ class JournalTypesController extends Controller
                 ]);
             } else {
                 \App\Models\FreeSignJournalType::where('journal_type_id', $journalType->id)->delete();
-            }
-
-            /* Шаблон OnlyOffice типа (v63): загрузка нового заменяет
-             | текущий (старый файл удаляем с FTP), чекбокс delete —
-             | удаляет совсем. Хранение: templates/journal-types/.
-             */
-            $tpl = \App\Models\JournalTypeTemplate::where('journal_type_id', $journalType->id)->first();
-
-            if ($request->boolean('delete_template') && $tpl) {
-                \Illuminate\Support\Facades\Storage::disk('ftp')->delete($tpl->file_path);
-                $tpl->delete();
-                $tpl = null;
-            }
-
-            $newTpl = $request->file('type_template');
-            if ($newTpl && $newTpl->isValid()
-                && strtolower($newTpl->getClientOriginalExtension()) === 'docx') {
-
-                if ($tpl) {
-                    \Illuminate\Support\Facades\Storage::disk('ftp')->delete($tpl->file_path);
-                }
-
-                $path = 'templates/journal-types/' . $journalType->id . '_' . time() . '.docx';
-                \Illuminate\Support\Facades\Storage::disk('ftp')
-                    ->put($path, file_get_contents($newTpl->getRealPath()));
-
-                \App\Models\JournalTypeTemplate::updateOrCreate(
-                    ['journal_type_id' => $journalType->id],
-                    ['file_path' => $path, 'orig_name' => $newTpl->getClientOriginalName()]
-                );
             }
         }
 
@@ -420,39 +371,14 @@ class JournalTypesController extends Controller
     public function stepRoles(Request $request, $id, $j_type_id)
     {
         //
-        /* v61.2: роли шага обязательны, ТОЛЬКО если не задан фиксированный
-         | маршрут — при целях (должности/сотрудники) чекбоксы ролей можно
-         | не отмечать вовсе (кандидаты по ролям не нужны, участники
-         | подставятся из целей). Раньше 'role_ids' => 'required' блокировал
-         | сохранение шага с одними целями («Обязательное поле не заполнено»).
-         */
         $request->validate([
-            'role_ids' => 'required_without_all:target_posts,target_users',
-        ], [
-            'role_ids.required_without_all' => 'Отметьте роли шага или задайте фиксированный маршрут',
+            'role_ids' => 'required',
         ]);
 
-        $role_ids = (array) $request->role_ids;
+        $role_ids = $request->role_ids;
         $status = $request->status;
 
         $journal_exec_step = JournalExecutionSteps::find($id);
-
-        /* v61.3: SIGN и RESOL в штатном движке ЕДИНИЧНЫ (getStep = first(),
-         | сценарии переходов двигают один шаг) — несколько людей на этих
-         | ролях зависли бы. Честная валидация вместо молчаливого take(1):
-         | больше одного явного сотрудника — не сохраняем. Должности не
-         | запрещаем (резолв в людей происходит при создании документа,
-         | там берётся первый и это видно в превью маршрута).
-         */
-        $stepCode = $journal_exec_step->executionRole->doc_code ?? '';
-        $targetUsers = array_filter((array) $request->input('target_users', []));
-
-        if (in_array($stepCode, ['SIGN', 'RESOL'], true) && count($targetUsers) > 1) {
-            return back()->withErrors([
-                'target_users' => 'Роль «' . ($journal_exec_step->executionRole->lang($journal_exec_step->executionRole->lang_id) ?? $stepCode)
-                    . '» единичная: документ подписывает один человек — укажите одного сотрудника',
-            ]);
-        }
 
         $journal_exec_step->update(['exec_status' => $status]);
 
@@ -467,32 +393,6 @@ class JournalTypesController extends Controller
                 $journal_exec_step_role->j_exec_step_id = $id;
                 $journal_exec_step_role->role_id = $role_id;
                 $journal_exec_step_role->save();
-            }
-        }
-
-        /* Фиксированный маршрут (v61): пересборка целей шага тем же
-         | паттерном delete+insert, что и роли выше. Пустые мультиселекты
-         | -> целей нет -> шаг обычный (кандидаты по ролям).
-         */
-        \App\Models\JournalExecutionStepTarget::where('j_exec_step_id', $id)->delete();
-
-        foreach ((array) $request->input('target_posts', []) as $postId) {
-            if ($postId) {
-                \App\Models\JournalExecutionStepTarget::firstOrCreate([
-                    'j_exec_step_id' => $id,
-                    'target_type'    => 'post',
-                    'target_id'      => (int) $postId,
-                ]);
-            }
-        }
-
-        foreach ((array) $request->input('target_users', []) as $userId) {
-            if ($userId) {
-                \App\Models\JournalExecutionStepTarget::firstOrCreate([
-                    'j_exec_step_id' => $id,
-                    'target_type'    => 'user',
-                    'target_id'      => (int) $userId,   // users.id (НЕ work_history!)
-                ]);
             }
         }
 
