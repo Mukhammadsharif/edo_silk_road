@@ -35,6 +35,19 @@ class OnlyOfficeService
     protected function getDocumentUrl(string $filePath): string
     {
         $encodedPath = base64_encode($filePath);
+
+        /* v63.1: URL для Document Server строим на ВНУТРЕННЕМ адресе
+         | приложения (only-office.APP_INTERNAL_URL — тот же, на котором
+         | работает callback сохранения), а НЕ через route() (APP_URL):
+         | при локальной разработке APP_URL=127.0.0.1:8000, и изнутри
+         | контейнера OnlyOffice это сам контейнер -> DS не мог скачать
+         | документ («не удалось загрузить документ»). Fallback на
+         | route(), если внутренний адрес не задан.
+         */
+        if (!empty($this->appInternalUrl)) {
+            return rtrim($this->appInternalUrl, '/') . '/proxy-document/' . $encodedPath;
+        }
+
         return route('document.proxy', ['path' => $encodedPath]);
     }
 
@@ -102,6 +115,38 @@ class OnlyOfficeService
         $docxPath = $path . $key . '.docx';
 
         Storage::disk('ftp')->put($docxPath, file_get_contents($file->getRealPath()));
+
+        return [
+            'key' => $key,
+            'path' => $path,
+            'url' => $this->getDocumentUrl($docxPath),
+        ];
+    }
+
+    /**
+     * Копия ШАБЛОНА типа (v63) для открытия в редакторе нового документа.
+     * Зеркало storeUploadedMainFile, но источник — docx-шаблон на FTP
+     * (journal_type_templates.file_path).
+     *
+     * @return array{key:string,path:string,url:string}|null null — файла нет
+     */
+    public function storeTemplateCopy(string $ftpTemplatePath): ?array
+    {
+        if (!\Illuminate\Support\Facades\Storage::disk('ftp')->exists($ftpTemplatePath)) {
+            \Illuminate\Support\Facades\Log::warning('[oo-template] файл шаблона не найден на FTP', [
+                'path' => $ftpTemplatePath,
+            ]);
+            return null;
+        }
+
+        $key = uniqid() . '_' . time();
+        $path = $this->getTodayPath();
+        $docxPath = $path . $key . '.docx';
+
+        \Illuminate\Support\Facades\Storage::disk('ftp')->put(
+            $docxPath,
+            \Illuminate\Support\Facades\Storage::disk('ftp')->get($ftpTemplatePath)
+        );
 
         return [
             'key' => $key,

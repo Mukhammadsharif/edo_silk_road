@@ -334,7 +334,8 @@ Route::group(['middleware' => ['auth']], function() {
             }
             return response()->file($path);
         });
-
+        Route::get('agreement-sheet/{id}/{hash}', [JournalController::class, 'agreementSheet'])
+            ->name('office.agreement-sheet');
         Route::any('document-create', [OnlyOfficeController::class, 'create'])->name('document-only-office.create');
         Route::get('/doc/view', [OnlyOfficeController::class, 'docView']);
         Route::get('download-pdf/{onlyDocId}', [OnlyOfficeController::class, 'convertToPDF'])->name('download-only-office.pdf');

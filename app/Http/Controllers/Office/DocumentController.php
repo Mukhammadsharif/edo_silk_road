@@ -286,12 +286,34 @@ class DocumentController extends Controller
             return $this->storeFreeSign($request);
         }
 
-        // Резолюция обязательна только для ШАБЛОННЫХ документов.
-        $request->validate([
-            'resolution_user' => 'required'
-        ], [
-            'resolution_user.required' => __('field.resolution_user_required'),
-        ]);
+        /* ═══ Фиксированный маршрут (v61) ═══
+         | У типа есть цели шагов: участники в форме СКРЫТЫ (см.
+         | getExecutionUsers) — resolution_user не требуем, шаги создаём
+         | из целей. Guard ДО создания записей: если какой-то шаг не
+         | резолвится в людей (вакантная должность, уволенный сотрудник) —
+         | документ не создаём, иначе маршрут завис бы.
+         */
+        $fixedRoute = null;
+        if (\App\Models\JournalExecutionStepTarget::typeHasTargets((int) $request->journal_type)) {
+            $fixedRoute = $this->resolveFixedRoute((int) $request->journal_type);
+
+            $empty = collect($fixedRoute)->first(fn ($e) => $e['users']->isEmpty());
+            if ($empty || empty($fixedRoute)) {
+                return back()->withInput()->withErrors([
+                    'journal_type' => 'Фиксированный маршрут типа не резолвится: шаг «'
+                        . ($empty['role_code'] ?? '-')
+                        . '» не имеет действующих участников (должность вакантна или '
+                        . 'сотрудник неактивен). Обратитесь к администратору типа документа.',
+                ]);
+            }
+        } else {
+            // Резолюция обязательна только для ШАБЛОННЫХ документов с ручным выбором.
+            $request->validate([
+                'resolution_user' => 'required'
+            ], [
+                'resolution_user.required' => __('field.resolution_user_required'),
+            ]);
+        }
 
         $journal_type = JournalTypes::find($request->journal_type);
 
@@ -331,7 +353,12 @@ class DocumentController extends Controller
         $this->saveFiles($document->id, $journal->id, $request);
 
         // 5️⃣ Foydalanuvchi rollarini saqlash
-        $this->assignExecutionUsers($journal->id, $request);
+        if ($fixedRoute !== null) {
+            // Фиксированный маршрут: шаги из целей типа, поля формы игнорируются.
+            $this->assignExecutionUsersFromTargets($journal->id, $fixedRoute);
+        } else {
+            $this->assignExecutionUsers($journal->id, $request);
+        }
 
         // 6️⃣ Log yaratish
         $this->createLog($journal->doc_id, 1, $journal->journal->title ?? '', $document->doc_name ?? '');
@@ -1111,6 +1138,20 @@ class DocumentController extends Controller
 
     public function getExecutionUsers($j_id)
     {
+        /* ═══ Фиксированный маршрут (v61) ═══
+         | Если у типа есть цели шагов — селекты участников НЕ отдаём:
+         | вместо них read-only превью «Маршрут документа». store()
+         | создаст шаги сам из целей.
+         */
+        if (\App\Models\JournalExecutionStepTarget::typeHasTargets((int) $j_id)) {
+            $fixedRoute = $this->resolveFixedRoute((int) $j_id);
+
+            $blade = view('office.templates.execution-steps-fixed', [
+                'fixedRoute' => $fixedRoute,
+            ])->render();
+
+            return response()->json(['success' => true, 'blade' => $blade, 'fixed' => true]);
+        }
         //
         $journal_type = JournalTypes::find($j_id);
 
@@ -1325,6 +1366,70 @@ class DocumentController extends Controller
         $timestamp = time();
 
         return "{$randomString}_{$timestamp}";
+    }
+
+    /* ═══════════ ФИКСИРОВАННЫЙ МАРШРУТ ТИПА (v61) ═══════════ */
+
+    /**
+     * Резолв целей всех шагов типа в участников.
+     *
+     * @return array [ ['step' => JournalExecutionSteps, 'role_code' => 'SIGN',
+     *                  'role_id' => int, 'users' => Collection<UserWorkHistory>], ... ]
+     *         users может быть ПУСТОЙ — вызывающий обязан проверить
+     *         (вакантная должность/уволенный человек = зависший маршрут).
+     */
+    private function resolveFixedRoute(int $journalTypeId): array
+    {
+        $steps = JournalExecutionSteps::where('journal_type_id', $journalTypeId)
+            ->orderBy('id')
+            ->get();
+
+        $route = [];
+
+        foreach ($steps as $step) {
+            $hasTargets = \App\Models\JournalExecutionStepTarget::where('j_exec_step_id', $step->id)->exists();
+            if (!$hasTargets) {
+                continue;   // шаг без целей в фиксированном типе пропускается
+            }
+
+            $route[] = [
+                'step'      => $step,
+                'role_code' => $step->executionRole->doc_code ?? '',
+                'role_id'   => (int) $step->exec_role_id,
+                'users'     => \App\Models\JournalExecutionStepTarget::resolveStep(
+                    $step->id, (int) $this->organizationId()
+                ),
+            ];
+        }
+
+        return $route;
+    }
+
+    /**
+     * Создание document_execution_steps из фиксированного маршрута.
+     * RESOL и SIGN — единичные в штатной семантике (directorDocument /
+     * signer берутся first()) — берём ПЕРВОГО, лишних логируем.
+     * AGREE и EXEC — все участники.
+     */
+    private function assignExecutionUsersFromTargets($journal_id, array $fixedRoute): void
+    {
+        foreach ($fixedRoute as $entry) {
+            $users = $entry['users'];
+
+            if (in_array($entry['role_code'], ['RESOL', 'SIGN'], true) && $users->count() > 1) {
+                \Illuminate\Support\Facades\Log::warning('[fixed-route] роль '
+                    . $entry['role_code'] . ' единична, целей резолвится больше — берём первого', [
+                    'j_id'  => $journal_id,
+                    'users' => $users->pluck('id')->toArray(),
+                ]);
+                $users = $users->take(1);
+            }
+
+            foreach ($users as $wh) {
+                // extracted() ждёт work_history.id — resolveStep возвращает их же.
+                $this->extracted($journal_id, $wh->id, $entry['role_id']);
+            }
+        }
     }
 
     public function extracted($journal_id, $signatory_user, $exec_role_id): void

@@ -882,7 +882,14 @@ class ExecutionController extends Controller
         $execution_step_ids = DocumentExecutionSteps::where('j_id', $journal->id)
             ->where('exec_role', $this->getExecutiveRole()->id)->pluck('id')->toArray();
 
-        $execution_roles_ids = JournalExecutionStepRoles::where('j_exec_step_id', $execution_step->id)->pluck('role_id')->toArray();
+        /* v61.4: у типа может НЕ БЫТЬ шага EXEC в journal_execution_steps
+         | (например, тип с фиксированным маршрутом без процесса Ijrochi) —
+         | штатный код падал на $execution_step->id (null). Без шага —
+         | пустой список кандидатов «доп. исполнителей», страница живёт.
+         */
+        $execution_roles_ids = $execution_step
+            ? JournalExecutionStepRoles::where('j_exec_step_id', $execution_step->id)->pluck('role_id')->toArray()
+            : [];
         $user_roles = UserRole::whereIn('role_id', $execution_roles_ids)->pluck('model_id')->toArray();
         $execution_users = UserWorkHistory::where('org_id', $this->organizationId())
             ->whereIn('user_id', $user_roles)->whereHas('user', function ($query) {

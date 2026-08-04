@@ -56,7 +56,7 @@
                         </div>
                     </div>
 
-                    <form method="POST" action="{{ route('document-type.update', $model->id) }}" class="modern-form" style="padding: 2rem;">
+                    <form method="POST" action="{{ route('document-type.update', $model->id) }}" class="modern-form" style="padding: 2rem;" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -148,6 +148,35 @@
                                         <label for="edit_status2">{{ __('field.delete') }}</label>
                                     </div>
                                 </div>
+                            </div>
+
+                            {{-- ═══ ШАБЛОН OnlyOffice (v63, опционально) ═══
+                                 docx-шаблон типа (например, заявка на закуп): при
+                                 создании документа OnlyOffice откроет ЕГО КОПИЮ
+                                 вместо пустого листа. Хранится на FTP
+                                 (journal_type_templates). --}}
+                            <div class="form-group-modern">
+                                <label>
+                                    <i data-lucide="file-text"></i>
+                                    Шаблон OnlyOffice (docx)
+                                </label>
+                                @if(!empty($typeTemplate))
+                                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;
+                                                padding:8px 12px; border:1px solid rgba(15,23,42,0.08);
+                                                border-radius:10px; background:#f8fafc; font-size:12.5px;">
+                                        <i data-lucide="file-check" style="width:15px;height:15px;color:#794DFD;"></i>
+                                        <span style="flex:1;">{{ $typeTemplate->orig_name }}</span>
+                                        <label style="display:flex; align-items:center; gap:5px; margin:0;
+                                                      font-size:12px; color:#ef4444; cursor:pointer;">
+                                            <input type="checkbox" name="delete_template" value="1"> удалить
+                                        </label>
+                                    </div>
+                                @endif
+                                <input type="file" name="type_template" accept=".docx"
+                                       class="form-control-modern">
+                                <small style="font-size:11.5px; color:#94a3b8;">
+                                    Загрузка нового файла заменит текущий шаблон
+                                </small>
                             </div>
 
                             {{-- ═══ МЕТКА «Внешаблонные документы (free-sign)» ═══
@@ -315,6 +344,58 @@
                                     @endforeach
                                 </div>
 
+                                {{-- ═══ ФИКСИРОВАННЫЙ МАРШРУТ (v61, опционально) ═══
+                                     Если для шага указаны должности/сотрудники — при
+                                     создании документа этого типа участники подставятся
+                                     АВТОМАТИЧЕСКИ (выбор скрыт), документ сразу пойдёт
+                                     по цепочке. Пусто — обычное поведение по ролям. --}}
+                                @php
+                                    $stTargets = $fsStepTargets[$journal_exec_step->id] ?? collect();
+                                    $stPostIds = $stTargets->where('target_type', 'post')->pluck('target_id')->map(fn($v)=>(int)$v)->all();
+                                    $stUserIds = $stTargets->where('target_type', 'user')->pluck('target_id')->map(fn($v)=>(int)$v)->all();
+                                @endphp
+                                <div style="padding: 1rem 1.5rem; border-top: 2px solid #f1f5f9;">
+                                    <div style="font-size:13px; font-weight:600; color:#1e293b; margin-bottom:4px;">
+                                        <i data-lucide="route" style="width:14px;height:14px;"></i>
+                                        Фиксированный маршрут (опционально)
+                                    </div>
+                                    <div style="font-size:12px; color:#94a3b8; margin-bottom:10px;">
+                                        Укажите сотрудников — при создании документа
+                                        участники шага подставятся автоматически, без выбора
+                                    </div>
+                                    {{-- v61.5: панель ДОЛЖНОСТЕЙ временно скрыта по решению
+                                         Jasur — выбор только по сотрудникам. Бэкенд целей
+                                         'post' не тронут (существующие данные и резолв
+                                         работают); вернуть панель = восстановить блок из
+                                         истории версий и grid на 1fr 1fr. --}}
+                                    <div style="display:grid; grid-template-columns:1fr; gap:12px;">
+                                        <div class="fst-picker">
+                                            <div class="fst-picker__head">
+                                                <span>Сотрудники</span>
+                                                <span class="fst-picker__count" data-count>0</span>
+                                            </div>
+                                            <input type="text" class="fst-picker__search" placeholder="Поиск сотрудника...">
+                                            <div class="fst-picker__list">
+                                                @foreach($fsEmployees as $emp)
+                                                    <label class="fst-picker__item">
+                                                        <input type="checkbox" name="target_users[]"
+                                                               value="{{ $emp->user_id }}"
+                                                               @if(in_array((int) $emp->user_id, $stUserIds)) checked @endif>
+                                                        <span class="fst-picker__box"><i data-lucide="check"></i></span>
+                                                        <span class="fst-picker__label">
+                                                            {{ $emp->personal?->fullName() ?? ('#'.$emp->user_id) }}
+                                                            <small>{{ $emp->userPost?->lang($emp->userPost?->id) ?? '' }}</small>
+                                                        </span>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style="font-size:11.5px; color:#94a3b8; margin-top:6px;">
+                                        Снять все отметки — шаг снова обычный (кандидаты по ролям)
+                                    </div>
+                                </div>
+
                                 <div style="padding: 1.5rem; border-top: 2px solid #f1f5f9; display: flex; justify-content: flex-end;">
                                     <input type="hidden" name="status" value="{{ $journal_exec_step->exec_status ?? 0 }}">
                                     <button type="submit" class="btn-modern btn-primary" style="width: auto;">
@@ -350,5 +431,67 @@
                 });
             }
         });
+    </script>
+
+    {{-- ═══ v61.2: панели выбора фиксированного маршрута ═══ --}}
+    <style>
+        .fst-picker { border:1px solid rgba(15,23,42,0.08); border-radius:12px; background:#fff; overflow:hidden; }
+        .fst-picker__head { display:flex; justify-content:space-between; align-items:center;
+            padding:8px 12px; font-size:12.5px; font-weight:600; color:#1e293b;
+            background:#f8fafc; border-bottom:1px solid rgba(15,23,42,0.06); }
+        .fst-picker__count { min-width:22px; height:20px; padding:0 6px; border-radius:10px;
+            background:#e2e8f0; color:#64748b; font-size:11.5px; display:flex;
+            align-items:center; justify-content:center; transition:all .15s; }
+        .fst-picker__count.is-active { background:#794DFD; color:#fff; }
+        .fst-picker__search { width:100%; border:none; border-bottom:1px solid rgba(15,23,42,0.06);
+            padding:8px 12px; font-size:12.5px; outline:none; }
+        .fst-picker__search:focus { background:rgba(121,77,253,0.03); }
+        .fst-picker__list { max-height:180px; overflow-y:auto; padding:4px; }
+        .fst-picker__item { display:flex; align-items:flex-start; gap:8px; padding:6px 8px;
+            border-radius:8px; cursor:pointer; margin:0; transition:background .1s; }
+        .fst-picker__item:hover { background:rgba(121,77,253,0.06); }
+        .fst-picker__item.is-hidden { display:none; }
+        .fst-picker__item input { position:absolute; opacity:0; pointer-events:none; }
+        .fst-picker__box { flex:0 0 auto; width:17px; height:17px; margin-top:1px;
+            border:2px solid #cbd5e1; border-radius:5px; display:flex; align-items:center;
+            justify-content:center; transition:all .12s; }
+        .fst-picker__box i { width:11px; height:11px; color:#fff; opacity:0; }
+        .fst-picker__item input:checked + .fst-picker__box { background:#794DFD; border-color:#794DFD; }
+        .fst-picker__item input:checked + .fst-picker__box i { opacity:1; }
+        .fst-picker__item input:checked ~ .fst-picker__label { color:#794DFD; font-weight:600; }
+        .fst-picker__label { font-size:12.5px; color:#334155; line-height:1.35;
+            display:flex; flex-direction:column; }
+        .fst-picker__label small { font-size:11px; color:#94a3b8; font-weight:400; }
+    </style>
+    <script>
+        /* Панели «Фиксированный маршрут»: живой поиск + счётчик выбранного.
+           Делегирование на document — панелей несколько (по одной паре на
+           каждый шаг маршрута), обработчики общие. */
+        (function () {
+            function refreshCount(picker) {
+                var n = picker.querySelectorAll('input[type="checkbox"]:checked').length;
+                var badge = picker.querySelector('[data-count]');
+                if (badge) {
+                    badge.textContent = n;
+                    badge.classList.toggle('is-active', n > 0);
+                }
+            }
+
+            document.addEventListener('input', function (e) {
+                if (!e.target.classList || !e.target.classList.contains('fst-picker__search')) return;
+                var q = e.target.value.trim().toLowerCase();
+                e.target.closest('.fst-picker').querySelectorAll('.fst-picker__item').forEach(function (item) {
+                    item.classList.toggle('is-hidden', q !== '' && item.textContent.toLowerCase().indexOf(q) === -1);
+                });
+            });
+
+            document.addEventListener('change', function (e) {
+                var picker = e.target.closest && e.target.closest('.fst-picker');
+                if (picker) refreshCount(picker);
+            });
+
+            document.querySelectorAll('.fst-picker').forEach(refreshCount);   // стартовые счётчики
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        })();
     </script>
 @endsection
