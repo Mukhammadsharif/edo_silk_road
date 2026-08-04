@@ -41,9 +41,17 @@ class OnlyOfficeController extends Controller
 
         // Если загружен основной файл (main_file) — сохраняем его и открываем
         // в OnlyOffice (вместо прямого сохранения / пустого шаблона).
+        $typeTemplatePath = \App\Models\JournalTypeTemplate::pathFor((int) $request->journal_type);
+
         if ($request->hasFile('main_file') && $request->file('main_file')->isValid()) {
             $uploaded = $this->onlyOfficeService->storeUploadedMainFile($request->file('main_file'));
             $service = $this->onlyOfficeService->openWordEditor($uploaded['url'], $uploaded['key']);
+        } elseif ($typeTemplatePath && ($copy = $this->onlyOfficeService->storeTemplateCopy($typeTemplatePath))) {
+            /* v63: у типа есть docx-шаблон (например, заявка на закуп) —
+               открываем его КОПИЮ вместо пустого листа. Товары/текст
+               пользователь заполняет руками; дальше штатное сохранение
+               (document_key копии уйдёт с формой в DefaultDocumentHandler). */
+            $service = $this->onlyOfficeService->openWordEditor($copy['url'], $copy['key']);
         } else {
             $service = $this->onlyOfficeService->openWordEditor();
         }

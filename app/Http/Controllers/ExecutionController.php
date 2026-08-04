@@ -821,11 +821,19 @@ class ExecutionController extends Controller
         // Free-sign? → PDF-viewer вместо HTML (см. confirm.templates.free-sign-page)
         [$isFreeSignDoc, $documentFile, $pdfVersion, $fsGhosts] = $this->freeSignPdfData($journal);
 
+        /* v52: free-sign + тумблер «обязательная резолюция» ВЫКЛ ->
+         | форму создания резолюции не показываем, резолюционера сразу
+         | выводим на ПОДПИСЬ (ветка else в view-right, null-guard там же).
+         | Подпись без резолюции пропустит handleFreeSignDocument (v49).
+         */
+        $fsResolutionOptional = $isFreeSignDoc
+            && !\App\Models\FreeSignJournalControl::resolutionRequiredFor($journal->id);
+
         return view('execution.confirm.view', compact('authUser','journal', 'document','edoCancelMessages', 'documentFiles',
             'directorDocument','directorResolution','selectedPerformers', 'isAddResolution','selectedAddPerformers',
             'agreement_users', 'replyDocuments', 'qrKey', 'signer', 'signType', 'current_agreement', 'execution_users',
             'resolutionExecRoles', 'resolutionTypes', 'execution_step_ids', 'documentComments', 'comment_inputs', 'html_doc', 'model',
-            'isFreeSignDoc', 'documentFile', 'pdfVersion', 'fsGhosts'));
+            'isFreeSignDoc', 'documentFile', 'pdfVersion', 'fsGhosts', 'fsResolutionOptional'));
     }
 
     public function viewExecDocument($j_id, $doc_hash): Factory|View|Application
@@ -874,7 +882,14 @@ class ExecutionController extends Controller
         $execution_step_ids = DocumentExecutionSteps::where('j_id', $journal->id)
             ->where('exec_role', $this->getExecutiveRole()->id)->pluck('id')->toArray();
 
-        $execution_roles_ids = JournalExecutionStepRoles::where('j_exec_step_id', $execution_step->id)->pluck('role_id')->toArray();
+        /* v61.4: у типа может НЕ БЫТЬ шага EXEC в journal_execution_steps
+         | (например, тип с фиксированным маршрутом без процесса Ijrochi) —
+         | штатный код падал на $execution_step->id (null). Без шага —
+         | пустой список кандидатов «доп. исполнителей», страница живёт.
+         */
+        $execution_roles_ids = $execution_step
+            ? JournalExecutionStepRoles::where('j_exec_step_id', $execution_step->id)->pluck('role_id')->toArray()
+            : [];
         $user_roles = UserRole::whereIn('role_id', $execution_roles_ids)->pluck('model_id')->toArray();
         $execution_users = UserWorkHistory::where('org_id', $this->organizationId())
             ->whereIn('user_id', $user_roles)->whereHas('user', function ($query) {

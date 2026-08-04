@@ -474,6 +474,44 @@ class JournalController extends Controller
             ->values();
     }
 
+    /* ═══════════ ЛИСТ СОГЛАСОВАНИЯ (v62) ═══════════
+     | Печатная страница А4: шапка с информацией о документе + список
+     | согласующих (ТОЛЬКО роль AGREE) со статусами, датами и
+     | комментариями (DocumentReplyComments типа DOC_SIGNED по шагу).
+     | Дата согласования = updated_at шага в статусе 5/6.
+     | Работает и для штатных, и для free-sign документов.
+     */
+    public function agreementSheet($id, $hash)
+    {
+        $journal  = DocumentJournals::findOrFail($id);
+        $document = \App\Models\Document\Documents::where('id', $journal->doc_id)
+            ->where('doc_hash', $hash)
+            ->firstOrFail();
+
+        $agreeRole = \App\Models\Document\DocumentExecutionRoles::where('doc_code', 'AGREE')
+            ->where('status', 1)
+            ->first();
+
+        $agreeSteps = $agreeRole
+            ? DocumentExecutionSteps::where('j_id', $journal->id)
+                ->where('exec_role', $agreeRole->id)
+                ->with(['toUser.personal', 'toUser.userPost', 'toUser.department'])
+                ->orderBy('id')
+                ->get()
+            : collect();
+
+        // Комментарии согласования по шагам (DOC_SIGNED).
+        $signedType = \App\Models\Resolution\ReplyCommentTypes::where('doc_code', 'DOC_SIGNED')->first();
+        $comments = ($signedType && $agreeSteps->isNotEmpty())
+            ? \App\Models\Document\DocumentReplyComments::whereIn('doc_exec_step_id', $agreeSteps->pluck('id'))
+                ->where('reply_comment_type', $signedType->id)
+                ->get()
+                ->keyBy('doc_exec_step_id')
+            : collect();
+
+        return view('office.journal.agreement-sheet', compact('journal', 'document', 'agreeSteps', 'comments'));
+    }
+
     public function viewFreeSign($id, $hash)
     {
         $journal = DocumentJournals::findOrFail($id);
@@ -562,7 +600,15 @@ class JournalController extends Controller
             && in_array((int) $journal->status, [1, 3], true)   // Yaratilgan / Tahrirlash
             && DocumentExecutionSteps::where('j_id', $journal->id)->exists(); // есть кого активировать
 
-        $canSign = $hasActiveStep || $isAuthorConfirm;
+        /* v50: подписание в РЕДАКТОРЕ — ТОЛЬКО для автора при отправке
+         | (его подпись запускает маршрут). После отправки участники
+         | подписывают со ШТАТНЫХ страниц («На подпись», «Согласование»,
+         | «Резолюция» — все адаптированы под free-sign); модалка и
+         | кнопка подписи в редакторе больше не показываются.
+         | Раньше: $canSign = $hasActiveStep || $isAuthorConfirm;
+         | ($hasActiveStep больше не используется — оставлен для ясности логики)
+         */
+        $canSign = $isAuthorConfirm;
 
         /* ═══════════ ВОССТАНОВЛЕНИЕ СОХРАНЁННОГО СОСТОЯНИЯ ═══════════
          | Без этого при обновлении страницы подписанты и метки теряются:
@@ -712,13 +758,43 @@ class JournalController extends Controller
         // Форму резолюции показываем только на своём этапе.
         $canResolve = $canResolve && $showResolution;
 
+        /* v51: встроенный редактор ЗАПОЛНЕНИЯ резолюции на странице
+         | free-sign УБРАН (роль RESOL в маршруте остаётся!). Резолюционер
+         | работает со ШТАТНОЙ страницы «Резолюция» (execution/confirm):
+         | там штатная форма создания резолюции (document.create-resolution,
+         | семантика совместима с нашим маршрутом — journal 8, RESOL 2,
+         | EXEC-шаги) и подпись уже с ecp_doc_type=free_sign_doc.
+         | Blade-блок и FreeSignResolutionController не удалены — форма
+         | просто не показывается; вернуть = убрать строку ниже.
+         */
+        $canResolve = false;
+
+        /* ═══ Тумблер «обязательная резолюция» (v49) — данные для редактора ═══
+         | fsResolRoleId       — id роли RESOL: по нему JS решает, показывать ли
+         |                       тумблер (есть ли резолюционер среди подписантов)
+         | fsControlEnabled    — фактический контроль журнала (выбор документа,
+         |                       при отсутствии записи — по настройке типа):
+         |                       при включённом тумблер заблокирован — проект
+         |                       резолюции готовит контролёр
+         | fsResolutionRequired — текущее значение тумблера
+         */
+        $fsResolRoleId = \App\Models\Document\DocumentExecutionRoles::where('doc_code', 'RESOL')->value('id');
+
+        $fsControlEnabled = \App\Models\FreeSignJournalControl::choiceFor($journal->id)
+            ?? \App\Models\Journal\JournalTypeControls::where('journal_type_id', $journal->j_type)
+                ->where('status', 1)
+                ->exists();
+
+        $fsResolutionRequired = \App\Models\FreeSignJournalControl::resolutionRequiredFor($journal->id);
+
         return view('office.journal.work.free-sign', compact(
             'journal', 'document', 'documentFile', 'people', 'roles', 'canSign',
             'savedSigners', 'savedFields', 'mode', 'signStatus', 'signType',
             'isAuthorConfirm', 'originalFile',
             'canResolve', 'resolutionTypes', 'resolutionExecRoles',
             'directorResolution', 'resolutionStep', 'performerSteps', 'myExecStep',
-            'showResolution', 'showExecution'
+            'showResolution', 'showExecution',
+            'fsResolRoleId', 'fsControlEnabled', 'fsResolutionRequired'
         ));
     }
     public function viewInbox($id, $hash): Factory|View|Application

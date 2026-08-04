@@ -623,6 +623,14 @@
 
             csrf: @json(csrf_token()),
 
+            // v49: тумблер «обязательное заполнение резолюции».
+            // resolRoleId — id роли RESOL (по нему видимость тумблера),
+            // controlEnabled — при включённом контроле тумблер заблокирован,
+            // resolutionRequired — текущее значение.
+            resolRoleId: @json($fsResolRoleId ?? null),
+            controlEnabled: @json((bool) ($fsControlEnabled ?? false)),
+            resolutionRequired: @json((bool) ($fsResolutionRequired ?? true)),
+
             // PDF документа через существующий preView (диск ftp_13).
             // $documentFile — запись document_files с исходным PDF.
             @isset($documentFile)

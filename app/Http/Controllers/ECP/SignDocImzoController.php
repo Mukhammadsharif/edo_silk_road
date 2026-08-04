@@ -413,14 +413,15 @@ class SignDocImzoController extends Controller
 
         $stepStatus = (int) $step->status;
 
-        /* ═══════ RESOL: сначала создать резолюцию, потом подписать ═══════
-         | Порядок у роли RESOL двухэтапный:
-         |   1) через форму создаётся резолюция (исполнители, срок, текст)
-         |      -> шаг RESOL остаётся 2, журнал -> 8
-         |   2) подписывает -> шаг 5, журнал -> 9, активируются EXEC
-         |
-         | Если подписать БЕЗ созданной резолюции — маршрут уедет к EXEC,
-         | а исполнителей нет (их создаёт форма резолюции). Документ зависнет.
+        /* ═══════ RESOL: резолюция перед подписью — ПО ТУМБЛЕРУ (v49) ═══════
+         | resolution_required (free_sign_journal_controls, default true):
+         |   true  — как раньше: сначала резолюция (исполнители, срок,
+         |           текст), потом подпись; без неё — отказ
+         |   false — RESOL может подписать БЕЗ резолюции: шагов EXEC не
+         |           будет (их создаёт форма резолюции), nextPresentRole
+         |           не найдёт EXEC и документ корректно завершится (10)
+         | При включённом контроле резолюция создаётся контролёром до
+         | пробуждения RESOL — проверка проходит независимо от тумблера.
          */
         $stepRole = $route->roleCodeOfStep($step);
 
@@ -428,11 +429,17 @@ class SignDocImzoController extends Controller
             $hasResolution = \App\Models\Document\DocumentResolutions::where('j_id', $journal->id)->exists();
 
             if (!$hasResolution) {
-                \Illuminate\Support\Facades\Log::warning('[free-sign] RESOL подписывает без резолюции', [
+                if (\App\Models\FreeSignJournalControl::resolutionRequiredFor($journal->id)) {
+                    \Illuminate\Support\Facades\Log::warning('[free-sign] RESOL подписывает без резолюции — отказ (resolution_required=true)', [
+                        'j_id' => $journal->id,
+                    ]);
+                    return $this->errorResponse(__('error.create_resolution_first')
+                        ?: 'Сначала создайте резолюцию, затем подпишите документ');
+                }
+
+                \Illuminate\Support\Facades\Log::info('[free-sign] RESOL подписывает без резолюции (resolution_required=false) — документ завершится без исполнителей', [
                     'j_id' => $journal->id,
                 ]);
-                return $this->errorResponse(__('error.create_resolution_first')
-                    ?: 'Сначала создайте резолюцию, затем подпишите документ');
             }
         }
 
@@ -1025,7 +1032,7 @@ class SignDocImzoController extends Controller
     private function createNewUser($jsonDecodeBack, $subjectName, $pin)
     {
         try {
-            $isOrg = isset($subjectName['O']) && isset($subjectName['1.2.860.3.16.1.1']);
+            $isOrg = isset($subjectName['O']);
             $organization = null;
             $department = null;
 
@@ -1215,9 +1222,9 @@ class SignDocImzoController extends Controller
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => $postData,
-            CURLOPT_HTTPHEADER => [
-                'X-Real-IP: ' . config('services.e-imzo-server.real_ip'),
-                'Host: '      . config('services.e-imzo-server.host'),
+            CURLOPT_HTTPHEADER     => [
+                'X-Real-IP: 185.183.242.32',
+                'Host: edoline.uz',
                 'Content-Type: application/json'
             ],
         ]);
