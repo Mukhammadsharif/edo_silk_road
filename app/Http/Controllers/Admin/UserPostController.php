@@ -154,9 +154,9 @@ class UserPostController extends Controller
             $dep_ids = json_decode($model->dep_ids, true);
         }
 
-        $selected_deps = Department::whereIn('id', $dep_ids)->where('status', 1)->orderBy('order_number')->get();
+        $selected_deps = Department::where('org_unit_id', $model->org_id)->whereIn('id', $dep_ids)->where('status', 1)->orderBy('order_number')->get();
 
-        $un_selected_deps = Department::whereNotIn('id', $dep_ids)->where('status', 1)->orderBy('order_number')->get();
+        $un_selected_deps = Department::where('org_unit_id', $model->org_id)->whereNotIn('id', $dep_ids)->where('status', 1)->orderBy('order_number')->get();
 
         return view('admin.user-posts.edit',compact('model', 'selected_deps', 'un_selected_deps'));
     }
