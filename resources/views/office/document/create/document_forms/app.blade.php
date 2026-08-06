@@ -30,7 +30,7 @@
         </div>
     </div>
 
-    @if($hasFromDate && $hasToDate)
+    @if(isset($hasFromDate) && $hasToDate)
         <div class="info-message">
             <i data-lucide="info"></i>
             <span>{{ __('action.choose_begin_end_date') }}</span>

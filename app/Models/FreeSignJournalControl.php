@@ -22,11 +22,26 @@ class FreeSignJournalControl extends Model
     protected $fillable = [
         'j_id',
         'enabled',
+        'resolution_required',
     ];
 
     protected $casts = [
-        'enabled' => 'boolean',
+        'enabled'             => 'boolean',
+        'resolution_required' => 'boolean',
     ];
+
+    /**
+     * Обязательна ли резолюция для журнала перед подписью роли RESOL.
+     *
+     * Записи нет -> true (текущее строгое поведение, как у старых
+     * и штатных документов).
+     */
+    public static function resolutionRequiredFor(int $journalId): bool
+    {
+        $value = static::where('j_id', $journalId)->value('resolution_required');
+
+        return $value === null ? true : (bool) $value;
+    }
 
     /**
      * Явный выбор контроля для журнала.

@@ -1,5 +1,11 @@
 <div class="view-right-modern">
+    {{-- v54: при отсутствии резолюции форма создания рендерится ВСЕГДА,
+         но для fs с необязательной резолюцией — СКРЫТА (display:none);
+         её раскрывает кнопка «Заполнить резолюцию» из блока подписи ниже.
+         Ветвление @if/@else заменено на два независимых @if — для
+         fs-optional рендерятся ОБА блока (форма создания + подпись). --}}
     @if(!$directorResolution)
+        <div id="fsResFillWrap" @if(!empty($fsResolutionOptional)) style="display:none" @endif>
         @if($directorDocument->status > 0)
             <div class="execution-card-modern">
                 <div class="card-header-modern">
@@ -201,7 +207,10 @@
                 </div>
             </div>
         @endif
-    @else
+        </div>{{-- /#fsResFillWrap --}}
+    @endif
+    {{-- v54: блок подписи — при резолюции ИЛИ при fs-optional (без неё) --}}
+    @if($directorResolution || !empty($fsResolutionOptional))
         @if($directorDocument)
             <div class="execution-card-modern">
                 <div class="card-header-modern">
@@ -281,6 +290,9 @@
                         </table>
                     </div>
 
+                    @if($directorResolution)
+                    {{-- v52: guard — при необязательной резолюции fs этой
+                         записи нет; resType->lang() на null уронил бы страницу --}}
                     <div class="profile-pic currentResolution">
                         <p>
                             <strong>{{ __('title.res_type') }}:</strong>
@@ -293,8 +305,31 @@
                         @endif
                         <strong>{{ __('title.res_text') }}:</strong> {!! $directorResolution->res_text??'' !!}
                     </div>
+                    @else
+                    {{-- v54: резолюции нет и она НЕОБЯЗАТЕЛЬНА (fs) — даём выбор:
+                         заполнить резолюцию (раскрывает форму создания выше)
+                         или подписать сразу (форма подписи ниже). --}}
+                    <div class="profile-pic currentResolution" id="fsResChoice">
+                        <p style="color:#94a3b8; font-size:13px; margin:0 0 8px;">
+                            <i data-lucide="info" style="width:14px;height:14px;"></i>
+                            Резолюция для этого документа необязательна: заполните её
+                            при необходимости или подпишите сразу — тогда документ
+                            будет завершён без назначения исполнителей
+                        </p>
+                        <button type="button" class="btn-modern btn-primary" id="fsFillResBtn"
+                                onclick="fsToggleResFill()">
+                            <i data-lucide="clipboard-list"></i>
+                            {{ __('action.create_resolution') }}
+                        </button>
+                    </div>
+                    @endif
 
 
+                    {{-- v55: блок выбора исполнителей нужен только когда
+                         резолюция применима; для fs с необязательной
+                         резолюцией (и без созданной) исполнителей не будет —
+                         прячем, чтобы не путать «обязательной» звёздочкой. --}}
+                    @if($directorResolution || empty($fsResolutionOptional))
                     <div id="edoUsers">
                         <label>{{ __('action.select_performers') }} <span class="text-red">*</span></label>
                         <div class="input-group mb-2 mt-2">
@@ -310,6 +345,7 @@
                         </div>
                         <hr>
                     </div>
+                    @endif
 
 
                     @if($journal->status == 8)
@@ -319,12 +355,17 @@
                             <div id="resDocForm" class="mt-10 actions-card">
                                 <div class="row">
                                     <div class="col-md-12">
+                                        {{-- v56: для fs с необязательной резолюцией (и без созданной)
+                                             поле комментария тоже скрыто — подпись в один клик.
+                                             ecp_r_text уйдёт пустым, флоу это переживает (??''). --}}
+                                        @if(empty($fsResolutionOptional) || $directorResolution)
                                         <div class="form-group">
                                             <div class="form-group">
                                                 <label>{{ __('title.resolution_text') }}</label>
                                                 <textarea name="ecp_r_text" id="div_editor1"></textarea>
                                             </div>
                                         </div>
+                                        @endif
                                         @if($signType->doc_sign_type === 1)
                                             <div class="form-group">
                                                 <label><i data-lucide="key-round"></i> {{ __('action.select_ecp_key') }}
@@ -466,8 +507,15 @@
                                             </div>
                                             <div class="col-sm-6">
                                                 <label>{{ __('field.perf_term') }}</label>
+                                                {{-- v53: required только когда резолюция применима.
+                                                     Поле сидит в СКРЫТОМ блоке «редактировать резолюцию»
+                                                     ВНУТРИ формы подписи: нативный submit (LOGIN)
+                                                     валидирует и невидимые поля -> пустая скрытая
+                                                     обязательная дата блокировала подпись
+                                                     («not focusable»). --}}
                                                 <input type="date" name="perf_term" class="form-control-modern"
-                                                       value="{{ $directorResolution->res_term??'' }}" required/>
+                                                       value="{{ $directorResolution->res_term??'' }}"
+                                                       @if(empty($fsResolutionOptional)) required @endif/>
                                             </div>
                                         </div>
 
@@ -898,4 +946,42 @@
 
         });
     });
+</script>
+
+<script>
+    /* v53: страховка от «An invalid form control is not focusable».
+       Формы подписи (loginSignForm) отправляются НАТИВНЫМ submit'ом, а
+       браузер валидирует ВСЕ required-поля формы, включая невидимые
+       (скрытый блок «редактировать резолюцию» с датой perf_term).
+       Перед отправкой снимаем required с полей, которые сейчас не
+       видны (offsetParent === null) — видимые валидируются как обычно.
+       capture-фаза: успеваем ДО нативной валидации. */
+    document.addEventListener('submit', function (e) {
+        var form = e.target;
+        if (!form || !form.classList || !form.classList.contains('loginSignForm')) return;
+        form.querySelectorAll('[required]').forEach(function (el) {
+            if (el.offsetParent === null) el.removeAttribute('required');
+        });
+    }, true);
+</script>
+
+<script>
+    /* v54: переключатель «Заполнить резолюцию» <-> «Подписать».
+       Форма создания (#fsResFillWrap) отрендерена, но скрыта для
+       fs-документов с необязательной резолюцией. Кнопка раскрывает её
+       и скроллит; повторный клик прячет обратно. После штатного POST
+       создания резолюции страница перезагрузится и ветвление станет
+       обычным (резолюция есть -> показ + подпись). */
+    function fsToggleResFill() {
+        var wrap = document.getElementById('fsResFillWrap');
+        var btn  = document.getElementById('fsFillResBtn');
+        if (!wrap || !btn) return;
+        var opening = wrap.style.display === 'none';
+        wrap.style.display = opening ? '' : 'none';
+        btn.innerHTML = opening
+            ? '<i data-lucide="x"></i> Скрыть форму резолюции'
+            : '<i data-lucide="clipboard-list"></i> {{ __('action.create_resolution') }}';
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        if (opening) wrap.scrollIntoView({behavior: 'smooth', block: 'start'});
+    }
 </script>
