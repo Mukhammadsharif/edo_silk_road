@@ -261,7 +261,11 @@
                     </div>
                 </div>
 
+                {{-- v65: получателям «Для информации» (FOR_INF) кнопка
+                     «Подтвердить исполнение» НЕ показывается — они не
+                     исполнители, подтверждать им нечего. --}}
                 @if($current_execution->status == 4 /*&& $current_execution->from_user == $directorDocument->to_user*/
+                    && ($current_execution->resExecRole?->doc_code ?? '') !== 'FOR_INF'
                     && $current_execution->replyDocs($journal->id, $authUser->id)
                     && $current_execution->replyDocs($journal->id, $authUser->id)->count())
                     <div class="row mt-10">

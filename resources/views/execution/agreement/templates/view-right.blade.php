@@ -270,13 +270,33 @@
     let editor2cfg = {}
     editor2cfg.toolbar = "mytoolbar";
     editor2cfg.toolbar_mytoolbar = "{bold,italic,justifyleft,justifycenter,justifyright,fontsize,forecolor,backcolor}";
-    let editor2 = new RichTextEditor("#div_editor2", editor2cfg);
+    /* v64: editor2 НЕ инициализируем сразу — textarea внутри ЗАКРЫТОЙ
+       модалки (display:none), RichTextEditor на скрытом элементе
+       рендерится с нулевыми размерами и «замораживает» поле («как будто
+       отключено»). Инициализация — при открытии модалки (shown.bs.modal),
+       как на страницах sign / confirm-sent. */
+    let editor2 = null;
 </script>
 
 <script src="{{ asset('/ajax/jquery.min.js') }}"></script>
 
 <script type="text/javascript">
     $(document).ready(function () {
+
+        // v64: RichTextEditor комментария — только когда модалка ВИДИМА.
+        $('#openCancelReturnModal').on('shown.bs.modal', function () {
+            if (editor2 !== null) {
+                editor2.destroy();
+                editor2 = null;
+            }
+            editor2 = new RichTextEditor("#div_editor2", editor2cfg);
+        });
+        $('#openCancelReturnModal').on('hidden.bs.modal', function () {
+            if (editor2 !== null) {
+                editor2.destroy();
+                editor2 = null;
+            }
+        });
 
         $.ajaxSetup({
             headers: {
