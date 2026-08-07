@@ -76,11 +76,11 @@
     let first = document.querySelector('#div_editor1');
     if(first) new RichTextEditor("#div_editor1", editor1cfg);
 
-    let editor2cfg = {}
-    editor2cfg.toolbar = "mytoolbar";
-    editor2cfg.toolbar_mytoolbar = "{bold,italic,justifyleft,justifycenter,justifyright,fontsize,forecolor,backcolor}";
-    let second = document.querySelector('#div_editor2');
-    if(second) new RichTextEditor("#div_editor2", editor2cfg);
+    /* v64: немедленная инициализация div_editor2 УБРАНА. Это поле живёт
+       внутри закрытой модалки возврата (view-sent-right), где есть СВОЙ
+       правильный init на shown.bs.modal — а здесь создавался лишний
+       безымянный экземпляр на скрытом элементе: поле «замораживалось»
+       и конфликтовало со вторым редактором при открытии модалки. */
 
     let editor3cfg = {}
     editor3cfg.toolbar = "mytoolbar";

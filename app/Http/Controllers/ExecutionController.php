@@ -1465,6 +1465,16 @@ class ExecutionController extends Controller
         //
         $execDocument = DocumentExecutionSteps::findOrFail($exec_id);
 
+        /* v65: шаг «Для информации» (FOR_INF) исполнением не подтверждается —
+         | получатель не исполнитель. Guard от прямого захода по URL
+         | (кнопка в UI для FOR_INF скрыта этим же условием).
+         */
+        if (($execDocument->resExecRole->doc_code ?? '') === 'FOR_INF') {
+            return back()->withErrors([
+                'execute' => 'Документ направлен вам для информации — подтверждение исполнения не требуется',
+            ]);
+        }
+
         $journal = DocumentJournals::find($execDocument->j_id);
 
         $resolutionStep = DocumentExecutionSteps::where('j_id', $journal->id)->whereHas('role', function ($query) {
