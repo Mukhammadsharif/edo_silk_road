@@ -293,7 +293,19 @@ class ProtocolDocTypeController extends Controller
             $parentId = $request->parent_id ?? 0;
             $level = $this->calculateLevel($parentId);
 
-            $this->revokeExistingPermissions($docType->doc_code);
+            // Состав участников трогаем ТОЛЬКО если форма его реально прислала.
+            //
+            // Раньше revokeExistingPermissions() вызывался безусловно: он снимает
+            // secretary_access_* / member_access_* у всех пользователей сразу, а
+            // возвращают права уже assignUsers()/assignSecretaries() — из данных формы.
+            // Если форма их не прислала (частичное сохранение, запрос мимо UI,
+            // сломанная вёрстка), доступ обнулялся у всех и /protocol/{doc_hash}
+            // начинал отдавать 403 даже администратору — Gate::before в проекте нет.
+            $hasUserPayload = $request->has('user_id') && $request->has('user_role_id');
+
+            if ($hasUserPayload) {
+                $this->revokeExistingPermissions($docType->doc_code);
+            }
 
             $this->updateLanguageLine($docType->lang_id, $request->title, $request->name_ru, $request->name_en);
 
@@ -314,12 +326,15 @@ class ProtocolDocTypeController extends Controller
                 'status' => $request->status,
             ]);
 
-            $secretaries = [];
-            $members = [];
-            $secretaryMembers = [];
+            if ($hasUserPayload) {
+                $secretaries = [];
+                $members = [];
+                $secretaryMembers = [];
 
-            if ($request->has('user_id') && $request->has('user_role_id')) {
-                foreach ($request->user_id as $userId) {
+                // user_role_id приходит ассоциативным массивом с ключом
+                // user_work_histories.id — см. name="user_role_id[{{ $item->id }}]"
+                // в document-settings/protocol/edit.blade.php.
+                foreach ((array) $request->user_id as $userId) {
                     $roleId = $request->user_role_id[$userId] ?? null;
 
                     if ($roleId == 1) {
@@ -330,11 +345,11 @@ class ProtocolDocTypeController extends Controller
                         $secretaryMembers[] = $userId;
                     }
                 }
-            }
 
-            $this->assignUsers($docType, $members, $role->id, $newDocCode);
-            $this->assignSecretaries($docType, $secretaries, $role->id, $newDocCode);
-            $this->assignSecretaryMembers($docType, $secretaryMembers, $role->id, $newDocCode);
+                $this->assignUsers($docType, $members, $role->id, $newDocCode);
+                $this->assignSecretaries($docType, $secretaries, $role->id, $newDocCode);
+                $this->assignSecretaryMembers($docType, $secretaryMembers, $role->id, $newDocCode);
+            }
 
             DB::commit();
 
@@ -519,24 +534,29 @@ class ProtocolDocTypeController extends Controller
 
     public function signRoles(Request $request)
     {
-        $rolesArray = $request->roles;
+        // Если не отмечено ни одной роли подписи, roles в запросе отсутствует.
+        // Раньше это давало TypeError в count(null) — теперь просто пустой массив:
+        // конфиг очищается, новые строки не создаются.
+        $rolesArray = $request->input('roles', []);
         $protocolTypeId = $request->protocol_type_id;
         $signType = $request->sign_type;
 
-        ProtocolDocConfigs::where('protocol_type_id', $protocolTypeId)->delete();
+        $protocolType = ProtocolDocType::find($protocolTypeId);
 
-        if (count($rolesArray)) {
-            foreach ($rolesArray as $key => $role) {
-                ProtocolDocConfigs::create([
-                    'protocol_type_id' => $protocolTypeId,
-                    'role_id' => $role,
-                    'order' => ++$key,
-                    'status' => 1,
-                ]);
-            }
+        if (!$protocolType) {
+            return redirect()->back()->withErrors(['error' => __('message.error_message')]);
         }
 
-        $protocolType = ProtocolDocType::find($protocolTypeId);
+        ProtocolDocConfigs::where('protocol_type_id', $protocolType->id)->delete();
+
+        foreach ($rolesArray as $key => $role) {
+            ProtocolDocConfigs::create([
+                'protocol_type_id' => $protocolType->id,
+                'role_id' => $role,
+                'order' => ++$key,
+                'status' => 1,
+            ]);
+        }
 
         $protocolType->update(['sign_type' => $signType]);
 

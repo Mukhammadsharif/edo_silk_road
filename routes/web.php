@@ -262,7 +262,15 @@ Route::group(['middleware' => ['auth']], function() {
         Route::any('app/document/{id}/update', [JournalTypesController::class, 'updateapp'])->name('app-document.update');
 
         // Protocol Doc type
-        Route::resource('protocol-types', ProtocolDocTypeController::class);
+        // except(['show']) обязателен: show() в контроллере не реализован, а
+        // маршрут protocol-types/{protocol_type} перехватывает URL
+        // /protocol-types/index (его генерирует route('protocol-types.index'),
+        // потому что строкой ниже это имя переопределяется) и падает
+        // BadMethodCallException: Method ...::show does not exist.
+        Route::resource('protocol-types', ProtocolDocTypeController::class)->except(['show']);
+        Route::any('protocol-types/index', [ProtocolDocTypeController::class, 'index'])->name('protocol-types.index');
+        Route::any('protocol-types/super-user-docs/{orgId}', [ProtocolDocTypeController::class, 'superUserOrgDocs'])->name('protocol-types.super-user-docs');
+        Route::post('prt-doc-sign-roles', [ProtocolDocTypeController::class, 'signRoles'])->name('prt.doc.sign.roles');
         Route::any('protocol-types/index', [ProtocolDocTypeController::class, 'index'])->name('protocol-types.index');
         Route::any('protocol-types/super-user-docs/{orgId}', [ProtocolDocTypeController::class, 'superUserOrgDocs'])->name('protocol-types.super-user-docs');
         Route::post('prt-doc-sign-roles', [ProtocolDocTypeController::class, 'signRoles'])->name('prt.doc.sign.roles');
