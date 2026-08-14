@@ -3,8 +3,37 @@
 @section('content')
     <link href="{{ asset('css/templates/common-document-styles.css') }}" rel="stylesheet">
     <link href="{{ asset('css/templates/document-types/protocol-types-modern.css') }}" rel="stylesheet">
+
     <link href="{{ asset('css/templates/document-types/document-types-modern.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/templates/select2.css') }}">
+    <style>
+        /* Селект роли участника. Стили самодостаточные — не зависят от того,
+           определён ли .role-select-modern в теме, и не влияют на другие экраны. */
+        .prt-role-select-wrap {
+            margin-left: auto;
+            padding-left: .75rem;
+            flex-shrink: 0;
+        }
+
+        .prt-role-select {
+            min-width: 130px;
+            max-width: 170px;
+            padding: .35rem .5rem;
+            font-size: .8125rem;
+            line-height: 1.3;
+            color: inherit;
+            background-color: #fff;
+            border: 1px solid rgba(0, 0, 0, .15);
+            border-radius: .375rem;
+            cursor: pointer;
+        }
+
+        .prt-role-select:focus {
+            outline: none;
+            border-color: #4f7cff;
+            box-shadow: 0 0 0 2px rgba(79, 124, 255, .18);
+        }
+    </style>
 
     <!-- Modern Document Page Container -->
     <div class="document-page-modern">
@@ -57,7 +86,14 @@
                         </div>
                     </div>
 
+                    {{--
+                        id нужен списку участников в правой колонке: он лежит вне
+                        этого <form>, поэтому его поля привязаны через form="protocolTypeForm".
+                        Без этого user_id[] / user_role_id[] не уходили на сервер,
+                        и update() снимал права доступа у всех пользователей.
+                    --}}
                     <form method="POST" action="{{ route('protocol-types.update', $model->id) }}" class="modern-form"
+                          id="protocolTypeForm"
                           style="padding: 2rem;">
                         @csrf
                         @method('PUT')
@@ -200,6 +236,7 @@
                                     <div class="user-item-left">
                                         <input class="user-checkbox-modern"
                                                type="checkbox"
+                                               form="protocolTypeForm"
                                                id="user_{{ $item->id }}"
                                                name="user_id[]"
                                                value="{{ $item->id }}"
@@ -222,6 +259,27 @@
                                             </span>
                                         </div>
                                     </div>
+
+                                    {{--
+                                        Роль участника: 1 — секретарь, 2 — участник, 3 — оба.
+                                        Ключ массива обязателен: update() читает как
+                                        $request->user_role_id[$userId], где $userId —
+                                        это user_work_histories.id. Последовательный
+                                        user_role_id[] сюда не подойдёт.
+                                    --}}
+                                    <div class="prt-role-select-wrap">
+                                        <select name="user_role_id[{{ $item->id }}]"
+                                                form="protocolTypeForm"
+                                                class="role-select-modern prt-role-select">
+                                            @foreach($user_roles as $role)
+                                                <option value="{{ $role->code }}"
+                                                    {{ ($selectedUsers[$item->id] ?? 3) == $role->code ? 'selected' : '' }}>
+                                                    {{ $role->lang($role->id) }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
                                     <div class="user-drag-handle">
                                         <i data-lucide="grip-vertical"></i>
                                     </div>
