@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Document\DocumentJournals;
+use App\Observers\DocumentJournalObserver;
 use Carbon\Carbon;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\App;
@@ -26,6 +28,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Paginator::useBootstrap();
+
+        // Фиксация кадровых приказов для выгрузки в 1С
+        DocumentJournals::observe(DocumentJournalObserver::class);
 
         Carbon::setLocale('ru');
 
