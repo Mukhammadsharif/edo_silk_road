@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\DocLogsController;
+use App\Http\Controllers\Admin\OnecOrderMappingController;
 use App\Http\Controllers\Admin\PricingController;
 use App\Http\Controllers\Admin\SubscriptionRequestController;
 use App\Http\Controllers\Admin\TariffController;
@@ -140,6 +141,10 @@ Route::group(['middleware' => ['auth']], function() {
             Route::get('/',          [OnecIntegrationController::class, 'index'])->name('admin.onec.index');
             Route::post('/generate', [OnecIntegrationController::class, 'generate'])->name('admin.onec.generate');
             Route::post('/retry',    [OnecIntegrationController::class, 'retry'])->name('admin.onec.retry');
+            // Соответствие кадровых журналов типам приказов 1С
+            Route::get('/order-mapping',         [OnecOrderMappingController::class, 'index'])->name('admin.onec.mapping');
+            Route::post('/order-mapping/update', [OnecOrderMappingController::class, 'update'])->name('admin.onec.mapping.update');
+            Route::post('/order-mapping/reset',  [OnecOrderMappingController::class, 'reset'])->name('admin.onec.mapping.reset');
         });
 
         Route::prefix('organizations')->group(function () {

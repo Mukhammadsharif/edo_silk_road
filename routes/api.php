@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Bitrix\DataController;
 use App\Http\Controllers\Api\ECP\SignDocImzoApiController;
 use App\Http\Controllers\Api\ECP\SignDocImzoMobileApiController;
 use App\Http\Controllers\Api\ECP\SignLoginApiController;
+use App\Http\Controllers\Api\Integration1C\OnecOrdersController;
 use App\Http\Controllers\Api\Integration1C\OnecTokenController;
 use App\Http\Controllers\Api\Office\ExecutionApiController;
 use App\Http\Controllers\Api\Office\JournalApiController;
@@ -129,6 +130,22 @@ Route::prefix('main/api-1c/v1')->middleware(OnecAuth::class)->group(function () 
         Route::put("/{$entity}/create_update_list", [OnecInboundController::class, 'createUpdateList'])->defaults('entity', $entity);
         Route::delete("/{$entity}/delete",          [OnecInboundController::class, 'delete'])->defaults('entity', $entity);
     }
+
+    /*
+     * Кадровые приказы: EDOLINE → 1С (pull-модель).
+     *
+     * Префикс /orders/ намеренный: в приёмнике выше уже есть сущность
+     * 'vocations' (справочник отпусков из 1С). Без него /vacations/get_list
+     * и /vocations/create_update жили бы в одном пространстве имён
+     * с двумя разными смыслами.
+     */
+    Route::prefix('orders')->group(function () {
+        // Объявляется РАНЬШЕ {type}, иначе Laravel сопоставит 'attachments' как тип приказа
+        Route::get('/attachments/{hash}', [OnecOrdersController::class, 'attachment']);
+
+        Route::get('/{type}/get_list',       [OnecOrdersController::class, 'getList']);
+        Route::post('/{type}/mark_exported', [OnecOrdersController::class, 'markExported']);
+    });
 });
 
 
