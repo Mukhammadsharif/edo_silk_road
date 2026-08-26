@@ -105,7 +105,7 @@
             <button type="button" class="fs-pdf-btn" id="fsZoomIn">+</button>
 
             @isset($documentFile)
-                <a href="{{ route('file.pre-view', $documentFile->id) }}" target="_blank" class="fs-pdf-btn">
+                <a href="{{ $fsPdfUrl ?? route('file.pre-view', $documentFile->id) }}" target="_blank" class="fs-pdf-btn">
                     <i data-lucide="external-link" style="width:14px;height:14px;"></i>
                     {{ __('action.view') }}
                 </a>
@@ -159,7 +159,7 @@
             setTimeout(function () { whenPdfJsReady(cb, tries + 1); }, 100);
         }
 
-        var PDF_URL = @json(route('file.pre-view', $documentFile->id));
+        var PDF_URL = @json($fsPdfUrl ?? route('file.pre-view', $documentFile->id));
         var viewer  = document.getElementById('fsPdfViewer');
         var loading = document.getElementById('fsPdfLoading');
         var pdfDoc  = null;

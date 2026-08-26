@@ -116,8 +116,26 @@ class QrCodeDocController extends Controller
 
         print_r($base64); die;*/
 
+        /* ═══ v69: free-sign на публичной QR-странице — PDF viewer ═══
+         | Определение id-независимое (по меткам). Призраки непроставленных
+         | меток публичному зрителю не показываем (fsGhosts пуст).
+         | PDF отдаётся публичным эндпоинтом d-pdf/{doc_hash} (fsPdfUrl) —
+         | file.pre-view в авторизованной группе и здесь недоступен.
+         */
+        $isFreeSignDoc = app(\App\Services\FreeSign\FreeSignRouteService::class)->isFreeSign($document->id);
+        $documentFile = null;
+        $pdfVersion = null;
+        $fsGhosts = collect();
+        $fsPdfUrl = null;
+
+        if ($isFreeSignDoc) {
+            [$documentFile, $pdfVersion] = $this->freeSignLatestPdf($journal->id);
+            $fsPdfUrl = url('d-pdf/' . $doc_hash);
+        }
+
         return view('qr-code-doc.'.$view, compact('document', 'journal', 'directorDocument', 'signer', 'agreement_users',
-            'qrCodeSignUser', 'html_doc', 'model'));
+            'qrCodeSignUser', 'html_doc', 'model',
+            'isFreeSignDoc', 'documentFile', 'pdfVersion', 'fsGhosts', 'fsPdfUrl'));
 
     }
 
@@ -162,4 +180,58 @@ class QrCodeDocController extends Controller
             return $qr_key->key_code;
         }
     }
+
+    /* ═══════════ FREE-SIGN на публичной QR-странице (v69) ═══════════ */
+
+    /** Последний проштампованный PDF журнала (иначе оригинал) + номер версии. */
+    private function freeSignLatestPdf(int $journalId): array
+    {
+        $stamped = \App\Models\Document\DocumentFiles::where('j_id', $journalId)
+            ->where('file_ext', 'pdf')
+            ->where('file_name', 'ilike', '%_signed_v%')
+            ->orderByDesc('id')
+            ->first();
+
+        $original = \App\Models\Document\DocumentFiles::where('j_id', $journalId)
+            ->where('file_ext', 'pdf')
+            ->where('file_name', 'not ilike', '%_signed_v%')
+            ->orderBy('id')
+            ->first();
+
+        $version = \App\Models\Document\DocumentFiles::where('j_id', $journalId)
+            ->where('file_ext', 'pdf')
+            ->where('file_name', 'ilike', '%_signed_v%')
+            ->count();
+
+        return [$stamped ?: $original, $version];
+    }
+
+    /**
+     * Публичная отдача PDF free-sign документа для QR-страницы.
+     * Доступ по doc_hash — та же модель, что у самой страницы d/{hash}.
+     * ТОЛЬКО для free-sign документов (иначе 404): произвольные файлы
+     * штатных документов этим путём не открываются.
+     */
+    public function freeSignPdf($doc_hash)
+    {
+        $document = \App\Models\Document\Documents::where('doc_hash', $doc_hash)->firstOrFail();
+
+        if (!app(\App\Services\FreeSign\FreeSignRouteService::class)->isFreeSign($document->id)) {
+            abort(404);
+        }
+
+        $journal = \App\Models\Document\DocumentJournals::where('doc_id', $document->id)->firstOrFail();
+
+        [$file] = $this->freeSignLatestPdf($journal->id);
+        abort_unless($file, 404);
+
+        $path = '/' . $file->file_path . $file->file_hash;
+        abort_unless(\Illuminate\Support\Facades\Storage::disk('ftp_13')->exists($path), 404);
+
+        return response(\Illuminate\Support\Facades\Storage::disk('ftp_13')->get($path), 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $file->file_name . '"',
+        ]);
+    }
+
 }
