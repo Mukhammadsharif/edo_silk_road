@@ -30,16 +30,27 @@
                                 {{-- v69: free-sign — PDF viewer со штампами вместо HTML-шаблона.
                                      v69.2: обёртка + адаптив под мобилку. --}}
                                 @if(!empty($isFreeSignDoc) && $isFreeSignDoc)
-                                    <div class="fs-qr-wrap">
+                                    {{-- v69.3: id="doc_content" — ТА ЖЕ обёртка, что у штатного
+                                         work-doc: key-js прячет её до ввода верного кода и
+                                         показывает после (content.hide()/show()). PDF при этом
+                                         успевает отрендериться в фоне — canvas не зависит от
+                                         layout скрытого контейнера. --}}
+                                    <div id="doc_content" class="fs-qr-wrap">
                                         @include('execution.confirm.templates.free-sign-page')
                                     </div>
                                     <style>
-                                        /* Публичная QR-страница: viewer во всю карточку, опрятно */
-                                        .fs-qr-wrap { margin: 0 -5px; }
-                                        .fs-qr-wrap .fs-pdf-viewer { width: 100%; overflow-x: auto;
-                                            -webkit-overflow-scrolling: touch; }
-                                        .fs-qr-wrap .fs-pdf-viewer canvas { max-width: 100%; height: auto; }
+                                        /* Публичная QR-страница: viewer во всю карточку, опрятно.
+                                           v69.3: жёсткое сдерживание по ширине — ничего не вылезает
+                                           за карточку/экран; при зуме >100% — скролл ВНУТРИ viewer'а. */
+                                        .fs-qr-wrap { margin: 0 -5px; max-width: 100%; }
+                                        .fs-qr-wrap .fs-pdf-viewer { width: 100%; max-width: 100%;
+                                            overflow-x: auto; -webkit-overflow-scrolling: touch; }
+                                        .fs-qr-wrap .fs-pdf-page { max-width: none; }  /* даём канвасу жить, скроллит viewer */
                                         .fs-qr-wrap .fs-pdf-toolbar { flex-wrap: wrap; gap: 6px; }
+                                        .card.table-card { overflow: hidden; max-width: 100% !important; }
+                                        @media (min-width: 769px) {
+                                            .card.table-card { max-width: 794px !important; }
+                                        }
 
                                         /* Мобилка: колонки в столбик уже складывает bootstrap (col-md-*),
                                            подтягиваем то, что он не решает */
