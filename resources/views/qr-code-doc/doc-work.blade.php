@@ -42,15 +42,18 @@
                                         /* Публичная QR-страница: viewer во всю карточку, опрятно.
                                            v69.3: жёсткое сдерживание по ширине — ничего не вылезает
                                            за карточку/экран; при зуме >100% — скролл ВНУТРИ viewer'а. */
-                                        .fs-qr-wrap { margin: 0 -5px; max-width: 100%; }
+                                        .fs-qr-wrap { margin: 0; max-width: 100%; }
                                         .fs-qr-wrap .fs-pdf-viewer { width: 100%; max-width: 100%;
                                             overflow-x: auto; -webkit-overflow-scrolling: touch; }
-                                        .fs-qr-wrap .fs-pdf-page { max-width: none; }  /* даём канвасу жить, скроллит viewer */
+                                        .fs-qr-wrap .fs-pdf-page { max-width: none; margin: 0 auto; }
                                         .fs-qr-wrap .fs-pdf-toolbar { flex-wrap: wrap; gap: 6px; }
-                                        .card.table-card { overflow: hidden; max-width: 100% !important; }
-                                        @media (min-width: 769px) {
-                                            .card.table-card { max-width: 794px !important; }
-                                        }
+                                        /* v69.4: инлайновый max-width:794px ШИРЕ колонки col-md-8
+                                           (~730px контента) — карточка вылезала вправо, а
+                                           overflow:hidden обрезал её «наполовину». Карточка =
+                                           ширина колонки, A4-страница центрируется внутри,
+                                           зум >100% скроллится внутри viewer'а. */
+                                        .card.table-card { width: 100%; max-width: 100% !important;
+                                            margin: 0 !important; overflow: visible; }
 
                                         /* Мобилка: колонки в столбик уже складывает bootstrap (col-md-*),
                                            подтягиваем то, что он не решает */
