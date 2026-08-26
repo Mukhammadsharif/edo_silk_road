@@ -130,7 +130,12 @@ class QrCodeDocController extends Controller
 
         if ($isFreeSignDoc) {
             [$documentFile, $pdfVersion] = $this->freeSignLatestPdf($journal->id);
-            $fsPdfUrl = url('d-pdf/' . $doc_code);   // параметр роута = doc_code документа
+            /* v69.2: ОТНОСИТЕЛЬНЫЙ url — url() строит по APP_URL (боевой
+               edoline.uz), а страница может открываться с другого хоста
+               (локальная разработка) -> fetch уходил на прод и падал
+               («не удалось загрузить документ»). Относительный путь
+               всегда бьёт в текущий origin. */
+            $fsPdfUrl = '/d-pdf/' . $doc_code;
         }
 
         return view('qr-code-doc.'.$view, compact('document', 'journal', 'directorDocument', 'signer', 'agreement_users',
