@@ -37,7 +37,7 @@
                                         </td>
                                         <td>
                                             <p>
-                                                {!! $directorDocument->signQrCode($document->id, $directorDocument->to_user, $directorDocument->id) !!}
+                                                {!! $directorDocument?->signQrCode($document->id, $directorDocument?->to_user, $directorDocument?->id) !!}
                                             </p>
                                         </td>
                                         <td>

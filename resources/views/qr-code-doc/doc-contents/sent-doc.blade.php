@@ -23,7 +23,7 @@
                         {{ $directorDocument?->toUser?->userPost?->docLang($directorDocument?->toUser?->userPost?->id, $document->doc_lang) ?? '' }}
                     </td>
                     <td>
-                        {!! $directorDocument->signQrCode($document->id, $directorDocument->to_user, $directorDocument->id) !!}
+                        {!! $directorDocument?->signQrCode($document->id, $directorDocument?->to_user, $directorDocument?->id) !!}
                     </td>
                     <td>
                         {{ $directorDocument?->toUser?->personal?->shortNameLang($document->doc_lang) ?? '' }}

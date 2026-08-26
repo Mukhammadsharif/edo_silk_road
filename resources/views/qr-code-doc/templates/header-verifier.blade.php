@@ -8,7 +8,7 @@
                 <br>
                 {{ $directorDocument?->toUser?->personal?->shortNameLang($document->doc_lang) ?? ''}}
                 <p>
-                    {!! $directorDocument->signQrCode($document->id, $directorDocument->to_user, $directorDocument->id) !!} <br>
+                    {!! $directorDocument?->signQrCode($document->id, $directorDocument?->to_user, $directorDocument?->id) !!} <br>
                     @if($directorDocument->status > 2)
                         <span class="font-size-12">{{ date('d.m.Y', strtotime($directorDocument->updated_at)) }}</span>
                     @endif
