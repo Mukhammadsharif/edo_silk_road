@@ -74,6 +74,12 @@ class QrCodeDocController extends Controller
 
         $journal = DocumentJournals::where('doc_id', $document->id)->first();
 
+        /* v67: guard — журнала может не быть (битые/удалённые данные),
+           дальше $journal->id уронил бы публичную страницу. */
+        if (!$journal) {
+            return view('qr-code-doc.404');
+        }
+
         $directorDocument = DocumentExecutionSteps::where('j_id', $journal->id)
             ->where('exec_role', $this->getResolutionRole()->id)->first();
 
