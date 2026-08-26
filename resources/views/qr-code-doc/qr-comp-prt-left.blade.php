@@ -63,8 +63,8 @@
                     <div class="feeds-body">
                         <h6 class="title text-blue">{{ __('field.performer') }}</h6>
                         <p>
-                            {{ $document->secretary->personal->l_name??'-' }}
-                            {{ $document->secretary->personal->f_name??'-' }}
+                            {{ $document->secretary->personal?->l_name??'-' }}
+                            {{ $document->secretary->personal?->f_name??'-' }}
                         </p>
                     </div>
                 </a>

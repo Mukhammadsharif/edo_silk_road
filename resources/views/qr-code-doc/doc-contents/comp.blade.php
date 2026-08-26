@@ -24,7 +24,7 @@
 
         <div class="doc-tel">
             <span>{{ __('field.phone') }}:</span>
-            {{ $document->secretary->personal->phone??'-' }}
+            {{ $document->secretary->personal?->phone??'-' }}
         </div>
 
         <div class="doc-qrcode" style="width: 100px">

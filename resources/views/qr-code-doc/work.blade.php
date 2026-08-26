@@ -109,8 +109,8 @@
                                     <div class="col-4"></div>
                                     <div class="col-4">
                                         <h6 class="text-center fw-700">
-                                            {{ $director->toUser->userPost->post_name??'' }}<br>
-                                            {{ $director->toUser->personal->shortName()??'' }}
+                                            {{ $director?->toUser?->userPost?->post_name??'' }}<br>
+                                            {{ $director?->toUser?->personal?->shortName()??'' }}
                                         </h6>
                                     </div>
                                 </div>
@@ -121,14 +121,14 @@
                             <div class="p-4 mt-15">
                                 <div class="row text-center">
                                     <div class="col-4" style="align-self: center">
-                                        <p class="fw-500 mb-0" style="font-style: italic">{{ __('executor') }}: {{ $journal->fromUser->personal->shortName()??'' }}</p>
+                                        <p class="fw-500 mb-0" style="font-style: italic">{{ __('executor') }}: {{ $journal->fromUser?->personal?->shortName()??'' }}</p>
                                         <p style="font-style: italic">{{ __('tel_number') }}</p>
                                     </div>
                                     <div class="col-4"></div>
                                     <div class="col-4" style="align-self: center">
                                         @if($journal->status === 4 || $journal->status === 5)
                                             {!! $document->QrCode($document->id) !!}
-                                            <h6 class="fw-700">{{ $director->toUser->personal->shortName()??'' }}</h6>
+                                            <h6 class="fw-700">{{ $director?->toUser?->personal?->shortName()??'' }}</h6>
                                             <span class="badge badge-pill bg-info mb-1">{{ __('confirmed') }}</span>
                                         @endif
                                     </div>
@@ -140,9 +140,9 @@
                                         <div class="col-4">
                                             <p>
                                                 @if(session()->get('locale') === 'ru')
-                                                    {{ $item->toUser->userPost->post_name_ru??'' }}
+                                                    {{ $item->toUser?->userPost?->post_name_ru??'' }}
                                                 @else
-                                                    {{ $item->toUser->userPost->post_name??'' }}
+                                                    {{ $item->toUser?->userPost?->post_name??'' }}
                                                 @endif
                                             </p>
                                         </div>
@@ -153,7 +153,7 @@
                                         </div>
                                         <div class="col-4">
                                             <p>
-                                                {{ $item->toUser->personal->shortName()??'' }}
+                                                {{ $item->toUser?->personal?->shortName()??'' }}
                                             </p>
                                         </div>
 
@@ -184,30 +184,30 @@
                                 <h6 class="pb-2"><i class="ik ik-user-check"></i> Kim tomonidan imzolangan</h6>
                                 <p class="text-muted">
                                 @if(($journal->doc_type === (int)1 && $journal->j_type === (int)2) || $journal->docType->doc_code === '0012')
-                                    {{ $director->toUser->personal->l_name??'' }}
-                                    {{ $director->toUser->personal->f_name??'' }}
-                                    {{ $director->toUser->personal->m_name??'' }}
+                                    {{ $director?->toUser?->personal?->l_name??'' }}
+                                    {{ $director?->toUser?->personal?->f_name??'' }}
+                                    {{ $director?->toUser?->personal?->m_name??'' }}
                                 @else
-                                    {{ $journal->fromUser->personal->l_name??'' }}
-                                    {{ $journal->fromUser->personal->f_name??'' }}
-                                    {{ $journal->fromUser->personal->m_name??'' }}
+                                    {{ $journal->fromUser?->personal?->l_name??'' }}
+                                    {{ $journal->fromUser?->personal?->f_name??'' }}
+                                    {{ $journal->fromUser?->personal?->m_name??'' }}
                                 @endif
                                 </p>
                                 <hr>
                                 <h6 class="pb-2"><i class="ik ik-user"></i> Hujjat ijrochisi</h6>
                                 <p class="text-muted">
-                                    {{ $document->journal->fromUser->personal->l_name??'' }}
-                                    {{ $document->journal->fromUser->personal->f_name??'' }}
-                                    {{ $document->journal->fromUser->personal->m_name??'' }}
+                                    {{ $document->journal?->fromUser?->personal?->l_name??'' }}
+                                    {{ $document->journal?->fromUser?->personal?->f_name??'' }}
+                                    {{ $document->journal?->fromUser?->personal?->m_name??'' }}
                                 </p>
                                 @if(count($agDepHeads) > 0)
                                 <hr>
                                 <h6 class="pb-2"><i class="fa fa-handshake"></i> Kelishuvchilar</h6>
                                 <p class="text-muted">
                                     @foreach($agDepHeads as $key => $item)
-                                        {{ $item->toUser->personal->l_name??'' }}
-                                        {{ $item->toUser->personal->f_name??'' }}
-                                        {{ $item->toUser->personal->m_name??'' }}<br>
+                                        {{ $item->toUser?->personal?->l_name??'' }}
+                                        {{ $item->toUser?->personal?->f_name??'' }}
+                                        {{ $item->toUser?->personal?->m_name??'' }}<br>
                                     @endforeach
                                 </p>
                                 @endif

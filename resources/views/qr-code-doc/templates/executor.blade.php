@@ -6,43 +6,43 @@
                     <div class="doc-performer">
                         @switch($document->doc_lang)
                             @case('uz')
-                                @if($journal->journal->doc_type === 'NOTIFICATION')
+                                @if($journal->journal?->doc_type === 'NOTIFICATION')
                                     <span>Kirituvchi:</span>
-                                @elseif(str_contains($journal->journal->doc_code, 'APP'))
+                                @elseif(str_contains($journal->journal?->doc_code, 'APP'))
                                     <span>Ariza beruvchi:</span>
                                 @else
                                     <span>Yaratuvchi:</span>
                                 @endif
                                 @break
                             @case('kr')
-                                @if($journal->journal->doc_type === 'NOTIFICATION')
+                                @if($journal->journal?->doc_type === 'NOTIFICATION')
                                     <span>Киритувчи:</span>
-                                @elseif(str_contains($journal->journal->doc_code, 'APP'))
+                                @elseif(str_contains($journal->journal?->doc_code, 'APP'))
                                     <span>Ариза берувчи:</span>
                                 @else
                                     <span>Яратувчи:</span>
                                 @endif
                                 @break
                             @case('ru')
-                                @if($journal->journal->doc_type === 'NOTIFICATION')
+                                @if($journal->journal?->doc_type === 'NOTIFICATION')
                                     <span>Вводящий:</span>
-                                @elseif(str_contains($journal->journal->doc_code, 'APP'))
+                                @elseif(str_contains($journal->journal?->doc_code, 'APP'))
                                     <span>Заявитель:</span>
                                 @else
                                     <span>Создатель:</span>
                                 @endif
                                 @break
                             @case('en')
-                                @if($journal->journal->doc_type === 'NOTIFICATION')
+                                @if($journal->journal?->doc_type === 'NOTIFICATION')
                                     <span>Inserter:</span>
-                                @elseif(str_contains($journal->journal->doc_code, 'APP'))
+                                @elseif(str_contains($journal->journal?->doc_code, 'APP'))
                                     <span>Applicant:</span>
                                 @else
                                     <span>Creator:</span>
                                 @endif
                                 @break
                         @endswitch
-                        {{ $journal->fromUser->personal->shortName()??'' }}
+                        {{ $journal->fromUser?->personal?->shortName()??'' }}
                     </div>
 
                     <div class="doc-tel">
@@ -60,7 +60,7 @@
                                 Phone number:
                                 @break
                         @endswitch
-                        {{ $journal->fromUser->personal->phone??'-' }})
+                        {{ $journal->fromUser?->personal?->phone??'-' }})
                     </div>
                 </div>
             </td>
