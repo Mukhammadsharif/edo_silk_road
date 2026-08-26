@@ -36,7 +36,7 @@
                                         <td>
                                             <p>
                                                 @if(!empty($directorDocument))
-                                                    {!! $directorDocument->signQrCode($document->id, $directorDocument->to_user, $directorDocument->id) !!}
+                                                    {!! $directorDocument?->signQrCode($document->id, $directorDocument?->to_user, $directorDocument?->id) !!}
                                                 @endif
                                                 <br>
                                                 @if(!empty($directorDocument) && $directorDocument->status > 2)

@@ -28,7 +28,7 @@
                                             <td></td>
                                             <td>
                                                 <p>
-                                                    {!! $directorDocument->signQrCode($document->id, $directorDocument->to_user, $directorDocument->id) !!}
+                                                    {!! $directorDocument?->signQrCode($document->id, $directorDocument?->to_user, $directorDocument?->id) !!}
                                                     <br>
                                                     @if($directorDocument->status > 2)
                                                         <span
