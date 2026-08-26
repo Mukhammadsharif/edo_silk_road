@@ -51,9 +51,9 @@
                         <h6 class="title text-blue">Kim tomonidan imzolangan:</h6>
                         <p>
                             @if($qrCodeSignUser)
-                                {{ mb_substr($qrCodeSignUser->toUser->personal->f_name??'', 0,1,) }}.
-                                {{ mb_substr($qrCodeSignUser->toUser->personal->m_name??'', 0,1,) }}.
-                                {{ $qrCodeSignUser->toUser->personal->l_name??'' }}
+                                {{ mb_substr($qrCodeSignUser?->toUser?->personal?->f_name ?? '', 0,1,) }}.
+                                {{ mb_substr($qrCodeSignUser?->toUser?->personal?->m_name ?? '', 0,1,) }}.
+                                {{ $qrCodeSignUser?->toUser?->personal?->l_name ?? '' }}
                             @endif
                         </p>
                     </div>
