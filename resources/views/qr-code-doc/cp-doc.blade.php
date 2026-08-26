@@ -62,9 +62,9 @@
                                     <div class="feeds-body">
                                         <h6 class="title text-blue">Kim tomonidan imzolangan:</h6>
                                         <p>
-                                            {{ mb_substr($user->personal->f_name??'', 0,1,) }}.
-                                            {{ mb_substr($user->personal->m_name??'', 0,1,) }}.
-                                            {{ $user->personal->l_name??'' }}
+                                            {{ mb_substr($user->personal?->f_name??'', 0,1,) }}.
+                                            {{ mb_substr($user->personal?->m_name??'', 0,1,) }}.
+                                            {{ $user->personal?->l_name??'' }}
                                         </p>
                                     </div>
                                 </a>
@@ -90,9 +90,9 @@
                                     <div class="feeds-body">
                                         <h6 class="title text-blue">Hujjat ijrochisi:</h6>
                                         <p>
-                                            {{ mb_substr($document->createdId->personal->f_name??'', 0,1,) }}.
-                                            {{ mb_substr($document->createdId->personal->m_name??'', 0,1,) }}.
-                                            {{ $document->createdId->personal->l_name??'' }}
+                                            {{ mb_substr($document->createdId->personal?->f_name??'', 0,1,) }}.
+                                            {{ mb_substr($document->createdId->personal?->m_name??'', 0,1,) }}.
+                                            {{ $document->createdId->personal?->l_name??'' }}
                                         </p>
                                     </div>
                                 </a>
@@ -124,15 +124,15 @@
                                                             <tr>
                                                                 <td style="width: 30%">
                                                                     <small
-                                                                        class="text-muted d-block">{{ $member->userWork->userPost->post_name_ru??'*' }}</small>
+                                                                        class="text-muted d-block">{{ $member->userWork->userPost?->post_name_ru??'*' }}</small>
                                                                 </td>
                                                                 <td style="width: 30%">
                                                                     {!! $member->qrCode($document->id, $member->user_id) !!}
                                                                 </td>
                                                                 <td style="width: 30%">
                                                                     <b>
-                                                                        {{ mb_substr($member->userWork->personal->f_name??'', 0,1,) }}
-                                                                        .{{ $member->userWork->personal->l_name??'' }}
+                                                                        {{ mb_substr($member->userWork->personal?->f_name??'', 0,1,) }}
+                                                                        .{{ $member->userWork->personal?->l_name??'' }}
                                                                     </b><br>
                                                                     <span class="badge {{ $member->cpMemStatus->bg_class??'' }}">
                                                                     <i class="{{ $member->cpMemStatus->icon_code??'' }}"></i>
@@ -153,8 +153,8 @@
 
                                     <div class="col-4 mt-35">
                                         <h6 class="fw-600 mb-0">{{ __('performer') }}:<br>
-                                            {{ mb_substr($document->createdId->personal->f_name??'', 0,1,) }}
-                                            .{{ $document->createdId->personal->l_name??'' }}
+                                            {{ mb_substr($document->createdId->personal?->f_name??'', 0,1,) }}
+                                            .{{ $document->createdId->personal?->l_name??'' }}
                                         </h6><br>
                                         <small>{{ __('tel_number') }}</small>
                                     </div>

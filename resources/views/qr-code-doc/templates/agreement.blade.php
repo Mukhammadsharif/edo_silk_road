@@ -10,8 +10,8 @@
                 </td>
                 <td>
                     {{ $item->toUser?->personal?->shortNameLang($document->doc_lang) ?? '' }}<br>
-                    <span class="badge badge-pill {{ $item->statusSign->badgeClass??'' }}">
-                        {{ $item->statusSign->lang($item->statusSign->id)??'' }}
+                    <span class="badge badge-pill {{ $item->statusSign?->badgeClass??'' }}">
+                        {{ $item->statusSign?->lang($item->statusSign?->id)??'' }}
                     </span>
                 </td>
             </tr>

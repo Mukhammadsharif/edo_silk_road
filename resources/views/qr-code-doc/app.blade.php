@@ -113,9 +113,9 @@
                                             .{{ $director?->toUser?->personal?->l_name??'' }}ga<br>
                                         </p>
                                         <p class="text-center fw-700">
-                                            {{ $journal->fromUser->userPost->post_name??'' }}<br>
-                                            {{ mb_substr($journal->fromUser->personal->f_name??'', 0,1,) }}
-                                            .{{ $journal->fromUser->personal->l_name??'' }}<br>tomonidan
+                                            {{ $journal->fromUser?->userPost?->post_name??'' }}<br>
+                                            {{ mb_substr($journal->fromUser?->personal?->f_name??'', 0,1,) }}
+                                            .{{ $journal->fromUser?->personal?->l_name??'' }}<br>tomonidan
                                         </p>
                                     </div>
                                 </div>
@@ -191,17 +191,17 @@
                                     {{ $director?->toUser?->personal?->f_name??'' }}
                                     {{ $director?->toUser?->personal?->m_name??'' }}
                                 @else
-                                    {{ $journal->fromUser->personal->l_name??'' }}
-                                    {{ $journal->fromUser->personal->f_name??'' }}
-                                    {{ $journal->fromUser->personal->m_name??'' }}
+                                    {{ $journal->fromUser?->personal?->l_name??'' }}
+                                    {{ $journal->fromUser?->personal?->f_name??'' }}
+                                    {{ $journal->fromUser?->personal?->m_name??'' }}
                                 @endif
                                 </p>
                                 <hr>
                                 <h6 class="pb-2"><i class="ik ik-user"></i> Hujjat ijrochisi</h6>
                                 <p class="text-muted">
-                                    {{ $document->journal->fromUser->personal->l_name??'' }}
-                                    {{ $document->journal->fromUser->personal->f_name??'' }}
-                                    {{ $document->journal->fromUser->personal->m_name??'' }}
+                                    {{ $document->journal?->fromUser?->personal?->l_name??'' }}
+                                    {{ $document->journal?->fromUser?->personal?->f_name??'' }}
+                                    {{ $document->journal?->fromUser?->personal?->m_name??'' }}
                                 </p>
                                 @if(count($agDepHeads) > 0)
                                 <hr>

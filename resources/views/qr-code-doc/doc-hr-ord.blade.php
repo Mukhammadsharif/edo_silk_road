@@ -33,7 +33,7 @@
                                 <table>
                                     <tr>
                                         <td>
-                                            {{ $directorDocument->toUser->userPost->name_uz??'' }}
+                                            {{ $directorDocument?->toUser?->userPost?->name_uz??'' }}
                                         </td>
                                         <td>
                                             <p>
@@ -41,8 +41,8 @@
                                             </p>
                                         </td>
                                         <td>
-                                            {{ $directorDocument->toUser->personal->l_name??''}}
-                                            {{ $directorDocument->toUser->personal->f_name??''}}
+                                            {{ $directorDocument?->toUser?->personal?->l_name??''}}
+                                            {{ $directorDocument?->toUser?->personal?->f_name??''}}
                                         </td>
                                     </tr>
                                 </table>

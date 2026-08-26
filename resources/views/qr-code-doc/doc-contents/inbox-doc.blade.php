@@ -27,7 +27,7 @@
                                         <span>Performer:</span>
                                         @break
                                 @endswitch
-                                {{ $journal->fromUser->personal->shortNameLang($document->doc_lang)??'' }}
+                                {{ $journal->fromUser?->personal?->shortNameLang($document->doc_lang)??'' }}
                             </div>
 
                             <div class="doc-tel">
@@ -45,7 +45,7 @@
                                         Phone number:
                                         @break
                                 @endswitch
-                                {{ $journal->fromUser->personal->phone??'-' }})
+                                {{ $journal->fromUser?->personal?->phone??'-' }})
                             </div>
                         </div>
                     </td>

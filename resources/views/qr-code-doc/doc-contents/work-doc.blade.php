@@ -11,11 +11,11 @@
             {{ date('d.m.Y', strtotime($document->doc_date)) }}
         </div>
 
-        @if(!in_array($journal->journal->doc_code, ['ORDER_F', 'STATEMENT', 'COMMAND']))
+        @if(!in_array($journal->journal?->doc_code, ['ORDER_F', 'STATEMENT', 'COMMAND']))
             @include('qr-code-doc.templates.header-verifier')
         @endif
 
-        @if($journal->journal->doc_code === 'ORDER_F' && $document->dep)
+        @if($journal->journal?->doc_code === 'ORDER_F' && $document->dep)
             <div class="table-tr-3td">
                 <table>
                     <tr>
@@ -24,16 +24,16 @@
                         <td>
                             @switch($document->doc_lang)
                                 @case('uz')
-                                    {{ $document->dep->department->docLang($document->dep->department->id, $document->doc_lang)??'' }}  ga
+                                    {{ $document->dep->department?->docLang($document->dep->department?->id, $document->doc_lang)??'' }}  ga
                                     @break
                                 @case('kr')
-                                    {{ $document->dep->department->docLang($document->dep->department->id, $document->doc_lang)??'' }}  га
+                                    {{ $document->dep->department?->docLang($document->dep->department?->id, $document->doc_lang)??'' }}  га
                                     @break
                                 @case('ru')
-                                    к {{ $document->dep->department->docLang($document->dep->department->id, $document->doc_lang)??'' }}
+                                    к {{ $document->dep->department?->docLang($document->dep->department?->id, $document->doc_lang)??'' }}
                                     @break
                                 @case('en')
-                                    to {{ $document->dep->department->docLang($document->dep->department->id, $document->doc_lang)??'' }}
+                                    to {{ $document->dep->department?->docLang($document->dep->department?->id, $document->doc_lang)??'' }}
                                     @break
                             @endswitch
                         </td>
@@ -48,7 +48,7 @@
             @endif
         </div>
 
-        @if(in_array($journal->status, [9, 10]) && in_array($journal->journal->doc_code, ['ORDER_F', 'STATEMENT', 'COMMAND']))
+        @if(in_array($journal->status, [9, 10]) && in_array($journal->journal?->doc_code, ['ORDER_F', 'STATEMENT', 'COMMAND']))
             @include('qr-code-doc.templates.verifier')
         @endif
 

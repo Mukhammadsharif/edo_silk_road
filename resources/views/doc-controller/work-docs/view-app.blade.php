@@ -39,9 +39,9 @@
                                                     {!! $directorDocument?->signQrCode($document->id, $directorDocument?->to_user, $directorDocument?->id) !!}
                                                 @endif
                                                 <br>
-                                                @if(!empty($directorDocument) && $directorDocument->status > 2)
+                                                @if(!empty($directorDocument) && $directorDocument?->status > 2)
                                                     <span
-                                                        class="font-size-12">{{ date('d.m.Y', strtotime($directorDocument->updated_at)) }}</span>
+                                                        class="font-size-12">{{ date('d.m.Y', strtotime($directorDocument?->updated_at)) }}</span>
                                                 @endif
                                             </p>
                                         </td>
@@ -50,8 +50,8 @@
                                             <p>{{ optional(optional(optional($directorDocument)->toUser)->personal)->shortName() ?? '' }}</p>
 
 
-                                            {{ $journal->fromUser->userPost->lang($journal->fromUser->userPost->id)??'' }}
-                                            <p>{{ $journal->fromUser->personal->shortName()??'' }}</p>
+                                            {{ $journal->fromUser?->userPost?->lang($journal->fromUser?->userPost?->id)??'' }}
+                                            <p>{{ $journal->fromUser?->personal?->shortName()??'' }}</p>
                                         </td>
                                     </tr>
                                 </table>

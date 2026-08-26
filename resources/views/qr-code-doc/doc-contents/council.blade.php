@@ -27,18 +27,18 @@
                             <td>
                                 @switch(session()->get('locale'))
                                     @case('ru')
-                                        {{ $item->userWork->userPost->post_name_ru??'' }}
+                                        {{ $item->userWork->userPost?->post_name_ru??'' }}
                                         @break
                                     @case('en')
-                                        {{ $item->userWork->userPost->post_name_en??'' }}
+                                        {{ $item->userWork->userPost?->post_name_en??'' }}
                                         @break
                                     @default
-                                        {{ $item->userWork->userPost->post_name??'' }}
+                                        {{ $item->userWork->userPost?->post_name??'' }}
                                 @endswitch
                             </td>
                             <td>{!! $item->qrCode($document->id, $item->user_id) !!}</td>
                             <td>
-                                {{ $item->userWork->personal->shortName()??'' }}<br>
+                                {{ $item->userWork->personal?->shortName()??'' }}<br>
                             </td>
                         </tr>
                     @endforeach
@@ -69,18 +69,18 @@
                             <td>
                                 @switch(session()->get('locale'))
                                     @case('ru')
-                                        {{ $item->userWork->userPost->post_name_ru??'' }}
+                                        {{ $item->userWork->userPost?->post_name_ru??'' }}
                                         @break
                                     @case('en')
-                                        {{ $item->userWork->userPost->post_name_en??'' }}
+                                        {{ $item->userWork->userPost?->post_name_en??'' }}
                                         @break
                                     @default
-                                        {{ $item->userWork->userPost->post_name??'' }}
+                                        {{ $item->userWork->userPost?->post_name??'' }}
                                 @endswitch
                             </td>
                             <td class="hr-prt-docs-qr">{!! $item->qrCode($document->id, $item->user_id) !!}</td>
                             <td>
-                                {{ $item->userWork->personal->shortName()??'' }}<br>
+                                {{ $item->userWork->personal?->shortName()??'' }}<br>
                             </td>
                         </tr>
                     @endforeach
@@ -97,18 +97,18 @@
                             <td>
                                 @switch(session()->get('locale'))
                                     @case('ru')
-                                        {{ $item->userWork->userPost->post_name_ru??'' }}
+                                        {{ $item->userWork->userPost?->post_name_ru??'' }}
                                         @break
                                     @case('en')
-                                        {{ $item->userWork->userPost->post_name_en??'' }}
+                                        {{ $item->userWork->userPost?->post_name_en??'' }}
                                         @break
                                     @default
-                                        {{ $item->userWork->userPost->post_name??'' }}
+                                        {{ $item->userWork->userPost?->post_name??'' }}
                                 @endswitch
                             </td>
                             <td>{!! $item->memQrCode($document->id, $item->user_id) !!}</td>
                             <td>
-                                {{ $item->userWork->personal->shortName()??'' }}<br>
+                                {{ $item->userWork->personal?->shortName()??'' }}<br>
                             </td>
                         </tr>
                     @endforeach
@@ -123,7 +123,7 @@
                     <td></td>
                     <td>{!! $document->qrCode($document->id, $document->created_id) !!}</td>
                     <td>
-                        {{ $document->createdId->personal->shortName()??'' }}<br>
+                        {{ $document->createdId->personal?->shortName()??'' }}<br>
                         @if($document->status > 1)
                             <span class="badge badge-success">
                                 {{ __('cn_for') }}
@@ -139,12 +139,12 @@
         </div>
 
         <div class="doc-performer">
-            <span>{{ __('performer') }}:</span> {{ $document->createdId->personal->shortName()??'' }}
+            <span>{{ __('performer') }}:</span> {{ $document->createdId->personal?->shortName()??'' }}
         </div>
 
         <div class="doc-tel">
             {{ __('tel_number') }} ({{ __('tel_in') }}
-            {{ $document->createdId->personal->tel_number2??'-' }})
+            {{ $document->createdId->personal?->tel_number2??'-' }})
         </div>
     </div>
 </div>

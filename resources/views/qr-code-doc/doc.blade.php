@@ -85,7 +85,7 @@
                         </div>
                     </div>
 
-                    @if($journal->journal->doc_code === 'BASE_OUTGOING')
+                    @if($journal->journal?->doc_code === 'BASE_OUTGOING')
                         <div class="row text-center text-md-left">
                             <div class="col-md-6">
                                 <h6 class="pb-2 doc-number">№ {{ $document->doc_number }}</h6>
@@ -97,17 +97,17 @@
                         </div>
                     @endif
 
-                    @if($journal->journal->doc_code !== 'BASE_OUTGOING' && $journal->journal->doc_code !== 'OTHERS')
+                    @if($journal->journal?->doc_code !== 'BASE_OUTGOING' && $journal->journal?->doc_code !== 'OTHERS')
                         <div class="p-4 mt-15">
                             <div class="row">
                                 <div class="col-4"></div>
                                 <div class="col-4"></div>
                                 <div class="col-4">
                                     <h6 class="text-center fw-700">
-                                        {{ $directorDocument->toUser->department->name_uz??'' }}<br>
-                                        {{ $directorDocument->toUser->userPost->name_uz??'' }}<br>
-                                        {{ mb_substr($directorDocument->toUser->personal->f_name??'', 0,1,) }}
-                                        .{{ $directorDocument->toUser->personal->l_name??'' }}
+                                        {{ $directorDocument?->toUser?->department?->name_uz??'' }}<br>
+                                        {{ $directorDocument?->toUser?->userPost?->name_uz??'' }}<br>
+                                        {{ mb_substr($directorDocument?->toUser?->personal?->f_name??'', 0,1,) }}
+                                        .{{ $directorDocument?->toUser?->personal?->l_name??'' }}
                                     </h6>
                                 </div>
                             </div>
@@ -118,34 +118,34 @@
 
                     <div class="p-4 mt-15">
                         <div class="row text-center">
-                            @if($journal->journal->doc_code === 'BASE_INCOMING' || $journal->journal->doc_code === 'OTHERS')
+                            @if($journal->journal?->doc_code === 'BASE_INCOMING' || $journal->journal?->doc_code === 'OTHERS')
                                 <div class="col-4" style="align-self: center">
-                                    <h6 class="fw-700">{{ $directorDocument->toUser->userPost->name_uz??'' }}</h6>
+                                    <h6 class="fw-700">{{ $directorDocument?->toUser?->userPost?->name_uz??'' }}</h6>
                                 </div>
                                 <div class="col-4">
                                     {!! $document->QrCode($document->id) !!}
                                 </div>
                                 <div class="col-4" style="align-self: center">
-                                    <h6 class="fw-700">{{ mb_substr($directorDocument->toUser->personal->f_name??'', 0,1,) }}
-                                        .{{ $directorDocument->toUser->personal->l_name??'' }}</h6>
+                                    <h6 class="fw-700">{{ mb_substr($directorDocument?->toUser?->personal?->f_name??'', 0,1,) }}
+                                        .{{ $directorDocument?->toUser?->personal?->l_name??'' }}</h6>
                                 </div>
                             @else
                                 <div class="col-4" style="align-self: center">
-                                    <h6 class="fw-700">{{ $journal->fromUser->userPost->name_uz??'' }}</h6>
+                                    <h6 class="fw-700">{{ $journal->fromUser?->userPost?->name_uz??'' }}</h6>
                                 </div>
                                 <div class="col-4">
                                     {!! $document->QrCode($document->id) !!}
                                 </div>
                                 <div class="col-4" style="align-self: center">
-                                    <h6 class="fw-700">{{ mb_substr($journal->fromUser->personal->f_name??'', 0,1,) }}
-                                        .{{ $journal->fromUser->personal->l_name??'' }}</h6>
+                                    <h6 class="fw-700">{{ mb_substr($journal->fromUser?->personal?->f_name??'', 0,1,) }}
+                                        .{{ $journal->fromUser?->personal?->l_name??'' }}</h6>
                                 </div>
                             @endif
                             <div class="col-4 mt-35">
                                 <p class="fw-500 mb-0">
                                     Ijrochi:
-                                    {{ mb_substr($journal->fromUser->personal->f_name??'', 0,1,) }}.
-                                    {{ $journal->fromUser->personal->l_name??'' }}
+                                    {{ mb_substr($journal->fromUser?->personal?->f_name??'', 0,1,) }}.
+                                    {{ $journal->fromUser?->personal?->l_name??'' }}
                                 </p>
                                 <p class="fw-500">Tel: 78 148-30-00</p>
                             </div>
@@ -176,31 +176,31 @@
                                 <hr>
                                 <h6 class="pb-2"><i class="ik ik-user-check"></i> Kim tomonidan imzolangan</h6>
                                 <p class="text-muted">
-                                @if($journal->journal->doc_code === 'BASE_INCOMING' || $journal->journal->doc_code === 'OTHERS')
-                                    {{ $directorDocument->toUser->personal->l_name??'' }}
-                                    {{ $directorDocument->toUser->personal->f_name??'' }}
-                                    {{ $directorDocument->toUser->personal->m_name??'' }}
+                                @if($journal->journal?->doc_code === 'BASE_INCOMING' || $journal->journal?->doc_code === 'OTHERS')
+                                    {{ $directorDocument?->toUser?->personal?->l_name??'' }}
+                                    {{ $directorDocument?->toUser?->personal?->f_name??'' }}
+                                    {{ $directorDocument?->toUser?->personal?->m_name??'' }}
                                 @else
-                                    {{ $journal->fromUser->personal->l_name??'' }}
-                                    {{ $journal->fromUser->personal->f_name??'' }}
-                                    {{ $journal->fromUser->personal->m_name??'' }}
+                                    {{ $journal->fromUser?->personal?->l_name??'' }}
+                                    {{ $journal->fromUser?->personal?->f_name??'' }}
+                                    {{ $journal->fromUser?->personal?->m_name??'' }}
                                 @endif
                                 </p>
                                 <hr>
                                 <h6 class="pb-2"><i class="ik ik-user"></i> Hujjat ijrochisi</h6>
                                 <p class="text-muted">
-                                    {{ $journal->fromUser->personal->l_name??'' }}
-                                    {{ $journal->fromUser->personal->f_name??'' }}
-                                    {{ $journal->fromUser->personal->m_name??'' }}
+                                    {{ $journal->fromUser?->personal?->l_name??'' }}
+                                    {{ $journal->fromUser?->personal?->f_name??'' }}
+                                    {{ $journal->fromUser?->personal?->m_name??'' }}
                                 </p>
                                 @if(count($agreement_users) > 0)
                                 <hr>
                                 <h6 class="pb-2"><i class="fa fa-handshake"></i> Kelishuvchilar</h6>
                                 <p class="text-muted">
                                     @foreach($agreement_users as $key => $item)
-                                        {{ $item->toUser->personal->l_name??'' }}
-                                        {{ $item->toUser->personal->f_name??'' }}
-                                        {{ $item->toUser->personal->m_name??'' }}<br>
+                                        {{ $item->toUser?->personal?->l_name??'' }}
+                                        {{ $item->toUser?->personal?->f_name??'' }}
+                                        {{ $item->toUser?->personal?->m_name??'' }}<br>
                                     @endforeach
                                 </p>
                                 @endif
