@@ -27,9 +27,31 @@
 
                                 @include('qr-code-doc.key-form')
 
-                                {{-- v69: free-sign — PDF viewer со штампами вместо HTML-шаблона --}}
+                                {{-- v69: free-sign — PDF viewer со штампами вместо HTML-шаблона.
+                                     v69.2: обёртка + адаптив под мобилку. --}}
                                 @if(!empty($isFreeSignDoc) && $isFreeSignDoc)
-                                    @include('execution.confirm.templates.free-sign-page')
+                                    <div class="fs-qr-wrap">
+                                        @include('execution.confirm.templates.free-sign-page')
+                                    </div>
+                                    <style>
+                                        /* Публичная QR-страница: viewer во всю карточку, опрятно */
+                                        .fs-qr-wrap { margin: 0 -5px; }
+                                        .fs-qr-wrap .fs-pdf-viewer { width: 100%; overflow-x: auto;
+                                            -webkit-overflow-scrolling: touch; }
+                                        .fs-qr-wrap .fs-pdf-viewer canvas { max-width: 100%; height: auto; }
+                                        .fs-qr-wrap .fs-pdf-toolbar { flex-wrap: wrap; gap: 6px; }
+
+                                        /* Мобилка: колонки в столбик уже складывает bootstrap (col-md-*),
+                                           подтягиваем то, что он не решает */
+                                        @media (max-width: 768px) {
+                                            .container[style*="margin-top: 7em"] { margin-top: 4.5em !important; }
+                                            .fs-qr-wrap { margin: 0 -12px; }
+                                            .fs-qr-wrap .fs-pdf-toolbar { justify-content: center; }
+                                            .fs-qr-wrap .fs-pdf-ver { width: 100%; text-align: center; }
+                                            .card.table-card .card-header { display: none; } /* пустая шапка */
+                                            .card.table-card .card-body { padding: 10px; }
+                                        }
+                                    </style>
                                 @else
                                     @include('qr-code-doc.doc-contents.work-doc')
                                 @endif
