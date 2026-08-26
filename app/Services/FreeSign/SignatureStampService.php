@@ -119,6 +119,39 @@ class SignatureStampService
      */
     private function renderStamped(string $srcPath, $fields, int $userId, int $documentId, array $ecpData): string
     {
+        /* v66: некоторые PDF (1.5+ со сжатыми object streams — их генерят
+         | Word, Chrome, сканеры; либо с защитой) бесплатный парсер FPDI
+         | не читает — setSourceFile кидает исключение, штамп молча не
+         | ставился (ловилось внешним catch, подпись проходила без штампа).
+         | Лечение: при падении парсера нормализуем PDF (qpdf, затем
+         | ghostscript — что найдётся) и повторяем ОДИН раз.
+         */
+        try {
+            return $this->renderStampedOnce($srcPath, $fields, $userId, $documentId, $ecpData);
+        } catch (\Throwable $e) {
+            $normalized = $this->normalizePdf($srcPath);
+
+            if ($normalized === null) {
+                Log::error('[free-sign] PDF не читается парсером FPDI, а qpdf/ghostscript '
+                    . 'на сервере не найдены — установите один из них (apt install qpdf). '
+                    . 'Исходная ошибка: ' . $e->getMessage());
+                throw $e;
+            }
+
+            Log::warning('[free-sign] PDF нормализован (' . $normalized['tool'] . ') после ошибки парсера: '
+                . $e->getMessage());
+
+            try {
+                return $this->renderStampedOnce($normalized['path'], $fields, $userId, $documentId, $ecpData);
+            } finally {
+                @unlink($normalized['path']);
+            }
+        }
+    }
+
+    /** Одна попытка отрисовки (вынесено из renderStamped для повтора). */
+    private function renderStampedOnce(string $srcPath, $fields, int $userId, int $documentId, array $ecpData): string
+    {
         $pdf = new Fpdi('P', 'mm', 'A4', true, 'UTF-8', false);
         $pdf->setPrintHeader(false);
         $pdf->setPrintFooter(false);
@@ -268,4 +301,46 @@ class SignatureStampService
     {
         return substr(bin2hex(random_bytes((int) ceil($length / 2))), 0, $length);
     }
+
+    /**
+     * Нормализация PDF для FPDI (v66): переписывает файл без object
+     * streams / защиты. Пробует qpdf, затем ghostscript.
+     *
+     * @return array{path:string,tool:string}|null null — утилит нет или обе не справились
+     */
+    private function normalizePdf(string $srcPath): ?array
+    {
+        $out = tempnam(sys_get_temp_dir(), 'fsnorm_') . '.pdf';
+
+        $tools = [
+            'qpdf' => sprintf(
+                'qpdf --decrypt --object-streams=disable %s %s 2>&1',
+                escapeshellarg($srcPath), escapeshellarg($out)
+            ),
+            'ghostscript' => sprintf(
+                'gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -sOutputFile=%s %s 2>&1',
+                escapeshellarg($out), escapeshellarg($srcPath)
+            ),
+        ];
+
+        foreach ($tools as $tool => $cmd) {
+            $bin = $tool === 'qpdf' ? 'qpdf' : 'gs';
+            @exec('command -v ' . $bin . ' 2>/dev/null', $probe, $probeCode);
+            if ($probeCode !== 0) {
+                continue;   // утилиты нет на сервере
+            }
+
+            @exec($cmd, $output, $code);
+            // qpdf: 0 = ок, 3 = ок с предупреждениями.
+            $ok = ($tool === 'qpdf') ? in_array($code, [0, 3], true) : $code === 0;
+
+            if ($ok && is_file($out) && filesize($out) > 0) {
+                return ['path' => $out, 'tool' => $tool];
+            }
+        }
+
+        @unlink($out);
+        return null;
+    }
+
 }
