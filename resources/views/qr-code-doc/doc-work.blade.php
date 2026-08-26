@@ -27,7 +27,12 @@
 
                                 @include('qr-code-doc.key-form')
 
-                                @include('qr-code-doc.doc-contents.work-doc')
+                                {{-- v69: free-sign — PDF viewer со штампами вместо HTML-шаблона --}}
+                                @if(!empty($isFreeSignDoc) && $isFreeSignDoc)
+                                    @include('execution.confirm.templates.free-sign-page')
+                                @else
+                                    @include('qr-code-doc.doc-contents.work-doc')
+                                @endif
 
                             @else
                                 <h6 class="text-center text-danger">{{ __('field.doc_is_not_full_signed') }}</h6>
