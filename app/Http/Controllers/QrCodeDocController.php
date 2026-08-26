@@ -130,7 +130,7 @@ class QrCodeDocController extends Controller
 
         if ($isFreeSignDoc) {
             [$documentFile, $pdfVersion] = $this->freeSignLatestPdf($journal->id);
-            $fsPdfUrl = url('d-pdf/' . $doc_hash);
+            $fsPdfUrl = url('d-pdf/' . $doc_code);   // параметр роута = doc_code документа
         }
 
         return view('qr-code-doc.'.$view, compact('document', 'journal', 'directorDocument', 'signer', 'agreement_users',
@@ -212,9 +212,11 @@ class QrCodeDocController extends Controller
      * ТОЛЬКО для free-sign документов (иначе 404): произвольные файлы
      * штатных документов этим путём не открываются.
      */
-    public function freeSignPdf($doc_hash)
+    public function freeSignPdf($doc_code)
     {
-        $document = \App\Models\Document\Documents::where('doc_hash', $doc_hash)->firstOrFail();
+        // Поиск тем же полем, что viewWorkDocument: в роуте d/{doc_hash}
+        // параметр НАЗВАН doc_hash, но фактически это documents.doc_code.
+        $document = \App\Models\Document\Documents::where('doc_code', $doc_code)->firstOrFail();
 
         if (!app(\App\Services\FreeSign\FreeSignRouteService::class)->isFreeSign($document->id)) {
             abort(404);
