@@ -4,9 +4,9 @@
             <td></td>
             <td></td>
             <td>
-                {{ $directorDocument->toUser->userPost->docLang($directorDocument->toUser->userPost->id, $document->doc_lang)??'' }}
+                {{ $directorDocument?->toUser?->userPost?->docLang($directorDocument?->toUser?->userPost?->id, $document->doc_lang) ?? '' }}
                 <br>
-                {{ $directorDocument->toUser->personal->shortNameLang($document->doc_lang)??''}}
+                {{ $directorDocument?->toUser?->personal?->shortNameLang($document->doc_lang) ?? ''}}
                 <p>
                     {!! $directorDocument->signQrCode($document->id, $directorDocument->to_user, $directorDocument->id) !!} <br>
                     @if($directorDocument->status > 2)

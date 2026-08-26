@@ -16,8 +16,8 @@
                 @endif
             </td>
             <td class="info-cell">
-                <span class="position-text">{{ optional(optional($directorDocument->toUser)->userPost)->doclang(optional(optional($directorDocument->toUser)->userPost)->id, $document->doc_lang) ?? '' }}</span>
-                <span class="name-text">{{ optional(optional($directorDocument->toUser)->personal)->shortNameLang($document->doc_lang) ?? '' }}</span>
+                <span class="position-text">{{ $directorDocument?->toUser?->userPost?->doclang($directorDocument?->toUser?->userPost?->id, $document->doc_lang) ?? '' }}</span>
+                <span class="name-text">{{ $directorDocument?->toUser?->personal?->shortNameLang($document->doc_lang) ?? '' }}</span>
             </td>
         </tr>
     </table>

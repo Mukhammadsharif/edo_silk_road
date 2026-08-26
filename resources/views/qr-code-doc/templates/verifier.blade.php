@@ -2,7 +2,7 @@
     <table>
         <tr>
             <td>
-                {{ $directorDocument->toUser->userPost->docLang($directorDocument->toUser->userPost->id, $document->doc_lang)??'' }}
+                {{ $directorDocument?->toUser?->userPost?->docLang($directorDocument?->toUser?->userPost?->id, $document->doc_lang) ?? '' }}
             </td>
             <td>
                 {!! $directorDocument->signQrCode($document->id, $directorDocument->to_user, $directorDocument->id) !!} <br>
@@ -11,7 +11,7 @@
                 @endif
             </td>
             <td>
-                {{ $directorDocument->toUser->personal->shortNameLang($document->doc_lang)??''}}
+                {{ $directorDocument?->toUser?->personal?->shortNameLang($document->doc_lang) ?? ''}}
             </td>
         </tr>
     </table>
