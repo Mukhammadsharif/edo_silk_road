@@ -453,6 +453,22 @@
 @endif
 
 @if(!empty($canSign) && $canSign && ($signType->doc_sign_type ?? 1) !== 2)
+    <script>
+        /* v71: после успешной подписи-отправки (ERI) уходим на страницу этого
+           документа (view-work-doc) вместо перезагрузки редактора. Штатный sign() из
+           общего e-imzo.blade вызывает location.reload() — не трогаем его;
+           глобальный ajaxSuccess-хук срабатывает ПОСЛЕ локального success,
+           и наша навигация (последняя) побеждает reload. canSign здесь
+           только у АВТОРА (v50) — хук не заденет другие сценарии. */
+        $(document).ajaxSuccess(function (e, xhr) {
+            try {
+                var r = xhr.responseJSON;
+                if (r && r.success === 200) {
+                    window.location.href = "{{ route('office.view-work-doc', [$journal->id, $document->doc_hash]) }}";
+                }
+            } catch (err) {}
+        });
+    </script>
     {{-- E-IMZO подключаем В КОНЦЕ content, как штатные страницы подписи
          (execution/sign/view.blade.php). КРИТИЧНО: e-imzo.blade.php делает
          window.onload = AppLoad — если подключить его в @push('scripts'),
@@ -484,9 +500,8 @@
             }).done(function (response) {
                 $('.loadingGif').hide();
                 if (response && response.success === 200) {
-                    // Без alert: страница просто перезагружается, статусы
-                    // и штамп на PDF видны сразу.
-                    location.reload();
+                    // v71.1: после отправки — на страницу ЭТОГО документа (view-work-doc)
+                    window.location.href = "{{ route('office.view-work-doc', [$journal->id, $document->doc_hash]) }}";
                 } else {
                     $btn.prop('disabled', false);
                     alert((response && response.message) || 'Ошибка подписи');
