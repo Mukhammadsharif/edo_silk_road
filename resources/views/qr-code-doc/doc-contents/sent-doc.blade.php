@@ -6,7 +6,7 @@
         </div>
 
         <div class="sent-doc-date-number">
-            № {{ $journal->createdUser->department->dep_code_doc??'' }}/{{ $journal->j_number }}<br>
+            № {{ $journal->createdUser->department?->dep_code_doc??'' }}/{{ $journal->j_number }}<br>
             {{ date('d.m.Y', strtotime($document->doc_date)) }}
         </div>
 
@@ -20,13 +20,13 @@
             <table>
                 <tr>
                     <td>
-                        {{ $directorDocument->toUser->userPost->docLang($directorDocument->toUser->userPost->id, $document->doc_lang)??'' }}
+                        {{ $directorDocument?->toUser?->userPost?->docLang($directorDocument?->toUser?->userPost?->id, $document->doc_lang) ?? '' }}
                     </td>
                     <td>
-                        {!! $directorDocument->signQrCode($document->id, $directorDocument->to_user, $directorDocument->id) !!}
+                        {!! $directorDocument?->signQrCode($document->id, $directorDocument?->to_user, $directorDocument?->id) !!}
                     </td>
                     <td>
-                        {{ $directorDocument->toUser->personal->shortNameLang($document->doc_lang)??'' }}
+                        {{ $directorDocument?->toUser?->personal?->shortNameLang($document->doc_lang) ?? '' }}
                     </td>
                 </tr>
             </table>
@@ -52,7 +52,7 @@
                                         <span>Performer:</span>
                                         @break
                                 @endswitch
-                                {{ $journal->fromUser->personal->shortNameLang($document->doc_lang)??'' }}
+                                {{ $journal->fromUser?->personal?->shortNameLang($document->doc_lang)??'' }}
                             </div>
 
                             <div class="doc-tel">
@@ -70,7 +70,7 @@
                                         Phone number:
                                         @break
                                 @endswitch
-                                {{ $journal->fromUser->personal->phone??'-' }})
+                                {{ $journal->fromUser?->personal?->phone??'-' }})
                             </div>
                         </div>
                     </td>

@@ -74,6 +74,12 @@ class QrCodeDocController extends Controller
 
         $journal = DocumentJournals::where('doc_id', $document->id)->first();
 
+        /* v67: guard — журнала может не быть (битые/удалённые данные),
+           дальше $journal->id уронил бы публичную страницу. */
+        if (!$journal) {
+            return view('qr-code-doc.404');
+        }
+
         $directorDocument = DocumentExecutionSteps::where('j_id', $journal->id)
             ->where('exec_role', $this->getResolutionRole()->id)->first();
 
@@ -110,8 +116,31 @@ class QrCodeDocController extends Controller
 
         print_r($base64); die;*/
 
+        /* ═══ v69: free-sign на публичной QR-странице — PDF viewer ═══
+         | Определение id-независимое (по меткам). Призраки непроставленных
+         | меток публичному зрителю не показываем (fsGhosts пуст).
+         | PDF отдаётся публичным эндпоинтом d-pdf/{doc_hash} (fsPdfUrl) —
+         | file.pre-view в авторизованной группе и здесь недоступен.
+         */
+        $isFreeSignDoc = app(\App\Services\FreeSign\FreeSignRouteService::class)->isFreeSign($document->id);
+        $documentFile = null;
+        $pdfVersion = null;
+        $fsGhosts = collect();
+        $fsPdfUrl = null;
+
+        if ($isFreeSignDoc) {
+            [$documentFile, $pdfVersion] = $this->freeSignLatestPdf($journal->id);
+            /* v69.2: ОТНОСИТЕЛЬНЫЙ url — url() строит по APP_URL (боевой
+               edoline.uz), а страница может открываться с другого хоста
+               (локальная разработка) -> fetch уходил на прод и падал
+               («не удалось загрузить документ»). Относительный путь
+               всегда бьёт в текущий origin. */
+            $fsPdfUrl = '/d-pdf/' . $doc_code;
+        }
+
         return view('qr-code-doc.'.$view, compact('document', 'journal', 'directorDocument', 'signer', 'agreement_users',
-            'qrCodeSignUser', 'html_doc', 'model'));
+            'qrCodeSignUser', 'html_doc', 'model',
+            'isFreeSignDoc', 'documentFile', 'pdfVersion', 'fsGhosts', 'fsPdfUrl'));
 
     }
 
@@ -156,4 +185,60 @@ class QrCodeDocController extends Controller
             return $qr_key->key_code;
         }
     }
+
+    /* ═══════════ FREE-SIGN на публичной QR-странице (v69) ═══════════ */
+
+    /** Последний проштампованный PDF журнала (иначе оригинал) + номер версии. */
+    private function freeSignLatestPdf(int $journalId): array
+    {
+        $stamped = \App\Models\Document\DocumentFiles::where('j_id', $journalId)
+            ->where('file_ext', 'pdf')
+            ->where('file_name', 'ilike', '%_signed_v%')
+            ->orderByDesc('id')
+            ->first();
+
+        $original = \App\Models\Document\DocumentFiles::where('j_id', $journalId)
+            ->where('file_ext', 'pdf')
+            ->where('file_name', 'not ilike', '%_signed_v%')
+            ->orderBy('id')
+            ->first();
+
+        $version = \App\Models\Document\DocumentFiles::where('j_id', $journalId)
+            ->where('file_ext', 'pdf')
+            ->where('file_name', 'ilike', '%_signed_v%')
+            ->count();
+
+        return [$stamped ?: $original, $version];
+    }
+
+    /**
+     * Публичная отдача PDF free-sign документа для QR-страницы.
+     * Доступ по doc_hash — та же модель, что у самой страницы d/{hash}.
+     * ТОЛЬКО для free-sign документов (иначе 404): произвольные файлы
+     * штатных документов этим путём не открываются.
+     */
+    public function freeSignPdf($doc_code)
+    {
+        // Поиск тем же полем, что viewWorkDocument: в роуте d/{doc_hash}
+        // параметр НАЗВАН doc_hash, но фактически это documents.doc_code.
+        $document = \App\Models\Document\Documents::where('doc_code', $doc_code)->firstOrFail();
+
+        if (!app(\App\Services\FreeSign\FreeSignRouteService::class)->isFreeSign($document->id)) {
+            abort(404);
+        }
+
+        $journal = \App\Models\Document\DocumentJournals::where('doc_id', $document->id)->firstOrFail();
+
+        [$file] = $this->freeSignLatestPdf($journal->id);
+        abort_unless($file, 404);
+
+        $path = '/' . $file->file_path . $file->file_hash;
+        abort_unless(\Illuminate\Support\Facades\Storage::disk('ftp_13')->exists($path), 404);
+
+        return response(\Illuminate\Support\Facades\Storage::disk('ftp_13')->get($path), 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $file->file_name . '"',
+        ]);
+    }
+
 }

@@ -631,7 +631,22 @@ class SignDocImzoController extends Controller
         $userKey->json_data = json_encode($ecpData);
         $userKey->save();
 
-        $docTypeModel = SignatureDocumentType::where('doc_code', $docType)->firstOrNew(['doc_code' => $docType], ['id' => 1]);
+        /* v71.2: firstOrNew возвращал НЕсохранённую модель — id (не в
+         | fillable) молча отбрасывался -> в signature_documents.doc_type
+         | уходил NULL -> not-null violation при первой подписи документа
+         | типа, которого нет в справочнике (free_sign_doc).
+         | firstOrCreate СОЗДАЁТ запись справочника с реальным id.
+         | Лечит и логин-, и ЭЦП-путь (оба идут через этот метод).
+         */
+        $docTypeModel = SignatureDocumentType::firstOrCreate(
+            ['doc_code' => $docType],
+            [
+                'doc_name' => $docType === 'free_sign_doc'
+                    ? 'Внешаблонные документы (free-sign)'
+                    : $docType,
+                'status'   => 1,
+            ]
+        );
 
         SignatureDocuments::create([
             'doc_id'        => $docId,

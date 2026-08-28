@@ -54,9 +54,9 @@
                                     <div class="feeds-body">
                                         <h6 class="title text-blue">Kim tomonidan imzolangan:</h6>
                                         <p>
-                                            {{ mb_substr($user->personal->f_name??'', 0,1,) }}.
-                                            {{ mb_substr($user->personal->m_name??'', 0,1,) }}.
-                                            {{ $user->personal->l_name??'' }}
+                                            {{ mb_substr($user->personal?->f_name??'', 0,1,) }}.
+                                            {{ mb_substr($user->personal?->m_name??'', 0,1,) }}.
+                                            {{ $user->personal?->l_name??'' }}
                                         </p>
                                     </div>
                                 </a>
@@ -82,9 +82,9 @@
                                     <div class="feeds-body">
                                         <h6 class="title text-blue">Hujjat ijrochisi:</h6>
                                         <p>
-                                            {{ mb_substr($document->createdId->personal->f_name??'', 0,1,) }}.
-                                            {{ mb_substr($document->createdId->personal->m_name??'', 0,1,) }}.
-                                            {{ $document->createdId->personal->l_name??'' }}
+                                            {{ mb_substr($document->createdId->personal?->f_name??'', 0,1,) }}.
+                                            {{ mb_substr($document->createdId->personal?->m_name??'', 0,1,) }}.
+                                            {{ $document->createdId->personal?->l_name??'' }}
                                         </p>
                                     </div>
                                 </a>
