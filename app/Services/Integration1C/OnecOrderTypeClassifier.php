@@ -61,6 +61,8 @@ class OnecOrderTypeClassifier
                 // «Lavozimlarni birlashtirish» — объединение должностей,
                 // в контракте 1С это additional_duties (совмещение)
                 'lavozimlarni birlashtirish', 'birlashtirish',
+                // «Kasblarni qo'shib olib borish» — совмещение профессий
+                'qoshib olib borish', 'kasblarni qoshib', 'qoshib olib',
             ],
             5 => ['и.о.', 'вазифасини бажариш'],
         ],
@@ -120,6 +122,8 @@ class OnecOrderTypeClassifier
                 'отсутстви', 'об отсутствии', 'неявк', 'больничн',
                 'нетрудоспособност', 'простой',
                 'yoqligi', 'ishga chiqmaslik', 'kasallik varaqasi',
+                // «Ishda yo'qlik holati» — отсутствие на работе
+                'yoqlik', 'ishda yoqlik', 'yoqlik holati',
             ],
             5 => ['kasallik'],
         ],

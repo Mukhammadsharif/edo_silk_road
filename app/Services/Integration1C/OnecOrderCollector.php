@@ -38,6 +38,12 @@ class OnecOrderCollector
         'removal_of_disciplinary_actions' => ['user_id', 'disciplinary_action_order_id'],
     ];
 
+    /**
+     * Статус подписанного шага. Ставится через updateStepStatus($steps['resolution'], 5)
+     * в момент подписания резолюции через E-IMZO.
+     */
+    private const STEP_SIGNED = 5;
+
     public function __construct(
         private OnecOrderTypeResolver $types,
         private OnecLogger $logger
@@ -50,8 +56,12 @@ class OnecOrderCollector
      * @param  array  $extra  Типизированные поля, если форма их уже собирает
      * @param  string|null  $forceType  Принудительный тип, в обход определения
      */
-    public function capture(int $jId, array $extra = [], ?string $forceType = null): ?OnecOrderPayload
-    {
+    public function capture(
+        int $jId,
+        array $extra = [],
+        ?string $forceType = null,
+        bool $allowUnsigned = false
+    ): ?OnecOrderPayload {
         try {
             $journal = DocumentJournals::with(['doc', 'journal', 'fromUser'])->find($jId);
 
@@ -66,6 +76,19 @@ class OnecOrderCollector
             if (!$resolved) {
                 // Не кадровый приказ, не распознан классификатором либо
                 // журнал исключён администратором вручную
+                return null;
+            }
+
+            // Резолюция должна быть именно подписана, а не документ возвращён
+            // на доработку — оба случая дают документу статус 9
+            $signedAt = $this->signDate($jId);
+
+            if (!$signedAt && !$allowUnsigned) {
+                $this->logger->event('ORDER SKIPPED — резолюция не подписана', [
+                    'j_id'   => $jId,
+                    'status' => $journal->status,
+                ]);
+
                 return null;
             }
 
@@ -85,7 +108,7 @@ class OnecOrderCollector
                     'org_unit_id'     => $journal->org_unit_id,
                     'order_number'    => $this->orderNumber($journal),
                     'created_date'    => $journal->created_at?->format('Y-m-d'),
-                    'sign_date'       => $this->signDate($jId) ?? now()->format('Y-m-d'),
+                    'sign_date'       => $signedAt ?? now()->format('Y-m-d'),
                     'data'            => $data,
                     'missing_fields'  => $this->missingFields($resolved['order_type'], $data),
                     'export_status'   => OnecOrderPayload::STATUS_NEW,
@@ -152,15 +175,30 @@ class OnecOrderCollector
         return $missing;
     }
 
-    /** Дата подписания — момент прохождения шага резолюции (RESOL). */
-    private function signDate(int $jId): ?string
+    /**
+     * Подписана ли резолюция.
+     *
+     * Статус 9 у документа сам по себе неоднозначен: его ставит и подписание
+     * резолюции (SignDocImzoController, ветка sign_resolution), и возврат
+     * на доработку (ExecutionController::controlSendToEdit, DOC_RETURNED).
+     *
+     * Различаем по шагу резолюции: при подписании он переводится в статус 5,
+     * при возврате остаётся в прежнем. Без этой проверки возвращённый
+     * на доработку документ уехал бы в 1С как подписанный приказ.
+     */
+    private function resolutionStep(int $jId): ?DocumentExecutionSteps
     {
-        $step = DocumentExecutionSteps::where('j_id', $jId)
-            ->whereHas('role', fn ($q) => $q->where('doc_code', 'RESOL')->where('status', 1))
+        return DocumentExecutionSteps::where('j_id', $jId)
+            ->whereHas('role', fn ($q) => $q->where('doc_code', 'RESOL'))
+            ->where('status', self::STEP_SIGNED)
             ->latest('updated_at')
             ->first();
+    }
 
-        return $step?->updated_at?->format('Y-m-d');
+    /** Дата подписания резолюции — она же дата приказа. */
+    private function signDate(int $jId): ?string
+    {
+        return $this->resolutionStep($jId)?->updated_at?->format('Y-m-d');
     }
 
     /** Регистрационный номер: j_number — номер в журнале регистрации. */

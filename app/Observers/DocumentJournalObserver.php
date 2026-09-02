@@ -23,14 +23,23 @@ use App\Services\Integration1C\OnecOrderCollector;
 class DocumentJournalObserver
 {
     /**
-     * Финальные статусы: 10 — Tugatilgan (завершён, ставится после подписания
-     * E-IMZO), 11 — Ijrosi ta'minlangan (исполнение обеспечено).
+     * Статусы, при которых кадровый приказ считается состоявшимся.
      *
-     * Статус 9 (In process) намеренно исключён: документ ещё в движении,
-     * его могут вернуть на доработку. Выгруженный в 1С приказ уже создаёт
-     * кадровое событие, отозвать его оттуда сложнее, чем дождаться подписания.
+     * 9 — резолюция подписана. Именно в этот момент SignDocImzoController
+     *     (ветка sign_resolution) запускает GenerateHrOrderPdfJob и формирует
+     *     сам приказ. Название «In process» относится к исполнению, которое
+     *     идёт дальше, а приказ уже подписан.
+     * 10 — Tugatilgan (исполнение закрыто)
+     * 11 — Ijrosi ta'minlangan (исполнение обеспечено)
+     *
+     * Тот же набор использует DataController::hrOrders.
+     *
+     * ВАЖНО: статус 9 неоднозначен — его же ставит возврат на доработку
+     * (ExecutionController::controlSendToEdit). Поэтому OnecOrderCollector
+     * дополнительно проверяет, что шаг резолюции в статусе 5, то есть
+     * действительно подписан.
      */
-    private const SIGNED_STATUSES = [10, 11];
+    private const SIGNED_STATUSES = [9, 10, 11];
 
     public function updated(DocumentJournals $journal): void
     {

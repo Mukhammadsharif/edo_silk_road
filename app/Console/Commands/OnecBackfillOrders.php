@@ -22,23 +22,21 @@ class OnecBackfillOrders extends Command
         {--from= : Приказы, зарегистрированные с этой даты (Y-m-d)}
         {--org= : Ограничить одной организацией (document_journals.org_unit_id)}
         {--dry-run : Показать, что будет собрано, без записи}
-        {--with-in-process : Захватить и документы в статусе 9 (в работе) — только для отладки}';
+        {--allow-unsigned : Захватить и документы с неподписанной резолюцией — только для отладки}';
 
     protected $description = 'Собрать структурированные данные подписанных кадровых приказов для выгрузки в 1С';
 
     /**
-     * Финальные статусы: 10 — Tugatilgan (завершён, ставится после подписания
-     * E-IMZO), 11 — Ijrosi ta'minlangan (исполнение обеспечено).
+     * Статусы состоявшегося кадрового приказа.
      *
-     * Статус 9 (In process) сюда НЕ входит, хотя DataController::hrOrders его
-     * учитывает. Документ в работе ещё могут вернуть на доработку или отменить,
-     * а выгруженный в 1С приказ уже создаст кадровое событие — отпуск, перевод,
-     * увольнение. Отозвать его оттуда сложнее, чем дождаться подписания.
+     * 9 — резолюция подписана: в этот момент формируется PDF приказа
+     *     (GenerateHrOrderPdfJob). Дальше идёт исполнение.
+     * 10 — исполнение закрыто, 11 — исполнение обеспечено.
+     *
+     * Подпись резолюции дополнительно проверяет OnecOrderCollector:
+     * статус 9 ставится и при возврате документа на доработку.
      */
-    private const SIGNED_STATUSES = [10, 11];
-
-    /** Статус «в работе» — для отладочной выгрузки по флагу. */
-    private const IN_PROCESS_STATUS = 9;
+    private const SIGNED_STATUSES = [9, 10, 11];
 
     public function handle(OnecOrderCollector $collector, OnecOrderTypeResolver $resolver): int
     {
@@ -61,9 +59,8 @@ class OnecBackfillOrders extends Command
 
         $statuses = self::SIGNED_STATUSES;
 
-        if ($this->option('with-in-process')) {
-            $statuses[] = self::IN_PROCESS_STATUS;
-            $this->warn('Включены документы в статусе 9 (в работе) — только для отладки!');
+        if ($this->option('allow-unsigned')) {
+            $this->warn('Включены документы с неподписанной резолюцией — только для отладки!');
         }
 
         $query = DocumentJournals::whereIn('j_type', $journalTypeIds)
@@ -110,7 +107,12 @@ class OnecBackfillOrders extends Command
                     continue;
                 }
 
-                $payload = $collector->capture($journal->id);
+                $payload = $collector->capture(
+                    $journal->id,
+                    [],
+                    null,
+                    (bool) $this->option('allow-unsigned')
+                );
 
                 if (!$payload) {
                     $skipped++;
@@ -133,6 +135,8 @@ class OnecBackfillOrders extends Command
 
         if ($skipped) {
             $this->warn("Пропущено: {$skipped}");
+            $this->line('Обычно это документы, возвращённые на доработку:');
+            $this->line('статус 9 ставится и при возврате, но резолюция там не подписана.');
         }
 
         if ($incomplete) {
@@ -192,10 +196,8 @@ class OnecBackfillOrders extends Command
         if ($ready < $totalDocs) {
             $skipped = $totalDocs - $ready;
             $this->newLine();
-            $this->line("Не выгружается {$skipped}: документы ещё не подписаны.");
-            $this->line('Выгружаются только 10 (Tugatilgan) и 11 (Ijrosi ta`minlangan).');
-            $this->line('Статусы 5 (Imzolashda) и 9 (In process) — документ ещё в движении,');
-            $this->line('его могут вернуть на доработку, поэтому в 1С он не уходит.');
+            $this->line("Не выгружается {$skipped}: документы ещё не дошли до резолюции.");
+            $this->line('Выгружаются статусы 9 (резолюция подписана), 10 и 11.');
         }
     }
 }
