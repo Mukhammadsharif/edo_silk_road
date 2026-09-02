@@ -157,6 +157,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::get('/users', [UserApiController::class, 'index']);
     Route::get('/roles', [DictionaryApiController::class, 'roleList']);
     Route::get('/languages', [DictionaryApiController::class, 'languageList']);
+    Route::get('/organization-units', [DictionaryApiController::class, 'organizationUnitList']);
 
     // Profile routes
     Route::get('/profile', [ProfileApiController::class, 'profile']);
