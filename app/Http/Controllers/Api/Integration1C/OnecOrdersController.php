@@ -34,9 +34,17 @@ class OnecOrdersController extends Controller
 
     public function __construct(
         private OnecOrderExporter $exporter,
-        private OnecGuidResolver $guid,
         private OnecLogger $logger
     ) {}
+
+    /**
+     * Берём резолвер у экспортёра, а не инжектим свой: класс не singleton,
+     * и отдельный экземпляр не увидел бы промахи, накопленные при сборке ответа.
+     */
+    private function guid(): OnecGuidResolver
+    {
+        return $this->exporter->guidResolver();
+    }
 
     /**
      * GET /api/main/api-1c/v1/orders/{type}/get_list
@@ -56,7 +64,7 @@ class OnecOrdersController extends Controller
             return $this->badType($type);
         }
 
-        $this->guid->reset();
+        $this->guid()->reset();
 
         $orgUnitId = $this->resolveOrgUnit($request);
 
@@ -108,7 +116,7 @@ class OnecOrdersController extends Controller
 
         // Несопоставленные справочники — чтобы 1С видела причину null в GUID-полях,
         // а не считала это ошибкой формата
-        if ($unresolved = $this->guid->unresolved()) {
+        if ($unresolved = $this->guid()->unresolved()) {
             $response['meta']['unresolved_references'] = $unresolved;
         }
 

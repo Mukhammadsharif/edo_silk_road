@@ -35,6 +35,18 @@ class OnecOrderExporter
         private OnecLogger $logger
     ) {}
 
+    /**
+     * Резолвер, которым пользуется экспортёр.
+     *
+     * Контроллеру нужен именно ЭТОТ экземпляр: OnecGuidResolver не singleton,
+     * поэтому инжектированный в контроллер объект — другой, и накопленные
+     * здесь промахи резолва в нём не видны.
+     */
+    public function guidResolver(): OnecGuidResolver
+    {
+        return $this->guid;
+    }
+
     public function export(OnecOrderPayload $payload, bool $withFiles = false): array
     {
         $data = $payload->data ?? [];
