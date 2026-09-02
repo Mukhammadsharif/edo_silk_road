@@ -147,6 +147,10 @@ class OnecOrderCollector
         $work = $journal->fromUser; // user_work_histories
 
         return array_filter([
+            // doc_code нужен, чтобы найти PDF приказа:
+            // GenerateHrOrderPdfJob кладёт его как hr_orders/{doc_code}.pdf
+            'doc_code' => $journal->doc?->doc_code,
+
             // user_work_histories: dep_id → departments, post_id → user_positions
             'work_id' => $work?->id,
             'user_id' => $work?->user_id,

@@ -186,11 +186,9 @@ class OnecSyncToWorking
         try {
             $hash = BitrixHashes::where('type', 'P')->where('hash', $person['ID'])->first();
 
-            $birthday = null;
-            if (!empty($person['birthDate'])) {
-                try { $birthday = Carbon::createFromFormat('d-m-Y', $person['birthDate'])->format('Y-m-d'); }
-                catch (\Throwable $e) {}
-            }
+            // Разбор с фолбэком и записью в лог: раньше пустой catch
+            // молча превращал непонятую дату в null
+            $birthday = $this->parseDate($person['birthDate'] ?? null, 'birthDate', $person['ID']);
             $docNumber = '';
             $docType = 2; // по умолчанию паспорт
             if (!empty($person['identityDocument'])) {
@@ -205,11 +203,14 @@ class OnecSyncToWorking
                 };
             }
             $personalData = [
-                'doc_pin'    => isset($person['insuranceNumber']) ? mb_substr((string) $person['insuranceNumber'], 0, 14) : null,
-                'doc_number' => $docNumber ? mb_substr($docNumber, 0, 9) : null,
+                'doc_pin'    => $this->cutWithWarning(
+                    isset($person['insuranceNumber']) ? (string) $person['insuranceNumber'] : null,
+                    14, 'insuranceNumber', $person['ID']
+                ),
+                'doc_number' => $this->cutWithWarning($docNumber ?: null, 9, 'doc_number', $person['ID']),
                 'doc_type'   => $docType,
                 'birthday'   => $birthday,
-                'gender'     => isset($person['gender']) ? (($person['gender'] === 'male') ? 1 : 2) : null,
+                'gender'     => $this->normalizeGender($person['gender'] ?? null),
                 'phone'      => $this->normalizePhone($person['mobilePhoneNumber'] ?? ''),
                 'f_name'     => $person['firstName'] ?? null,
                 'l_name'     => $person['lastName'] ?? null,
@@ -243,8 +244,50 @@ class OnecSyncToWorking
             // eMail необязателен в 1С, но users.email NOT NULL + unique.
             // Если eMail есть — используем; иначе синтезируем уникальный по onec_id.
             if (!empty($person['eMail'])) {
-                $email = $person['eMail'];
-                if (User::where('email', $email)->exists()) return 'skipped';
+                $email    = $person['eMail'];
+                $existing = User::where('email', $email)->first();
+
+                /*
+                 * Пользователь с таким email уже заведён — обычно вручную,
+                 * до подключения интеграции.
+                 *
+                 * Раньше здесь стоял return 'skipped', и это было опасно:
+                 * связь в bitrix_hashes не создавалась, поэтому syncEmployee
+                 * потом не находил физлицо и тоже пропускал сотрудника.
+                 * В выгрузке приказов employee_ID оставался null, а 1С при этом
+                 * получала ответ об успехе — сбой был не виден никому.
+                 *
+                 * Поэтому связываем существующего пользователя с GUID из 1С
+                 * и обновляем его персональные данные.
+                 */
+                if ($existing) {
+                    BitrixHashes::create([
+                        'type'     => 'P',
+                        'hash'     => $person['ID'],
+                        'local_id' => $existing->id,
+                    ]);
+
+                    UserPersonalInfo::updateOrCreate(
+                        ['user_id' => $existing->id],
+                        array_merge($personalData, [
+                            'is_emp'        => 2,
+                            'doc_sign_type' => 1,
+                            'sort'          => 1,
+                        ])
+                    );
+
+                    if ($orgUnitId && empty($existing->org_unit_id)) {
+                        $existing->update(['org_unit_id' => $orgUnitId]);
+                    }
+
+                    Log::channel('onec')->info('[1C sync person] привязан существующий пользователь', [
+                        'key'      => $person['ID'],
+                        'local_id' => $existing->id,
+                        'email'    => $email,
+                    ]);
+
+                    return 'linked';
+                }
             } else {
                 $email = 'onec+' . substr($person['ID'], 0, 24) . '@noemail.local';
             }
@@ -299,17 +342,41 @@ class OnecSyncToWorking
                 return 'skipped';
             }
 
-            // division → department
+            /*
+             * division → department, position → user_position.
+             *
+             * Ноль означает «не сопоставлено». Раньше это происходило молча,
+             * и понять, что подразделение потерялось, можно было только по
+             * пустому GUID в выгрузке приказа. Теперь пишем предупреждение:
+             * обычно причина в порядке загрузки — divisions и positions должны
+             * приезжать из 1С раньше employees.
+             */
             $depId = 0;
             if (!empty($e['divisionID'])) {
                 $dh = BitrixHashes::where('type', 'D')->where('hash', $e['divisionID'])->first();
-                if ($dh) $depId = (int) $dh->local_id;
+
+                if ($dh) {
+                    $depId = (int) $dh->local_id;
+                } else {
+                    Log::channel('onec')->warning('[1C sync employee] division не сопоставлен', [
+                        'key'        => $e['ID'],
+                        'divisionID' => $e['divisionID'],
+                    ]);
+                }
             }
-            // position → user_position (type POS)
+
             $postId = 0;
             if (!empty($e['positionID'])) {
                 $ph = BitrixHashes::where('type', 'POS')->where('hash', $e['positionID'])->first();
-                if ($ph) $postId = (int) $ph->local_id;
+
+                if ($ph) {
+                    $postId = (int) $ph->local_id;
+                } else {
+                    Log::channel('onec')->warning('[1C sync employee] position не сопоставлен', [
+                        'key'        => $e['ID'],
+                        'positionID' => $e['positionID'],
+                    ]);
+                }
             }
             // организация: сначала по companyID-хэшу, иначе из токена 1С
             $orgId = 0;
@@ -319,25 +386,32 @@ class OnecSyncToWorking
             }
             if (!$orgId && $orgUnitId) $orgId = $orgUnitId;
 
-            $fromDate = null;
-            if (!empty($e['employmentDate'])) {
-                try { $fromDate = Carbon::createFromFormat('d-m-Y', $e['employmentDate'])->format('Y-m-d'); }
-                catch (\Throwable $ex) { try { $fromDate = Carbon::parse($e['employmentDate'])->format('Y-m-d'); } catch (\Throwable $ex2) {} }
+            $fromDate = $this->parseDate($e['employmentDate'] ?? null, 'employmentDate', $e['ID']);
+
+            /*
+             * from_date NOT NULL, поэтому при отсутствии даты подставляем сегодня.
+             * Это выдуманное значение: сотрудник, работающий с 2019 года, получит
+             * дату приёма сегодняшним числом, и она же уедет обратно в 1С
+             * в приказе о приёме. Поэтому фиксируем в логе — расхождение должно
+             * быть видно, а не растворяться в данных.
+             */
+            if (!$fromDate) {
+                $fromDate = now()->format('Y-m-d');
+
+                Log::channel('onec')->warning('[1C sync employee] employmentDate отсутствует, подставлена текущая дата', [
+                    'key' => $e['ID'],
+                ]);
             }
-            // user_work_histories.from_date NOT NULL — дефолт на сегодня, если 1С не прислал дату
-            if (!$fromDate) $fromDate = now()->format('Y-m-d');
 
             // user_work_histories.to_date NOT NULL.
             // Работающий сотрудник: заглушка 9999-12-31 («бессрочно»).
             // Уволенный: реальная дата (transferDate, иначе сегодня).
             $isDismissed = (bool) ($e['dismissed'] ?? false);
             $toDate = '9999-12-31';
+
             if ($isDismissed) {
-                $toDate = now()->format('Y-m-d');
-                if (!empty($e['transferDate'])) {
-                    try { $toDate = Carbon::createFromFormat('d-m-Y', $e['transferDate'])->format('Y-m-d'); }
-                    catch (\Throwable $ex) { try { $toDate = Carbon::parse($e['transferDate'])->format('Y-m-d'); } catch (\Throwable $ex2) {} }
-                }
+                $toDate = $this->parseDate($e['transferDate'] ?? null, 'transferDate', $e['ID'])
+                    ?? now()->format('Y-m-d');
             }
 
             $data = [
@@ -366,10 +440,88 @@ class OnecSyncToWorking
         }
     }
 
+    /**
+     * Телефон: последние 9 цифр (формат Узбекистана, без кода страны).
+     *
+     * Раньше короткая строка вроде '12345' проходила как есть и оседала
+     * в базе заведомо неверным номером. Теперь короткие отбрасываются.
+     */
     private function normalizePhone($phone): ?string
     {
         $digits = preg_replace('/\D/', '', (string) $phone);
-        return $digits ? substr($digits, -9) : null;
+
+        if (strlen((string) $digits) < 9) {
+            return null;
+        }
+
+        return substr($digits, -9);
+    }
+
+    /**
+     * Разбор даты из 1С.
+     *
+     * Основной формат — d-m-Y, но 1С может прислать и ISO. Раньше в syncPerson
+     * ошибка разбора глушилась пустым catch: дата рождения молча становилась
+     * null, и понять это по логам было нельзя.
+     *
+     * @param  string  $field  Название поля — только для сообщения в логе
+     */
+    private function parseDate($value, string $field, $key = null): ?string
+    {
+        if (empty($value)) {
+            return null;
+        }
+
+        try {
+            return Carbon::createFromFormat('d-m-Y', $value)->format('Y-m-d');
+        } catch (\Throwable) {
+            // Фолбэк: ISO и прочие распознаваемые форматы
+        }
+
+        try {
+            return Carbon::parse($value)->format('Y-m-d');
+        } catch (\Throwable) {
+            Log::channel('onec')->warning("[1C sync] не разобрана дата «{$field}»", [
+                'key'   => $key,
+                'value' => $value,
+            ]);
+
+            return null;
+        }
+    }
+
+    /**
+     * Пол: 1 — мужской, 2 — женский.
+     *
+     * Раньше сравнение было строгим с 'male', поэтому 'Male', 'M' или 'м'
+     * молча давали женский пол.
+     */
+    private function normalizeGender($gender): ?int
+    {
+        if (!isset($gender) || $gender === '') {
+            return null;
+        }
+
+        $value = mb_strtolower(trim((string) $gender));
+
+        return in_array($value, ['male', 'm', 'м', 'муж', 'мужской', '1'], true) ? 1 : 2;
+    }
+
+    /** Обрезка с предупреждением: молча портить номер документа нельзя. */
+    private function cutWithWarning(?string $value, int $limit, string $field, $key = null): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if (mb_strlen($value) > $limit) {
+            Log::channel('onec')->warning("[1C sync] «{$field}» длиннее {$limit} символов, обрезано", [
+                'key'      => $key,
+                'original' => $value,
+            ]);
+        }
+
+        return mb_substr($value, 0, $limit);
     }
 
     /* ───────────────────────── USERS → users (логин/пароль) ───────────────────────── */
@@ -390,8 +542,30 @@ class OnecSyncToWorking
             if (!empty($u['username'])) {
                 $update['username'] = $u['username'];
             }
+
+            /*
+             * Смена пароля из 1С — рискованный сценарий: пароль приходит
+             * открытым текстом, и при каждой синхронизации пользователь
+             * терял бы уже установленный им пароль.
+             *
+             * Поэтому пароль ставим только пока пользователь не активирован:
+             * syncPerson создаёт его со status = 2, и до активации
+             * администратором собственного пароля у него ещё нет.
+             *
+             * Если нужно разрешить перезапись всегда — включите
+             * ONEC_ALLOW_PASSWORD_OVERWRITE=true в .env.
+             */
             if (!empty($u['password'])) {
-                $update['password'] = Hash::make($u['password']);
+                $allowOverwrite = (bool) env('ONEC_ALLOW_PASSWORD_OVERWRITE', false);
+
+                if ($allowOverwrite || (int) $user->status === 2) {
+                    $update['password'] = Hash::make($u['password']);
+                } else {
+                    Log::channel('onec')->info('[1C sync user] пароль не перезаписан: пользователь уже активирован', [
+                        'personID' => $u['personID'],
+                        'local_id' => $user->id,
+                    ]);
+                }
             }
             if (!empty($update)) {
                 $user->update($update);

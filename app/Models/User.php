@@ -8,7 +8,7 @@ use App\Models\Admin\Subscriptions;
 use App\Models\Admin\UserPersonalInfo;
 use App\Models\Admin\UserRole;
 use App\Models\Admin\UserWorkHistory;
-use DateTime;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -195,9 +195,38 @@ class User extends Authenticatable
         return $lang_name;
     }
 
-    public static function fromPositionDate($dateStr): DateTime|false|string
+    /**
+     * Дата начала работы в должности, прописью на языке интерфейса.
+     *
+     * DateTime::createFromFormat возвращает false, а не бросает исключение,
+     * поэтому раньше страница профиля падала с «Call to a member function
+     * format() on bool». False возвращается на пустой строке, на null
+     * и на дате со временем ('2026-09-02 14:36:00') — а именно такую строку
+     * давал прежний фолбэк ?? now(), потому что Carbon приводится к строке
+     * вместе со временем.
+     *
+     * Это штатная ситуация для пользователей из 1С: физлицо приезжает раньше
+     * сотрудника, и записи в истории работы у него ещё нет.
+     */
+    public static function fromPositionDate($dateStr): string
     {
-        $date = DateTime::createFromFormat('Y-m-d', $dateStr);
+        if ($dateStr instanceof \DateTimeInterface) {
+            $date = Carbon::instance($dateStr);
+        } else {
+            $raw = trim((string) $dateStr);
+
+            if ($raw === '') {
+                return '-';
+            }
+
+            try {
+                // Carbon::parse принимает и 'Y-m-d', и дату со временем,
+                // и ISO — в отличие от жёсткого createFromFormat
+                $date = Carbon::parse($raw);
+            } catch (\Throwable) {
+                return '-';
+            }
+        }
 
         $months = [
             'uz' => [
@@ -217,23 +246,16 @@ class User extends Authenticatable
             ]
         ];
 
-        $day = $date->format('d');
-        $month = (int)$date->format('m');
-        $year = $date->format('Y');
+        $day   = $date->format('d');
+        $month = (int) $date->format('m');
+        $year  = $date->format('Y');
 
-        $locale = session()->get('locale');
-
-        switch ($locale) {
-            case 'uz':
-                return "$year yil $day " . $months['uz'][$month];
-            case 'ru':
-                return "$day " . $months['ru'][$month] . " $year года";
-            case 'en':
-                return $months['en'][$month] . " $day, $year";
-            default:
-                return $dateStr;
-        }
-
+        return match (session()->get('locale')) {
+            'uz'    => "$year yil $day " . $months['uz'][$month],
+            'ru'    => "$day " . $months['ru'][$month] . " $year года",
+            'en'    => $months['en'][$month] . " $day, $year",
+            default => $date->format('Y-m-d'),
+        };
     }
 
     public function organization()

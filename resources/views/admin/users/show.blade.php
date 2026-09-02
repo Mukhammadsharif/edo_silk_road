@@ -91,8 +91,12 @@
                                 <span>{{ __('field.user_position_from_date') }}</span>
                             </div>
                             <div class="info-value">
-                                @php($user_position_from_date = $user->currentWork->from_date??now())
-                                {{ $user->fromPositionDate($user_position_from_date) }}
+                                {{-- currentWork?-> как в блоках выше: у пользователя из 1С
+                                     истории работы может не быть вовсе.
+                                     Фолбэк ?? now() убран намеренно — подставлять сегодняшнюю
+                                     дату как дату приёма значит выдумывать данные. Если даты
+                                     нет, fromPositionDate вернёт «-». --}}
+                                {{ $user->fromPositionDate($user->currentWork?->from_date) }}
                             </div>
                         </div>
                     </div>

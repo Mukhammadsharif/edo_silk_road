@@ -142,7 +142,8 @@ Route::prefix('main/api-1c/v1')->middleware(OnecAuth::class)->group(function () 
     Route::prefix('orders')->group(function () {
         // Объявляется РАНЬШЕ {type}, иначе Laravel сопоставит 'attachments' как тип приказа
         Route::get('/attachments/{hash}', [OnecOrdersController::class, 'attachment']);
-
+        // Сам PDF приказа (генерируется при подписании резолюции)
+        Route::get('/document/{jId}', [OnecOrdersController::class, 'orderDocument']);
         Route::get('/{type}/get_list',       [OnecOrdersController::class, 'getList']);
         Route::post('/{type}/mark_exported', [OnecOrdersController::class, 'markExported']);
     });

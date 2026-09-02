@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Integration1C;
 use App\Http\Controllers\Controller;
 use App\Models\BitrixHashes;
 use App\Models\Document\DocumentFiles;
+use App\Models\Document\Documents;
 use App\Models\Integration1C\OnecOrderPayload;
 use App\Services\Integration1C\OnecGuidResolver;
 use App\Services\Integration1C\OnecLogger;
@@ -29,7 +30,7 @@ class OnecOrdersController extends Controller
     private const DEFAULT_PER_PAGE = 50;
     private const MAX_PER_PAGE     = 200;
 
-    /** Диск вложений — тот же, куда их кладёт DocumentController. */
+    /** Диск пользовательских вложений — тот же, куда их кладёт DocumentController. */
     private const FILES_DISK = 'ftp_13';
 
     public function __construct(
@@ -176,6 +177,46 @@ class OnecOrdersController extends Controller
             'updated'   => $updated,
             'not_found' => $notFound,
         ]);
+    }
+
+    /**
+     * GET /api/main/api-1c/v1/orders/document/{jId}
+     *
+     * Скачивание самого приказа — PDF, сформированного при подписании
+     * резолюции (GenerateHrOrderPdfJob). Лежит отдельно от пользовательских
+     * вложений: storage/app/public/hr_orders/{doc_code}.pdf
+     */
+    public function orderDocument(int $jId)
+    {
+        $payload = OnecOrderPayload::where('j_id', $jId)->first();
+
+        if (!$payload) {
+            return response()->json(['success' => false, 'message' => 'Приказ не найден'], 404);
+        }
+
+        // Организация из токена: чужой приказ отдавать нельзя
+        $orgUnitId = $this->resolveOrgUnit(request());
+
+        if ($orgUnitId && (int) $payload->org_unit_id !== $orgUnitId) {
+            return response()->json(['success' => false, 'message' => 'Приказ другой организации'], 403);
+        }
+
+        $docCode = $payload->data['doc_code']
+            ?? Documents::where('id', $payload->doc_id)->value('doc_code');
+
+        $path = 'public/hr_orders/' . $docCode . '.pdf';
+
+        if (!$docCode || !Storage::exists($path)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'PDF приказа ещё не сформирован',
+            ], 404);
+        }
+
+        return response()->streamDownload(
+            fn () => print(Storage::get($path)),
+            'prikaz_' . str_replace(['/', ' '], '-', (string) $payload->order_number) . '.pdf'
+        );
     }
 
     /**
