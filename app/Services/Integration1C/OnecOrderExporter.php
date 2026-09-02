@@ -3,6 +3,7 @@
 namespace App\Services\Integration1C;
 
 use App\Models\Document\DocumentFiles;
+use App\Models\Document\Documents;
 use App\Models\Integration1C\OnecOrderPayload;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -27,8 +28,17 @@ class OnecOrderExporter
     /** Порог инлайна файла в base64 (байт). */
     private const INLINE_FILE_LIMIT = 5 * 1024 * 1024;
 
-    /** Диск вложений — тот же, куда их кладут DocumentController и ExecutionController. */
+    /** Диск пользовательских вложений — куда их кладут DocumentController и ExecutionController. */
     private const FILES_DISK = 'ftp_13';
+
+    /**
+     * Каталог PDF самих приказов.
+     *
+     * GenerateHrOrderPdfJob кладёт готовый приказ в storage/app/public/hr_orders/
+     * под именем doc_code.pdf — то есть НЕ в document_files и не на ftp_13.
+     * Поэтому сам документ надо забирать отдельно от пользовательских вложений.
+     */
+    private const HR_ORDER_PDF_DIR = 'hr_orders';
 
     public function __construct(
         private OnecGuidResolver $guid,
@@ -242,19 +252,28 @@ class OnecOrderExporter
 
     /* ─────────────────────────────── Вложения ─────────────────────────────── */
 
+    /**
+     * Файлы приказа: сам подписанный приказ первым, затем вложения.
+     *
+     * Сам приказ помечен is_main_document — это тело документа, которое
+     * 1С показывает пользователю. Остальное — приложения к нему.
+     */
     private function attachedFiles(OnecOrderPayload $payload, bool $withFiles): array
     {
-        $files = DocumentFiles::where('j_id', $payload->j_id)->get();
-        $out   = [];
+        $out = [];
 
-        foreach ($files as $file) {
+        if ($main = $this->hrOrderPdf($payload, $withFiles)) {
+            $out[] = $main;
+        }
+
+        foreach (DocumentFiles::where('j_id', $payload->j_id)->get() as $file) {
             $item = [
                 'attached_file_name'      => $file->file_name,
                 'attached_file_extension' => ltrim((string) $file->file_ext, '.'),
                 'attached_file_size'      => (int) $file->file_size,
                 'attached_file_ID'        => $file->file_hash,
-                'attached_file_url'       => rtrim((string) config('app.url'), '/')
-                    . '/api/main/api-1c/v1/orders/attachments/' . $file->file_hash,
+                'is_main_document'        => false,
+                'attached_file_url'       => $this->apiUrl('attachments/' . $file->file_hash),
             ];
 
             if ($withFiles) {
@@ -265,6 +284,64 @@ class OnecOrderExporter
         }
 
         return $out;
+    }
+
+    /**
+     * PDF самого приказа, сформированный при подписании резолюции.
+     *
+     * null — если задание очереди ещё не отработало или упало. Это штатная
+     * ситуация: PDF генерируется асинхронно в очереди pdf, приказ может
+     * приехать в выгрузку на секунду раньше своего файла.
+     */
+    private function hrOrderPdf(OnecOrderPayload $payload, bool $withFiles): ?array
+    {
+        $docCode = $payload->data['doc_code']
+            ?? Documents::where('id', $payload->doc_id)->value('doc_code');
+
+        if (!$docCode) {
+            return null;
+        }
+
+        $path = self::HR_ORDER_PDF_DIR . '/' . $docCode . '.pdf';
+
+        // Путь с префиксом public/ — ровно как в GenerateHrOrderPdfJob
+        if (!Storage::exists('public/' . $path)) {
+            $this->logger->event('ORDER PDF NOT READY', [
+                'j_id'     => $payload->j_id,
+                'doc_code' => $docCode,
+            ], 'warning');
+
+            return null;
+        }
+
+        $item = [
+            'attached_file_name'      => $this->orderFileName($payload, $docCode),
+            'attached_file_extension' => 'pdf',
+            'attached_file_size'      => (int) Storage::size('public/' . $path),
+            'attached_file_ID'        => $docCode,
+            'is_main_document'        => true,
+            'attached_file_url'       => $this->apiUrl('document/' . $payload->j_id),
+        ];
+
+        if ($withFiles && $item['attached_file_size'] <= self::INLINE_FILE_LIMIT) {
+            $item['attached_file'] = base64_encode(Storage::get('public/' . $path));
+        }
+
+        return $item;
+    }
+
+    /** Читаемое имя файла: номер приказа вместо служебного doc_code. */
+    private function orderFileName(OnecOrderPayload $payload, string $docCode): string
+    {
+        $number = $payload->order_number ?: $docCode;
+
+        return 'prikaz_' . str_replace(['/', '\\', ' '], '-', $number) . '.pdf';
+    }
+
+    private function apiUrl(string $suffix): string
+    {
+        return rtrim((string) config('app.url'), '/')
+            . '/api/main/api-1c/v1/orders/' . $suffix;
     }
 
     /** Base64 тела файла. null — если файла нет на диске или он больше лимита. */
