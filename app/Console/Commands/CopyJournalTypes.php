@@ -40,6 +40,11 @@ use Illuminate\Support\Str;
  *   php artisan journals:copy 1 5 --dry-run
  *   php artisan journals:copy 1 5 --root=COMMAND
  *   php artisan journals:copy 1 5 --root=COMMAND --only=HR
+ *   php artisan journals:copy 1 5 --ids=13,14,15
+ *
+ * Структура организаций различается: в одних журналы приказов лежат прямо
+ * под разделом COMMAND, в других есть промежуточный узел «HR buyruqlari».
+ * Поэтому --only срабатывает не везде, и самый предсказуемый вариант — --ids.
  */
 class CopyJournalTypes extends Command
 {
@@ -47,7 +52,8 @@ class CopyJournalTypes extends Command
         {from : ID организации-источника}
         {to : ID организации-приёмника}
         {--root= : Копировать только поддерево раздела с этим doc_code (например COMMAND)}
-        {--only= : Из поддерева взять только ветку, в названии которой есть эта строка}
+        {--only= : Из поддерева взять только ветку, в названии или коде которой есть эта строка}
+        {--ids= : Копировать конкретные журналы по id через запятую (вместе с их родителями)}
         {--dry-run : Показать, что будет скопировано, без записи}';
 
     protected $description = 'Скопировать виды документов (журналы) со всеми настройками в другую организацию';
@@ -158,43 +164,89 @@ class CopyJournalTypes extends Command
             $all = $this->subtree($all, [(int) $root->id])->put($root->id, $root);
         }
 
-        // Ограничение веткой по названию (например «HR»)
-        if ($only = $this->option('only')) {
-            $branches = $all->filter(fn ($j) => Str::contains(
-                mb_strtolower((string) $j->title),
-                mb_strtolower($only)
-            ));
+        // Явный список журналов по id
+        if ($ids = $this->option('ids')) {
+            $wanted = collect(explode(',', $ids))
+                ->map(fn ($i) => (int) trim($i))
+                ->filter()
+                ->all();
+
+            $branches = $all->only($wanted);
 
             if ($branches->isEmpty()) {
-                $this->error("Ветка с «{$only}» в названии не найдена.");
+                $this->error('Ни один из указанных id не найден в организации-источнике.');
 
                 return collect();
             }
 
-            $kept = $this->subtree($all, $branches->pluck('id')->map(fn ($i) => (int) $i)->all());
+            return $this->withParents($branches, $all);
+        }
 
-            foreach ($branches as $b) {
-                $kept->put($b->id, $b);
+        // Ограничение веткой по названию или коду (например «HR»)
+        if ($only = $this->option('only')) {
+            $branches = $all->filter(function ($j) use ($only) {
+                $needle = mb_strtolower($only);
+
+                return Str::contains(mb_strtolower((string) $j->title), $needle)
+                    || Str::contains(mb_strtolower((string) $j->doc_code), $needle);
+            });
+
+            if ($branches->isEmpty()) {
+                $this->error("Ветка с «{$only}» в названии или коде не найдена.");
+                $this->newLine();
+                $this->line('Доступные журналы в выбранном поддереве:');
+
+                $this->table(
+                    ['ID', 'Родитель', 'doc_code', 'Название'],
+                    $all->map(fn ($j) => [
+                        $j->id,
+                        $j->parent_id,
+                        $j->doc_code,
+                        mb_substr((string) $j->title, 0, 45),
+                    ])->values()->all()
+                );
+
+                $this->newLine();
+                $this->line('Скопировать нужные можно по id:');
+                $this->line('  php artisan journals:copy ' . $fromOrg . ' <приёмник> --ids=13,14,15 --dry-run');
+
+                return collect();
             }
 
-            // Родителей веток тоже надо взять — иначе некуда вешать копию
-            foreach ($branches as $b) {
-                $parentId = (int) $b->parent_id;
-
-                while ($parentId !== 0 && $all->has($parentId)) {
-                    $parent = $all->get($parentId);
-                    $kept->put($parent->id, $parent);
-                    $parentId = (int) $parent->parent_id;
-                }
-            }
-
-            $all = $kept;
+            $all = $this->withParents($branches, $all);
         }
 
         // Сортировка по уровню вложенности: родители раньше потомков
         return $all->sortBy([
             fn ($a, $b) => $this->depth($a, $all) <=> $this->depth($b, $all),
         ])->values();
+    }
+
+    /**
+     * Выбранные журналы + все их потомки + вся цепочка родителей.
+     *
+     * Родители нужны обязательно: без раздела-родителя копию некуда вешать,
+     * parent_id указал бы на журнал чужой организации.
+     */
+    private function withParents($branches, $all)
+    {
+        $kept = $this->subtree($all, $branches->pluck('id')->map(fn ($i) => (int) $i)->all());
+
+        foreach ($branches as $b) {
+            $kept->put($b->id, $b);
+        }
+
+        foreach ($branches as $b) {
+            $parentId = (int) $b->parent_id;
+
+            while ($parentId !== 0 && $all->has($parentId)) {
+                $parent = $all->get($parentId);
+                $kept->put($parent->id, $parent);
+                $parentId = (int) $parent->parent_id;
+            }
+        }
+
+        return $kept;
     }
 
     /** Все потомки указанных журналов, на любую глубину. */
