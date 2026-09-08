@@ -28,6 +28,7 @@ use App\Models\Resolution\ResolutionExecutionRoles;
 use App\Models\Resolution\ResolutionTypes;
 use App\Models\User;
 use App\Services\DocumentService;
+use App\Traits\JournalFilterTrait;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -40,6 +41,9 @@ use Illuminate\Support\Facades\Storage;
 
 class ExecutionController extends Controller
 {
+    // Двухэтапный фильтр журналов: верхний уровень → подтип
+    use JournalFilterTrait;
+
     //
     protected DocumentService $documentService;
 
@@ -58,6 +62,24 @@ class ExecutionController extends Controller
         $status = $request->input('status');
         $created_user = $request->input('created_user');
 
+        /* Двухэтапный фильтр журналов.
+         | Первый уровень — верхние журналы (Buyruq, Ariza, Hisobot…),
+         | второй — их подтипы. Раньше список был плоским, и одинаковые
+         | названия из разных разделов («Mehnat ta'tili» есть и среди
+         | заявлений, и среди приказов) было не различить.
+         |
+         | Блок стоит ДО построения запроса: если верхний уровень сменили,
+         | а прежний подтип в него не входит, doc_type сбрасывается — иначе
+         | он попал бы в условие выборки и та вернула бы пустоту.
+         */
+        $doc_section      = $request->input('doc_section');
+        $journal_sections = $this->journalSections();
+        $journal_types    = $this->journalLeaves($doc_section, ['BASE_OUTGOING']);
+
+        if ($doc_type && $doc_type !== 'all' && !$journal_types->contains('id', (int) $doc_type)) {
+            $doc_type = 'all';
+        }
+
         $workIds = $this->authActiveUserIds();
 
         $statusNames = StatusList::where('type', 'doc_exec')->orderBy('order_number')->get();
@@ -68,22 +90,26 @@ class ExecutionController extends Controller
 
         $search = DocumentJournals::where('org_unit_id', $this->organizationId())
             ->whereHas('executionSteps', function ($query) use ($workIds) {
-            $query->whereIn('to_user', $workIds)->where('status', '>', 1)->whereHas('role', function ($query) {
-                $query->where('doc_code', 'EXEC');
-            });
-        })->where('status', '>', 7);
+                $query->whereIn('to_user', $workIds)->where('status', '>', 1)->whereHas('role', function ($query) {
+                    $query->where('doc_code', 'EXEC');
+                });
+            })->where('status', '>', 7);
 
         if ($status != 'all') {
             $search = DocumentJournals::where('org_unit_id', $this->organizationId())
                 ->whereHas('executionSteps', function ($query) use ($statusArray, $workIds) {
-                $query->whereIn('to_user', $workIds)->whereIn('status', $statusArray)->whereHas('role', function ($query) {
-                    $query->where('doc_code', 'EXEC');
-                });
-            })->where('status', '>', 1);
+                    $query->whereIn('to_user', $workIds)->whereIn('status', $statusArray)->whereHas('role', function ($query) {
+                        $query->where('doc_code', 'EXEC');
+                    });
+                })->where('status', '>', 1);
         }
 
         if ($doc_type && $doc_type != 'all') {
             $search->where('j_type', $doc_type);
+        } elseif ($doc_section && $doc_section != 'all') {
+            // Выбран только верхний уровень: показываем документы всех его
+            // подтипов, а если подтипов нет — самого журнала
+            $search->whereIn('j_type', $this->sectionFilterIds($doc_section, $journal_types));
         }
 
         if ($created_user){
@@ -115,13 +141,6 @@ class ExecutionController extends Controller
             });
         }
 
-        $journal_types = JournalTypes::whereDoesntHave('childs')
-            ->where('org_id', $this->organizationId())
-            ->where('status', 1)
-            ->whereNotIn('doc_code', ['BASE_OUTGOING'])
-            ->orderBy('order_number')->get();
-
-
         $models = $search->where('status', '!=', 13)->orderBy('id', 'DESC')->paginate(25);
 
 
@@ -132,11 +151,12 @@ class ExecutionController extends Controller
             'date_till' => $date_till,
             'status' => $status,
             'created_user' => $created_user,
-            'cr_users' => $cr_users
+            'cr_users' => $cr_users,
+            'doc_section' => $doc_section,
         ]);
         $models->withQueryString();
 
-        return view('execution.executor.index', compact('models', 'journal_types', 'doc_name', 'doc_type', 'date_from',
+        return view('execution.executor.index', compact('models', 'journal_types', 'journal_sections', 'doc_section', 'doc_name', 'doc_type', 'date_from',
             'date_till', 'status', 'statusNames', 'cr_users', 'created_user'));
     }
 
@@ -150,6 +170,24 @@ class ExecutionController extends Controller
         $status = $request->input('status')??2;
         $created_user = $request->input('created_user');
 
+        /* Двухэтапный фильтр журналов.
+         | Первый уровень — верхние журналы (Buyruq, Ariza, Hisobot…),
+         | второй — их подтипы. Раньше список был плоским, и одинаковые
+         | названия из разных разделов («Mehnat ta'tili» есть и среди
+         | заявлений, и среди приказов) было не различить.
+         |
+         | Блок стоит ДО построения запроса: если верхний уровень сменили,
+         | а прежний подтип в него не входит, doc_type сбрасывается — иначе
+         | он попал бы в условие выборки и та вернула бы пустоту.
+         */
+        $doc_section      = $request->input('doc_section');
+        $journal_sections = $this->journalSections();
+        $journal_types    = $this->journalLeaves($doc_section, ['BASE_INCOMING', 'BASE_OUTGOING']);
+
+        if ($doc_type && $doc_type !== 'all' && !$journal_types->contains('id', (int) $doc_type)) {
+            $doc_type = 'all';
+        }
+
         $statusNames = StatusList::where('type', 'doc_signer')->orderBy('order_number')->get();
 
         $cr_users = User::where('status', 1)->get();
@@ -158,10 +196,10 @@ class ExecutionController extends Controller
 
         $search = DocumentJournals::where('org_unit_id', $this->organizationId())
             ->whereHas('executionSteps', function ($query) use ($status, $workIds) {
-            $query->whereIn('to_user', $workIds)->whereHas('role', function ($query) {
-                $query->where('doc_code', 'SIGN');
-            });
-        })->where('status', '>', 1);
+                $query->whereIn('to_user', $workIds)->whereHas('role', function ($query) {
+                    $query->where('doc_code', 'SIGN');
+                });
+            })->where('status', '>', 1);
 
         if ($created_user){
             $search->whereIn('created_user', $this->getWorkUserIds($created_user));
@@ -170,14 +208,18 @@ class ExecutionController extends Controller
         if ($status != 'all') {
             $search = DocumentJournals::where('org_unit_id', $this->organizationId())
                 ->whereHas('executionSteps', function ($query) use ($status, $workIds) {
-                $query->whereIn('to_user', $workIds)->where('status', $status)->whereHas('role', function ($query) {
-                    $query->where('doc_code', 'SIGN');
-                });
-            })->where('status', '>', 1);
+                    $query->whereIn('to_user', $workIds)->where('status', $status)->whereHas('role', function ($query) {
+                        $query->where('doc_code', 'SIGN');
+                    });
+                })->where('status', '>', 1);
         }
 
         if ($doc_type && $doc_type != 'all') {
             $search->where('j_type', $doc_type);
+        } elseif ($doc_section && $doc_section != 'all') {
+            // Выбран только верхний уровень: показываем документы всех его
+            // подтипов, а если подтипов нет — самого журнала
+            $search->whereIn('j_type', $this->sectionFilterIds($doc_section, $journal_types));
         }
 
         if (trim(''.$doc_name.'')) {
@@ -205,13 +247,6 @@ class ExecutionController extends Controller
             });
         }
 
-        $journal_types = JournalTypes::whereDoesntHave('childs')
-            ->where('org_id', $this->organizationId())
-            ->where('status', 1)
-            ->whereNotIn('doc_code', ['BASE_INCOMING', 'BASE_OUTGOING'])
-            ->orderBy('order_number')->get();
-
-
         $models = $search->orderBy('id', 'DESC')->paginate(25);
 
         $models->appends([
@@ -221,10 +256,11 @@ class ExecutionController extends Controller
             'date_till' => $date_till,
             'status' => $status,
             'created_user' => $created_user,
+            'doc_section' => $doc_section,
         ]);
         $models->withQueryString();
 
-        return view('execution.sign.index', compact('models', 'journal_types', 'doc_name', 'doc_type', 'date_from',
+        return view('execution.sign.index', compact('models', 'journal_types', 'journal_sections', 'doc_section', 'doc_name', 'doc_type', 'date_from',
             'date_till', 'status', 'statusNames', 'created_user', 'cr_users'));
     }
 
@@ -238,6 +274,24 @@ class ExecutionController extends Controller
         $status = $request->input('status')??2;
         $created_user = $request->input('created_user');
 
+        /* Двухэтапный фильтр журналов.
+         | Первый уровень — верхние журналы (Buyruq, Ariza, Hisobot…),
+         | второй — их подтипы. Раньше список был плоским, и одинаковые
+         | названия из разных разделов («Mehnat ta'tili» есть и среди
+         | заявлений, и среди приказов) было не различить.
+         |
+         | Блок стоит ДО построения запроса: если верхний уровень сменили,
+         | а прежний подтип в него не входит, doc_type сбрасывается — иначе
+         | он попал бы в условие выборки и та вернула бы пустоту.
+         */
+        $doc_section      = $request->input('doc_section');
+        $journal_sections = $this->journalSections();
+        $journal_types    = $this->journalLeaves($doc_section, ['BASE_INCOMING']);
+
+        if ($doc_type && $doc_type !== 'all' && !$journal_types->contains('id', (int) $doc_type)) {
+            $doc_type = 'all';
+        }
+
         $workIds = $this->authActiveUserIds();
 
         $statusNames = StatusList::where('type', 'doc_signer')->orderBy('order_number')->get();
@@ -246,18 +300,18 @@ class ExecutionController extends Controller
 
         $search = DocumentJournals::where('org_unit_id', $this->organizationId())
             ->whereHas('executionSteps', function ($query) use ($status, $workIds) {
-            $query->whereIn('to_user', $workIds)->whereHas('role', function ($query) {
-                $query->where('doc_code', 'AGREE');
-            });
-        })->where('status', '>', 1);
+                $query->whereIn('to_user', $workIds)->whereHas('role', function ($query) {
+                    $query->where('doc_code', 'AGREE');
+                });
+            })->where('status', '>', 1);
 
         if ($status != 'all') {
             $search = DocumentJournals::where('org_unit_id', $this->organizationId())
                 ->whereHas('executionSteps', function ($query) use ($status, $workIds) {
-                $query->whereIn('to_user', $workIds)->where('status', $status)->whereHas('role', function ($query) {
-                    $query->where('doc_code', 'AGREE');
-                });
-            })->where('status', '>', 1);
+                    $query->whereIn('to_user', $workIds)->where('status', $status)->whereHas('role', function ($query) {
+                        $query->where('doc_code', 'AGREE');
+                    });
+                })->where('status', '>', 1);
         }
 
         if ($created_user){
@@ -266,6 +320,10 @@ class ExecutionController extends Controller
 
         if ($doc_type && $doc_type != 'all') {
             $search->where('j_type', $doc_type);
+        } elseif ($doc_section && $doc_section != 'all') {
+            // Выбран только верхний уровень: показываем документы всех его
+            // подтипов, а если подтипов нет — самого журнала
+            $search->whereIn('j_type', $this->sectionFilterIds($doc_section, $journal_types));
         }
 
         if (trim(''.$doc_name.'')) {
@@ -293,12 +351,6 @@ class ExecutionController extends Controller
             });
         }
 
-        $journal_types = JournalTypes::whereDoesntHave('childs')
-            ->where('org_id', $this->organizationId())
-            ->where('status', 1)
-            ->whereNotIn('doc_code', ['BASE_INCOMING'])
-            ->orderBy('order_number')->get();
-
         $models = $search->where('status', '!=', 13)->orderBy('id', 'DESC')->paginate(25);
 
         $models->appends([
@@ -308,11 +360,12 @@ class ExecutionController extends Controller
             'date_till' => $date_till,
             'status' => $status,
             'created_user' => $created_user,
-            'cr_users' => $cr_users
+            'cr_users' => $cr_users,
+            'doc_section' => $doc_section,
         ]);
         $models->withQueryString();
 
-        return view('execution.agreement.index', compact('models', 'journal_types', 'doc_name', 'doc_type', 'date_from',
+        return view('execution.agreement.index', compact('models', 'journal_types', 'journal_sections', 'doc_section', 'doc_name', 'doc_type', 'date_from',
             'date_till', 'status', 'statusNames', 'cr_users', 'created_user'));
     }
 
@@ -326,6 +379,24 @@ class ExecutionController extends Controller
         $status = $request->input('status');
         $created_user = $request->input('created_user');
 
+        /* Двухэтапный фильтр журналов.
+         | Первый уровень — верхние журналы (Buyruq, Ariza, Hisobot…),
+         | второй — их подтипы. Раньше список был плоским, и одинаковые
+         | названия из разных разделов («Mehnat ta'tili» есть и среди
+         | заявлений, и среди приказов) было не различить.
+         |
+         | Блок стоит ДО построения запроса: если верхний уровень сменили,
+         | а прежний подтип в него не входит, doc_type сбрасывается — иначе
+         | он попал бы в условие выборки и та вернула бы пустоту.
+         */
+        $doc_section      = $request->input('doc_section');
+        $journal_sections = $this->journalSections();
+        $journal_types    = $this->journalLeaves($doc_section, []);
+
+        if ($doc_type && $doc_type !== 'all' && !$journal_types->contains('id', (int) $doc_type)) {
+            $doc_type = 'all';
+        }
+
         $workIds = $this->authActiveUserIds();
 
         $statusArray = $status ? [$status] : [8,11];
@@ -336,10 +407,10 @@ class ExecutionController extends Controller
 
         $search = DocumentJournals::where('org_unit_id', $this->organizationId())
             ->whereHas('executionSteps', function ($query) use ($status, $workIds) {
-            $query->whereIn('to_user', $workIds)->whereHas('role', function ($query) {
-                $query->where('doc_code', 'RESOL');
-            });
-        })->whereNotIn('status', [1, 4, 5, 6, 7, 13]);
+                $query->whereIn('to_user', $workIds)->whereHas('role', function ($query) {
+                    $query->where('doc_code', 'RESOL');
+                });
+            })->whereNotIn('status', [1, 4, 5, 6, 7, 13]);
 
         if ($created_user){
             $search->whereIn('created_user', $this->getWorkUserIds($created_user));
@@ -364,14 +435,18 @@ class ExecutionController extends Controller
         if (!in_array($status, ['all', '12', '14'])) {
             $search = DocumentJournals::where('org_unit_id', $this->organizationId())
                 ->whereHas('executionSteps', function ($query) use ($status, $workIds) {
-                $query->whereIn('to_user', $workIds)->whereHas('role', function ($query) {
-                    $query->where('doc_code', 'RESOL');
-                });
-            })->whereIn('status', $statusArray);
+                    $query->whereIn('to_user', $workIds)->whereHas('role', function ($query) {
+                        $query->where('doc_code', 'RESOL');
+                    });
+                })->whereIn('status', $statusArray);
         }
 
         if ($doc_type && $doc_type != 'all') {
             $search->where('j_type', $doc_type);
+        } elseif ($doc_section && $doc_section != 'all') {
+            // Выбран только верхний уровень: показываем документы всех его
+            // подтипов, а если подтипов нет — самого журнала
+            $search->whereIn('j_type', $this->sectionFilterIds($doc_section, $journal_types));
         }
 
         if (trim(''.$doc_name.'')) {
@@ -399,11 +474,6 @@ class ExecutionController extends Controller
             });
         }
 
-        $journal_types = JournalTypes::whereDoesntHave('childs')
-            ->where('org_id', $this->organizationId())
-            ->where('status', 1)
-            ->orderBy('order_number')->get();
-
         $models = $search->orderBy('id', 'DESC')->paginate(25);
 
         $models->appends([
@@ -413,10 +483,11 @@ class ExecutionController extends Controller
             'date_till' => $date_till,
             'status' => $status,
             'created_user' => $created_user,
+            'doc_section' => $doc_section,
         ]);
         $models->withQueryString();
 
-        return view('execution.confirm.index', compact('models', 'journal_types', 'doc_name', 'doc_type', 'date_from',
+        return view('execution.confirm.index', compact('models', 'journal_types', 'journal_sections', 'doc_section', 'doc_name', 'doc_type', 'date_from',
             'date_till', 'status', 'statusNames', 'cr_users', 'created_user'));
     }
 
@@ -430,6 +501,24 @@ class ExecutionController extends Controller
         $status = $request->input('status');
 
         $controls = JournalTypeControls::where('status', 1)->pluck('journal_type_id')->toArray();
+
+        /* Двухэтапный фильтр журналов.
+         | Первый уровень — верхние журналы (Buyruq, Ariza, Hisobot…),
+         | второй — их подтипы. Раньше список был плоским, и одинаковые
+         | названия из разных разделов («Mehnat ta'tili» есть и среди
+         | заявлений, и среди приказов) было не различить.
+         |
+         | Блок стоит ДО построения запроса: если верхний уровень сменили,
+         | а прежний подтип в него не входит, doc_type сбрасывается — иначе
+         | он попал бы в условие выборки и та вернула бы пустоту.
+         */
+        $doc_section      = $request->input('doc_section');
+        $journal_sections = $this->journalSections();
+        $journal_types    = $this->journalLeaves($doc_section, [], $controls);
+
+        if ($doc_type && $doc_type !== 'all' && !$journal_types->contains('id', (int) $doc_type)) {
+            $doc_type = 'all';
+        }
 
         $statusNames = StatusList::where('type', 'work_document')->where('code', '!=', 1)->orderBy('order_number')->get();
 
@@ -449,9 +538,9 @@ class ExecutionController extends Controller
             ->where('status', '!=', 1)
             ->where(function ($q) use ($controls, $fsControlOn, $fsControlOff) {
                 $q->whereIn('id', $fsControlOn)
-                  ->orWhere(function ($q2) use ($controls, $fsControlOff) {
-                      $q2->whereIn('j_type', $controls)->whereNotIn('id', $fsControlOff);
-                  });
+                    ->orWhere(function ($q2) use ($controls, $fsControlOff) {
+                        $q2->whereIn('j_type', $controls)->whereNotIn('id', $fsControlOff);
+                    });
             });
 
         $today = Carbon::now()->format('Y-m-d');
@@ -474,6 +563,10 @@ class ExecutionController extends Controller
 
         if ($doc_type && $doc_type != 'all') {
             $search->where('j_type', $doc_type);
+        } elseif ($doc_section && $doc_section != 'all') {
+            // Выбран только верхний уровень: показываем документы всех его
+            // подтипов, а если подтипов нет — самого журнала
+            $search->whereIn('j_type', $this->sectionFilterIds($doc_section, $journal_types));
         }
 
         if (trim(''.$doc_name.'')) {
@@ -501,12 +594,6 @@ class ExecutionController extends Controller
             });
         }
 
-        $journal_types = JournalTypes::whereDoesntHave('childs')
-            ->where('org_id', $this->organizationId())
-            ->where('status', 1)
-            ->whereIn('id', $controls)
-            ->orderBy('order_number')->get();
-
         $models = $search->where('status', '!=', 13)->orderBy('id', 'DESC')->paginate(25);
 
         $models->appends([
@@ -515,10 +602,11 @@ class ExecutionController extends Controller
             'date_from' => $date_from,
             'date_till' => $date_till,
             'status' => $status,
+            'doc_section' => $doc_section,
         ]);
         $models->withQueryString();
 
-        return view('execution.doc-control.index', compact('models', 'journal_types', 'doc_name', 'doc_type', 'date_from',
+        return view('execution.doc-control.index', compact('models', 'journal_types', 'journal_sections', 'doc_section', 'doc_name', 'doc_type', 'date_from',
             'date_till', 'status', 'statusNames'));
     }
 
@@ -1220,52 +1308,52 @@ class ExecutionController extends Controller
                 $query->where('doc_code', 'AGREE')->where('status', 1);
             })->where('to_user', $this->authActiveUser()->id)->first();
 
-                $doc_code = $status == 2 ? 'DOC_CANCELLED' : 'DOC_RETURNED';
+            $doc_code = $status == 2 ? 'DOC_CANCELLED' : 'DOC_RETURNED';
 
-                $exec_status = $status == 2 ? 3 : 4;
+            $exec_status = $status == 2 ? 3 : 4;
 
-                $replyCommentType = ReplyCommentTypes::where('doc_code', $doc_code)->first();
+            $replyCommentType = ReplyCommentTypes::where('doc_code', $doc_code)->first();
 
-                $journalType = $journal->journal->title??'';
-                $docName = $journal->doc->doc_name??'';
+            $journalType = $journal->journal->title??'';
+            $docName = $journal->doc->doc_name??'';
 
-                if ($sign_step) {
-                    $sign_step->update(['status' => $exec_status, 'r_text' => $r_text??'']);
+            if ($sign_step) {
+                $sign_step->update(['status' => $exec_status, 'r_text' => $r_text??'']);
 
-                    $this->extracted($sign_step, $journal, $replyCommentType, $r_text, $exec_status);
+                $this->extracted($sign_step, $journal, $replyCommentType, $r_text, $exec_status);
 
-                    $act_id = $exec_status == 3 ? 22 : 23;
+                $act_id = $exec_status == 3 ? 22 : 23;
 
-                    $this->createLog($journal->doc_id, $act_id, $journalType, $docName);
-                }
+                $this->createLog($journal->doc_id, $act_id, $journalType, $docName);
+            }
 
-                if ($agreement_step) {
-                    $agreement_step->update(['status' => $exec_status, 'r_text' => $r_text??'']);
+            if ($agreement_step) {
+                $agreement_step->update(['status' => $exec_status, 'r_text' => $r_text??'']);
 
-                    $this->extracted($agreement_step, $journal, $replyCommentType, $r_text, $exec_status);
+                $this->extracted($agreement_step, $journal, $replyCommentType, $r_text, $exec_status);
 
-                    $act_id = $exec_status == 3 ? 7 : 8;
+                $act_id = $exec_status == 3 ? 7 : 8;
 
-                    $this->createLog($journal->doc_id, $act_id, $journalType, $docName);
-                }
+                $this->createLog($journal->doc_id, $act_id, $journalType, $docName);
+            }
 
-                $journal->update(['status' => $status]);
+            $journal->update(['status' => $status]);
 
-                if ($resolution_step) {
-                    $resolution_step->update(['status' => $exec_status, 'r_text' => $r_text??'']);
+            if ($resolution_step) {
+                $resolution_step->update(['status' => $exec_status, 'r_text' => $r_text??'']);
 
-                    $this->extracted($resolution_step, $journal, $replyCommentType, $r_text, $exec_status);
+                $this->extracted($resolution_step, $journal, $replyCommentType, $r_text, $exec_status);
 
-                    $act_id = $exec_status == 3 ? 11 : 12;
+                $act_id = $exec_status == 3 ? 11 : 12;
 
-                    $this->createLog($journal->doc_id, $act_id, $journalType, $docName);
-                }
+                $this->createLog($journal->doc_id, $act_id, $journalType, $docName);
+            }
 
             return response()->json([
-                    'success' => 200,
-                    'title' => __('message.success_message'),
-                    'message' => __('message.task_completed_successfully'),
-                ]);
+                'success' => 200,
+                'title' => __('message.success_message'),
+                'message' => __('message.task_completed_successfully'),
+            ]);
         } elseif($ecp_confirm_id == 5) {
 
             if ($ecp_doc_type === 'from_signer_to_ag') {
@@ -1462,16 +1550,6 @@ class ExecutionController extends Controller
     {
         //
         $execDocument = DocumentExecutionSteps::findOrFail($exec_id);
-
-        /* v65: шаг «Для информации» (FOR_INF) исполнением не подтверждается —
-         | получатель не исполнитель. Guard от прямого захода по URL
-         | (кнопка в UI для FOR_INF скрыта этим же условием).
-         */
-        if (($execDocument->resExecRole->doc_code ?? '') === 'FOR_INF') {
-            return back()->withErrors([
-                'execute' => 'Документ направлен вам для информации — подтверждение исполнения не требуется',
-            ]);
-        }
 
         $journal = DocumentJournals::find($execDocument->j_id);
 
