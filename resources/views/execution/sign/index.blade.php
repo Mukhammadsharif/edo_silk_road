@@ -46,17 +46,38 @@
                 <form action="{{ route('documents.for-sign.index') }}" method="post" class="filters-form-modern">
                     @csrf
                     <div class="filters-grid">
+                        {{-- Первый уровень фильтра: верхние журналы (Buyruq, Ariza, Hisobot…),
+                             включая те, у кого подтипов нет. Сами подтипы — во втором списке.
+                             Раньше список был плоским, и одинаковые названия из разных разделов
+                             («Mehnat ta'tili» есть и среди заявлений, и среди приказов)
+                             было не различить. --}}
+                        <div class="filter-item">
+                            <label>
+                                <i data-lucide="folder-tree"></i>
+                                {{ __('field.document') }}
+                            </label>
+                            <select name="doc_section" class="form-control-modern select2" onchange="this.form.submit()">
+                                <option value="all">{{ __('field.documents') }}</option>
+                                @foreach($journal_sections as $section)
+                                    <option value="{{ $section->id }}" {{ ($doc_section == $section->id ? "selected" : "") }}>
+                                        {{ \App\Models\Journal\JournalTypes::lang($section->lang_id) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
                         <div class="filter-item">
                             <label>
                                 <i data-lucide="folder"></i>
                                 {{ __('document.document') }}
                             </label>
-                            <select name="doc_type" class="form-control-modern select2">
-                                <option value="all">{{ __('document.document') }}</option>
+                            @php($hasSubtypes = $journal_types->isNotEmpty())
+                            <select name="doc_type" class="form-control-modern select2" @disabled(!$hasSubtypes)>
+                                <option value="all">{{ $hasSubtypes ? __('document.document') : __('field.not_found') }}</option>
                                 @forelse($journal_types as $key => $journal_type)
                                     <option value="{{ $journal_type->id }}" {{ ($doc_type == $journal_type->id ? "selected":"") }}>
                                         {{ $key+1 }}.
-                                        {{ $journal_type->lang($journal_type->lang_id) }}
+                                        @if((!$doc_section || $doc_section == "all") && $journal_type->parent){{ \App\Models\Journal\JournalTypes::lang($journal_type->parent->lang_id) }} → @endif{{ $journal_type->lang($journal_type->lang_id) }}
                                     </option>
                                 @empty
                                     <option>{{ __('field.not_found') }}</option>

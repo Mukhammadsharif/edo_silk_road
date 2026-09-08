@@ -46,18 +46,39 @@
                 <form action="{{ route('office.work-docs') }}" method="post" class="filters-form-modern">
                     @csrf
                     <div class="filters-grid">
+                        {{-- Первый уровень фильтра: верхние журналы (Buyruq, Ariza, Hisobot…),
+                             включая те, у кого подтипов нет. Сами подтипы — во втором списке.
+                             Раньше список был плоским, и одинаковые названия из разных разделов
+                             («Mehnat ta'tili» есть и среди заявлений, и среди приказов)
+                             было не различить. --}}
+                        <div class="filter-item">
+                            <label>
+                                <i data-lucide="folder-tree"></i>
+                                {{ __('field.document') }}
+                            </label>
+                            <select name="doc_section" class="form-control-modern select2" onchange="this.form.submit()">
+                                <option value="all">{{ __('field.documents') }}</option>
+                                @foreach($journal_sections as $section)
+                                    <option value="{{ $section->id }}" {{ ($doc_section == $section->id ? "selected" : "") }}>
+                                        {{ \App\Models\Journal\JournalTypes::lang($section->lang_id) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
                         <div class="filter-item">
                             <label>
                                 <i data-lucide="folder"></i>
                                 {{ __('document.document') }}
                             </label>
-                            <select name="doc_type" class="form-control-modern select2">
-                                    <option value="all">{{ __('document.document') }}</option>
-                                    @forelse($journal_types as $key => $journal_type)
-                                        <option value="{{ $journal_type->id }}" {{ ($doc_type == $journal_type->id ? "selected":"") }}>
-                                            {{ $key+1 }}.
-                                            {{ $journal_type->lang($journal_type->lang_id) }}
-                                        </option>
+                            @php($hasSubtypes = $journal_types->isNotEmpty())
+                            <select name="doc_type" class="form-control-modern select2" @disabled(!$hasSubtypes)>
+                                <option value="all">{{ $hasSubtypes ? __('document.document') : __('field.not_found') }}</option>
+                                @forelse($journal_types as $key => $journal_type)
+                                    <option value="{{ $journal_type->id }}" {{ ($doc_type == $journal_type->id ? "selected":"") }}>
+                                        {{ $key+1 }}.
+                                        @if((!$doc_section || $doc_section == "all") && $journal_type->parent){{ \App\Models\Journal\JournalTypes::lang($journal_type->parent->lang_id) }} → @endif{{ $journal_type->lang($journal_type->lang_id) }}
+                                    </option>
                                 @empty
                                     <option>{{ __('field.not_found') }}</option>
                                 @endforelse
@@ -165,69 +186,69 @@
                 <div class="table-wrapper-modern">
                     <table class="modern-table">
                         <thead>
-                            <tr>
-                                <th><i data-lucide="folder"></i> {{ __('document.document') }}</th>
-                                <th><i data-lucide="file-text"></i> {{ __('document.doc_name') }}</th>
-                                <th><i data-lucide="calendar"></i> {{ __('document.doc_date') }}</th>
-                                <th><i data-lucide="activity"></i> {{ __('document.status') }}</th>
-                                <th><i data-lucide="timer"></i> {{ __('document.signing_term') }}</th>
-                                <th><i data-lucide="user"></i> {{ __('document.creator') }}</th>
-                                <th><i data-lucide="clock"></i> {{ __('document.created_at') }}</th>
-                            </tr>
+                        <tr>
+                            <th><i data-lucide="folder"></i> {{ __('document.document') }}</th>
+                            <th><i data-lucide="file-text"></i> {{ __('document.doc_name') }}</th>
+                            <th><i data-lucide="calendar"></i> {{ __('document.doc_date') }}</th>
+                            <th><i data-lucide="activity"></i> {{ __('document.status') }}</th>
+                            <th><i data-lucide="timer"></i> {{ __('document.signing_term') }}</th>
+                            <th><i data-lucide="user"></i> {{ __('document.creator') }}</th>
+                            <th><i data-lucide="clock"></i> {{ __('document.created_at') }}</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            @forelse($models as $key => $model)
-                                <tr class="table-row-modern">
-                                    <td>
+                        @forelse($models as $key => $model)
+                            <tr class="table-row-modern">
+                                <td>
                                         <span class="badge-modern badge-success">
                                             {{ $model->journal->lang($model->journal->lang_id)??'' }}
                                         </span>
-                                    </td>
-                                    <td class="td-doc-name">
-                                        <a href="{{ route('office.view-work-doc', [$model->id, $model->doc->doc_hash??'*']) }}" class="doc-link">
-                                            <i data-lucide="file-text"></i>
-                                            <span>{{ $model->doc->doc_name??'*' }}</span>
-                                            <i data-lucide="arrow-right" class="arrow-icon"></i>
-                                        </a>
-                                    </td>
-                                    <td class="td-date">{{ date('d.m.Y', strtotime($model->doc->doc_date??now())) }}</td>
-                                    <td class="td-status">
-                                        @if($model->statusWork)
-                                            <span class="status-badge-modern {{ $model->statusWork->badgeClass??'' }}">
+                                </td>
+                                <td class="td-doc-name">
+                                    <a href="{{ route('office.view-work-doc', [$model->id, $model->doc->doc_hash??'*']) }}" class="doc-link">
+                                        <i data-lucide="file-text"></i>
+                                        <span>{{ $model->doc->doc_name??'*' }}</span>
+                                        <i data-lucide="arrow-right" class="arrow-icon"></i>
+                                    </a>
+                                </td>
+                                <td class="td-date">{{ date('d.m.Y', strtotime($model->doc->doc_date??now())) }}</td>
+                                <td class="td-status">
+                                    @if($model->statusWork)
+                                        <span class="status-badge-modern {{ $model->statusWork->badgeClass??'' }}">
                                                 <i data-lucide="{{ $model->statusWork->iconClass->name?? 'circle' }}"></i>
                                                 {{ $model->statusWork->lang($model->statusWork->id)??'' }}
                                             </span>
-                                        @else
-                                            <span class="status-badge-modern {{ $default_status->bg_class??'' }}">
+                                    @else
+                                        <span class="status-badge-modern {{ $default_status->bg_class??'' }}">
                                                 <i data-lucide="{{ $model->statusWork->iconClass->name?? 'circle' }}"></i>
                                                 {{ __($default_status->lang_code??'unk') }}
                                             </span>
-                                        @endif
-                                    </td>
-                                    <td class="td-term">@include('templates.execution-time')</td>
-                                    <td class="td-creator">
-                                        <div class="creator-cell">
-                                            <i data-lucide="user"></i>
-                                            <span>{{ $model->fromUser->personal->shortName()??'' }}</span>
-                                        </div>
-                                    </td>
-                                    <td class="td-datetime">
-                                        <div class="datetime-cell">
-                                            <span class="date">{{ \Carbon\Carbon::parse($model->created_at)->format('d.m.y') }}</span>
-                                            <span class="time">{{ \Carbon\Carbon::parse($model->created_at)->format('H:i') }}</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="7" class="empty-state">
-                                        <div class="empty-state-content">
-                                            <i data-lucide="briefcase"></i>
-                                            <p>{{ __('field.not_found') }}</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforelse
+                                    @endif
+                                </td>
+                                <td class="td-term">@include('templates.execution-time')</td>
+                                <td class="td-creator">
+                                    <div class="creator-cell">
+                                        <i data-lucide="user"></i>
+                                        <span>{{ $model->fromUser->personal->shortName()??'' }}</span>
+                                    </div>
+                                </td>
+                                <td class="td-datetime">
+                                    <div class="datetime-cell">
+                                        <span class="date">{{ \Carbon\Carbon::parse($model->created_at)->format('d.m.y') }}</span>
+                                        <span class="time">{{ \Carbon\Carbon::parse($model->created_at)->format('H:i') }}</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="empty-state">
+                                    <div class="empty-state-content">
+                                        <i data-lucide="briefcase"></i>
+                                        <p>{{ __('field.not_found') }}</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
                         </tbody>
                     </table>
                 </div>

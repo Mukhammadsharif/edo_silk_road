@@ -23,6 +23,7 @@ use App\Models\Journal\JournalTypes;
 use App\Models\Messages\OnlyOfficeDoc;
 use App\Models\QrCodeKeys;
 use App\Services\DocumentService;
+use App\Traits\JournalFilterTrait;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -35,6 +36,9 @@ use Illuminate\Support\Facades\Storage;
 
 class JournalController extends Controller
 {
+    // Двухэтапный фильтр журналов: верхний уровень → подтип
+    use JournalFilterTrait;
+
     //
     protected DocumentService $documentService;
 
@@ -50,6 +54,22 @@ class JournalController extends Controller
         $date_from = $request->input('date_from');
         $date_till = $request->input('date_till');
         $status = $request->input('status');
+
+        /* Двухэтапный фильтр журналов.
+         | Первый уровень — верхние журналы (Buyruq, Ariza, Hisobot…),
+         | второй — их подтипы. Раньше список был плоским, и одинаковые
+         | названия из разных разделов было не различить.
+         |
+         | Блок стоит ДО построения запроса: если верхний уровень сменили,
+         | а прежний подтип в него не входит, doc_type сбрасывается.
+         */
+        $doc_section      = $request->input('doc_section');
+        $journal_sections = $this->journalSections();
+        $journal_types    = $this->journalLeaves($doc_section, ['BASE_INCOMING', 'BASE_OUTGOING']);
+
+        if ($doc_type && $doc_type !== 'all' && !$journal_types->contains('id', (int) $doc_type)) {
+            $doc_type = 'all';
+        }
 
         $search = DocumentJournals::whereHas('journal', function ($query) {
             $query->whereNotIn('doc_code', ['BASE_INCOMING', 'BASE_OUTGOING']);
@@ -77,6 +97,10 @@ class JournalController extends Controller
 
         if ($doc_type && $doc_type != 'all') {
             $search->where('j_type', $doc_type);
+        } elseif ($doc_section && $doc_section != 'all') {
+            // Выбран только верхний уровень: документы всех его подтипов,
+            // а если подтипов нет — самого журнала
+            $search->whereIn('j_type', $this->sectionFilterIds($doc_section, $journal_types));
         }
 
         if (trim($doc_name)) {
@@ -112,14 +136,9 @@ class JournalController extends Controller
             'date_from' => $date_from,
             'date_till' => $date_till,
             'status' => $status,
+            'doc_section' => $doc_section,
         ]);
         $models->withQueryString();
-
-        $journal_types = JournalTypes::where('org_id', $this->organizationId())
-            ->whereDoesntHave('childs')
-            ->where('status', 1)
-            ->whereNotIn('doc_code', ['BASE_INCOMING', 'BASE_OUTGOING'])
-            ->orderBy('order_number')->get();
 
         $statusNames = StatusList::where('type', 'work_document')
             ->whereNotIn('code', [4,13])
@@ -128,7 +147,8 @@ class JournalController extends Controller
         $default_status = StatusList::where('type', 'work_document')->orderBy('code')->first();
 
         return view('office.journal.work.index',
-            compact('models', 'doc_name', 'journal_types', 'doc_type', 'status', 'date_from', 'date_till','statusNames', 'default_status'));
+            compact('models', 'doc_name', 'journal_types', 'journal_sections', 'doc_section', 'doc_type', 'status',
+                'date_from', 'date_till', 'statusNames', 'default_status'));
     }
 
     public function inboxDocs(Request $request): Factory|View|Application
@@ -398,9 +418,9 @@ class JournalController extends Controller
             $join->on('document_comments.id', '=', 'document_comment_users.comment_id')->where('document_comments.doc_type', 1);
         })->whereIn('document_comment_users.user_id', $this->authActiveUserIds())->where('document_comment_users.is_read', 1)
             ->update([
-            'document_comment_users.is_read' => 2,
-            'document_comment_users.is_read_date' => Carbon::now()
-        ]);
+                'document_comment_users.is_read' => 2,
+                'document_comment_users.is_read_date' => Carbon::now()
+            ]);
 
         $model = OnlyOfficeDoc::where('doc_type', 'DOC')->where('doc_id', $journal->doc_id)->first();
 
@@ -531,8 +551,8 @@ class JournalController extends Controller
         $people = DB::table('users as u')
             ->join('user_work_histories as w', function ($j) use ($orgUnitId) {
                 $j->on('w.user_id', '=', 'u.id')
-                  ->where('w.org_id', '=', $orgUnitId)
-                  ->where('w.status', '=', 1);
+                    ->where('w.org_id', '=', $orgUnitId)
+                    ->where('w.status', '=', 1);
             })
             ->leftJoin('user_personal_infos as pi', 'pi.user_id', '=', 'u.id')
             ->where('u.status', 1)
@@ -814,7 +834,7 @@ class JournalController extends Controller
         return view('office.journal.inbox.view', compact('authUser','journal', 'document', 'documentFiles',
             'directorDocument','directorResolution','selectedPerformers', 'selectedAddPerformers',
             'agreement_users', 'replyDocuments', 'qrKey', 'signer', 'signType', 'execution_step_ids', 'documentComments', 'comment_inputs',
-             'type'));
+            'type'));
     }
 
     public function viewSent($id, $hash): Factory|View|Application
