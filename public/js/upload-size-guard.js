@@ -1,130 +1,94 @@
 /**
- * Предупреждение о слишком большой загрузке — до отправки формы.
+ * Предупреждение о слишком большом файле — в момент выбора, а не отправки.
  *
- * ЗАЧЕМ.
- * PHP отбрасывает запрос тяжелее post_max_size ещё до Laravel: приходит
- * страница «Content Too Large», а вся заполненная форма теряется.
- * Серверный обработчик (bootstrap/app.php) возвращает пользователя назад
- * с понятным сообщением, но файлы браузер приложить заново не может.
+ * ПОЧЕМУ НЕ ПЕРЕХВАТЫВАЕМ submit.
+ * Первая версия вешала обработчик на submit в фазе capture. Это оказалось
+ * опасно: формы документов отправляются не кнопкой, а программно —
+ * setFormAction() меняет form.action и вызывает form.submit(). Программный
+ * submit() события не порождает, так что проверка всё равно не работала,
+ * зато обработчик вмешивался в чужие формы.
  *
- * Поэтому считаем размер прямо в браузере и не даём отправить форму —
- * пользователь сразу видит, какой файл лишний, и ничего не теряет.
+ * Здесь другой подход: слушаем только change у файловых полей. Ни один
+ * обработчик отправки не трогается, помешать сохранению документа скрипт
+ * физически не может.
  *
- * ПОДКЛЮЧЕНИЕ: один раз в общем layout, перед закрывающим </body>.
+ * ПОДКЛЮЧЕНИЕ: один раз в layout, перед </body>.
  */
 (function () {
     'use strict';
 
     // Должно совпадать с upload_max_filesize в php.ini
-    var MAX_FILE_MB  = 30;
-    // Чуть меньше post_max_size (40M): запас на текстовые поля формы
-    var MAX_TOTAL_MB = 35;
+    var MAX_FILE_MB = 30;
 
     var MB = 1024 * 1024;
 
     var messages = {
-        ru: {
-            single: 'Файл «%s» весит %sМБ — это больше допустимых %sМБ.',
-            total:  'Общий размер файлов %sМБ — это больше допустимых %sМБ. Прикрепите их по частям.'
-        },
-        uz: {
-            single: '«%s» fayli %sMB — ruxsat etilgan %sMB dan katta.',
-            total:  'Fayllarning umumiy hajmi %sMB — ruxsat etilgan %sMB dan katta. Ularni qismlarga bo\'lib biriktiring.'
-        },
-        en: {
-            single: 'File "%s" is %sMB — larger than the allowed %sMB.',
-            total:  'Total file size is %sMB — larger than the allowed %sMB. Please attach them in parts.'
-        }
+        ru: 'Файл «%s» весит %sМБ — это больше допустимых %sМБ. Он не загрузится.',
+        uz: '«%s» fayli %sMB — ruxsat etilgan %sMB dan katta. U yuklanmaydi.',
+        en: 'File "%s" is %sMB — larger than the allowed %sMB. It will not upload.'
     };
 
-    function t(key) {
+    function text() {
         var lang = (document.documentElement.lang || 'ru').substring(0, 2);
-        return (messages[lang] || messages.ru)[key];
+        return messages[lang] || messages.ru;
     }
 
-    function format(template) {
-        var args = Array.prototype.slice.call(arguments, 1);
-        var i = 0;
-        return template.replace(/%s/g, function () {
-            return args[i++];
-        });
+    function format(template, name, size, limit) {
+        return template
+            .replace('%s', name)
+            .replace('%s', size)
+            .replace('%s', limit);
     }
 
-    function mb(bytes) {
-        return (bytes / MB).toFixed(1);
-    }
-
-    /** Показать сообщение тем способом, который есть на странице. */
-    function warn(text) {
-        if (window.toastr && typeof window.toastr.error === 'function') {
-            window.toastr.error(text);
+    /** Сообщение тем способом, который есть на странице. */
+    function warn(message) {
+        if (window.toastr && typeof window.toastr.warning === 'function') {
+            window.toastr.warning(message);
             return;
         }
 
         if (window.Swal && typeof window.Swal.fire === 'function') {
-            window.Swal.fire({ icon: 'error', text: text });
+            window.Swal.fire({ icon: 'warning', text: message });
             return;
         }
 
-        alert(text);
+        alert(message);
     }
 
     /**
-     * Проверка одной формы.
-     * @returns {boolean} true — можно отправлять
+     * Проверка в момент выбора файла.
+     *
+     * Делегирование на document: файловые поля добавляются динамически
+     * (кнопка «+» в формах документов, AJAX-загрузка формы типа),
+     * поэтому вешать обработчик на каждое поле при загрузке страницы нельзя.
+     *
+     * Фаза всплытия, без preventDefault и stopPropagation — чужие обработчики
+     * change продолжают работать как прежде.
      */
-    function checkForm(form) {
-        var inputs = form.querySelectorAll('input[type="file"]');
-        var total  = 0;
+    document.addEventListener('change', function (event) {
+        var input = event.target;
 
-        for (var i = 0; i < inputs.length; i++) {
-            var files = inputs[i].files;
-
-            if (!files) {
-                continue;
-            }
-
-            for (var j = 0; j < files.length; j++) {
-                var file = files[j];
-                total += file.size;
-
-                if (file.size > MAX_FILE_MB * MB) {
-                    warn(format(t('single'), file.name, mb(file.size), MAX_FILE_MB));
-                    return false;
-                }
-            }
-        }
-
-        if (total > MAX_TOTAL_MB * MB) {
-            warn(format(t('total'), mb(total), MAX_TOTAL_MB));
-            return false;
-        }
-
-        return true;
-    }
-
-    document.addEventListener('submit', function (event) {
-        var form = event.target;
-
-        if (!form || form.tagName !== 'FORM') {
+        if (!input || input.type !== 'file' || !input.files) {
             return;
         }
 
-        // Формы без файлов не трогаем
-        if (!form.querySelector('input[type="file"]')) {
-            return;
-        }
+        for (var i = 0; i < input.files.length; i++) {
+            var file = input.files[i];
 
-        if (!checkForm(form)) {
-            event.preventDefault();
-            event.stopPropagation();
+            if (file.size > MAX_FILE_MB * MB) {
+                warn(format(
+                    text(),
+                    file.name,
+                    (file.size / MB).toFixed(1),
+                    MAX_FILE_MB
+                ));
 
-            // Кнопку могли заблокировать в обработчике отправки — возвращаем
-            var buttons = form.querySelectorAll('button[type="submit"], input[type="submit"]');
-
-            for (var i = 0; i < buttons.length; i++) {
-                buttons[i].disabled = false;
+                // Поле не очищаем: решение оставляем пользователю.
+                // Если он всё же отправит форму, сервер вернёт его назад
+                // с сообщением — обработчик PostTooLargeException
+                // в bootstrap/app.php.
+                return;
             }
         }
-    }, true); // capture: срабатываем раньше остальных обработчиков submit
+    }, false);
 })();
