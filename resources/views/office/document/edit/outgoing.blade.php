@@ -505,7 +505,12 @@
             }
         });
 
-        function setFormAction(type) {
+        /* Объявляем через window, а не как function setFormAction(...).
+         | Инлайновый onclick ищет функцию именно в window, и при любом
+         | нестандартном способе выполнения скрипта (AJAX-вставка, обёртка
+         | загрузчиком) обычное объявление до window не доходит —
+         | получаем «setFormAction is not defined». */
+        window.setFormAction = function (type) {
             const j_id = document.getElementById('journal_id').value;
             const hash = document.getElementById('doc_hash').value;
             const form = document.getElementById('createForm');
@@ -521,7 +526,7 @@
             }
 
             form.submit();
-        }
+        };
     </script>
 
     <script type="text/javascript">

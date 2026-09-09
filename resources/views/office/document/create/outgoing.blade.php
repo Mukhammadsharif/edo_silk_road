@@ -435,7 +435,11 @@
             }
         }
 
-        function setFormAction(type) {
+        /* Объявляем через window, а не как function setFormAction(...).
+         | Инлайновый onclick ищет функцию именно в window, и при любом
+         | нестандартном способе выполнения скрипта обычное объявление
+         | до window не доходит — «setFormAction is not defined». */
+        window.setFormAction = function (type) {
             const form = document.getElementById('createForm');
             if (form) {
                 if (type === 'file') {
@@ -445,7 +449,7 @@
                 }
                 form.submit();
             }
-        }
+        };
 
         // File Upload Handler
         let fileInputCounter = 1;

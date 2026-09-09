@@ -137,8 +137,17 @@
     }
     // });
 
-    // Form action handler
-    function setFormAction(type) {
+    /* Form action handler.
+     |
+     | Объявляем через window, а не как function setFormAction(...).
+     |
+     | Эта форма догружается по AJAX и вставляется через $formBody.html(html).
+     | При таком выполнении скрипт может оказаться не в глобальной области —
+     | тогда объявление функции остаётся локальным, а инлайновый onclick
+     | ищет её в window и падает с «setFormAction is not defined».
+     | Явное присваивание в window снимает зависимость от способа вставки.
+     */
+    window.setFormAction = function (type) {
         const form = document.getElementById('createForm');
         if (form) {
             if (type === 'file') {
@@ -148,7 +157,7 @@
             }
             form.submit();
         }
-    }
+    };
 </script>
 
 @include('templates.mini_editor_js')
