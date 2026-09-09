@@ -132,8 +132,12 @@
                                 </div>
                             @endif
 
+                            {{-- onclick="setFormAction('file')" убран: функции с таким именем
+                                 на этой странице нет (она определена только в формах документов),
+                                 и каждый клик давал в консоли ReferenceError.
+                                 Форма отправлялась всё равно — кнопка type="submit",
+                                 а маршрут задан в самом теге <form>. --}}
                             <button type="submit" name="action" value="file" id="submitBtn" class="btn-submit"
-                                    onclick="setFormAction('file')"
                                     @if(!Auth::user()->currentSubscription) disabled @endif>
                                 <i data-lucide="save"></i>
                                 {{ __('action.save') }}

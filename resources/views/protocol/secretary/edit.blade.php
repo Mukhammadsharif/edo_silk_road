@@ -189,8 +189,10 @@
                         </div>
 
                         <div class="form-actions">
-                            <button type="submit" name="action" value="file" id="submitBtn" class="btn-submit"
-                                    onclick="setFormAction('file')">
+                            {{-- onclick="setFormAction('file')" убран: функции на этой странице
+                                 нет, каждый клик давал ReferenceError в консоли.
+                                 Отправку выполняет сам type="submit", маршрут — в теге <form>. --}}
+                            <button type="submit" name="action" value="file" id="submitBtn" class="btn-submit">
                                 <i data-lucide="save"></i>
                                 {{ __('action.save') }}
                             </button>
