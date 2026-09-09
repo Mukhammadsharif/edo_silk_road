@@ -199,7 +199,7 @@
                                         </div>
                                         <div class="file-text">
                                             <p class="file-name">{{ __('action.choose') }}</p>
-                                            <span class="file-hint">PDF, DOC, DOCX, XLS, XLSX (max 10MB)</span>
+                                            <span class="file-hint">PDF, DOC, DOCX, XLS, XLSX (max 30MB)</span>
                                         </div>
                                     </div>
 
@@ -378,7 +378,7 @@
                     </div>
                     <div class="file-text">
                         <p class="file-name">{{ __('action.choose') }}</p>
-                        <span class="file-hint">PDF, DOC, DOCX, XLS, XLSX (max 10MB)</span>
+                        <span class="file-hint">PDF, DOC, DOCX, XLS, XLSX (max 30MB)</span>
                     </div>
                 </div>
 

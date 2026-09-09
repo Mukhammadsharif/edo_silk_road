@@ -175,6 +175,7 @@
     <script src="{{ asset('/assets/js/alerts.js') }}"></script>
     <script src="{{ asset('/assets/dist/js/theme.min.js') }}"></script>
     <script src="{{ asset('js/lucide.min.js') }}"></script>
+    <script src="{{ asset('js/upload-size-guard.js') }}"></script>
 
 <script>
 
