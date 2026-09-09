@@ -4,23 +4,23 @@
 
 <script>
     // document.addEventListener('DOMContentLoaded', function () {
-        // Initialize Lucide Icons
-        if (typeof lucide !== 'undefined') {
-            // lucide.createIcons();
-        }
+    // Initialize Lucide Icons
+    if (typeof lucide !== 'undefined') {
+        // lucide.createIcons();
+    }
 
-        // File Upload Handler
-        let fileInputCounter = 1;
-        // Handle Add Button Click
-        document.addEventListener('click', function (e) {
-            if (e.target.closest('.add-file-input')) {
-                const container = document.getElementById('file-inputs-container');
-                const newWrapper = document.createElement('div');
-                newWrapper.className = 'file-input-wrapper mt-3';
+    // File Upload Handler
+    let fileInputCounter = 1;
+    // Handle Add Button Click
+    document.addEventListener('click', function (e) {
+        if (e.target.closest('.add-file-input')) {
+            const container = document.getElementById('file-inputs-container');
+            const newWrapper = document.createElement('div');
+            newWrapper.className = 'file-input-wrapper mt-3';
 
-                const currentCounter = fileInputCounter;
+            const currentCounter = fileInputCounter;
 
-                newWrapper.innerHTML = `
+            newWrapper.innerHTML = `
                     <div class="custom-file-hidden">
                         <input type="file" name="doc_files[]" class="custom-file-input" id="customFile-${currentCounter}">
                     </div>
@@ -31,7 +31,7 @@
                         </div>
                         <div class="file-text">
                             <p class="file-name">{{ __('action.choose') }}</p>
-                            <span class="file-hint">PDF, DOC, DOCX, XLS, XLSX (max 10MB)</span>
+                            <span class="file-hint">PDF, DOC, DOCX, XLS, XLSX (max 30MB)</span>
                         </div>
                     </div>
 
@@ -40,53 +40,53 @@
                     </button>
                 `;
 
-                container.appendChild(newWrapper);
+            container.appendChild(newWrapper);
 
-                const fileInputCustom = newWrapper.querySelector(`#customFile-${currentCounter}`);
-                const fileNameDisplay = newWrapper.querySelector('.file-name');
+            const fileInputCustom = newWrapper.querySelector(`#customFile-${currentCounter}`);
+            const fileNameDisplay = newWrapper.querySelector('.file-name');
 
-                fileInputCustom.addEventListener('change', function () {
-                    if (this.files.length > 0) {
-                        fileNameDisplay.textContent = this.files[0].name;
-                        newWrapper.querySelector('.file-display-area').classList.add('has-file');
-                    }
-                });
-
-                newWrapper.querySelector('.btn-remove-file').addEventListener('click', function () {
-                    newWrapper.remove();
-                });
-
-                if (typeof lucide !== 'undefined') {
-                    lucide.createIcons();
-                }
-                fileInputCounter++;
-            }
-        });
-
-        // Handle initial file input
-        const initialFileInput = document.getElementById('customFile-0');
-        if (initialFileInput) {
-            const initialFileNameDisplay = document.querySelector('.file-name');
-            initialFileInput.addEventListener('change', function () {
+            fileInputCustom.addEventListener('change', function () {
                 if (this.files.length > 0) {
-                    initialFileNameDisplay.textContent = this.files[0].name;
-                    document.querySelector('.file-display-area').classList.add('has-file');
+                    fileNameDisplay.textContent = this.files[0].name;
+                    newWrapper.querySelector('.file-display-area').classList.add('has-file');
                 }
             });
+
+            newWrapper.querySelector('.btn-remove-file').addEventListener('click', function () {
+                newWrapper.remove();
+            });
+
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+            fileInputCounter++;
         }
+    });
 
-        // Report Form Builder (for report_form.blade.php)
-        let fieldIndex = 1;
-        const addFieldBtn = document.getElementById('add-field');
-        const fieldsContainer = document.getElementById('fields-container');
+    // Handle initial file input
+    const initialFileInput = document.getElementById('customFile-0');
+    if (initialFileInput) {
+        const initialFileNameDisplay = document.querySelector('.file-name');
+        initialFileInput.addEventListener('change', function () {
+            if (this.files.length > 0) {
+                initialFileNameDisplay.textContent = this.files[0].name;
+                document.querySelector('.file-display-area').classList.add('has-file');
+            }
+        });
+    }
 
-        if (addFieldBtn && fieldsContainer) {
-            addFieldBtn.addEventListener('click', function () {
-                const fieldId = 'field_' + fieldIndex;
-                const newDiv = document.createElement('div');
-                newDiv.classList.add('field-row');
-                newDiv.id = fieldId;
-                newDiv.innerHTML = `
+    // Report Form Builder (for report_form.blade.php)
+    let fieldIndex = 1;
+    const addFieldBtn = document.getElementById('add-field');
+    const fieldsContainer = document.getElementById('fields-container');
+
+    if (addFieldBtn && fieldsContainer) {
+        addFieldBtn.addEventListener('click', function () {
+            const fieldId = 'field_' + fieldIndex;
+            const newDiv = document.createElement('div');
+            newDiv.classList.add('field-row');
+            newDiv.id = fieldId;
+            newDiv.innerHTML = `
                     <div class="field-inputs">
                         <div class="form-group-modern" style="flex: 3;">
                             <label>
@@ -117,24 +117,24 @@
                         </button>
                     </div>
                 `;
-                fieldsContainer.appendChild(newDiv);
-                fieldIndex++;
+            fieldsContainer.appendChild(newDiv);
+            fieldIndex++;
 
-                if (typeof lucide !== 'undefined') {
-                    lucide.createIcons();
-                }
-            });
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
 
-            document.addEventListener('click', function (e) {
-                if (e.target.closest('.remove-field')) {
-                    e.preventDefault();
-                    const btn = e.target.closest('.remove-field');
-                    const fieldId = btn.getAttribute('data-id');
-                    const divToRemove = document.getElementById(fieldId);
-                    if (divToRemove) divToRemove.remove();
-                }
-            });
-        }
+        document.addEventListener('click', function (e) {
+            if (e.target.closest('.remove-field')) {
+                e.preventDefault();
+                const btn = e.target.closest('.remove-field');
+                const fieldId = btn.getAttribute('data-id');
+                const divToRemove = document.getElementById(fieldId);
+                if (divToRemove) divToRemove.remove();
+            }
+        });
+    }
     // });
 
     // Form action handler

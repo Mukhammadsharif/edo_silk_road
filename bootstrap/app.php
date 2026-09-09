@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Http\Exceptions\PostTooLargeException;
 use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -75,5 +76,42 @@ return Application::configure(basePath: dirname(__DIR__))
                     'code'    => 'token_invalid_or_expired',
                 ], 401);
             }
+        });
+
+        /*
+         | Загрузка тяжелее post_max_size.
+         |
+         | PHP отбрасывает такой запрос ДО того, как до него доберётся Laravel:
+         | $_POST и $_FILES приходят пустыми, поэтому обычная валидация
+         | 'file|max:...' тут не срабатывает — пользователь видел голую
+         | страницу «Content Too Large» и терял заполненную форму.
+         |
+         | Возвращаем его на ту же форму с понятным сообщением. Введённые
+         | поля сохраняются через withInput(), кроме самих файлов —
+         | их браузер приложить заново не может.
+         */
+        $exceptions->render(function (PostTooLargeException $e, Request $request) {
+            $limit = ini_get('post_max_size');
+
+            $message = __('validate.upload_too_large', ['limit' => $limit]);
+
+            // Строки перевода может не быть — тогда __() вернёт сам ключ
+            if ($message === 'validate.upload_too_large') {
+                $message = "Загрузка слишком большая. Общий размер файлов в одной "
+                    . "форме не должен превышать {$limit}. Прикрепите файлы по частям "
+                    . "или сожмите их.";
+            }
+
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $message,
+                    'code'    => 'post_too_large',
+                ], 413);
+            }
+
+            return redirect()->back()
+                ->withInput($request->except(['doc_files', 'document_file', 'profile_img']))
+                ->withErrors(['files' => $message]);
         });
     })->create();

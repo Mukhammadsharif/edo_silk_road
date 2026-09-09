@@ -24,6 +24,7 @@
     <link rel="stylesheet" href="/assets/node_modules/mohithg-switchery/dist/switchery.min.css">
     <link rel="stylesheet" href="/assets/dist/css/theme.min.css">
     <script src="/assets/src/js/vendor/modernizr-2.8.3.min.js"></script>
+    <script src="{{ asset('js/upload-size-guard.js') }}"></script>
 </head>
 <body>
 
