@@ -32,6 +32,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class JournalController extends Controller
@@ -217,9 +218,29 @@ class JournalController extends Controller
 
         $default_status = StatusList::where('type', 'work_document')->orderBy('code')->first();
 
-        $journal = JournalTypes::where('org_id', $this->organizationId())->where('doc_code', 'BASE_INCOMING')->first();
+        /*
+         | Базового журнала может не быть: organizationId() возвращает null
+         | у пользователя без организации, а у недавно созданной организации
+         | системные журналы могли не завестись. Раньше страница падала
+         | с «Attempt to read property "id" on null».
+         |
+         | Пустой список корреспондентов лучше, чем 500: журнал останется
+         | доступным, просто фильтр по организациям будет пуст.
+         */
+        $journal = JournalTypes::where('org_id', $this->organizationId())
+            ->where('doc_code', 'BASE_INCOMING')
+            ->first();
 
-        $doc_organizations = DocumentOrganizations::where('for_doc_type', $journal->id)->where('status', 1)->get();
+        $doc_organizations = $journal
+            ? DocumentOrganizations::where('for_doc_type', $journal->id)->where('status', 1)->get()
+            : collect();
+
+        if (!$journal) {
+            Log::warning('Базовый журнал BASE_INCOMING не найден', [
+                'org_id'  => $this->organizationId(),
+                'user_id' => auth()->id(),
+            ]);
+        }
 
         return view('office.journal.inbox.index',
             compact('models', 'doc_name', 'doc_org', 'status', 'date_from', 'date_till','statusNames', 'default_status',
@@ -298,9 +319,29 @@ class JournalController extends Controller
 
         $default_status = StatusList::where('type', 'out_document')->orderBy('code')->first();
 
-        $journal = JournalTypes::where('org_id', $this->organizationId())->where('doc_code', 'BASE_OUTGOING')->first();
+        /*
+         | Базового журнала может не быть: organizationId() возвращает null
+         | у пользователя без организации, а у недавно созданной организации
+         | системные журналы могли не завестись. Раньше страница падала
+         | с «Attempt to read property "id" on null».
+         |
+         | Пустой список корреспондентов лучше, чем 500: журнал останется
+         | доступным, просто фильтр по организациям будет пуст.
+         */
+        $journal = JournalTypes::where('org_id', $this->organizationId())
+            ->where('doc_code', 'BASE_OUTGOING')
+            ->first();
 
-        $doc_organizations = DocumentOrganizations::where('for_doc_type', $journal->id)->where('status', 1)->get();
+        $doc_organizations = $journal
+            ? DocumentOrganizations::where('for_doc_type', $journal->id)->where('status', 1)->get()
+            : collect();
+
+        if (!$journal) {
+            Log::warning('Базовый журнал BASE_OUTGOING не найден', [
+                'org_id'  => $this->organizationId(),
+                'user_id' => auth()->id(),
+            ]);
+        }
 
         return view('office.journal.sent.index',
             compact('models', 'doc_name', 'doc_org', 'status', 'date_from', 'date_till','statusNames', 'default_status',
