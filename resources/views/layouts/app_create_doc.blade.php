@@ -183,7 +183,7 @@
     <script src="{{ asset('/assets/node_modules/jquery.repeater/jquery.repeater.min.js') }}"></script>
     <script src="{{ asset('/assets/dist/js/theme.min.js') }}"></script>
     <script src="{{ asset('js/lucide.min.js') }}"></script>
-    <script src="{{ asset('js/upload-size-guard.js') }}"></script>
+{{--    <script src="{{ asset('js/upload-size-guard.js') }}"></script>--}}
 
     {{--<script>
         document.getElementById('createForm').addEventListener('submit', function() {
