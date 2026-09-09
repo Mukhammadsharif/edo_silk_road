@@ -857,11 +857,24 @@ class DocumentController extends Controller
             return back();
         }
 
+        /*
+         | Текущий текст документа.
+         |
+         | Форма редактирования показывала пустой блок «Текст документа»:
+         | что уже загружено, было не видно. Пользователь думал, что текста
+         | нет, а «Web Word Office» открывал ранее загруженный файл — и это
+         | выглядело как ошибка.
+         */
+        $onlyOfficeDoc = OnlyOfficeDoc::where('doc_type', 'DOC')
+            ->where('doc_id', $document->id)
+            ->first();
+
         return view('office.document.edit.'.$type, compact('journals', 'departments', 'confidences', 'type', 'authUser',
-            'journal', 'document', 'documentFiles', 'fromDate', 'toDate', 'organizations', 'departmentJournals', 'labourApps'));
+            'journal', 'document', 'documentFiles', 'fromDate', 'toDate', 'organizations', 'departmentJournals',
+            'labourApps', 'onlyOfficeDoc'));
     }
 
-	public function edit($document_key, $j_id, $hash)
+    public function edit($document_key, $j_id, $hash)
     {
         $authUser = $this->authActiveUser();
 
@@ -1172,9 +1185,9 @@ class DocumentController extends Controller
             $agreement_roles_ids = JournalExecutionStepRoles::where('j_exec_step_id', $agreement_step->id)->pluck('role_id')->toArray();
             $user_roles = UserRole::whereIn('role_id', $agreement_roles_ids)->pluck('model_id')->toArray();
             $agreement_users = UserWorkHistory::where('user_work_histories.org_id', $this->organizationId())->
-                whereIn('user_work_histories.user_id', $user_roles)->whereHas('user', function ($query) {
-                    $query->where('status', 1);
-                })->where('user_work_histories.status', 1)
+            whereIn('user_work_histories.user_id', $user_roles)->whereHas('user', function ($query) {
+                $query->where('status', 1);
+            })->where('user_work_histories.status', 1)
                 ->whereNotIn('user_work_histories.user_id', $super_admins_array)
                 ->join('user_personal_infos', 'user_personal_infos.user_id', '=', 'user_work_histories.user_id')
                 ->orderBy('user_personal_infos.sort')
@@ -1341,4 +1354,3 @@ class DocumentController extends Controller
         $signer_step->save();
     }
 }
-

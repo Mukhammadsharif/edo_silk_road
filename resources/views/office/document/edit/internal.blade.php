@@ -324,15 +324,54 @@
                                         <input type="file" accept=".doc, .docx" name="main_file" id="fileInput" style="display: none;">
                                     </div>
 
-                                    <!-- Web Office -->
+                                    {{-- В форме РЕДАКТИРОВАНИЯ эта кнопка открывает уже
+                                         существующий текст документа, а не создаёт новый.
+                                         Раньше подпись обещала создание, и пользователи
+                                         принимали открытие прежнего файла за ошибку. --}}
                                     <div class="upload-option-card" onclick="setFormAction('web')">
                                         <div class="upload-icon">
                                             <i data-lucide="monitor"></i>
                                         </div>
                                         <h4>Web Word Office</h4>
-                                        <p>{{ __('action.create_via_editor') }}</p>
+                                        <p>
+                                            @isset($onlyOfficeDoc)
+                                                {{ __('action.edit') }} — {{ __('document.doc_text') }}
+                                            @else
+                                                {{ __('action.create_via_editor') }}
+                                            @endisset
+                                        </p>
                                     </div>
                                 </div>
+
+                                {{-- Что уже сохранено как текст документа.
+                                     Без этого блока форма выглядела пустой, и было
+                                     непонятно, есть ли текст вообще. --}}
+                                @isset($onlyOfficeDoc)
+                                    @php($replaceHint = __('message.replace_current_text'))
+                                    <div id="currentDocText" class="file-list-display">
+                                        <div style="padding: 0.75rem; background: #f8fafc; border-radius: 8px;
+                                                    margin-top: 0.5rem; border: 1px solid #e2e8f0;">
+                                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                <i data-lucide="file-check" style="width: 20px; height: 20px; color: #20a37b;"></i>
+                                                <span style="flex: 1; font-size: 14px; color: #1e293b;">
+                                                    {{ __('document.doc_text') }} — {{ $onlyOfficeDoc->doc_key }}.docx
+                                                </span>
+                                                @if($onlyOfficeDoc->created_at)
+                                                    <span style="font-size: 12px; color: #64748b;">
+                                                        {{ \Carbon\Carbon::parse($onlyOfficeDoc->created_at)->format('d.m.Y H:i') }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            {{-- Ключа перевода пока нет: если __() вернул сам ключ,
+                                                 показываем русский текст. --}}
+                                            <div style="margin-top: 0.5rem; font-size: 12px; color: #64748b;">
+                                                {{ $replaceHint === 'message.replace_current_text'
+                                                    ? 'Загрузите новый файл, чтобы заменить текущий текст документа'
+                                                    : $replaceHint }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endisset
 
                                 <div id="fileList" class="file-list-display"></div>
                             </div>
@@ -415,9 +454,34 @@
                         <i data-lucide="file-text" style="width: 20px; height: 20px; color: #794DFD;"></i>
                         <span style="flex: 1; font-size: 14px; color: #1e293b;">${file.name}</span>
                         <span style="font-size: 12px; color: #64748b;">${(file.size / 1024).toFixed(2)} KB</span>
+                        <button type="button" class="remove-main-file"
+                                style="border: none; background: transparent; cursor: pointer; color: #e0679a;"
+                                title="{{ __('action.delete') }}">
+                            <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+                        </button>
                     </div>
                 `;
                 fileList.appendChild(item);
+
+                // Отмена выбора: без неё ошибочно выбранный файл нельзя было убрать,
+                // оставалось только перезагрузить страницу
+                item.querySelector('.remove-main-file').addEventListener('click', function () {
+                    fileInput.value = '';
+                    fileList.innerHTML = '';
+
+                    const current = document.getElementById('currentDocText');
+                    if (current) {
+                        current.style.display = '';
+                    }
+                });
+
+                // Пока выбран новый файл, прежний текст показывать незачем —
+                // он всё равно будет заменён
+                const current = document.getElementById('currentDocText');
+                if (current) {
+                    current.style.display = 'none';
+                }
+
                 lucide.createIcons();
             }
         }
