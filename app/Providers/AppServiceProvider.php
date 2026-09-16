@@ -54,7 +54,9 @@ class AppServiceProvider extends ServiceProvider
             $menus = null;
 
             if (Auth::check()) {
-                $menus = Auth::user()->sidebarMenus();
+                // Схлопываем повторы: один пункт меню приходит столько раз,
+                // сколько у пользователя ролей, которые его открывают
+                $menus = $this->dedupeSidebarMenus(Auth::user()->sidebarMenus());
             }
 
             // Protocols kategoriyasi uchun filtr
@@ -105,6 +107,65 @@ class AppServiceProvider extends ServiceProvider
             $view->with('lang', App::getLocale());
         });
     }
+
+    /**
+     * Схлопнуть повторяющиеся пункты бокового меню.
+     *
+     * ПРИЧИНА ДУБЛЕЙ.
+     * В role_menus у каждой роли своя строка на один и тот же пункт меню.
+     * У пользователя с пятью ролями «Мои документы» приходило пятью записями:
+     * menu_id у них одинаковый, а role_menus.id разные — поэтому unique('id')
+     * в User::sidebarMenus() их не схлопывал, идентификаторы ведь и правда
+     * различаются. Один и тот же пункт определяет menu_id, по нему и группируем.
+     *
+     * ПОЧЕМУ ЗДЕСЬ, А НЕ В МОДЕЛИ.
+     * Дедупликация идёт ПОСЛЕ кэша (user_{id}_menus), поэтому:
+     *   - кэш не нужно сбрасывать ни при установке, ни при откате;
+     *   - выборка в User::sidebarMenus() остаётся нетронутой, а её вызывает
+     *     ещё и HomeController;
+     *   - откат — возврат одного этого файла.
+     *
+     * ПОЧЕМУ СЛИВАЕМ ДОЧЕРНИЕ.
+     * Разные роли могут открывать разные подпункты одного раздела. Если взять
+     * первую попавшуюся запись, пользователь потеряет доступ к подпунктам,
+     * которые даёт вторая роль. Поэтому родителя берём первым по порядку,
+     * а детей собираем из всех ролей — тоже без повторов.
+     */
+    private function dedupeSidebarMenus($menus)
+    {
+        if (!$menus || $menus->isEmpty()) {
+            return $menus;
+        }
+
+        return $menus
+            ->groupBy('menu_id')
+            ->map(function ($sameMenu) {
+                $parent = $sameMenu->first();
+
+                // Пункт пришёл от одной роли — сливать нечего
+                if ($sameMenu->count() === 1) {
+                    return $parent;
+                }
+
+                $children = $sameMenu
+                    ->pluck('child')
+                    ->filter()
+                    ->flatten()
+                    ->unique('menu_id')
+                    ->sortBy('order_number')
+                    ->values();
+
+                // Клонируем: setRelation на исходной модели изменил бы
+                // коллекцию, лежащую в кэше, до конца запроса
+                $parent = clone $parent;
+                $parent->setRelation('child', $children);
+
+                return $parent;
+            })
+            ->sortBy('order_number')
+            ->values();
+    }
+
     public function boot_old(): void
     {
         //

@@ -29,6 +29,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('qr_code_key_gen:cron')->dailyAt('22:50');*/
 
         $schedule->command('didox:sync-incoming')->everyTenMinutes()->withoutOverlapping();
+
+        $schedule->command('telegram:set-webhook')->dailyAt('04:00');
     }
 
     protected function commands()
