@@ -535,6 +535,44 @@ class JournalController extends Controller
             ->values();
     }
 
+    /* ═══════════ ЛИСТ СОГЛАСОВАНИЯ (v62) ═══════════
+     | Печатная страница А4: шапка с информацией о документе + список
+     | согласующих (ТОЛЬКО роль AGREE) со статусами, датами и
+     | комментариями (DocumentReplyComments типа DOC_SIGNED по шагу).
+     | Дата согласования = updated_at шага в статусе 5/6.
+     | Работает и для штатных, и для free-sign документов.
+     */
+    public function agreementSheet($id, $hash)
+    {
+        $journal  = DocumentJournals::findOrFail($id);
+        $document = \App\Models\Document\Documents::where('id', $journal->doc_id)
+            ->where('doc_hash', $hash)
+            ->firstOrFail();
+
+        $agreeRole = \App\Models\Document\DocumentExecutionRoles::where('doc_code', 'AGREE')
+            ->where('status', 1)
+            ->first();
+
+        $agreeSteps = $agreeRole
+            ? DocumentExecutionSteps::where('j_id', $journal->id)
+                ->where('exec_role', $agreeRole->id)
+                ->with(['toUser.personal', 'toUser.userPost', 'toUser.department'])
+                ->orderBy('id')
+                ->get()
+            : collect();
+
+        // Комментарии согласования по шагам (DOC_SIGNED).
+        $signedType = \App\Models\Resolution\ReplyCommentTypes::where('doc_code', 'DOC_SIGNED')->first();
+        $comments = ($signedType && $agreeSteps->isNotEmpty())
+            ? \App\Models\Document\DocumentReplyComments::whereIn('doc_exec_step_id', $agreeSteps->pluck('id'))
+                ->where('reply_comment_type', $signedType->id)
+                ->get()
+                ->keyBy('doc_exec_step_id')
+            : collect();
+
+        return view('office.journal.agreement-sheet', compact('journal', 'document', 'agreeSteps', 'comments'));
+    }
+
     public function viewFreeSign($id, $hash)
     {
         $journal = DocumentJournals::findOrFail($id);

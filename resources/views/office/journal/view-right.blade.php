@@ -297,6 +297,22 @@
                 <i data-lucide="download"></i>
                 <span>{{ __('action.download') }}</span>
             </button>
+
+            {{-- v62: печать листа согласования — только если в маршруте
+                 есть согласующие (роль AGREE). Открывается в новой вкладке,
+                 печать кнопкой на самой странице. --}}
+            @php
+                $fsAgreeRoleId = \App\Models\Document\DocumentExecutionRoles::where('doc_code', 'AGREE')->value('id');
+                $fsHasAgree = $fsAgreeRoleId && \App\Models\Document\DocumentExecutionSteps::where('j_id', $journal->id)
+                    ->where('exec_role', $fsAgreeRoleId)->exists();
+            @endphp
+            @if($fsHasAgree)
+                <a href="{{ route('office.agreement-sheet', [$journal->id, $journal->doc->doc_hash ?? '']) }}"
+                   target="_blank" class="btn-modern btn-secondary" style="text-decoration:none;">
+                    <i data-lucide="clipboard-check"></i>
+                    <span>Лист согласования</span>
+                </a>
+            @endif
             <input id="downloadName"
                    value="{{ $journal->journal->lang($journal->journal->lang_id)??'-' }} - {{ $journal->fromUser->personal->shortName()??'' }}"
                    hidden/>
