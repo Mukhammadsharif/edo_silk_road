@@ -26,6 +26,7 @@ use App\Jobs\SendTelegramMessageJob;
     OA\Server(url: 'http://localhost:8082', description: "Local server"),
     OA\Server(url: 'http://172.17.110.54:8080', description: "172.17.110.54 server"),
     OA\Server(url: 'https://onlyoffice.local:8443', description: "local dev server"),
+    OA\Server(url: 'https://edoline.test', description: "local mac"),
 ]
 
 class Controller extends BaseController

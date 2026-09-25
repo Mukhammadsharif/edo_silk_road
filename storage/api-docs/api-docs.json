@@ -21,6 +21,10 @@
         {
             "url": "https://onlyoffice.local:8443",
             "description": "local dev server"
+        },
+        {
+            "url": "https://edoline.test",
+            "description": "local mac"
         }
     ],
     "paths": {
@@ -72,6 +76,110 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/LanguageListResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизован"
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/organization-units": {
+            "get": {
+                "tags": [
+                    "Dictionaries"
+                ],
+                "summary": "Справочник организаций",
+                "description": "Возвращает организации со всеми полями. Поддерживает фильтры по статусу, родителю, уровню и поиск по названию, коду или ИНН.",
+                "operationId": "878828196209fde9d32ce22aebda244c",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Фильтр по статусу (1 — активные). По умолчанию отдаются все.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "parent_id",
+                        "in": "query",
+                        "description": "Только дочерние указанной организации. 0 — корневые.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 0
+                        }
+                    },
+                    {
+                        "name": "level",
+                        "in": "query",
+                        "description": "Уровень вложенности",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Поиск по названию (uz/kr/ru/en), коду или ИНН",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "vazirlik"
+                        }
+                    },
+                    {
+                        "name": "with_parent",
+                        "in": "query",
+                        "description": "Добавить объект родительской организации",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "example": false
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Записей на странице (1–500, по умолчанию 100)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 100
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrganizationUnitListResponse"
                                 }
                             }
                         }
@@ -5987,6 +6095,3725 @@
                     }
                 }
             }
+        },
+        "/api/v1/mobile/login": {
+            "post": {
+                "tags": [
+                    "Mobile API"
+                ],
+                "summary": "Вход в мобильное приложение",
+                "description": "Возвращает Sanctum-токен со сроком жизни 30 дней.\n     *         В отличие от /api/auth/login не гасит токены других устройств:\n     *         токен именуется по device_name, поэтому телефон и планшет\n     *         работают одновременно.\n     *\n     *         Побочный эффект: если org_unit_id пользователя указывает на\n     *         организацию без активной записи работы, он переключается на\n     *         организацию с активной записью — иначе списки документов\n     *         пришли бы пустыми.",
+                "operationId": "7f2057b14d893ad8860a6aa9e437de4b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "type": "string",
+                                        "example": "i.shunkorov"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "device_name": {
+                                        "description": "Имя устройства; по умолчанию mobile",
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "example": "iPhone 15"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Токен выдан",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "access_token": {
+                                            "type": "string"
+                                        },
+                                        "token_type": {
+                                            "type": "string",
+                                            "example": "Bearer"
+                                        },
+                                        "expires_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 191
+                                                },
+                                                "username": {
+                                                    "type": "string"
+                                                },
+                                                "email": {
+                                                    "type": "string"
+                                                },
+                                                "org_unit_id": {
+                                                    "type": "integer",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неверный логин или пароль",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "invalid_credentials"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Login yoki parol noto'g'ri"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Учётная запись отключена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "inactive"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Не переданы обязательные поля"
+                    },
+                    "429": {
+                        "description": "Слишком много попыток входа"
+                    }
+                }
+            }
+        },
+        "/api/v1/mobile/logout": {
+            "post": {
+                "tags": [
+                    "Mobile API"
+                ],
+                "summary": "Выход с текущего устройства",
+                "operationId": "988b574ec16e87d653af2d217bca66a2",
+                "responses": {
+                    "200": {
+                        "description": "Токен погашен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/logout-all": {
+            "post": {
+                "tags": [
+                    "Mobile API"
+                ],
+                "summary": "Выход со всех устройств",
+                "operationId": "3a19268b0aaa81ac166b2ff4cb1a29d5",
+                "responses": {
+                    "200": {
+                        "description": "Все токены погашены",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "revoked": {
+                                            "type": "integer",
+                                            "example": 3
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/me": {
+            "get": {
+                "tags": [
+                    "Mobile API"
+                ],
+                "summary": "Текущий пользователь",
+                "operationId": "e9069ffa6836fb4208da4e44357e5c67",
+                "responses": {
+                    "200": {
+                        "description": "Данные пользователя",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/translations": {
+            "get": {
+                "tags": [
+                    "Mobile API"
+                ],
+                "summary": "Переводы интерфейса мини-аппа",
+                "description": "В мобильной группе, в отличие от мини-аппа, требует\n     *         авторизации: вся группа /api/v1/mobile закрыта middleware\n     *         auth:sanctum.",
+                "operationId": "bf5c3a39177ecb0e56ee3efb41d8d063",
+                "responses": {
+                    "200": {
+                        "description": "Словарь переводов по языкам",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "uz": {
+                                        "login": "Kirish"
+                                    },
+                                    "ru": {
+                                        "login": "Вход"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/counts": {
+            "get": {
+                "tags": [
+                    "Mobile API"
+                ],
+                "summary": "Счётчики на главном экране",
+                "description": "Считаются по ВСЕМ записям user_work_histories пользователя,\n     *         без фильтра по организации — намеренно, чтобы числа совпадали\n     *         с веб-версией (menuCount).\n     *\n     *         Счётчика по исполнению (роль EXEC) здесь нет: этот раздел\n     *         в мобильном API не реализован.",
+                "operationId": "fee099f46c61a2afd30a10201ac3c3c0",
+                "responses": {
+                    "200": {
+                        "description": "Количество документов по разделам",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "for_resolution": {
+                                            "description": "Роль RESOL, статус шага 2 или 6",
+                                            "type": "integer",
+                                            "example": 3
+                                        },
+                                        "for_sign": {
+                                            "description": "Роль SIGN, статус шага 2",
+                                            "type": "integer",
+                                            "example": 5
+                                        },
+                                        "for_approval": {
+                                            "description": "Роль AGREE, статус шага 2",
+                                            "type": "integer",
+                                            "example": 2
+                                        },
+                                        "my_docs": {
+                                            "description": "Свои документы, кроме статусов 2 и 13",
+                                            "type": "integer",
+                                            "example": 12
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/status-options": {
+            "get": {
+                "tags": [
+                    "Mobile API"
+                ],
+                "summary": "Варианты фильтра по статусу шага",
+                "operationId": "093a5691cd1b91c4a55e44a0fb262427",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "description": "Роль в маршруте документа",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "RESOL",
+                                "SIGN",
+                                "AGREE"
+                            ],
+                            "example": "SIGN"
+                        }
+                    },
+                    {
+                        "name": "lang",
+                        "in": "query",
+                        "description": "Язык подписей. Значение cyr трактуется как uz",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "uz",
+                                "ru",
+                                "en",
+                                "cyr"
+                            ],
+                            "example": "uz"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Список статусов",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "category": {
+                                            "type": "string",
+                                            "example": "SIGN"
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "example": "doc_signer"
+                                        },
+                                        "default": {
+                                            "type": "string",
+                                            "example": "2"
+                                        },
+                                        "options": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "code": {
+                                                        "type": "string",
+                                                        "example": "2"
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "Imzolashda"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/documents": {
+            "get": {
+                "tags": [
+                    "Mobile API"
+                ],
+                "summary": "Документы, пришедшие пользователю",
+                "description": "Без параметра category возвращаются все три роли сразу.\n     *\n     *         ВАЖНО: роль EXEC (исполнение резолюции) в выдачу НЕ входит —\n     *         ни здесь, ни в счётчиках, ни в карточке документа. Эти три роли\n     *         завершаются подписью через E-IMZO, а исполнение требует другого\n     *         действия — отчёта о выполнении, которого в мобильном API пока нет.\n     *         В веб-версии исполнение живёт в отдельном разделе.",
+                "operationId": "197f8dd705e0c686dcf8bfd0469d440e",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "RESOL",
+                                "SIGN",
+                                "AGREE"
+                            ],
+                            "example": "SIGN"
+                        }
+                    },
+                    {
+                        "name": "step_status",
+                        "in": "query",
+                        "description": "Код статуса шага из /status-options",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "2"
+                        }
+                    },
+                    {
+                        "name": "lang",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "uz",
+                                "ru",
+                                "en",
+                                "cyr"
+                            ],
+                            "example": "uz"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Список документов",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "count": {
+                                            "type": "integer",
+                                            "example": 4
+                                        },
+                                        "documents": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/TelegramDocumentListItem"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/documents/{j_id}": {
+            "get": {
+                "tags": [
+                    "Mobile API"
+                ],
+                "summary": "Карточка входящего документа",
+                "operationId": "ea3a2b1d6f66dd64972e7912193b12d7",
+                "parameters": [
+                    {
+                        "name": "j_id",
+                        "in": "path",
+                        "description": "document_journals.id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 497
+                        }
+                    },
+                    {
+                        "name": "lang",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "uz",
+                                "ru",
+                                "en",
+                                "cyr"
+                            ],
+                            "example": "uz"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Карточка документа",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TelegramDocumentDetail"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    },
+                    "403": {
+                        "description": "Документ не адресован пользователю"
+                    },
+                    "404": {
+                        "description": "Документ не найден"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/documents/{j_id}/sign-link": {
+            "post": {
+                "tags": [
+                    "Mobile API"
+                ],
+                "summary": "Одноразовая ссылка на страницу подписи E-IMZO",
+                "description": "Подпись происходит вне приложения: ссылка открывается во\n     *         внешнем браузере, где работает E-IMZO. Страница своя\n     *         (/mobile/app/sign/{token}), токены — в таблице mobile_sign_tokens,\n     *         поэтому вход в Telegram Mini App на ссылку не влияет.\n     *         Ссылка одноразовая и живёт 15 минут.",
+                "operationId": "f6f2f2d99298b71cc72b34aac077dbe5",
+                "parameters": [
+                    {
+                        "name": "j_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 497
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ссылка создана",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "sign_url": {
+                                            "type": "string",
+                                            "example": "https://edoline.uz/mobile/app/sign/s1gn70k3n"
+                                        },
+                                        "sign_type": {
+                                            "type": "string",
+                                            "example": "sign_resolution"
+                                        },
+                                        "expires_in": {
+                                            "description": "Секунд до истечения",
+                                            "type": "integer",
+                                            "example": 900
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    },
+                    "403": {
+                        "description": "Нет активного шага на этом пользователе",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Document not available"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Документ не найден"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/my-documents": {
+            "get": {
+                "tags": [
+                    "Mobile API"
+                ],
+                "summary": "Документы, созданные пользователем",
+                "description": "Базовые журналы входящих и исходящих исключены —\n     *         это раздел собственных рабочих документов.",
+                "operationId": "1b55a4c9f89ae5aec8cb71e0c0703573",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Код статуса документа",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "1"
+                        }
+                    },
+                    {
+                        "name": "lang",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "uz",
+                                "ru",
+                                "en",
+                                "cyr"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Страница списка",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/TelegramDocumentListItem"
+                                            }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 3
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 15
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 42
+                                                },
+                                                "has_more": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/my-documents/{j_id}": {
+            "get": {
+                "tags": [
+                    "Mobile API"
+                ],
+                "summary": "Карточка своего документа",
+                "operationId": "4215b1af64fb75186627775ad561192d",
+                "parameters": [
+                    {
+                        "name": "j_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 497
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Карточка документа",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TelegramMyDocumentDetail"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    },
+                    "403": {
+                        "description": "Документ создан не этим пользователем"
+                    },
+                    "404": {
+                        "description": "Документ не найден"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Mobile API"
+                ],
+                "summary": "Удалить свой документ",
+                "operationId": "e3982adf02ee0434d6fe013aa3a1c91c",
+                "parameters": [
+                    {
+                        "name": "j_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 497
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Документ удалён",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    },
+                    "403": {
+                        "description": "Документ создан не этим пользователем"
+                    },
+                    "404": {
+                        "description": "Документ не найден"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/my-documents/{j_id}/send": {
+            "post": {
+                "tags": [
+                    "Mobile API"
+                ],
+                "summary": "Отправить свой документ по маршруту",
+                "description": "Отправка требует подписи автора, поэтому возвращается\n     *         ссылка на страницу E-IMZO, а не результат отправки. Документ\n     *         должен быть в статусе 1 (черновик).",
+                "operationId": "ada6ab88c87075f88840aced43c2ae20",
+                "parameters": [
+                    {
+                        "name": "j_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 497
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "sign_type"
+                                ],
+                                "properties": {
+                                    "sign_type": {
+                                        "type": "string",
+                                        "example": "from_signer_to_ag"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ссылка на подпись создана",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "sign_url": {
+                                            "type": "string",
+                                            "example": "https://edoline.uz/mobile/app/sign/s1gn70k3n"
+                                        },
+                                        "sign_type": {
+                                            "type": "string",
+                                            "example": "from_signer_to_ag"
+                                        },
+                                        "expires_in": {
+                                            "type": "integer",
+                                            "example": 900
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    },
+                    "403": {
+                        "description": "Документ создан не этим пользователем"
+                    },
+                    "404": {
+                        "description": "Документ не найден"
+                    },
+                    "422": {
+                        "description": "Документ не в статусе черновика",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "invalid_status"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Hujjat status bilan bu amalni bajarib bo'lmaydi"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/profile": {
+            "get": {
+                "tags": [
+                    "Mobile API"
+                ],
+                "summary": "Карточка сотрудника",
+                "operationId": "186aba0b915bdab6cab46b9bca35ad7a",
+                "responses": {
+                    "200": {
+                        "description": "Данные профиля",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "profile": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 191
+                                                },
+                                                "username": {
+                                                    "type": "string",
+                                                    "example": "i.shunkorov"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "i.shunkorov@edoline.uz"
+                                                },
+                                                "full_name": {
+                                                    "type": "string",
+                                                    "example": "Шункоров Икром"
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "901234567",
+                                                    "nullable": true
+                                                },
+                                                "birthday": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "1990-05-12",
+                                                    "nullable": true
+                                                },
+                                                "avatar_url": {
+                                                    "type": "string",
+                                                    "example": "https://edoline.uz/profile_img/img_191.png",
+                                                    "nullable": true
+                                                },
+                                                "organization": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 28
+                                                        },
+                                                        "name_uz": {
+                                                            "type": "string",
+                                                            "example": "ООО ATLAS GROUP"
+                                                        },
+                                                        "name_ru": {
+                                                            "type": "string",
+                                                            "nullable": true
+                                                        },
+                                                        "name_en": {
+                                                            "type": "string",
+                                                            "nullable": true
+                                                        },
+                                                        "tax_number": {
+                                                            "type": "string",
+                                                            "example": "201122334",
+                                                            "nullable": true
+                                                        }
+                                                    },
+                                                    "type": "object",
+                                                    "nullable": true
+                                                },
+                                                "department": {
+                                                    "type": "string",
+                                                    "example": "IT bo'limi",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    },
+                    "404": {
+                        "description": "Пользователь не найден"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/profile/avatar": {
+            "post": {
+                "tags": [
+                    "Mobile API"
+                ],
+                "summary": "Загрузить аватар",
+                "description": "Файл сохраняется в public/profile_img как img_{user_id}.png.\n     *         К ссылке добавляется метка времени, чтобы браузер не показывал\n     *         закэшированную старую картинку.",
+                "operationId": "f0edd571b03ed6b154b6ec6a1b862d01",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "avatar"
+                                ],
+                                "properties": {
+                                    "avatar": {
+                                        "description": "Изображение, до 5 МБ",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Аватар обновлён",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "avatar_url": {
+                                            "type": "string",
+                                            "example": "https://edoline.uz/profile_img/img_191.png?v=1757000000"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    },
+                    "422": {
+                        "description": "Файл не изображение или больше 5 МБ"
+                    },
+                    "500": {
+                        "description": "Не удалось записать файл",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "upload_failed"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Yuklash xatosi"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Mobile API"
+                ],
+                "summary": "Удалить аватар",
+                "operationId": "5541e7d495aaf531d98e435ea140c79b",
+                "responses": {
+                    "200": {
+                        "description": "Аватар удалён",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/profile/password": {
+            "post": {
+                "tags": [
+                    "Mobile API"
+                ],
+                "summary": "Сменить пароль",
+                "operationId": "fa9107ba19517696d28eeca80fed0dcf",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "current_password",
+                                    "new_password",
+                                    "new_password_confirmation"
+                                ],
+                                "properties": {
+                                    "current_password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "new_password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "minLength": 6
+                                    },
+                                    "new_password_confirmation": {
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Пароль изменён",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    },
+                    "422": {
+                        "description": "Текущий пароль неверен либо новый не прошёл проверку"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/profile/info": {
+            "post": {
+                "tags": [
+                    "Mobile API"
+                ],
+                "summary": "Изменить личные данные",
+                "description": "ВНИМАНИЕ: маршрут и метод контроллера существуют, но\n     *         мини-апп их не вызывает — в src/shared/api/endpoints.js такого\n     *         вызова нет. Либо функция не доведена до интерфейса, либо маршрут\n     *         остался от прежней версии.",
+                "operationId": "a2246c145d67b7248f03b7724458b645",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "l_name",
+                                    "f_name"
+                                ],
+                                "properties": {
+                                    "l_name": {
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "example": "Шункоров"
+                                    },
+                                    "f_name": {
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "example": "Икром"
+                                    },
+                                    "m_name": {
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "example": "Анварович",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Данные обновлены"
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    },
+                    "422": {
+                        "description": "Ошибка валидации"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/create/init/{type}": {
+            "get": {
+                "tags": [
+                    "Mobile API"
+                ],
+                "summary": "Справочники для формы создания",
+                "description": "Первый шаг мастера: журналы, уровни конфиденциальности,\n     *         подразделения, языки и признак активной подписки.",
+                "operationId": "f2029d141f80add5b5b717d17335f771",
+                "parameters": [
+                    {
+                        "name": "type",
+                        "in": "path",
+                        "description": "Тип документа",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "incoming",
+                                "outgoing",
+                                "internal"
+                            ],
+                            "example": "internal"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Справочники",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "example": "internal"
+                                        },
+                                        "has_subscription": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "journals": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/TelegramJournalOption"
+                                            }
+                                        },
+                                        "confidences": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "Oddiy"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "departments": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "languages": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    },
+                    "422": {
+                        "description": "Неизвестный тип документа",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "invalid_type"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/create/journals/{j_type_id}": {
+            "get": {
+                "tags": [
+                    "Mobile API"
+                ],
+                "summary": "Подтипы выбранного журнала",
+                "operationId": "e9715a2e2edf96a124844515f797a51e",
+                "parameters": [
+                    {
+                        "name": "j_type_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 9
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Вложенные журналы",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "journals": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/TelegramJournalOption"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/create/execution-users/{j_id}": {
+            "get": {
+                "tags": [
+                    "Mobile API"
+                ],
+                "summary": "Участники маршрута для журнала",
+                "description": "Состав ролей задаётся настройками журнала: кто может\n     *         накладывать резолюцию, подписывать и согласовывать.",
+                "operationId": "793899d85958ba48c18437933c85995c",
+                "parameters": [
+                    {
+                        "name": "j_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 202
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Пользователи по ролям",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "resolution_users": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "signatory_users": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "agreement_users": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/create/doc-organizations/{j_id}": {
+            "get": {
+                "tags": [
+                    "Mobile API"
+                ],
+                "summary": "Организации-корреспонденты",
+                "description": "Нужны для входящих и исходящих документов.",
+                "operationId": "b333a1bc40609771aeeedcf29ea60835",
+                "parameters": [
+                    {
+                        "name": "j_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 202
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Список организаций",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "organizations": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 5
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "Adliya vazirligi"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/create/store": {
+            "post": {
+                "tags": [
+                    "Mobile API"
+                ],
+                "summary": "Создать документ",
+                "description": "Последний шаг мастера. Передаётся как multipart/form-data,\n     *         потому что вместе с полями идут файлы. Требуется активная подписка\n     *         у пользователя.",
+                "operationId": "9c7ba7fb6d89aa3c82fc80fd1afd89e7",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "journal_type",
+                                    "resolution_user"
+                                ],
+                                "properties": {
+                                    "journal_type": {
+                                        "description": "journal_types.id",
+                                        "type": "integer",
+                                        "example": 9
+                                    },
+                                    "journal_type2": {
+                                        "description": "Подтип журнала",
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "doc_name": {
+                                        "type": "string",
+                                        "maxLength": 500
+                                    },
+                                    "doc_number": {
+                                        "type": "string",
+                                        "maxLength": 100
+                                    },
+                                    "doc_date": {
+                                        "type": "string",
+                                        "maxLength": 20,
+                                        "example": "15.09.2026"
+                                    },
+                                    "doc_text": {
+                                        "type": "string"
+                                    },
+                                    "doc_lang": {
+                                        "type": "string",
+                                        "enum": [
+                                            "uz",
+                                            "kr",
+                                            "ru",
+                                            "en"
+                                        ]
+                                    },
+                                    "confidence": {
+                                        "type": "integer"
+                                    },
+                                    "signing_term": {
+                                        "type": "string",
+                                        "maxLength": 50
+                                    },
+                                    "j_number": {
+                                        "type": "string",
+                                        "maxLength": 50
+                                    },
+                                    "resolution_user": {
+                                        "description": "Обязателен: кто накладывает резолюцию",
+                                        "type": "integer"
+                                    },
+                                    "to_emp": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "to_agree": {
+                                        "description": "Согласующие",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "doc_organization": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "main_file": {
+                                        "description": "Текст документа, до 50 МБ",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "doc_files": {
+                                        "description": "Вложения, по 50 МБ",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Документ создан",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "journal_id": {
+                                            "type": "integer",
+                                            "example": 498
+                                        },
+                                        "doc_hash": {
+                                            "type": "string",
+                                            "example": "a1b2c3d4"
+                                        },
+                                        "view_url": {
+                                            "type": "string",
+                                            "example": "https://edoline.uz/office/view-work-doc/498/a1b2c3d4"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Hujjat muvaffaqiyatli yaratildi"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    },
+                    "422": {
+                        "description": "Ошибка валидации или нет активной подписки",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "validation"
+                                        },
+                                        "messages": {
+                                            "type": "object",
+                                            "example": {
+                                                "resolution_user": [
+                                                    "Rezolyutsiya uchun foydalanuvchi tanlang"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка при сохранении",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "server_error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Не удалось создать документ. Попробуйте ещё раз."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/create/web-editor": {
+            "post": {
+                "tags": [
+                    "Mobile API"
+                ],
+                "summary": "Передать черновик в веб-редактор на компьютере",
+                "description": "Заполненная в телефоне форма сохраняется в кэш на 10 минут,\n     *         и возвращается ссылка для открытия на компьютере, где доступен\n     *         OnlyOffice. Файлы не переносятся — их нужно приложить заново.",
+                "operationId": "9e6af6230c17502b50b48a63666ff5c4",
+                "requestBody": {
+                    "description": "Те же поля, что и у /create/store, кроме файлов",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ссылка создана",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "url": {
+                                            "type": "string",
+                                            "example": "https://edoline.uz/telegram/handoff-create?draft=abc123"
+                                        },
+                                        "expires": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2026-09-16T12:10:00+05:00"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/telegram/auth": {
+            "post": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Авторизация по Telegram initData",
+                "description": "Проверяет HMAC-подпись initData от Telegram WebApp и выдаёт\n     *         Bearer-токен. Telegram-аккаунт должен быть заранее привязан к\n     *         пользователю EDOLINE через команду /start у бота — иначе 403 not_linked.\n     *\n     *         Побочный эффект: если у пользователя org_unit_id указывает на\n     *         организацию без активной записи в user_work_histories, он\n     *         автоматически переключается на организацию с активной записью.\n     *         Без этого все списки документов приходили бы пустыми, а\n     *         переключателя организаций в мини-аппе нет.",
+                "operationId": "4925570ac4d9d3e0f8c0fb87f305ef19",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "init_data"
+                                ],
+                                "properties": {
+                                    "init_data": {
+                                        "description": "Строка window.Telegram.WebApp.initData как есть, URL-encoded",
+                                        "type": "string",
+                                        "example": "query_id=AAH...&user=%7B%22id%22%3A123456789%7D&auth_date=1757000000&hash=abc123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Токен выдан",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "example": "a1b2c3d4e5f6..."
+                                        },
+                                        "expires_at": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2026-09-16T12:00:00+05:00"
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "i.shunkorov"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "i.shunkorov@edoline.uz"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "В initData нет данных пользователя",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "User data not found in initData"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Подпись Telegram не прошла проверку",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Invalid Telegram signature"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Telegram-аккаунт не привязан к пользователю EDOLINE",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "not_linked"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Telegram аккаунт не привязан. Отправьте /start боту для привязки."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Привязка есть, но пользователь EDOLINE не найден",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/telegram/resolve-token": {
+            "post": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Обменять sign-token на Bearer-токен",
+                "description": "Используется страницей подписи E-IMZO (/mobile/sign/{token}),\n     *         а не самим мини-аппом: одноразовая ссылка открывается во внешнем\n     *         браузере, где Bearer-токена ещё нет.",
+                "operationId": "51e91ef1cdf66bd16a538d9b7494e024",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "sign_token"
+                                ],
+                                "properties": {
+                                    "sign_token": {
+                                        "type": "string",
+                                        "example": "s1gn70k3n..."
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Токен найден",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "example": "a1b2c3d4e5f6..."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Токен неверный или истёк",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Invalid or expired token"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/telegram/translations": {
+            "get": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Переводы интерфейса мини-аппа",
+                "description": "Публичный: нужен до авторизации, чтобы экраны загрузки\n     *         и ошибок были уже локализованы.",
+                "operationId": "a01bdeddbb0fc84363dcb9ed0ddd23a7",
+                "responses": {
+                    "200": {
+                        "description": "Словарь переводов по языкам",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "uz": {
+                                        "login": "Kirish"
+                                    },
+                                    "ru": {
+                                        "login": "Вход"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/telegram/counts": {
+            "get": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Счётчики на главном экране",
+                "description": "Считаются по ВСЕМ записям user_work_histories пользователя,\n     *         без фильтра по организации — намеренно, чтобы числа совпадали\n     *         с веб-версией (menuCount).",
+                "operationId": "7506a1b576268d1636023f8fcbb2973b",
+                "responses": {
+                    "200": {
+                        "description": "Количество документов по разделам",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "for_resolution": {
+                                            "description": "Роль RESOL, статус шага 2 или 6",
+                                            "type": "integer",
+                                            "example": 3
+                                        },
+                                        "for_sign": {
+                                            "description": "Роль SIGN, статус шага 2",
+                                            "type": "integer",
+                                            "example": 5
+                                        },
+                                        "for_approval": {
+                                            "description": "Роль AGREE, статус шага 2",
+                                            "type": "integer",
+                                            "example": 2
+                                        },
+                                        "my_docs": {
+                                            "description": "Свои документы, кроме статусов 2 и 13",
+                                            "type": "integer",
+                                            "example": 12
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    }
+                },
+                "security": [
+                    {
+                        "telegramBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/telegram/status-options": {
+            "get": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Варианты фильтра по статусу шага",
+                "operationId": "272ae8b8e9a9e5df40f1ad45306e6d3d",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "description": "Роль в маршруте документа",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "RESOL",
+                                "SIGN",
+                                "AGREE"
+                            ],
+                            "example": "SIGN"
+                        }
+                    },
+                    {
+                        "name": "lang",
+                        "in": "query",
+                        "description": "Язык подписей. Значение cyr трактуется как uz",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "uz",
+                                "ru",
+                                "en",
+                                "cyr"
+                            ],
+                            "example": "uz"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Список статусов",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "category": {
+                                            "type": "string",
+                                            "example": "SIGN"
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "example": "doc_signer"
+                                        },
+                                        "default": {
+                                            "type": "string",
+                                            "example": "2"
+                                        },
+                                        "options": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "code": {
+                                                        "type": "string",
+                                                        "example": "2"
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "Imzolashda"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    }
+                },
+                "security": [
+                    {
+                        "telegramBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/telegram/documents": {
+            "get": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Документы, пришедшие пользователю",
+                "description": "Без параметра category возвращаются все три роли сразу —\n     *         так было до появления фильтра, поведение сохранено.",
+                "operationId": "0e680c10e9d549848d59886f50b12da7",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "RESOL",
+                                "SIGN",
+                                "AGREE"
+                            ],
+                            "example": "SIGN"
+                        }
+                    },
+                    {
+                        "name": "step_status",
+                        "in": "query",
+                        "description": "Код статуса шага из /status-options",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "2"
+                        }
+                    },
+                    {
+                        "name": "lang",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "uz",
+                                "ru",
+                                "en",
+                                "cyr"
+                            ],
+                            "example": "uz"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Список документов",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "count": {
+                                            "type": "integer",
+                                            "example": 4
+                                        },
+                                        "documents": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/TelegramDocumentListItem"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    }
+                },
+                "security": [
+                    {
+                        "telegramBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/telegram/documents/{j_id}": {
+            "get": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Карточка входящего документа",
+                "operationId": "2733ebf4bd65e679c5d8ee2d7344f632",
+                "parameters": [
+                    {
+                        "name": "j_id",
+                        "in": "path",
+                        "description": "document_journals.id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 497
+                        }
+                    },
+                    {
+                        "name": "lang",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "uz",
+                                "ru",
+                                "en",
+                                "cyr"
+                            ],
+                            "example": "uz"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Карточка документа",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TelegramDocumentDetail"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    },
+                    "403": {
+                        "description": "Документ не адресован пользователю"
+                    },
+                    "404": {
+                        "description": "Документ не найден"
+                    }
+                },
+                "security": [
+                    {
+                        "telegramBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/telegram/documents/{j_id}/sign-token": {
+            "post": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Одноразовая ссылка на страницу подписи E-IMZO",
+                "description": "Подпись происходит вне мини-аппа: ссылка открывается во\n     *         внешнем браузере, где работает E-IMZO. Тип подписи определяется\n     *         ролью пользователя в маршруте документа. Срок жизни — 15 минут.",
+                "operationId": "f954b8657d09f143236d034402f6ff3a",
+                "parameters": [
+                    {
+                        "name": "j_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 497
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ссылка создана",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "sign_url": {
+                                            "type": "string",
+                                            "example": "https://edoline.uz/mobile/sign/s1gn70k3n"
+                                        },
+                                        "sign_type": {
+                                            "type": "string",
+                                            "example": "sign_resolution"
+                                        },
+                                        "expires_in": {
+                                            "description": "Секунд до истечения",
+                                            "type": "integer",
+                                            "example": 900
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    },
+                    "403": {
+                        "description": "Нет активного шага на этом пользователе",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Document not available"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Документ не найден"
+                    }
+                },
+                "security": [
+                    {
+                        "telegramBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/telegram/my-documents": {
+            "get": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Документы, созданные пользователем",
+                "description": "Базовые журналы входящих и исходящих исключены —\n     *         это раздел собственных рабочих документов.",
+                "operationId": "4862a79cf290a9fef41b039143ae7d7b",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Код статуса документа",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "1"
+                        }
+                    },
+                    {
+                        "name": "lang",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "uz",
+                                "ru",
+                                "en",
+                                "cyr"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Страница списка",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/TelegramDocumentListItem"
+                                            }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 3
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 15
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 42
+                                                },
+                                                "has_more": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    }
+                },
+                "security": [
+                    {
+                        "telegramBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/telegram/my-documents/{j_id}": {
+            "get": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Карточка своего документа",
+                "operationId": "a70efe38c20d595893d03ee635c53adb",
+                "parameters": [
+                    {
+                        "name": "j_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 497
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Карточка документа",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TelegramMyDocumentDetail"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    },
+                    "403": {
+                        "description": "Документ создан не этим пользователем"
+                    },
+                    "404": {
+                        "description": "Документ не найден"
+                    }
+                },
+                "security": [
+                    {
+                        "telegramBearer": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Удалить свой документ",
+                "operationId": "7637cd16f1f1ce51a9bd39c7985018df",
+                "parameters": [
+                    {
+                        "name": "j_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 497
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Документ удалён",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    },
+                    "403": {
+                        "description": "Документ создан не этим пользователем"
+                    },
+                    "404": {
+                        "description": "Документ не найден"
+                    }
+                },
+                "security": [
+                    {
+                        "telegramBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/telegram/my-documents/{j_id}/send": {
+            "post": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Отправить свой документ по маршруту",
+                "description": "Отправка требует подписи автора, поэтому возвращается\n     *         ссылка на страницу E-IMZO, а не результат отправки. Документ\n     *         должен быть в статусе 1 (черновик).",
+                "operationId": "09cba35439af5bf00f922e674980e244",
+                "parameters": [
+                    {
+                        "name": "j_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 497
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "sign_type"
+                                ],
+                                "properties": {
+                                    "sign_type": {
+                                        "type": "string",
+                                        "example": "from_signer_to_ag"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ссылка на подпись создана",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "sign_url": {
+                                            "type": "string",
+                                            "example": "https://edoline.uz/mobile/sign/s1gn70k3n"
+                                        },
+                                        "sign_type": {
+                                            "type": "string",
+                                            "example": "from_signer_to_ag"
+                                        },
+                                        "expires_in": {
+                                            "type": "integer",
+                                            "example": 900
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    },
+                    "403": {
+                        "description": "Документ создан не этим пользователем"
+                    },
+                    "404": {
+                        "description": "Документ не найден"
+                    },
+                    "422": {
+                        "description": "Документ не в статусе черновика",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "invalid_status"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Hujjat status bilan bu amalni bajarib bo'lmaydi"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "telegramBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/telegram/profile": {
+            "get": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Карточка сотрудника",
+                "operationId": "d9e6425d7b9b660c873964ad38996d19",
+                "responses": {
+                    "200": {
+                        "description": "Данные профиля",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "profile": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 191
+                                                },
+                                                "username": {
+                                                    "type": "string",
+                                                    "example": "i.shunkorov"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "i.shunkorov@edoline.uz"
+                                                },
+                                                "full_name": {
+                                                    "type": "string",
+                                                    "example": "Шункоров Икром"
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "901234567",
+                                                    "nullable": true
+                                                },
+                                                "birthday": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "1990-05-12",
+                                                    "nullable": true
+                                                },
+                                                "avatar_url": {
+                                                    "type": "string",
+                                                    "example": "https://edoline.uz/profile_img/img_191.png",
+                                                    "nullable": true
+                                                },
+                                                "organization": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 28
+                                                        },
+                                                        "name_uz": {
+                                                            "type": "string",
+                                                            "example": "ООО ATLAS GROUP"
+                                                        },
+                                                        "name_ru": {
+                                                            "type": "string",
+                                                            "nullable": true
+                                                        },
+                                                        "name_en": {
+                                                            "type": "string",
+                                                            "nullable": true
+                                                        },
+                                                        "tax_number": {
+                                                            "type": "string",
+                                                            "example": "201122334",
+                                                            "nullable": true
+                                                        }
+                                                    },
+                                                    "type": "object",
+                                                    "nullable": true
+                                                },
+                                                "department": {
+                                                    "type": "string",
+                                                    "example": "IT bo'limi",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    },
+                    "404": {
+                        "description": "Пользователь не найден"
+                    }
+                },
+                "security": [
+                    {
+                        "telegramBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/telegram/profile/avatar": {
+            "post": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Загрузить аватар",
+                "description": "Файл сохраняется в public/profile_img как img_{user_id}.png.\n     *         К ссылке добавляется метка времени, чтобы браузер не показывал\n     *         закэшированную старую картинку.",
+                "operationId": "c9b7841920c706ae080aa7f02079ecfb",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "avatar"
+                                ],
+                                "properties": {
+                                    "avatar": {
+                                        "description": "Изображение, до 5 МБ",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Аватар обновлён",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "avatar_url": {
+                                            "type": "string",
+                                            "example": "https://edoline.uz/profile_img/img_191.png?v=1757000000"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    },
+                    "422": {
+                        "description": "Файл не изображение или больше 5 МБ"
+                    },
+                    "500": {
+                        "description": "Не удалось записать файл",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "upload_failed"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Yuklash xatosi"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "telegramBearer": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Удалить аватар",
+                "operationId": "b94acf1d403c93ec5a2354e331d4bd27",
+                "responses": {
+                    "200": {
+                        "description": "Аватар удалён",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    }
+                },
+                "security": [
+                    {
+                        "telegramBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/telegram/profile/password": {
+            "post": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Сменить пароль",
+                "operationId": "6d56639f6f02d49b925bc20bc4698b79",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "current_password",
+                                    "new_password",
+                                    "new_password_confirmation"
+                                ],
+                                "properties": {
+                                    "current_password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "new_password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "minLength": 6
+                                    },
+                                    "new_password_confirmation": {
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Пароль изменён",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    },
+                    "422": {
+                        "description": "Текущий пароль неверен либо новый не прошёл проверку"
+                    }
+                },
+                "security": [
+                    {
+                        "telegramBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/telegram/profile/info": {
+            "post": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Изменить личные данные",
+                "description": "ВНИМАНИЕ: маршрут и метод контроллера существуют, но\n     *         мини-апп их не вызывает — в src/shared/api/endpoints.js такого\n     *         вызова нет. Либо функция не доведена до интерфейса, либо маршрут\n     *         остался от прежней версии.",
+                "operationId": "9b52a5c65c2236411619b2b5404c49c9",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "l_name",
+                                    "f_name"
+                                ],
+                                "properties": {
+                                    "l_name": {
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "example": "Шункоров"
+                                    },
+                                    "f_name": {
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "example": "Икром"
+                                    },
+                                    "m_name": {
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "example": "Анварович",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Данные обновлены"
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    },
+                    "422": {
+                        "description": "Ошибка валидации"
+                    }
+                },
+                "security": [
+                    {
+                        "telegramBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/telegram/create/init/{type}": {
+            "get": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Справочники для формы создания",
+                "description": "Первый шаг мастера: журналы, уровни конфиденциальности,\n     *         подразделения, языки и признак активной подписки.",
+                "operationId": "99948067c7e88782f3827ee40e3f1da0",
+                "parameters": [
+                    {
+                        "name": "type",
+                        "in": "path",
+                        "description": "Тип документа",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "incoming",
+                                "outgoing",
+                                "internal"
+                            ],
+                            "example": "internal"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Справочники",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "example": "internal"
+                                        },
+                                        "has_subscription": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "journals": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/TelegramJournalOption"
+                                            }
+                                        },
+                                        "confidences": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "Oddiy"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "departments": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "languages": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    },
+                    "422": {
+                        "description": "Неизвестный тип документа",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "invalid_type"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "telegramBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/telegram/create/journals/{j_type_id}": {
+            "get": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Подтипы выбранного журнала",
+                "operationId": "edb673d0741f093935dacc67624026c7",
+                "parameters": [
+                    {
+                        "name": "j_type_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 9
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Вложенные журналы",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "journals": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/TelegramJournalOption"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    }
+                },
+                "security": [
+                    {
+                        "telegramBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/telegram/create/execution-users/{j_id}": {
+            "get": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Участники маршрута для журнала",
+                "description": "Состав ролей задаётся настройками журнала: кто может\n     *         накладывать резолюцию, подписывать и согласовывать.",
+                "operationId": "3efc9ccfc5a1f6c888faa0cddbcaa3f1",
+                "parameters": [
+                    {
+                        "name": "j_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 202
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Пользователи по ролям",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "resolution_users": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "signatory_users": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "agreement_users": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    }
+                },
+                "security": [
+                    {
+                        "telegramBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/telegram/create/doc-organizations/{j_id}": {
+            "get": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Организации-корреспонденты",
+                "description": "Нужны для входящих и исходящих документов.",
+                "operationId": "a2641430c573e3962d7d9363b5fc9f0b",
+                "parameters": [
+                    {
+                        "name": "j_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 202
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Список организаций",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "organizations": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 5
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "Adliya vazirligi"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    }
+                },
+                "security": [
+                    {
+                        "telegramBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/telegram/create/store": {
+            "post": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Создать документ",
+                "description": "Последний шаг мастера. Передаётся как multipart/form-data,\n     *         потому что вместе с полями идут файлы. Требуется активная подписка\n     *         у пользователя.",
+                "operationId": "b99dd0bf1cbb7d6e559cd3a1b4512c74",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "journal_type",
+                                    "resolution_user"
+                                ],
+                                "properties": {
+                                    "journal_type": {
+                                        "description": "journal_types.id",
+                                        "type": "integer",
+                                        "example": 9
+                                    },
+                                    "journal_type2": {
+                                        "description": "Подтип журнала",
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "doc_name": {
+                                        "type": "string",
+                                        "maxLength": 500
+                                    },
+                                    "doc_number": {
+                                        "type": "string",
+                                        "maxLength": 100
+                                    },
+                                    "doc_date": {
+                                        "type": "string",
+                                        "maxLength": 20,
+                                        "example": "15.09.2026"
+                                    },
+                                    "doc_text": {
+                                        "type": "string"
+                                    },
+                                    "doc_lang": {
+                                        "type": "string",
+                                        "enum": [
+                                            "uz",
+                                            "kr",
+                                            "ru",
+                                            "en"
+                                        ]
+                                    },
+                                    "confidence": {
+                                        "type": "integer"
+                                    },
+                                    "signing_term": {
+                                        "type": "string",
+                                        "maxLength": 50
+                                    },
+                                    "j_number": {
+                                        "type": "string",
+                                        "maxLength": 50
+                                    },
+                                    "resolution_user": {
+                                        "description": "Обязателен: кто накладывает резолюцию",
+                                        "type": "integer"
+                                    },
+                                    "to_emp": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "to_agree": {
+                                        "description": "Согласующие",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "doc_organization": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "main_file": {
+                                        "description": "Текст документа, до 50 МБ",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "doc_files": {
+                                        "description": "Вложения, по 50 МБ",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Документ создан",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "journal_id": {
+                                            "type": "integer",
+                                            "example": 498
+                                        },
+                                        "doc_hash": {
+                                            "type": "string",
+                                            "example": "a1b2c3d4"
+                                        },
+                                        "view_url": {
+                                            "type": "string",
+                                            "example": "https://edoline.uz/office/view-work-doc/498/a1b2c3d4"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Hujjat muvaffaqiyatli yaratildi"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    },
+                    "422": {
+                        "description": "Ошибка валидации или нет активной подписки",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "validation"
+                                        },
+                                        "messages": {
+                                            "type": "object",
+                                            "example": {
+                                                "resolution_user": [
+                                                    "Rezolyutsiya uchun foydalanuvchi tanlang"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка при сохранении",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "server_error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Не удалось создать документ. Попробуйте ещё раз."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "telegramBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/telegram/create/web-editor": {
+            "post": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Передать черновик в веб-редактор на компьютере",
+                "description": "Заполненная в телефоне форма сохраняется в кэш на 10 минут,\n     *         и возвращается ссылка для открытия на компьютере, где доступен\n     *         OnlyOffice. Файлы не переносятся — их нужно приложить заново.",
+                "operationId": "bf5db2544d70f9dd44b34729c3e2cdf0",
+                "requestBody": {
+                    "description": "Те же поля, что и у /create/store, кроме файлов",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ссылка создана",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "url": {
+                                            "type": "string",
+                                            "example": "https://edoline.uz/telegram/handoff-create?draft=abc123"
+                                        },
+                                        "expires": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2026-09-16T12:10:00+05:00"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Нет или истёк токен"
+                    }
+                },
+                "security": [
+                    {
+                        "telegramBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/telegram/eimzo-link/auth-init": {
+            "post": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Начать привязку аккаунта по ID-Card",
+                "description": "Часть сценария привязки Telegram-аккаунта через E-IMZO:\n     *         вызывается со страницы привязки, открытой по одноразовой ссылке\n     *         от бота, а не из самого мини-аппа. Поэтому авторизация здесь\n     *         не по Bearer, а по link_token.",
+                "operationId": "94a69eba79b8eee5cb756b2bbb7edf1e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "link_token"
+                                ],
+                                "properties": {
+                                    "link_token": {
+                                        "description": "Токен из ссылки, выданной ботом",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Челлендж создан",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "documentId": {
+                                            "type": "string",
+                                            "example": "doc-abc-123"
+                                        },
+                                        "challenge": {
+                                            "type": "string",
+                                            "example": "5f2a..."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "link_token неверный или истёк"
+                    },
+                    "422": {
+                        "description": "link_token не передан"
+                    }
+                }
+            }
+        },
+        "/api/telegram/eimzo-link/status": {
+            "post": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Опрос состояния подписи ID-Card",
+                "description": "Страница привязки периодически спрашивает, подписал ли\n     *         пользователь челлендж в приложении E-IMZO.",
+                "operationId": "cbe17838aa2d03359821f8fe8ff564b9",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "link_token",
+                                    "documentId"
+                                ],
+                                "properties": {
+                                    "link_token": {
+                                        "type": "string"
+                                    },
+                                    "documentId": {
+                                        "type": "string",
+                                        "example": "doc-abc-123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Текущее состояние",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "pending | signed | expired",
+                                            "type": "string",
+                                            "example": "pending"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "link_token неверный или истёк"
+                    },
+                    "422": {
+                        "description": "Не переданы обязательные поля"
+                    }
+                }
+            }
+        },
+        "/api/telegram/eimzo-link/check-auth": {
+            "post": {
+                "tags": [
+                    "Telegram Mini App"
+                ],
+                "summary": "Завершить привязку после подписи",
+                "description": "Проверяет подписанный челлендж, определяет пользователя\n     *         EDOLINE по ПИНФЛ из сертификата и связывает его с Telegram-аккаунтом.",
+                "operationId": "b2aaf092894517f34a3e9cd476ae0db9",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "link_token",
+                                    "documentId"
+                                ],
+                                "properties": {
+                                    "link_token": {
+                                        "type": "string"
+                                    },
+                                    "documentId": {
+                                        "type": "string",
+                                        "example": "doc-abc-123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Аккаунт привязан",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "link_token неверный, истёк или подпись не подтверждена"
+                    },
+                    "404": {
+                        "description": "Пользователь с таким ПИНФЛ не найден"
+                    },
+                    "422": {
+                        "description": "Не переданы обязательные поля"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -6137,6 +9964,181 @@
                             }
                         },
                         "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "OrganizationUnitItem": {
+                "title": "Организация",
+                "description": "Запись справочника organization_units со всеми полями таблицы",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 16
+                    },
+                    "code": {
+                        "description": "Уникальный код организации",
+                        "type": "string",
+                        "maxLength": 50,
+                        "example": "ORG-016"
+                    },
+                    "name_uz": {
+                        "description": "Название на узбекской латинице (обязательное)",
+                        "type": "string",
+                        "maxLength": 100,
+                        "example": "Adliya vazirligi"
+                    },
+                    "name_kr": {
+                        "description": "Название на узбекской кириллице",
+                        "type": "string",
+                        "maxLength": 100,
+                        "example": "Адлия вазирлиги",
+                        "nullable": true
+                    },
+                    "name_ru": {
+                        "type": "string",
+                        "maxLength": 100,
+                        "example": "Министерство юстиции",
+                        "nullable": true
+                    },
+                    "name_en": {
+                        "type": "string",
+                        "maxLength": 100,
+                        "example": "Ministry of Justice",
+                        "nullable": true
+                    },
+                    "tax_number": {
+                        "description": "ИНН",
+                        "type": "string",
+                        "maxLength": 20,
+                        "example": "201122334",
+                        "nullable": true
+                    },
+                    "owner_user_id": {
+                        "description": "Владелец организации, users.id. 0 — не назначен",
+                        "type": "integer",
+                        "example": 42
+                    },
+                    "parent_id": {
+                        "description": "Родительская организация. 0 — корневая",
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "level": {
+                        "description": "Уровень вложенности, начиная с 1",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "status": {
+                        "description": "1 — активна, иначе отключена",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "meta_data": {
+                        "description": "Произвольные дополнительные данные организации (jsonb)",
+                        "type": "object",
+                        "example": {
+                            "address": "Toshkent sh.",
+                            "phone": "+998712000000"
+                        },
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-01-15T09:30:00.000000Z",
+                        "nullable": true
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-08-27T14:05:00.000000Z",
+                        "nullable": true
+                    },
+                    "parent": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/OrganizationUnitParentItem"
+                            }
+                        ],
+                        "nullable": true,
+                        "description": "Родительская организация. Приходит только при with_parent=true"
+                    }
+                },
+                "type": "object"
+            },
+            "OrganizationUnitListResponse": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Organization units retrieved successfully"
+                    },
+                    "data": {
+                        "properties": {
+                            "data": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/OrganizationUnitItem"
+                                }
+                            },
+                            "current_page": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "per_page": {
+                                "type": "integer",
+                                "example": 100
+                            },
+                            "total": {
+                                "type": "integer",
+                                "example": 30
+                            },
+                            "last_page": {
+                                "type": "integer",
+                                "example": 1
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "OrganizationUnitParentItem": {
+                "title": "Родительская организация",
+                "properties": {
+                    "id": {
+                        "description": "Родительская организация в сокращённом виде.\n\nОтдельная схема, а не ссылка на OrganizationUnitItem: иначе получилась бы\nрекурсия, и Swagger UI разворачивал бы дерево до бесконечности.",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "code": {
+                        "type": "string",
+                        "example": "ORG-001"
+                    },
+                    "name_uz": {
+                        "type": "string",
+                        "example": "Bosh boshqarma"
+                    },
+                    "name_ru": {
+                        "type": "string",
+                        "example": "Главное управление",
+                        "nullable": true
+                    },
+                    "parent_id": {
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "level": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "status": {
+                        "type": "integer",
+                        "example": 1
                     }
                 },
                 "type": "object"
@@ -6403,6 +10405,217 @@
                     }
                 },
                 "type": "object"
+            },
+            "TelegramDocumentListItem": {
+                "title": "Документ в списке",
+                "properties": {
+                    "id": {
+                        "description": "document_journals.id",
+                        "type": "integer",
+                        "example": 497
+                    },
+                    "doc_number": {
+                        "description": "Прочерк, если номера нет",
+                        "type": "string",
+                        "example": "142/2026"
+                    },
+                    "doc_name": {
+                        "type": "string",
+                        "example": "Ta'til berish to'g'risida"
+                    },
+                    "created_at": {
+                        "description": "Формат d.m.Y",
+                        "type": "string",
+                        "example": "12.09.2026"
+                    },
+                    "role": {
+                        "type": "string",
+                        "enum": [
+                            "RESOL",
+                            "SIGN",
+                            "AGREE"
+                        ],
+                        "example": "SIGN"
+                    },
+                    "role_label": {
+                        "type": "string",
+                        "example": "Imzolash"
+                    },
+                    "step_status": {
+                        "type": "integer",
+                        "example": 2,
+                        "nullable": true
+                    },
+                    "status_label": {
+                        "type": "string",
+                        "example": "Imzolashda"
+                    }
+                },
+                "type": "object"
+            },
+            "TelegramDocumentDetail": {
+                "title": "Карточка входящего документа",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 497
+                    },
+                    "doc_id": {
+                        "type": "integer",
+                        "example": 1203
+                    },
+                    "doc_number": {
+                        "type": "string",
+                        "example": "142/2026",
+                        "nullable": true
+                    },
+                    "doc_name": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "doc_date": {
+                        "type": "string",
+                        "example": "12.09.2026",
+                        "nullable": true
+                    },
+                    "doc_term": {
+                        "type": "string",
+                        "example": "20.09.2026",
+                        "nullable": true
+                    },
+                    "doc_text": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "doc_hash": {
+                        "type": "string",
+                        "example": "a1b2c3d4",
+                        "nullable": true
+                    },
+                    "journal": {
+                        "type": "string",
+                        "example": "Ta'til",
+                        "nullable": true
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "Imzolashda",
+                        "nullable": true
+                    },
+                    "role": {
+                        "type": "string",
+                        "enum": [
+                            "RESOL",
+                            "SIGN",
+                            "AGREE"
+                        ],
+                        "nullable": true
+                    },
+                    "files": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TelegramDocumentFile"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "TelegramMyDocumentDetail": {
+                "title": "Карточка своего документа",
+                "description": "Отличается от входящего тем, что вместо роли в маршруте\n *         показывается состояние отправки: черновик можно отправить или удалить",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 498
+                    },
+                    "doc_id": {
+                        "type": "integer",
+                        "example": 1204
+                    },
+                    "doc_number": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "doc_name": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "doc_date": {
+                        "type": "string",
+                        "example": "15.09.2026",
+                        "nullable": true
+                    },
+                    "doc_term": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "doc_text": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "doc_hash": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "journal": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "Yaratilgan",
+                        "nullable": true
+                    },
+                    "files": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TelegramDocumentFile"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "TelegramDocumentFile": {
+                "title": "Вложение документа",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "prikaz.pdf"
+                    },
+                    "url": {
+                        "type": "string",
+                        "example": "https://edoline.uz/..."
+                    },
+                    "size": {
+                        "type": "integer",
+                        "example": 184320,
+                        "nullable": true
+                    },
+                    "ext": {
+                        "type": "string",
+                        "example": "pdf",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "TelegramJournalOption": {
+                "title": "Журнал в выпадающем списке",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 202
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "Ishga qabul qilish"
+                    },
+                    "doc_code": {
+                        "type": "string",
+                        "example": "PIGL"
+                    }
+                },
+                "type": "object"
             }
         },
         "securitySchemes": {
@@ -6423,6 +10636,11 @@
                 "description": "Статический токен интеграции 1С (из ONEC_INBOUND_TOKENS). Вводится в Authorize.",
                 "name": "X-1C-Token",
                 "in": "header"
+            },
+            "telegramBearer": {
+                "type": "http",
+                "description": "Токен из POST /api/telegram/auth, передаётся как\n *         Authorization: Bearer {token}",
+                "scheme": "bearer"
             }
         }
     },
@@ -6446,6 +10664,14 @@
         {
             "name": "Protocols API",
             "description": "API для работы с протоколами (для членов и участников)"
+        },
+        {
+            "name": "Mobile API",
+            "description": "API мобильного приложения. Авторизация: POST /api/v1/mobile/login\n *         возвращает Sanctum-токен, он передаётся как Authorization: Bearer.\n *         Набор эндпоинтов повторяет Telegram Mini App — отличается только\n *         способом авторизации и префиксом пути (/api/v1/mobile вместо\n *         /api/telegram)."
+        },
+        {
+            "name": "Telegram Mini App",
+            "description": "API мини-приложения EDOLINE внутри Telegram. Авторизация —\n *         собственная: Bearer-токен выдаётся эндпоинтом /api/telegram/auth\n *         по подписанному initData от Telegram WebApp, живёт ограниченное\n *         время. Это НЕ Sanctum-токен из /api/auth/login."
         },
         {
             "name": "Dictionaries",

@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Models\Document\DocumentJournals;
 use App\Observers\DocumentJournalObserver;
+use App\Services\Api\MobileSignLinkIssuer;
+use App\Services\Api\SignLinkIssuer;
 use Carbon\Carbon;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\App;
@@ -23,6 +25,9 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         //
+        // Какую страницу подписи использовать, решается здесь.
+        // Мини-апп пока работает по-старому, через свои контроллеры.
+        $this->app->bind(SignLinkIssuer::class, MobileSignLinkIssuer::class);
     }
 
     public function boot()
