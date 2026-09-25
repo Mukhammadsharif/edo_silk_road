@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\PricingController;
 use App\Http\Controllers\Admin\SubscriptionRequestController;
 use App\Http\Controllers\Admin\TariffController;
 use App\Http\Controllers\Admin\LicenseController;
+use App\Http\Controllers\Mobile\MobileAppSignController;
 use App\Http\Controllers\Projects\BoardController;
 use App\Http\Controllers\Projects\BoardLabelController;
 use App\Http\Controllers\Projects\BoardListController;
@@ -557,6 +558,9 @@ Route::post('/frontend/mobile/upload', [SignDocImzoMobileApiController::class, '
 Route::prefix('mobile')->group(function () {
     Route::get('/sign/{token}', [MobileSignController::class, 'show'])->name('mobile.sign');
     Route::post('/sign/{token}/complete', [MobileSignController::class, 'complete'])->name('mobile.sign.complete');
+    // Страница подписи мобильного приложения — своя, отдельно от мини-аппа
+    Route::get('/app/sign/{token}',           [MobileAppSignController::class, 'show'])->name('mobile.app.sign');
+    Route::post('/app/sign/{token}/complete', [MobileAppSignController::class, 'complete'])->name('mobile.app.sign.complete');
 });
 
 Route::get('/mobile/redirect', function(\Illuminate\Http\Request $request) {

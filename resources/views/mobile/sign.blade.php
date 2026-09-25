@@ -1161,6 +1161,12 @@
     var DOC_ID     = {{ $journal->doc_id }};
     var DOC_TYPE   = '{{ $doc_type }}';
     var SIGN_TOKEN = '{{ $token }}';
+
+    /* Адрес завершения подписи приходит из контроллера: у мини-аппа и у
+       мобильного приложения страницы разные (/mobile/sign и /mobile/app/sign),
+       а шаблон общий. Фолбэк — прежний путь, чтобы старая страница
+       продолжала работать без изменений. */
+    var COMPLETE_URL = '{{ $complete_url ?? url("/mobile/sign/{$token}/complete") }}';
     var API_TOKEN  = '{{ $api_token }}';
 
     // ── State ─────────────────────────────────────────────────────────────────
@@ -1403,7 +1409,7 @@
 
     function onSuccess() {
         haptic('success');
-        fetch(BASE_URL + '/mobile/sign/' + SIGN_TOKEN + '/complete', {method: 'POST'});
+        fetch(COMPLETE_URL, {method: 'POST'});
         document.getElementById('main-content').style.display = 'none';
         document.getElementById('success-screen').classList.add('active');
         if (tgApp) {

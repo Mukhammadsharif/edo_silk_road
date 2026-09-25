@@ -7,6 +7,10 @@ use App\Http\Controllers\Api\ECP\SignDocImzoMobileApiController;
 use App\Http\Controllers\Api\ECP\SignLoginApiController;
 use App\Http\Controllers\Api\Integration1C\OnecOrdersController;
 use App\Http\Controllers\Api\Integration1C\OnecTokenController;
+use App\Http\Controllers\Api\Mobile\MobileAuthController;
+use App\Http\Controllers\Api\Mobile\MobileDocumentController;
+use App\Http\Controllers\Api\Mobile\MobileDocumentCreateController;
+use App\Http\Controllers\Api\Mobile\MobileProfileController;
 use App\Http\Controllers\Api\Office\ExecutionApiController;
 use App\Http\Controllers\Api\Office\JournalApiController;
 use App\Http\Controllers\Api\Protocol\ProtocolApiCommentController;
@@ -352,6 +356,62 @@ Route::prefix('telegram')->group(function () {
     Route::post('/eimzo-link/auth-init',  [TelegramEimzoLinkController::class, 'authInit']);
     Route::post('/eimzo-link/status',     [TelegramEimzoLinkController::class, 'pollStatus']);
     Route::post('/eimzo-link/check-auth', [TelegramEimzoLinkController::class, 'checkAuth']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Мобильное приложение
+|--------------------------------------------------------------------------
+| Самостоятельный раздел со стандартной авторизацией Sanctum. Набор
+| возможностей повторяет Telegram Mini App, но контроллеры и токены свои —
+| вход в одном клиенте не влияет на другой.
+|
+| Бизнес-логика общая: контроллеры тонкие, всё в App\Services\Api\*.
+*/
+Route::prefix('v1/mobile')->group(function () {
+
+    // Вход — без авторизации
+    Route::post('/login', [MobileAuthController::class, 'login'])
+        ->middleware('throttle:10,1');   // 10 попыток в минуту с IP
+
+    Route::middleware('auth:sanctum')->group(function () {
+
+        // Сессия
+        Route::post('/logout',     [MobileAuthController::class, 'logout']);
+        Route::post('/logout-all', [MobileAuthController::class, 'logoutAll']);
+        Route::get('/me',          [MobileAuthController::class, 'me']);
+
+        // Переводы интерфейса
+        Route::get('/translations', [\App\Http\Controllers\Api\Telegram\TelegramTranslationController::class, 'index']);
+
+        // Документы, пришедшие пользователю
+        Route::get('/counts',           [MobileDocumentController::class, 'counts']);
+        Route::get('/status-options',   [MobileDocumentController::class, 'statusOptions']);
+        Route::get('/documents',        [MobileDocumentController::class, 'index']);
+        Route::get('/documents/{j_id}', [MobileDocumentController::class, 'show'])->whereNumber('j_id');
+        Route::post('/documents/{j_id}/sign-link', [MobileDocumentController::class, 'signLink'])->whereNumber('j_id');
+
+        // Свои документы
+        Route::get('/my-documents',              [MobileDocumentController::class, 'myIndex']);
+        Route::get('/my-documents/{j_id}',       [MobileDocumentController::class, 'myShow'])->whereNumber('j_id');
+        Route::post('/my-documents/{j_id}/send', [MobileDocumentController::class, 'send'])->whereNumber('j_id');
+        Route::delete('/my-documents/{j_id}',    [MobileDocumentController::class, 'destroy'])->whereNumber('j_id');
+
+        // Профиль
+        Route::get('/profile',           [MobileProfileController::class, 'show']);
+        Route::post('/profile/avatar',   [MobileProfileController::class, 'updateAvatar']);
+        Route::delete('/profile/avatar', [MobileProfileController::class, 'deleteAvatar']);
+        Route::post('/profile/password', [MobileProfileController::class, 'updatePassword']);
+        Route::post('/profile/info',     [MobileProfileController::class, 'updateInfo']);
+
+        // Создание документа
+        Route::get('/create/init/{type}',              [MobileDocumentCreateController::class, 'init']);
+        Route::get('/create/journals/{j_type_id}',     [MobileDocumentCreateController::class, 'journals'])->whereNumber('j_type_id');
+        Route::get('/create/execution-users/{j_id}',   [MobileDocumentCreateController::class, 'executionUsers'])->whereNumber('j_id');
+        Route::get('/create/doc-organizations/{j_id}', [MobileDocumentCreateController::class, 'docOrganizations'])->whereNumber('j_id');
+        Route::post('/create/store',                   [MobileDocumentCreateController::class, 'store']);
+        Route::post('/create/web-editor',              [MobileDocumentCreateController::class, 'webEditor']);
+    });
 });
 
 // --- OUTBOUND: EDOLINE отправляет в 1С ---
