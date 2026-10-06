@@ -18,6 +18,15 @@ use Illuminate\Support\Collection;
  */
 trait HandlesAgreementFlow
 {
+    /** Шаг ожидает своей очереди. */
+    private const STEP_WAITING = 1;
+
+    /** Шаг активен: документ лежит у согласующего. */
+    private const STEP_ACTIVE = 2;
+
+    /** Шаг подписан. */
+    private const STEP_SIGNED = 5;
+
     private function isSequentialAgreement($journal): bool
     {
         return ($journal->agreement_type ?? 'parallel') === 'sequential';
@@ -54,6 +63,19 @@ trait HandlesAgreementFlow
      * Возвращает true, если согласование полностью завершено (можно идти дальше — к резолюции),
      * иначе активирует следующий уровень (для sequential) и возвращает false.
      *
+     * ИСПРАВЛЕНО: прежняя версия определяла «текущий уровень» как минимальный
+     * среди НЕподписанных и тут же проверяла, все ли шаги этого уровня подписаны.
+     * Сразу после подписания последнего шага уровня N минимальным неподписанным
+     * становился уровень N+1 — он, разумеется, не подписан, и метод выходил
+     * с return false, не активировав его. Ветка активации следующего уровня была
+     * недостижима в принципе, и документ зависал: уровень 1 подписан,
+     * уровни 2..N навсегда оставались в статусе 1.
+     *
+     * Теперь уровень-кандидат тот же (минимальный неподписанный), но решение
+     * принимается по признаку «работает ли кто-то над ним прямо сейчас»:
+     *   - есть активный шаг (status = 2) → ждём, ничего не трогаем;
+     *   - активных нет, значит уровень ещё не запускали → активируем его.
+     *
      * @param  Collection|array  $agreementSteps  свежая выборка ВСЕХ шагов согласования (со статусами)
      * @param  callable          $activate        function (Collection $stepsToActivate): void
      */
@@ -65,7 +87,7 @@ trait HandlesAgreementFlow
             return true;
         }
 
-        $unsigned = $steps->filter(fn ($s) => (int) $s->status !== 5);
+        $unsigned = $steps->filter(fn ($s) => (int) $s->status !== self::STEP_SIGNED);
 
         // Все согласовали — согласование завершено.
         if ($unsigned->isEmpty()) {
@@ -77,24 +99,42 @@ trait HandlesAgreementFlow
             return false;
         }
 
-        // Последовательно: определяем текущий (минимальный неполностью подписанный) уровень.
+        // Последовательно: уровень-кандидат — минимальный из неподписанных.
         $currentLevel = (int) $unsigned->map(fn ($s) => (int) $s->queue_number)->min();
         $currentLevelSteps = $steps->filter(fn ($s) => (int) $s->queue_number === $currentLevel);
-        $currentLevelUnsigned = $currentLevelSteps->filter(fn ($s) => (int) $s->status !== 5);
 
-        // Текущий уровень ещё не весь подписан — ждём остальных на этом уровне.
-        if ($currentLevelUnsigned->isNotEmpty()) {
+        // Кто-то из этого уровня уже держит документ — ждём его.
+        $active = $currentLevelSteps->filter(fn ($s) => (int) $s->status === self::STEP_ACTIVE);
+
+        if ($active->isNotEmpty()) {
             return false;
         }
 
-        // Текущий уровень завершён — ищем следующий.
-        $nextSteps = $steps->filter(fn ($s) => (int) $s->queue_number > $currentLevel);
-        if ($nextSteps->isEmpty()) {
-            return true; // следующих уровней нет — согласование завершено
-        }
+        /*
+         | Активных нет — уровень ещё не запускали, запускаем сейчас.
+         |
+         | Берём только шаги в статусе ожидания: на уровне могут оказаться
+         | уже подписанные (если согласующих несколько и часть отработала
+         | раньше), их повторно активировать нельзя. Отклонённые и
+         | возвращённые статусы сюда тоже не попадут — их обрабатывает
+         | отдельная ветка возврата документа.
+         */
+        $toActivate = $currentLevelSteps
+            ->filter(fn ($s) => (int) $s->status === self::STEP_WAITING)
+            ->values();
 
-        $nextLevel = (int) $nextSteps->map(fn ($s) => (int) $s->queue_number)->min();
-        $toActivate = $steps->filter(fn ($s) => (int) $s->queue_number === $nextLevel)->values();
+        if ($toActivate->isEmpty()) {
+            // Шаги уровня в неожиданном состоянии: активировать нечего,
+            // но и завершать согласование нельзя — документ зависнет молча.
+            // Пишем в лог, чтобы причина была видна.
+            \Illuminate\Support\Facades\Log::warning('[agreement] уровень не содержит шагов для активации', [
+                'journal_id' => $journal->id ?? null,
+                'level'      => $currentLevel,
+                'statuses'   => $currentLevelSteps->pluck('status', 'id')->all(),
+            ]);
+
+            return false;
+        }
 
         $activate($toActivate);
 
