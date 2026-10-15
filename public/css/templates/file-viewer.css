@@ -1,0 +1,238 @@
+/* ═══════════ Карточка вложения на странице документа ═══════════
+ | Нейтральные цвета и те же скругления, что у остальных карточек
+ | страницы, чтобы блок не выпадал из общего вида.
+ */
+
+.file-viewer-card {
+    border: 1px solid #e4e7ec;
+    border-radius: 10px;
+    background: #fff;
+    margin: 0 0 18px;
+    overflow: hidden;
+}
+
+/* ─────────── Шапка: имя, размер, действия ─────────── */
+
+.file-viewer-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+    background: #f7f8fa;
+    border-bottom: 1px solid #e4e7ec;
+}
+
+.file-viewer-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;             /* иначе длинное имя растянет шапку */
+    color: #344054;
+    font-size: 14px;
+}
+
+.file-viewer-title i,
+.file-viewer-title svg {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+    color: #667085;
+}
+
+.file-viewer-name {
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-viewer-size {
+    flex: 0 0 auto;
+    color: #98a2b3;
+    font-size: 12px;
+}
+
+.file-viewer-actions {
+    display: flex;
+    gap: 6px;
+    flex: 0 0 auto;
+}
+
+.file-viewer-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    color: #667085;
+    background: #fff;
+    border: 1px solid #e4e7ec;
+    transition: background .15s, color .15s;
+}
+
+.file-viewer-btn:hover {
+    background: #eef2f6;
+    color: #1d2939;
+}
+
+.file-viewer-btn i,
+.file-viewer-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* ─────────── Содержимое ─────────── */
+
+.file-viewer-body {
+    padding: 0;
+}
+
+.file-viewer-image {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.file-viewer-frame {
+    display: block;
+    width: 100%;
+    height: 780px;
+    border: 0;
+}
+
+.file-viewer-office,
+.file-viewer-office-mount {
+    width: 100%;
+    height: 700px;
+    position: relative;
+}
+
+/* Высоту задаёт обёртка; iframe редактора её наследует,
+   иначе просмотрщик схлопнется в ноль. */
+.file-viewer-office-mount > iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.file-viewer-text {
+    margin: 0;
+    padding: 14px 16px;
+    max-height: 520px;
+    overflow: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #1d2939;
+    white-space: pre-wrap;
+    word-break: break-word;
+    background: #fcfcfd;
+}
+
+/* Пустой <pre> до загрузки не должен схлопываться в полоску */
+.file-viewer-text:empty {
+    min-height: 60px;
+}
+
+.file-viewer-audio {
+    display: block;
+    width: 100%;
+    padding: 14px 16px;
+}
+
+.file-viewer-video {
+    display: block;
+    width: 100%;
+    max-height: 620px;
+    background: #000;
+}
+
+/* ─────────── Заглушки и состояния ─────────── */
+
+.file-viewer-fallback,
+.file-viewer-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    height: 100%;
+    min-height: 200px;
+    padding: 28px 16px;
+    text-align: center;
+    color: #667085;
+    font-size: 14px;
+}
+
+.file-viewer-fallback i,
+.file-viewer-fallback svg {
+    width: 36px;
+    height: 36px;
+    color: #98a2b3;
+}
+
+.file-viewer-fallback p {
+    margin: 0;
+}
+
+/* Крутилка на время загрузки документа */
+.file-viewer-spinner {
+    width: 26px;
+    height: 26px;
+    border: 2.5px solid #e4e7ec;
+    border-top-color: #3b5bdb;
+    border-radius: 50%;
+    animation: file-viewer-spin .8s linear infinite;
+}
+
+@keyframes file-viewer-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Уважаем системную настройку «меньше движения» */
+@media (prefers-reduced-motion: reduce) {
+    .file-viewer-spinner {
+        animation: none;
+        border-top-color: #e4e7ec;
+    }
+}
+
+.file-viewer-open-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 16px;
+    border: 0;
+    border-radius: 7px;
+    background: #3b5bdb;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background .15s;
+}
+
+.file-viewer-open-btn:hover {
+    background: #2f4bbd;
+    color: #fff;
+}
+
+.file-viewer-open-btn i,
+.file-viewer-open-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Кнопка под текстовым блоком стоит отдельной строкой */
+.file-viewer-body > .file-viewer-open-btn {
+    margin: 0 16px 16px;
+}
+
+/* ─────────── Узкие экраны ─────────── */
+
+@media (max-width: 768px) {
+    .file-viewer-frame { height: 520px; }
+    .file-viewer-office,
+    .file-viewer-office-mount { height: 520px; }
+}

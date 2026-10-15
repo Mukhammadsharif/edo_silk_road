@@ -2,6 +2,7 @@
 
 <link rel="stylesheet" href="{{ asset('css/templates/universal-document-view.css') }}">
 <link rel="stylesheet" href="{{ asset('css/templates/office/journal/work/templates/header.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/file-viewer.css') }}">
 
 @section('content')
     <div class="work-view-page-modern">
@@ -52,22 +53,8 @@
                         </div>
                         <div class="printPage" id="printPage">
                             <div class="doc-text mt-3">{!! $document->doc_text??'' !!}</div>
-                            @forelse($documentFiles as $key => $file)
-                                @switch(strtolower($file->file_ext))
-                                    @case('jpg')
-                                    @case('jpeg')
-                                    @case('png')
-                                    @case('pdf')
-                                        <div class="document-file-viewer">
-                                            <div class="file-name-badge">
-                                                <i data-lucide="file"></i>
-                                                <span>{{ $file->file_name }}</span>
-                                            </div>
-                                            <iframe src="{{ route('file.pre-view',['id'=>$file->id]) }}"
-                                                    class="document-iframe"></iframe>
-                                        </div>
-                                        @break
-                                @endswitch
+                            @forelse($documentFiles as $file)
+                                @include('templates.file-viewer', ['file' => $file])
                             @empty
                                 <div class="empty-document-state">
                                     <i data-lucide="file-x"></i>
@@ -101,6 +88,8 @@
     @include('e-imzo.e-imzo')
 
     @include('templates.download')
+
+    @include('templates.file-viewer-js')
 
     <script type="text/javascript">
         $(document).ready(function () {

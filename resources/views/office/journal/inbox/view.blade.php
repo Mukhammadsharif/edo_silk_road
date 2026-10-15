@@ -2,6 +2,7 @@
 
 <link rel="stylesheet" href="{{ asset('css/templates/universal-document-view.css') }}">
 <link rel="stylesheet" href="{{ asset('css/templates/office/journal/work/templates/header.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/file-viewer.css') }}">
 
 @section('content')
     <div class="work-view-page-modern">
@@ -54,22 +55,21 @@
                         </div>
                         <div class="printPage" id="printPage">
                             <div class="doc-text mt-3">{!! $document->doc_text??'' !!}</div>
-                            @forelse($documentFiles as $key => $file)
-                                @switch(strtolower($file->file_ext))
-                                    @case('jpg')
-                                    @case('jpeg')
-                                    @case('png')
-                                    @case('pdf')
-                                        <div class="document-file-viewer">
-                                            <div class="file-name-badge">
-                                                <i data-lucide="file"></i>
-                                                <span>{{ $file->file_name }}</span>
-                                            </div>
-                                            <iframe src="{{ route('file.pre-view',['id'=>$file->id]) }}"
-                                                    class="document-iframe"></iframe>
-                                        </div>
-                                        @break
-                                @endswitch
+
+                            {{-- ═══════════ ВЛОЖЕНИЯ ═══════════
+                             | Раньше здесь стоял @switch на jpg/jpeg/png/pdf,
+                             | и файл любого другого типа — word, excel,
+                             | архив, текст — не отрисовывался вообще: ни
+                             | просмотра, ни строки с именем, ни ссылки на
+                             | скачивание. Для пользователя вложения просто
+                             | не существовало.
+                             |
+                             | Теперь каждый файл проходит через общий
+                             | просмотрщик templates.file-viewer, который сам
+                             | выбирает способ показа по типу.
+                             --}}
+                            @forelse($documentFiles as $file)
+                                @include('templates.file-viewer', ['file' => $file])
                             @empty
                                 <div class="empty-document-state">
                                     <i data-lucide="file-x"></i>
@@ -97,6 +97,10 @@
     @include('qr-code-doc.qr-code-view-js')
     @include('print.iframe-print')
     @include('e-imzo.e-imzo')
+
+    {{-- Поведение просмотрщика вложений: ленивая загрузка OnlyOffice
+         и текстовых файлов. Подключается один раз на страницу. --}}
+    @include('templates.file-viewer-js')
 
     <script>
         // Initialize lucide icons

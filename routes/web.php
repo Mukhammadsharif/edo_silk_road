@@ -1,12 +1,10 @@
 <?php
 
 use App\Http\Controllers\Admin\DocLogsController;
-use App\Http\Controllers\Admin\OnecOrderMappingController;
 use App\Http\Controllers\Admin\PricingController;
 use App\Http\Controllers\Admin\SubscriptionRequestController;
 use App\Http\Controllers\Admin\TariffController;
 use App\Http\Controllers\Admin\LicenseController;
-use App\Http\Controllers\Mobile\MobileAppSignController;
 use App\Http\Controllers\Projects\BoardController;
 use App\Http\Controllers\Projects\BoardLabelController;
 use App\Http\Controllers\Projects\BoardListController;
@@ -142,10 +140,6 @@ Route::group(['middleware' => ['auth']], function() {
             Route::get('/',          [OnecIntegrationController::class, 'index'])->name('admin.onec.index');
             Route::post('/generate', [OnecIntegrationController::class, 'generate'])->name('admin.onec.generate');
             Route::post('/retry',    [OnecIntegrationController::class, 'retry'])->name('admin.onec.retry');
-            // Соответствие кадровых журналов типам приказов 1С
-            Route::get('/order-mapping',         [OnecOrderMappingController::class, 'index'])->name('admin.onec.mapping');
-            Route::post('/order-mapping/update', [OnecOrderMappingController::class, 'update'])->name('admin.onec.mapping.update');
-            Route::post('/order-mapping/reset',  [OnecOrderMappingController::class, 'reset'])->name('admin.onec.mapping.reset');
         });
 
         Route::prefix('organizations')->group(function () {
@@ -154,8 +148,6 @@ Route::group(['middleware' => ['auth']], function() {
             Route::post('store', [DepartmentController::class, 'organizationsStore'])->name('organizations.store');
             Route::any('edit/{id}', [DepartmentController::class, 'organizationsEdit'])->name('organizations.edit');
             Route::any('update/{id}', [DepartmentController::class, 'organizationsUpdate'])->name('organizations.update');
-            Route::delete('destroy/{id}', [DepartmentController::class, 'organizationsDestroy'])->name('organizations.destroy');
-            Route::post('restore/{id}', [DepartmentController::class, 'organizationsRestore'])->name('organizations.restore');
             Route::any('send-request', [DepartmentController::class, 'sendRequest'])->name('organizations.send.request');
             Route::any('cancel-request', [DepartmentController::class, 'cancelRequest'])->name('organizations.cancel.request');
         });
@@ -268,15 +260,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::any('app/document/{id}/update', [JournalTypesController::class, 'updateapp'])->name('app-document.update');
 
         // Protocol Doc type
-        // except(['show']) обязателен: show() в контроллере не реализован, а
-        // маршрут protocol-types/{protocol_type} перехватывает URL
-        // /protocol-types/index (его генерирует route('protocol-types.index'),
-        // потому что строкой ниже это имя переопределяется) и падает
-        // BadMethodCallException: Method ...::show does not exist.
-        Route::resource('protocol-types', ProtocolDocTypeController::class)->except(['show']);
-        Route::any('protocol-types/index', [ProtocolDocTypeController::class, 'index'])->name('protocol-types.index');
-        Route::any('protocol-types/super-user-docs/{orgId}', [ProtocolDocTypeController::class, 'superUserOrgDocs'])->name('protocol-types.super-user-docs');
-        Route::post('prt-doc-sign-roles', [ProtocolDocTypeController::class, 'signRoles'])->name('prt.doc.sign.roles');
+        Route::resource('protocol-types', ProtocolDocTypeController::class);
         Route::any('protocol-types/index', [ProtocolDocTypeController::class, 'index'])->name('protocol-types.index');
         Route::any('protocol-types/super-user-docs/{orgId}', [ProtocolDocTypeController::class, 'superUserOrgDocs'])->name('protocol-types.super-user-docs');
         Route::post('prt-doc-sign-roles', [ProtocolDocTypeController::class, 'signRoles'])->name('prt.doc.sign.roles');
@@ -350,8 +334,7 @@ Route::group(['middleware' => ['auth']], function() {
             }
             return response()->file($path);
         });
-        Route::get('agreement-sheet/{id}/{hash}', [JournalController::class, 'agreementSheet'])
-            ->name('office.agreement-sheet');
+
         Route::any('document-create', [OnlyOfficeController::class, 'create'])->name('document-only-office.create');
         Route::get('/doc/view', [OnlyOfficeController::class, 'docView']);
         Route::get('download-pdf/{onlyDocId}', [OnlyOfficeController::class, 'convertToPDF'])->name('download-only-office.pdf');
@@ -374,8 +357,7 @@ Route::group(['middleware' => ['auth']], function() {
             ->name('free-sign.version.show');
         Route::get('free-sign/{journal}/download/{which?}', [\App\Http\Controllers\FreeSign\FreeSignVersionController::class, 'download'])
             ->name('free-sign.download');
-        Route::post('free-sign/login-sign', [\App\Http\Controllers\ECP\SignDocImzoController::class, 'loginSignFreeSign'])
-            ->name('free-sign.login-sign');
+
         // Резолюция и исполнение внутри free-sign редактора.
         Route::post('free-sign/{journal}/resolution', [\App\Http\Controllers\FreeSign\FreeSignResolutionController::class, 'store'])
             ->name('free-sign.resolution.store');
@@ -545,6 +527,10 @@ Route::post('/create-key', [QrCodeDocController::class, 'createQrKeyCode'])->nam
 
 Route::get('/send-telegram-notification/{user_id}', [TelegramWebhookController::class, 'sendTelegramNotification']);
 
+Route::get('/file/office-source/{id}', [FileController::class, 'officeSource'])
+    ->middleware('signed')
+    ->name('file.office-source');
+
 Route::get('/proxy-document/{path}', [DocumentProxyController::class, 'show'])
     ->name('document.proxy')
     ->where('path', '[A-Za-z0-9+/=]+');
@@ -559,9 +545,6 @@ Route::post('/frontend/mobile/upload', [SignDocImzoMobileApiController::class, '
 Route::prefix('mobile')->group(function () {
     Route::get('/sign/{token}', [MobileSignController::class, 'show'])->name('mobile.sign');
     Route::post('/sign/{token}/complete', [MobileSignController::class, 'complete'])->name('mobile.sign.complete');
-    // Страница подписи мобильного приложения — своя, отдельно от мини-аппа
-    Route::get('/app/sign/{token}',           [MobileAppSignController::class, 'show'])->name('mobile.app.sign');
-    Route::post('/app/sign/{token}/complete', [MobileAppSignController::class, 'complete'])->name('mobile.app.sign.complete');
 });
 
 Route::get('/mobile/redirect', function(\Illuminate\Http\Request $request) {
@@ -650,10 +633,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/sync',                [ExternalDocFlowController::class, 'syncNow'])->name('sync');
         Route::get('/{id}',                 [ExternalDocFlowController::class, 'show'])->whereNumber('id')->name('show');
         Route::get('/{id}/print',           [ExternalDocFlowController::class, 'printForm'])->whereNumber('id')->name('print');
-        // Печатная форма и вложения байтами с НАШЕГО домена — для инлайн-рендера
-        // через pdf.js и склейки в один файл (storage-ссылки Didox без CORS).
-        Route::get('/{id}/print-pdf',       [ExternalDocFlowController::class, 'printPdf'])->whereNumber('id')->name('print-pdf');
-        Route::get('/{id}/attachment-raw/{didoxId?}', [ExternalDocFlowController::class, 'attachmentRaw'])->whereNumber('id')->name('attachment-raw');
         Route::get('/{id}/file/{didoxId?}', [ExternalDocFlowController::class, 'file'])->whereNumber('id')->name('file');
         Route::post('/{id}/send-to-review', [ExternalDocFlowController::class, 'sendToReview'])->whereNumber('id')->name('send-review');
         Route::post('/{id}/decide',         [ExternalDocFlowController::class, 'decide'])->whereNumber('id')->name('decide');

@@ -5,21 +5,13 @@
             {!! $html_doc !!}
         @endif
 
-        @forelse($documentFiles as $key => $file)
-            @switch(strtolower($file->file_ext))
-                @case('jpg')
-                @case('jpeg')
-                @case('png')
-                @case('pdf')
-                    {{ $file->file_name }}
-                    <iframe src="{{ route('file.pre-view',['id'=>$file->id]) }}"
-                            style="width: 100%; height: 800px;"></iframe>
-                    <hr>
-                    @break
-                    @break
-            @endswitch
-        @empty
-
-        @endforelse
+            @forelse($documentFiles as $file)
+                @include('templates.file-viewer', ['file' => $file])
+            @empty
+                <div class="empty-document-state">
+                    <i data-lucide="file-x"></i>
+                    <p>{{ __('message.no_document_files') ?? 'Файлы документа не найдены' }}</p>
+                </div>
+            @endforelse
     </div>
 </div>

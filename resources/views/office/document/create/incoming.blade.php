@@ -93,9 +93,9 @@
                                     {{ __('field.doc_lang') }}
                                 </label>
                                 <select name="doc_lang" class="form-control-modern select2">
+                                    <option value="ru">{{ __('lang.russian') }}</option>
                                     <option value="uz">{{ __('lang.uzbek') }}</option>
                                     <option value="kr">{{ __('lang.cyrillic') }}</option>
-                                    <option value="ru">{{ __('lang.russian') }}</option>
                                     <option value="en">{{ __('lang.english') }}</option>
                                 </select>
                             </div>

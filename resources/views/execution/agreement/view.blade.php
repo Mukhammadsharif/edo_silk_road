@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 <link rel="stylesheet" href="{{ asset('css/templates/universal-document-view.css') }}">
+<link rel="stylesheet" href="{{ asset('css/templates/file-viewer.css') }}">
 
 @section('content')
     <div class="work-view-page-modern">
@@ -57,6 +58,8 @@
     @include('print.iframe-print')
 
     @include('e-imzo.e-imzo')
+
+    @include('templates.file-viewer-js')
 
     <script type="text/javascript">
         $('.modal').each(function () {
